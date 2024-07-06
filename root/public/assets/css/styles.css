@@ -1,0 +1,177 @@
+/* ================================================
+    GLOBAL STYLES
+================================================ */
+body {
+  margin: 0 0 70px 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  background: #f0f0f0 url(/assets/images/background-marble.png) repeat;
+}
+
+header,
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: #ffffff;
+}
+
+header {
+  background-color: #0366d6;
+  border-bottom: 2px solid #66cc33;
+}
+
+.logo img {
+  width: 300px;
+  height: auto;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  border-radius: 20px 20px 0 0;
+  background-color: #ffffff;
+  min-height: calc(100vh - 200px);
+}
+.container {
+  border-radius: 20px 20px 0 0;
+  background-color: #ffffff;
+  min-height: calc(100vh - 200px);
+}
+
+footer {
+  background-color: #66cc33;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+.footer-text {
+  margin: 0;
+}
+
+/* ================================================
+    TAB STYLES
+================================================ */
+.tabcontent {
+  border-top: none;
+  display: none;
+  margin-bottom: 70px;
+}
+
+.tab {
+  background-color: #f1f1f1;
+  margin-left: 15px;
+  margin-right: 15px;
+  display: flex;
+  overflow: hidden;
+}
+
+.tab button {
+  background-color: transparent;
+  color: #66cc33;
+  border: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  float: left;
+  font-size: 1em;
+  outline: none;
+  padding: 14px 16px;
+  transition: 0.3s;
+  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tab button.active,
+.tab button:hover {
+  background-color: #ffffff;
+  box-shadow: unset;
+}
+
+/* ================================================
+    BUTTON STYLES
+================================================ */
+.green-button {
+  background-color: #66cc33;
+}
+
+.green-button:hover {
+  background-color: #5cbf2a;
+}
+
+.red-button {
+  background-color: #c9302c;
+}
+
+.red-button:hover {
+  background-color: #d9534f;
+}
+
+.orange-button {
+  background-color: #ec971f;
+}
+
+.orange-button:hover {
+  background-color: #f0ad4e;
+}
+
+.blue-button {
+  background-color: #0366d6;
+}
+
+.blue-button:hover {
+  background-color: #3478d9;
+}
+
+button {
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s;
+}
+
+button:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================================
+    FORM STYLES
+================================================ */
+textarea,
+select,
+input[type="text"],
+input[type="password"] {
+  display: block;
+  padding: 8px 6px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  width: 97%;
+  border: 1px solid #66cc33;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+input[type="submit"] {
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s;
+}
+
+select {
+  width: 100% !important;
+}
+
+textarea {
+  height: 100px;
+}
