@@ -2,7 +2,7 @@ RewriteEngine On
 
 # Serve a default PNG image if the requested PNG does not exist
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^images/.*\.png$ /assets/images/default.png[L]
+RewriteRule ^images/.*\.png$ /assets/images/default.png [L]
 
 # redirect '/' to '/home' for external requests only
 RewriteCond %{THE_REQUEST} \s/\s [NC]

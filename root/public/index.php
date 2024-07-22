@@ -59,7 +59,7 @@ require_once '../lib/load-lib.php'; // Dynamic page loading library
         <!-- Statuses tab -->
         <a href="/home"><button class="tablinks <?php if ($_SERVER['REQUEST_URI'] === '/home') echo 'active'; ?>">Statuses</button></a>
         <!-- Accounts tab -->
-        <a href="/accounts"><button class="tablinks <?php if ($_SERVER['REQUEST_URI'] === '/accounts') echo 'active'; ?>">Accounts</button></a>
+        <a href="/accounts"><button class="tablinks <?php if ($_SERVER['REQUEST_URI'] === '/accounts') echo 'active'; ?>">Accts</button></a>
         <!-- Conditional tabs based on user's role -->
         <?php
         // Check if user is logged in and retrieve their data
@@ -76,13 +76,15 @@ require_once '../lib/load-lib.php'; // Dynamic page loading library
                     // Display My info tab for non-admin users
                 } elseif ($userInfo->admin == 0) {
                 ?>
-                    <a href="/info"><button class="tablinks <?php if ($_SERVER['REQUEST_URI'] === '/info') echo 'active'; ?>">My Info</button></a>
+                    <a href="/info"><button class="tablinks <?php if ($_SERVER['REQUEST_URI'] === '/info') echo 'active'; ?>">My
+                            Info</button></a>
         <?php
                 }
             }
         }
         ?>
-
+        <!-- Omni Feed tab -->
+        <a href="/feeds.php?user=<?php echo $_SESSION['username']; ?>&acct=all"><button class="tablinks <?php if ($_SERVER['REQUEST_URI'] === '/feeds.php?user=' . $_SESSION['username'] . '&acct=all') echo 'active'; ?>">Omni</button></a>
     </div>
 
     <!-- Content area where different pages will be loaded based on the selected tab -->
@@ -95,16 +97,23 @@ require_once '../lib/load-lib.php'; // Dynamic page loading library
 
     <!-- Footer section -->
     <footer>
-        <p>&copy; <?php echo date("Y"); ?> <a href="https://vontainment.com">Vontainment.com</a> All Rights Reserved.</p>
+        <p>&copy;
+            <?php echo date("Y"); ?> <a href="https://vontainment.com">Vontainment.com</a> All Rights Reserved.
+        </p>
     </footer>
     <script>
         window.difyChatbotConfig = {
-            token: '4JqpLaqG8GoSdI65',
+            token: 'NMYzy6g6I3Ke3yX9',
             baseUrl: 'https://dify.hugev.xyz'
         }
     </script>
-    <script src="https://dify.hugev.xyz/embed.min.js" id="4JqpLaqG8GoSdI65" defer>
+    <script src="https://dify.hugev.xyz/embed.min.js" id="NMYzy6g6I3Ke3yX9" defer>
     </script>
+    <style>
+        #dify-chatbot-bubble-button {
+            background-color: #1C64F2 !important;
+        }
+    </style>
 </body>
 
 </html>

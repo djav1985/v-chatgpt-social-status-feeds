@@ -68,3 +68,11 @@
     margin-right: 20px;
   }
 }
+/* ================================================
+   DESKTOP RESPONSIVE STYLES
+================================================ */
+    @media (min-width: 768px) {
+        .share-button {
+            display: none;
+        }
+    }

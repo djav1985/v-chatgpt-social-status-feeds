@@ -5,7 +5,7 @@
  * Author: Vontainment
  * URL: https://vontainment.com
  * File: cron.php
- * Description: Handles scheduled tasks such as resetting API usage, running status updates, and clearing the IP blacklist.
+ * Description: Handles scheduled tasks such as resetting API usage, running status updates, clearing the IP blacklist, and purging old images.
  */
 
 // Including necessary configuration and library files
@@ -13,6 +13,9 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/lib/common-lib.php';
 require_once __DIR__ . '/lib/status-lib.php';
+
+// Define the constant for image age
+define('IMG_AGE', 30); // For example, set it to 30 days
 
 // Checking for command line arguments to determine the job type
 $jobType = $argv[1] ?? 'run_status'; // Default to 'run_status' if no argument provided
@@ -26,6 +29,8 @@ if ($jobType == 'reset_usage') {
     clearIpBlacklist();
 } elseif ($jobType == 'cleanup') {
     cleanupStatuses();
+} elseif ($jobType == 'purge_images') {
+    purgeImages();
 }
 
 // Function to run status update jobs
@@ -88,6 +93,29 @@ function cleanupStatuses()
 
             // Delete the oldest statuses
             deleteOldStatuses($accountName, $deleteCount);
+        }
+    }
+}
+
+// Function to purge old images
+function purgeImages()
+{
+    $imageDir = __DIR__ . '/public/images/';
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    $now = time();
+
+    foreach ($files as $fileinfo) {
+        if ($fileinfo->isFile() && $fileinfo->getExtension() == 'png') {
+            $filePath = $fileinfo->getRealPath();
+            $fileAge = ($now - $fileinfo->getMTime()) / 86400; // Convert file age to days
+
+            if ($fileAge > IMG_AGE) {
+                unlink($filePath); // Delete the file if it's older than IMG_AGE days
+            }
         }
     }
 }

@@ -8,7 +8,8 @@
  */
 
 // Utility Functions
-function sanitize_input($data) {
+function sanitize_input($data)
+{
     // Trim whitespace and remove HTML tags
     $data = trim(strip_tags($data));
 
@@ -23,7 +24,8 @@ function sanitize_input($data) {
     return $data;
 }
 
-function contains_disallowed_chars($str) {
+function contains_disallowed_chars($str)
+{
     global $disallowed_chars;
     foreach ($disallowed_chars as $char) {
         if (strpos($str, $char) !== false) {
@@ -33,7 +35,8 @@ function contains_disallowed_chars($str) {
     return false;
 }
 
-function contains_disallowed_patterns($str) {
+function contains_disallowed_patterns($str)
+{
     global $disallowed_patterns;
     foreach ($disallowed_patterns as $pattern) {
         if (strpos($str, $pattern) !== false) {
@@ -44,7 +47,8 @@ function contains_disallowed_patterns($str) {
 }
 
 // Session and Message Handling Functions
-function display_and_clear_messages() {
+function display_and_clear_messages()
+{
     if (isset($_SESSION['messages']) && count($_SESSION['messages']) > 0) {
         echo '<div class="messages">';
         foreach ($_SESSION['messages'] as $message) {
@@ -57,7 +61,8 @@ function display_and_clear_messages() {
 }
 
 // IP Blacklist Management Functions
-function update_failed_attempts($ip) {
+function update_failed_attempts($ip)
+{
     $db = new Database();
 
     // Check if the IP already exists in the database
@@ -84,7 +89,8 @@ function update_failed_attempts($ip) {
     $db->execute();
 }
 
-function is_blacklisted($ip) {
+function is_blacklisted($ip)
+{
     $db = new Database();
     $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip AND blacklisted = TRUE");
     $db->bind(':ip', $ip);
@@ -104,28 +110,32 @@ function is_blacklisted($ip) {
     return false;
 }
 
-function clearIpBlacklist() {
+function clearIpBlacklist()
+{
     $db = new Database();
     $db->query("DELETE FROM ip_blacklist"); // Delete all entries from the IP blacklist
     $db->execute();
 }
 
 // User Information Functions
-function getUserInfo($username) {
+function getUserInfo($username)
+{
     $db = new Database();
     $db->query("SELECT * FROM users WHERE username = :username");
     $db->bind(':username', $username);
     return $db->single();
 }
 
-function getAllUsers() {
+function getAllUsers()
+{
     $db = new Database();
     $db->query("SELECT * FROM users");
     return $db->resultSet();  // Returns an array of user objects
 }
 
 // Account Information Functions
-function getAcctInfo($username, $account) {
+function getAcctInfo($username, $account)
+{
     $db = new Database();
     $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
     $db->bind(':username', $username);
@@ -133,21 +143,24 @@ function getAcctInfo($username, $account) {
     return $db->single();
 }
 
-function getAllUserAccts($username) {
+function getAllUserAccts($username)
+{
     $db = new Database();
     $db->query("SELECT account FROM accounts WHERE username = :username");
     $db->bind(':username', $username);
     return $db->resultSet();  // Returns an array of objects where each object contains account information
 }
 
-function getAllAccounts() {
+function getAllAccounts()
+{
     $db = new Database();
     $db->query("SELECT * FROM accounts"); // Select all accounts
     return $db->resultSet(); // Return the result set
 }
 
 // Status Information Functions
-function getStatusInfo($username, $account) {
+function getStatusInfo($username, $account)
+{
     $db = new Database();
     $db->query("SELECT * FROM status_updates WHERE username = :username AND account = :account ORDER BY created_at DESC");
     $db->bind(':username', $username);
@@ -155,14 +168,16 @@ function getStatusInfo($username, $account) {
     return $db->resultSet(); // Return the result set directly
 }
 
-function countStatuses($accountName) {
+function countStatuses($accountName)
+{
     $db = new Database();
     $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account");
     $db->bind(':account', $accountName);
     return $db->single();
 }
 
-function deleteOldStatuses($accountName, $deleteCount) {
+function deleteOldStatuses($accountName, $deleteCount)
+{
     $db = new Database();
     $db->query("DELETE FROM status_updates WHERE account = :account ORDER BY created_at ASC LIMIT :deleteCount");
     $db->bind(':account', $accountName);
@@ -170,7 +185,8 @@ function deleteOldStatuses($accountName, $deleteCount) {
     $db->execute();
 }
 
-function hasStatusBeenPosted($accountName, $accountOwner, $currentTimeSlot) {
+function hasStatusBeenPosted($accountName, $accountOwner, $currentTimeSlot)
+{
     $db = new Database();
     // Calculate time window +/- 15 minutes
     $startTime = date('Y-m-d H:i:s', strtotime($currentTimeSlot . ' -15 minutes'));
@@ -188,13 +204,15 @@ function hasStatusBeenPosted($accountName, $accountOwner, $currentTimeSlot) {
 }
 
 // API Usage Functions
-function resetAllApiUsage() {
+function resetAllApiUsage()
+{
     $db = new Database();
     $db->query("UPDATE users SET used_api_calls = 0"); // Reset used API calls to 0
     $db->execute();
 }
 
-function updateUsedApiCalls($username, $usedApiCalls) {
+function updateUsedApiCalls($username, $usedApiCalls)
+{
     $db = new Database();
     $db->query("UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username");
     $db->bind(':used_api_calls', $usedApiCalls);

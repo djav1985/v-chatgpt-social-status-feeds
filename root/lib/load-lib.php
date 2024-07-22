@@ -7,8 +7,6 @@
  * Description: ChatGPT API Status Generator
  */
 
-session_start();
-
 $ip = $_SERVER['REMOTE_ADDR'];
 if (is_blacklisted($ip)) {
     // Stop the script and show an error if the IP is blacklisted

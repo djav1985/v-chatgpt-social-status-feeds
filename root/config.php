@@ -36,6 +36,9 @@ define('MAX_WIDTH', 720);
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', 30);
 
+// Maximum days to keep images. Should be over 360.
+define('IMG_AGE', 360);
+
 // MySQL Database Connection Constants
 define('DB_HOST', 'localhost'); // Database host or server
 define('DB_USER', '  '); // Database username

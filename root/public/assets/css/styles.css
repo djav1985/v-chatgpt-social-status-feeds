@@ -39,7 +39,7 @@ header {
 .container {
   border-radius: 20px 20px 0 0;
   background-color: #ffffff;
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - 180px);
 }
 
 footer {
@@ -174,4 +174,11 @@ select {
 
 textarea {
   height: 100px;
+}
+
+/* ================================================
+    BOT STYLES
+================================================ */
+#dify-chatbot-bubble-button {
+    bottom: var(--dify-chatbot-bubble-button-bottom, 3rem)!important;
 }
