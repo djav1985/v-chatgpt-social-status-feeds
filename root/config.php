@@ -18,10 +18,10 @@ define('API_ENDPOINT', 'https://api.openai.com/v1/chat/completions');
 // Model identifier for the AI (e.g., GPT-3.5 or GPT-4)
 define('MODEL', 'gpt-4-turbo');
 
-// Temperature setting for the AI's creativity
+// Temperature setting for the AI's creativity (0 to 2 where higher values mean more creative responses)
 define('TEMPERATURE', 1);
 
-// Maximum number of tokens to generate
+// Maximum number of tokens to generate in a response
 define('TOKENS', 256);
 
 // Domain where the status service is hosted
@@ -36,14 +36,14 @@ define('MAX_WIDTH', 720);
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', 30);
 
-// Maximum days to keep images. Should be over 360.
+// Maximum age of images in days before they are removed (should be over 360 days)
 define('IMG_AGE', 360);
 
 // MySQL Database Connection Constants
-define('DB_HOST', 'localhost'); // Database host or server
-define('DB_USER', '  '); // Database username
-define('DB_PASSWORD', '  '); // Database password
-define('DB_NAME', '  '); // Database schema name
+define('DB_HOST', 'localhost'); // Database host or server address
+define('DB_USER', '  '); // Username for the database connection
+define('DB_PASSWORD', '  '); // Password for the database connection
+define('DB_NAME', '  '); // Name of the database schema
 
 // Flag to check if the system has been installed correctly
 define('INSTALLED', false);

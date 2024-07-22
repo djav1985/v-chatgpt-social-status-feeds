@@ -90,6 +90,7 @@ require_once '../lib/load-lib.php'; // Dynamic page loading library
     <!-- Content area where different pages will be loaded based on the selected tab -->
     <?php
     // Include the content of the selected page
+    $pageOutput = loadPage(); // Function from load-lib.php to dynamically load the required page content
     if (isset($pageOutput)) {
         require_once $pageOutput;
     }

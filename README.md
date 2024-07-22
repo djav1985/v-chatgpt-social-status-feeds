@@ -208,10 +208,11 @@ V-chatgpt-social-status-feeds is a robust application designed to generate and m
 
 ## 🛠 Project Roadmap
 
-- [X] `► INSERT-TASK-1`
-- [ ] `► INSERT-TASK-2`
-- [ ] `► ...`
-
+- [X] `► Added Webshare API`
+- [X] `► Collapsable sectiosn for easier mobile usage`
+- [X] `► added ability to remove old images`
+- [X] `► images will never 404 but will serve a customizable placeholder`
+- [X] `► Added omnifeed combined user feed`
 ---
 
 ## 🎗 License

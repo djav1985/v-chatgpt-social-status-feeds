@@ -22,15 +22,15 @@ $jobType = $argv[1] ?? 'run_status'; // Default to 'run_status' if no argument p
 
 // Execute the appropriate function based on the job type
 if ($jobType == 'reset_usage') {
-    resetAllApiUsage();
+    resetAllApiUsage(); // Function to reset all API usage counters
 } elseif ($jobType == 'run_status') {
-    runStatusUpdateJobs();
+    runStatusUpdateJobs(); // Run tasks related to updating statuses
 } elseif ($jobType == 'clear_list') {
-    clearIpBlacklist();
+    clearIpBlacklist(); // Clear the IP blacklist
 } elseif ($jobType == 'cleanup') {
-    cleanupStatuses();
+    cleanupStatuses(); // Clean up old statuses
 } elseif ($jobType == 'purge_images') {
-    purgeImages();
+    purgeImages(); // Purge old images from the server
 }
 
 // Function to run status update jobs
@@ -41,7 +41,7 @@ function runStatusUpdateJobs()
     $currentHour = date('H'); // Gets the current hour in 24-hour format
     $currentDay = strtolower(date('l')); // Gets the current day in lowercase
     $currentMinute = date('i'); // Gets the current minute
-    $currentTimeSlot = sprintf("%02d", $currentHour) . ':' . $currentMinute;
+    $currentTimeSlot = sprintf("%02d", $currentHour) . ':' . $currentMinute; // Current time slot in HH:MM format
 
     foreach ($accounts as $account) {
         // Account details
@@ -77,6 +77,7 @@ function runStatusUpdateJobs()
 // New function to cleanup old statuses
 function cleanupStatuses()
 {
+    // Fetch all accounts from the database
     $accounts = getAllAccounts();
     foreach ($accounts as $account) {
         $accountName = $account->account;
@@ -100,17 +101,19 @@ function cleanupStatuses()
 // Function to purge old images
 function purgeImages()
 {
-    $imageDir = __DIR__ . '/public/images/';
+    $imageDir = __DIR__ . '/public/images/'; // Directory containing the images
     $files = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
         RecursiveIteratorIterator::CHILD_FIRST
     );
 
+    // Get the current timestamp
     $now = time();
 
+    // Iterate through all files in the directory
     foreach ($files as $fileinfo) {
-        if ($fileinfo->isFile() && $fileinfo->getExtension() == 'png') {
-            $filePath = $fileinfo->getRealPath();
+        if ($fileinfo->isFile() && $fileinfo->getExtension() == 'png') { // Only consider PNG files
+            $filePath = $fileinfo->getRealPath(); // Get the full path of the file
             $fileAge = ($now - $fileinfo->getMTime()) / 86400; // Convert file age to days
 
             if ($fileAge > IMG_AGE) {
