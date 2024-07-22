@@ -2,10 +2,10 @@
   <img src="v-chatgpt-social-status-feeds.png" width="60%" alt="project-logo">
 </p>
 <p align="center">
-    <h1 align="center">V-CHATGPT-SOCIAL-STATUS-FEEDS</h1>
+    <h1 align="center"></h1>
 </p>
 <p align="center">
-    <em>Automate Your Social Updates. Engage Effortlessly.</em>
+    <em>Empower Your Voice, Manage Your Status!</em>
 </p>
 <p align="center">
 	<!-- local repository, no metadata badges. -->
@@ -23,12 +23,10 @@
 
 - [📍 Overview](#-overview)
 - [🧩 Features](#-features)
-- [🗂️ Repository Structure](#️-repository-structure)
 - [📦 Modules](#-modules)
 - [🚀 Getting Started](#-getting-started)
   - [⚙️ Installation](#️-installation)
   - [🤖 Usage](#-usage)
-  - [🧪 Tests](#-tests)
 - [🛠 Project Roadmap](#-project-roadmap)
 - [🎗 License](#-license)
 </details>
@@ -36,51 +34,73 @@
 
 ## 📍 Overview
 
-V-chatgpt-social-status-feeds is a robust application designed to generate and manage automated social media status updates using the ChatGPT API. It facilitates user account creation, handles authentication, and enforces API usage limits. The platform supports scheduled tasks, real-time RSS feed generation, and secure login processes, ensuring reliable and timely updates. Enhancing user engagement, it provides features like status sharing, account management, and password changes, all while maintaining data integrity and security through session handling, input sanitization, and IP blacklisting. This project streamlines social media content generation and management for users across various platforms.
+The ChatGPT API Status Generator is a web application designed to facilitate the management and monitoring of user accounts and their corresponding social media statuses. It provides a user-friendly dashboard for account creation, updates, and deletions while ensuring secure authentication and robust session management. The project generates personalized RSS feeds, streamlines API interactions, and automates routine maintenance tasks to optimize performance. With its seamless integration of user management features and content generation capabilities, the ChatGPT API Status Generator offers significant value by enhancing user engagement and simplifying the process of sharing dynamic content across platforms.
 
 ---
 
 ## 🧩 Features
 
-|    |   Feature         | Description                                                                                                                           |
-|----|-------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| ⚙️  | **Architecture**  | The project uses a PHP-based architecture with well-defined modules for configuration, database interactions, and user management.    |
-| 🔩 | **Code Quality**  | The codebase follows a consistent style, emphasizing readability and maintainability, with logical separation of concerns across files. |
-| 📄 | **Documentation** | Documentation is embedded within the code and provides clear instructions for setup, configuration, and maintenance tasks.             |
-| 🔌 | **Integrations**  | Integrates with the ChatGPT API for status generation, includes database connections, and utilizes cron jobs for automated tasks.      |
-| 🧩 | **Modularity**    | The code is modular with dedicated files for configuration, forms, helpers, and libraries, enhancing reusability and ease of updates.   |
-| 🧪 | **Testing**       | No explicit mention of testing frameworks, implying reliance on manual testing and code review to ensure functionality and stability.  |
-| ⚡️  | **Performance**   | Efficient resource usage with caching strategies in `.htaccess` and controlled API call limits, ensuring responsive performance.     |
-| 🛡️ | **Security**      | Implements security measures like IP blacklisting, session management, CSRF tokens, and input sanitization to protect data and access. |
-| 📦 | **Dependencies**  | Relies on PHP, database libraries, and specific configuration, form, and utility scripts for comprehensive functionality.              |
-| 🚀 | **Scalability**   | Designed to handle increasing traffic with automated scheduling, efficient database interactions, and caching strategies.              |
+|     | Feature           | Description                                                                                                                                                                                       |
+| --- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ⚙️   | **Architecture**  | The project utilizes a PHP-based architecture with a clear directory structure that separates configuration, database, and public-facing components, ensuring modularity and maintainability.     |
+| 🔩   | **Code Quality**  | The code follows a consistent style with clear naming conventions, facilitating readability and collaboration. It incorporates robust error handling and input validation to enhance reliability. |
+| 📄   | **Documentation** | Documentation is present but mostly inline within the codebase. Each file includes comments explaining functionality, which aids developers in understanding and using the system effectively.    |
+| 🔌   | **Integrations**  | The project integrates with the ChatGPT API for generating statuses and supports RSS feed generation, enhancing its functionality and user engagement with external systems.                      |
+| 🧩   | **Modularity**    | The codebase is highly modular, segmented into distinct libraries and helper functions that promote reusability across various functionalities, enabling easier updates and feature additions.    |
+| 🧪   | **Testing**       | The project does not explicitly mention testing frameworks, suggesting a potential area for improvement. Automated testing could enhance reliability and simplify maintenance.                    |
+| ⚡️   | **Performance**   | Designed for efficiency, the project implements caching mechanisms and optimized database queries, ensuring responsive performance even with multiple users and status updates.                   |
+| 🛡️   | **Security**      | Security measures include session management, input sanitization, and an IP blacklist, which collectively help protect against unauthorized access and ensure data integrity.                     |
+| 📦   | **Dependencies**  | Key dependencies include PHP for server-side logic and configuration files (e.g. .htaccess) for URL management and caching, which are critical for application routing and performance.           |
+| 🚀   | **Scalability**   | The architecture supports scalability through efficient database management and modular code, allowing the handling of increased user traffic and resource demands as the user base grows.        |
+```
 
 ---
 
 ## 🗂️ Repository Structure
 
 ```sh
-└── v-chatgpt-social-status-feeds/
+└── /
     ├── LICENSE
     ├── README.md
-    ├── images
-    │   ├── header.png
-    │   ├── ss-1.jpg
-    │   ├── ss-10.jpg
-    │   ├── ss-11.jpg
-    │   ├── ss-2.jpg
-    │   ├── ss-4.jpg
-    │   ├── ss-6.jpg
-    │   ├── ss-7.jpg
-    │   ├── ss-8.jpg
-    │   └── ss-9.jpg
-    └── root
-        ├── app
-        ├── config.php
-        ├── cron.php
-        ├── db.php
-        ├── lib
-        └── public
+    ├── root
+    │   ├── app
+    │   │   ├── forms
+    │   │   │   ├── accounts-forms.php
+    │   │   │   ├── home-forms.php
+    │   │   │   ├── info-forms.php
+    │   │   │   └── users-forms.php
+    │   │   ├── helpers
+    │   │   │   ├── accounts-helper.php
+    │   │   │   └── home-helper.php
+    │   │   └── pages
+    │   │       ├── accounts.php
+    │   │       ├── home.php
+    │   │       ├── info.php
+    │   │       └── users.php
+    │   ├── config.php
+    │   ├── cron.php
+    │   ├── db.php
+    │   ├── lib
+    │   │   ├── auth-lib.php
+    │   │   ├── common-lib.php
+    │   │   ├── load-lib.php
+    │   │   ├── rss-lib.php
+    │   │   └── status-lib.php
+    │   └── public
+    │       ├── .htaccess
+    │       ├── assets
+    │       │   ├── css
+    │       │   ├── images
+    │       │   ├── index.php
+    │       │   └── js
+    │       ├── favicon.ico
+    │       ├── feeds.php
+    │       ├── images
+    │       │   └── index.php
+    │       ├── index.php
+    │       ├── login.php
+    │       └── robots.txt
+    └── v-chatgpt-social-status-feeds.png
 ```
 
 ---
@@ -89,74 +109,74 @@ V-chatgpt-social-status-feeds is a robust application designed to generate and m
 
 <details closed><summary>root</summary>
 
-| File                          | Summary                                                                                                                                                                                                                                                                                                                                               |
-| ---                           | ---                                                                                                                                                                                                                                                                                                                                                   |
-| [config.php](root/config.php) | Define configuration settings including API keys, endpoints, model preferences, domain, system messages, image resizing constraints, and database connection details to support the ChatGPT API Status Generators functionality within the v-chatgpt-social-status-feeds repository.                                                                  |
-| [db.php](root/db.php)         | Establishes database connections, creates essential tables, and populates initial data for IP blacklists, status updates, accounts, and users, ensuring the smooth initial setup of the ChatGPT social status feeds application. Executes table creation and inserts default records, finalizing the installation by updating the configuration file. |
-| [cron.php](root/cron.php)     | Handles scheduled tasks by resetting API usage, running status updates, and clearing the IP blacklist. Manages status updates based on a cron schedule, cleans up outdated statuses, and enforces API call limits per user. Ensures timely updates and database maintenance within the v-chatgpt-social-status-feeds repository.                      |
+| File                          | Summary                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [config.php](root/config.php) | Defines crucial configuration settings for the ChatGPT API Status Generator, including API keys, endpoints, model preferences, and database connection details. Establishes parameters guiding the AIs behavior, such as output temperature and content scope, thereby ensuring seamless integration and functionality within the overall repository architecture. |
+| [db.php](root/db.php)         | Establishes a robust database connection and initializes essential tables for user accounts and status updates. Facilitates the installation process by verifying application status and creating necessary structures, ensuring that the repository can manage user data and interactions effectively within its broader application framework.                   |
+| [cron.php](root/cron.php)     | Handles scheduled tasks essential for maintaining system performance, including API usage resets, status updates, IP blacklist clearing, and image purging. Integrates seamlessly into the repositorys architecture to optimize functionality and ensure efficient management of user accounts and resources within the ChatGPT API project.                       |
 
 </details>
 
 <details closed><summary>root.public</summary>
 
-| File                                 | Summary                                                                                                                                                                                                                                                                                                                                                                         |
-| ---                                  | ---                                                                                                                                                                                                                                                                                                                                                                             |
-| [index.php](root/public/index.php)   | Serves as the main entry point for the ChatGPT API Status Generators admin interface, managing session initialization, page loading, and inclusion of essential configuration and utility files. Provides navigation and content display for various dashboard sections, catering to different user roles and ensuring responsive design with embedded scripts and stylesheets. |
-| [.htaccess](root/public/.htaccess)   | The `.htaccess` file in `root/public` manages URL redirection, serves default images when requested ones are missing, and optimizes performance through cache control headers. These features enhance user experience and ensure efficient resource loading within the v-chatgpt-social-status-feeds repositorys web application architecture.                                  |
-| [login.php](root/public/login.php)   | The login.php file facilitates the authentication process for admin users by presenting a login interface and validating credentials. Integrating with configuration, database, and authentication libraries, it streamlines access management within the ChatGPT API Status Generator system, ensuring secure and controlled administrative entry.                             |
-| [robots.txt](root/public/robots.txt) | Regulate web crawlers access with an autogenerated `robots.txt` to control crawl rates and manage server load, ensuring efficient indexing and performance. This configuration directly supports the repositorys goal of providing a robust and scalable social status feed platform by mitigating potential overload from web crawling activities.                             |
-| [feeds.php](root/public/feeds.php)   | Generate an RSS feed based on user accounts for the ChatGPT API, leveraging configuration, database functions, and RSS feed utilities. Validate required query parameters to ensure security before delivering the feed. The file integrates seamlessly with the parent repositorys architecture for managing social status feeds.                                              |
+| File                                 | Summary                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [index.php](root/public/index.php)   | Serves as the main entry point for the admin interface of the ChatGPT API Status Generator, providing a dashboard that allows users to navigate through different sections, manage account information, and access status feeds while ensuring seamless user experience and session management.                                                             |
+| [.htaccess](root/public/.htaccess)   | Facilitates URL rewriting and caching mechanisms within the web application, ensuring user-friendly navigation and optimized resource loading. Directs requests to relevant pages while serving a default image when necessary, enhancing performance and user experience across the repositorys structure.                                                 |
+| [login.php](root/public/login.php)   | Facilitates user authentication for the ChatGPT API Status Generator by providing an intuitive login interface. Integrates session management and input handling while ensuring secure access to the administrative features within the repositorys broader architecture, enhancing user experience and system protection.                                  |
+| [robots.txt](root/public/robots.txt) | Enables search engine management by instructing crawlers on how to interact with the website. Establishes a crawl-delay to optimize server performance while ensuring important content remains accessible, thereby enhancing user experience and aligning with the overall architecture’s goal of efficient resource utilization and site discoverability. |
+| [feeds.php](root/public/feeds.php)   | Generates an RSS feed for the ChatGPT API based on user accounts, facilitating direct content delivery. It ensures security through parameter validation, enhances user experience by providing account-specific feeds, and integrates essential configuration and utility functions within the repository’s architecture.                                  |
 
 </details>
 
 <details closed><summary>root.public.images</summary>
 
-| File                                      | Summary                                               |
-| ---                                       | ---                                                   |
-| [index.php](root/public/images/index.php) | Prevent unauthorized access by terminating execution. |
+| File                                      | Summary                                                                                                                                                                                                                                                                                                                     |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [index.php](root/public/images/index.php) | Prevents direct access to the images directory by terminating script execution. This security measure is crucial in the parent repositorys architecture, ensuring that sensitive resources remain protected from unauthorized access, thereby enhancing the overall integrity and safety of the applications public assets. |
 
 </details>
 
 <details closed><summary>root.app.forms</summary>
 
-| File                                                    | Summary                                                                                                                                                                                                                                                                                                                                                                                |
-| ---                                                     | ---                                                                                                                                                                                                                                                                                                                                                                                    |
-| [home-forms.php](root/app/forms/home-forms.php)         | Handles the creation and deletion of social status updates by interacting with the database and the filesystem. Validates user API call limits, manages image files associated with statuses, and updates user information accordingly, ensuring a smooth user experience within the ChatGPT-powered social status feed application.                                                   |
-| [info-forms.php](root/app/forms/info-forms.php)         | Handles user password change requests, verifies password match, interacts with the database to update passwords, and provides success or error messages. Integrates into the broader ChatGPT API Status Generator project, enhancing user account management within the social status feeds application architecture.                                                                  |
-| [users-forms.php](root/app/forms/users-forms.php)       | Manages user-related operations including creation, modification, and deletion of user accounts. Validates user credentials, updates database records, and handles session management for user login. Ensures appropriate user directory creation for storing images, essential for maintaining the ChatGPT API social status feeds platform’s user data integrity and functionality.  |
-| [accounts-forms.php](root/app/forms/accounts-forms.php) | Manage user accounts related to social media status updates, supporting creation, modification, and deletion. Validate user inputs, ensure correct formatting, and interact with the database to update account records. Handle scheduling options and data validation, ensuring seamless integration with the repositorys overall ChatGPT API-driven status generation functionality. |
+| File                                                    | Summary                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [home-forms.php](root/app/forms/home-forms.php)         | Facilitates user interactions on the home page by enabling status generation and deletion. It manages API call limits while retrieving and updating user status information. By integrating with the database, it ensures efficient status management, enhancing the overall user experience in the ChatGPT API project.                                                      |
+| [info-forms.php](root/app/forms/info-forms.php)         | Facilitates user password management within the ChatGPT API by handling password changes securely. It ensures that password confirmation is validated and updates the database accordingly, enhancing user experience and account security in the broader application architecture. This feature integrates seamlessly with the user management components of the repository. |
+| [users-forms.php](root/app/forms/users-forms.php)       | Facilitates user management by enabling the creation, modification, and deletion of user accounts within the ChatGPT API framework. Ensures robust validation of user inputs while providing session management to enhance user experience, thus integrating seamlessly into the applications overall architecture for efficient user authentication and administration.      |
+| [accounts-forms.php](root/app/forms/accounts-forms.php) | Facilitates account management within the ChatGPT API project by allowing users to create, update, or delete their accounts. It validates user inputs, manages scheduling options, and ensures seamless integration with the database for storing account details, thereby enhancing user interaction and experience.                                                         |
 
 </details>
 
 <details closed><summary>root.app.helpers</summary>
 
-| File                                                        | Summary                                                                                                                                                                                                                                                                                                                          |
-| ---                                                         | ---                                                                                                                                                                                                                                                                                                                              |
-| [accounts-helper.php](root/app/helpers/accounts-helper.php) | Provides user account details by fetching information from the session and integrating it into the user interface. Enhances the display of key metrics like total accounts, maximum API calls, and used API calls, contributing to better user experience and account management within the ChatGPT API status generator.        |
-| [home-helper.php](root/app/helpers/home-helper.php)         | Generates share buttons for status updates, enabling users to copy text, download images, and delete statuses. Integrates seamlessly into the home page, leveraging SVG icons for visual cues and incorporating security measures like CSRF tokens to ensure safe interactions within the ChatGPT API Status Generator platform. |
+| File                                                        | Summary                                                                                                                                                                                                                                                                                                                              |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [accounts-helper.php](root/app/helpers/accounts-helper.php) | Generates account details for users by fetching and formatting essential information such as total accounts and API call limits. This functionality enhances the user experience within the application, allowing easy access to relevant account status, thus supporting the overall architecture of the ChatGPT API ecosystem.     |
+| [home-helper.php](root/app/helpers/home-helper.php)         | Generates an RSS feed for ChatGPT API status updates, consolidating information from multiple user accounts if requested. It retrieves status updates from a database, organizes them chronologically, and constructs an RSS XML output, enhancing user experience by providing a structured format for monitoring account statuses. |
 
 </details>
 
 <details closed><summary>root.app.pages</summary>
 
-| File                                        | Summary                                                                                                                                                                                                                                                                                                                                                                    |
-| ---                                         | ---                                                                                                                                                                                                                                                                                                                                                                        |
-| [info.php](root/app/pages/info.php)         | Provide users with a form to change their password within the ChatGPT API Status Generator application, ensuring secure and straightforward credential updates while displaying any relevant messages.                                                                                                                                                                     |
-| [accounts.php](root/app/pages/accounts.php) | Manages account configurations and scheduling for social media updates using the ChatGPT API. Enables adding or updating account details, setting posting schedules, and configuring prompts for status updates. Facilitates account management through a user-friendly interface, including forms and interactive elements for efficient social media content generation. |
-| [users.php](root/app/pages/users.php)       | Manage user accounts by providing forms to add, update, or delete users. Display users with editable details and facilitate role assignments and API call limits. Offer functionality to impersonate users for administrative purposes. Ensure user actions are secured with CSRF tokens.                                                                                  |
-| [home.php](root/app/pages/home.php)         | Generates and displays status updates for user accounts, offering options to view the feed or create new statuses. Supports status sharing through copy or download actions. Integrates with the parent repositorys architecture by handling user-specific data retrieval and interaction, enhancing user engagement on the platform.                                      |
+| File                                        | Summary                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [info.php](root/app/pages/info.php)         | Facilitates user account management by providing a password change feature within the ChatGPT API environment. This page is crucial for enhancing security and user experience, allowing users to update their credentials seamlessly while integrating with the broader application framework for robust session management and feedback display. |
+| [accounts.php](root/app/pages/accounts.php) | Facilitates account management within the ChatGPT API, allowing users to add, update, and delete social media account details. It dynamically generates forms for input and incorporates session-based CSRF protection, enhancing security while providing a seamless user experience in managing status updates and schedules.                    |
+| [users.php](root/app/pages/users.php)       | Facilitates user management within the ChatGPT API project by providing an interface to add, update, and delete users. It dynamically displays user information and ensures secure interactions through CSRF protection, thereby enhancing user account administration and overall system functionality.                                           |
+| [home.php](root/app/pages/home.php)         | Provides a dynamic interface for displaying user account statuses in a structured manner. It facilitates account management by allowing users to view, generate, and share statuses, ensuring a seamless experience while managing multiple accounts within the broader architecture of the ChatGPT API Status Generator repository.               |
 
 </details>
 
 <details closed><summary>root.lib</summary>
 
-| File                                      | Summary                                                                                                                                                                                                                                                                                                                                                              |
-| ---                                       | ---                                                                                                                                                                                                                                                                                                                                                                  |
-| [rss-lib.php](root/lib/rss-lib.php)       | Generate RSS feeds for status updates from specified accounts, enabling users to access and subscribe to real-time status updates. Integrates with the database to fetch account information and status updates, and formats the data in RSS 2.0 standards, ensuring seamless information dissemination and accessibility.                                           |
-| [auth-lib.php](root/lib/auth-lib.php)     | Manages user authentication processes, including login and logout functionalities, session handling, CSRF token generation, and IP-based blacklisting for enhanced security. Integral to ensuring secure access and user session integrity within the ChatGPT API Status Generators framework.                                                                       |
-| [common-lib.php](root/lib/common-lib.php) | Provide essential utility functions for sanitizing inputs, handling sessions, managing IP blacklists, retrieving user and account information, and updating status and API usage, thereby supporting the security, user management, and data integrity mechanisms in the ChatGPT API Status Generator within the broader v-chatgpt-social-status-feeds architecture. |
-| [status-lib.php](root/lib/status-lib.php) | Generate automated social media statuses tailored to different platforms, incorporating user-specific prompts, links, and images, and optionally adding relevant hashtags. Retrieve and store content via API interactions and save it along with associated metadata in the database for efficient management and deployment.                                       |
-| [load-lib.php](root/lib/load-lib.php)     | Load-lib.php ensures secure access and dynamic content loading in the ChatGPT social status feeds application. It manages session handling, IP blacklisting, and user authentication while conditionally including helper, form, and page files based on user roles, ensuring a personalized and secure user experience.                                             |
+| File                                      | Summary                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [rss-lib.php](root/lib/rss-lib.php)       | Generates an RSS feed for user status updates, allowing users to retrieve either all accounts or a specific accounts statuses. It retrieves data from the database, formats it into XML, and sets the appropriate content headers, enhancing the overall accessibility of user-generated content within the ChatGPT API architecture.                                           |
+| [auth-lib.php](root/lib/auth-lib.php)     | Authenticates users for the ChatGPT API by managing login sessions, handling logout requests, and ensuring security through CSRF tokens and session regeneration. It enhances user experience by redirecting to appropriate pages based on authentication success or failure, integrating seamlessly within the repository’s overall architecture.                              |
+| [common-lib.php](root/lib/common-lib.php) | Enhances user experience and security within the ChatGPT API by providing essential utility functions for input sanitization, session management, IP blacklist handling, and user account management. These features ensure safe interactions, efficient user data retrieval, and robust status updates, contributing to the overall stability of the application architecture. |
+| [status-lib.php](root/lib/status-lib.php) | Generates social media statuses by integrating account information, API calls for content and images, and hashtag optimization based on platform requirements. This functionality enhances user engagement within the ChatGPT API repository, enabling dynamic and visually appealing social media sharing that aligns with user preferences.                                   |
+| [load-lib.php](root/lib/load-lib.php)     | Facilitates user access control and dynamic page loading in the ChatGPT API project. It manages user permissions based on their roles, checks against IP blacklists, and includes relevant helpers and forms while ensuring that sensitive pages remain accessible only to authorized users, thereby enhancing security and user experience.                                    |
 
 </details>
 
@@ -166,61 +186,41 @@ V-chatgpt-social-status-feeds is a robust application designed to generate and m
 
 **System Requirements:**
 
-* **PHP**: `version 3.10`
+* **PHP**: `version 7.4+`
 
 ### ⚙️ Installation
 
-<h4>From <code>source</code></h4>
-
-> 1. Clone the v-chatgpt-social-status-feeds repository:
->
-> ```console
-> $ git clone ../v-chatgpt-social-status-feeds
-> ```
->
-> 2. Change to the project directory:
-> ```console
-> $ cd v-chatgpt-social-status-feeds
-> ```
->
-> 3. Install the dependencies:
-> ```console
-> $ composer install
-> ```
+Upload to webserver. Create a MySQL database. Update `config.php`, launch the site, and it will auto-install.
+Make sure to set `public/` as your new webroot.
 
 ### 🤖 Usage
 
-<h4>From <code>source</code></h4>
+Go to the installed URL. Login with the default credentials:
 
-> Run v-chatgpt-social-status-feeds using the command below:
-> ```console
-> $ php main.php
-> ```
+admin
+admin
 
-### 🧪 Tests
+You can then change the password and create other users.
 
-> Run the test suite using the command below:
-> ```console
-> $ vendor/bin/phpunit
-> ```
+Accounts are more like "social media accounts". Each one has a link and prompt for status generation.
+You can set days and times for each to generate.
+
+Use RSS feeds with tools like IFTTT to easily update social media.
 
 ---
 
 ## 🛠 Project Roadmap
 
-- [X] `► Added Webshare API`
-- [X] `► Collapsable sectiosn for easier mobile usage`
-- [X] `► added ability to remove old images`
-- [X] `► images will never 404 but will serve a customizable placeholder`
-- [X] `► Added omnifeed combined user feed`
+- [X] `► Added cron to clear old images`
+- [X] `► Added server side ability to prevent image 404s by using a default image`
+- [X] `► Added Web Share API`
+- [X] `► Made accounts collapsible for better mobile usage`
+- [X] `► Added OmniFeed, a user feed integrated with all feeds`
+-
 ---
 
 ## 🎗 License
 
-This project is protected under the MIT License
-
----
-
-[**Return**](#-overview)
+This project is protected under the [MIT License](./LICENSE) License.
 
 ---
