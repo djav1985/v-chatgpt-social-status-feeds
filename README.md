@@ -216,7 +216,7 @@ Use RSS feeds with tools like IFTTT to easily update social media.
 - [X] `► Added Web Share API`
 - [X] `► Made accounts collapsible for better mobile usage`
 - [X] `► Added OmniFeed, a user feed integrated with all feeds`
--
+
 ---
 
 ## 🎗 License
