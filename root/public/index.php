@@ -28,6 +28,7 @@ require_once '../lib/load-lib.php'; // Dynamic page loading library
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Scripts for handling header-related interactions -->
     <script src="/assets/js/header-scripts.js"></script>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <!-- Main stylesheet for the dashboard -->
     <link rel="stylesheet" href="/assets/css/styles.css">
     <!-- Additional stylesheets for specific pages and mobile responsiveness -->
@@ -90,7 +91,6 @@ require_once '../lib/load-lib.php'; // Dynamic page loading library
     <!-- Content area where different pages will be loaded based on the selected tab -->
     <?php
     // Include the content of the selected page
-    $pageOutput = loadPage(); // Function from load-lib.php to dynamically load the required page content
     if (isset($pageOutput)) {
         require_once $pageOutput;
     }

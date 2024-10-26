@@ -7,36 +7,45 @@
  * Description: ChatGPT API Status Generator
  */
 
-function outputRssFeed($accountName, $accountOwner) {
-    // Initialize a new database connection
+/**
+ * Outputs an RSS feed for a user's status updates.
+ *
+ * @param string $accountName   The name of the account for which to generate the feed.
+ * @param string $accountOwner  The owner of the account (username) that owns the statuses.
+ */
+function outputRssFeed($accountName, $accountOwner)
+{
+    // Create a new instance of the Database class to interact with the database
     $db = new Database();
-    // Initialize an array to hold statuses
+
+    // Initialize an array to hold status updates
     $statuses = [];
-    // Check if the request is for all accounts
+
+    // Determine if the request is for all accounts or a specific one
     $isAllAccounts = ($accountName === 'all');
 
     if ($isAllAccounts) {
-        // Fetch all accounts associated with the user
+        // Fetch all accounts associated with the account owner
         $accounts = getAllUserAccts($accountOwner);
 
-        // Iterate through each account
+        // Iterate through each account to fetch their statuses
         foreach ($accounts as $account) {
             $currentAccountName = $account->account;
 
-            // Fetch link information for the current account
+            // Query to retrieve link information for the current account
             $db->query("SELECT link FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $accountOwner);
             $db->bind(':account', $currentAccountName);
             $acctInfo = $db->single();
             $accountLink = $acctInfo->link;
 
-            // Fetch status updates for the current account
+            // Query to fetch statuses for the current account
             $db->query("SELECT * FROM status_updates WHERE account = :accountName AND username = :accountOwner ORDER BY created_at DESC");
             $db->bind(':accountName', $currentAccountName);
             $db->bind(':accountOwner', $accountOwner);
             $statusInfo = $db->resultSet();
 
-            // Append account link to each status update
+            // Append account link to each fetched status and store it in the statuses array
             foreach ($statusInfo as $status) {
                 $status->accountLink = $accountLink;
                 $statuses[] = $status;
@@ -48,31 +57,32 @@ function outputRssFeed($accountName, $accountOwner) {
             return strtotime($b->created_at) - strtotime($a->created_at);
         });
     } else {
-        // Fetch account link information for the specified account
+        // For a specific account, retrieve its link information
         $db->query("SELECT link FROM accounts WHERE username = :username AND account = :account");
         $db->bind(':username', $accountOwner);
         $db->bind(':account', $accountName);
         $acctInfo = $db->single();
         $accountLink = $acctInfo->link;
 
-        // Query to retrieve all status updates for the given account
+        // Query to retrieve all status updates for the specified account
         $db->query("SELECT * FROM status_updates WHERE account = :accountName AND username = :accountOwner ORDER BY created_at DESC");
         $db->bind(':accountName', $accountName);
         $db->bind(':accountOwner', $accountOwner);
         $statuses = $db->resultSet();
 
-        // Append account link to each status
+        // Append the account link to each status
         foreach ($statuses as $status) {
             $status->accountLink = $accountLink;
         }
     }
 
-    // Set the content type header for RSS XML
+    // Set the content type for the output to be RSS XML
     header('Content-Type: application/rss+xml; charset=utf-8');
-    // Construct the feed URL
+
+    // Construct the RSS feed URL
     $rssUrl = DOMAIN . '/feeds.php?user=' . $accountOwner . '&amp;acct=' . ($isAllAccounts ? 'all' : $accountName);
 
-    // Start generating the RSS XML
+    // Output the beginning of the RSS feed with XML declaration
     echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
     echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">' . PHP_EOL;
     echo '<channel>' . PHP_EOL;
@@ -82,34 +92,32 @@ function outputRssFeed($accountName, $accountOwner) {
     echo '<description>Status feed for ' . htmlspecialchars($accountName) . '</description>' . PHP_EOL;
     echo '<language>en-us</language>' . PHP_EOL;
 
-    // Loop through each status and generate the corresponding RSS item
+    // Loop through each status and build the corresponding RSS item
     foreach ($statuses as $status) {
         $enclosureTag = '';
+
+        // If there is an image associated with the status, prepare the enclosure tag
         if (!empty($status->status_image)) {
-            // Construct the image URL and file path
             $imageUrl = DOMAIN . "/images/" . htmlspecialchars($accountOwner) . "/" . htmlspecialchars($status->account) . "/" . htmlspecialchars($status->status_image);
             $imageFilePath = $_SERVER['DOCUMENT_ROOT'] . "/images/" . htmlspecialchars($accountOwner) . "/" . htmlspecialchars($status->account) . "/" . htmlspecialchars($status->status_image);
-            // Get the file size of the image
             $imageFileSize = filesize($imageFilePath);
-            // Create the enclosure tag for the image
             $enclosureTag = '<enclosure url="' . $imageUrl . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
         }
 
+        // Escape the status description for safe XML output
         $description = htmlspecialchars($status->status);
-        // Generate the RSS item for the status
         echo '<item>' . PHP_EOL;
-        echo '<guid isPermaLink="false">' . md5($status->status) . '</guid>' . PHP_EOL;
-        echo '<pubDate>' . date('r', strtotime($status->created_at)) . '</pubDate>' . PHP_EOL;
-        echo '<title>' . htmlspecialchars($status->account) . '</title>' . PHP_EOL;
-        echo '<link>' . htmlspecialchars($status->accountLink) . '</link>' . PHP_EOL;
-        echo '<description><![CDATA[' . $description . ']]></description>' . PHP_EOL;
-        echo '<content:encoded><![CDATA[' . $description . ']]></content:encoded>' . PHP_EOL;
-        echo $enclosureTag;
-        echo '<category>' . htmlspecialchars($status->account) . '</category>' . PHP_EOL;
-        echo '</item>' . PHP_EOL;
+        echo '<guid isPermaLink="false">' . md5($status->status) . '</guid>' . PHP_EOL; // Generate a unique identifier for the status
+        echo '<pubDate>' . date('r', strtotime($status->created_at)) . '</pubDate>' . PHP_EOL; // Publish date
+        echo '<title>' . htmlspecialchars($status->account) . '</title>' . PHP_EOL; // Title of the status
+        echo '<link>' . htmlspecialchars($status->accountLink) . '</link>' . PHP_EOL; // Link to the account
+        echo '<description><![CDATA[' . $description . ']]></description>' . PHP_EOL; // Description as CDATA
+        echo '<content:encoded><![CDATA[' . $description . ']]></content:encoded>' . PHP_EOL; // Encoded content
+        echo $enclosureTag; // Include the enclosure tag if applicable
+        echo '<category>' . htmlspecialchars($status->account) . '</category>' . PHP_EOL; // Category based on account name
+        echo '</item>' . PHP_EOL; // End of the item
     }
 
-    // Close the RSS channel and RSS tags
-    echo '</channel>' . PHP_EOL;
-    echo '</rss>';
+    echo '</channel>' . PHP_EOL; // Close the channel
+    echo '</rss>'; // Close the RSS feed
 }
