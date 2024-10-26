@@ -166,10 +166,14 @@ if (!defined('INSTALLED') || !INSTALLED) {
     );");
     $db->execute(); // Execute the table creation
 
-    // Insert a default admin user into the users table
+    // Hash the password for the admin user
+    $hashedPassword = password_hash('admin', PASSWORD_DEFAULT);
+
+    // Insert a default admin user into the users table with the hashed password
     $db->query("INSERT INTO users (username, password, total_accounts, max_api_calls, used_api_calls, admin)
-        VALUES ('admin', 'admin', 10, 9999999999, 0, 1);");
-    $db->execute(); // Execute the insert
+        VALUES ('admin', :password, 10, 9999999999, 0, 1);");
+    $db->bind(':password', $hashedPassword);
+    $db->execute(); // Execute the insert for users
 
     // Update the configuration file to mark the application as installed
     $configFilePath = __DIR__ . '/config.php';
@@ -186,18 +190,41 @@ if (defined('INSTALLED') && INSTALLED === true && defined('APP_VERSION') && APP_
     // Create a new instance of the Database class
     $db = new Database();
 
+    // Add the new 'cta' column to the 'accounts' table
     $db->query("ALTER TABLE accounts ADD COLUMN cta VARCHAR(255) AFTER platform;");
     $db->execute(); // Execute the table alteration
 
-    // Alter the users table to add a new column expires in the correct order
+    // Add the new 'expires' column to the 'users' table
     $db->query("ALTER TABLE users ADD COLUMN expires DATE DEFAULT '9999-12-31' AFTER used_api_calls;");
     $db->execute(); // Execute the table alteration
 
+    // Retrieve all users from the users table to hash passwords
+    $db->query("SELECT username, password FROM users");
+    $users = $db->resultSet();
+
+    foreach ($users as $user) {
+        // Check if the password is already hashed by comparing its length or format
+        if (password_needs_rehash($user->password, PASSWORD_DEFAULT)) {
+            // Hash the password
+            $hashedPassword = password_hash($user->password, PASSWORD_DEFAULT);
+
+            // Update the user's password with the hashed version
+            $db->query("UPDATE users SET password = :password WHERE username = :username");
+            $db->bind(':password', $hashedPassword);
+            $db->bind(':username', $user->username);
+            $db->execute();
+        }
+    }
+
     // Update the APP_VERSION in config.php
     $configFilePath = __DIR__ . '/config.php';
-    $configData = file_get_contents($configFilePath); // Read the configuration file
-    $configData = str_replace("define('APP_VERSION', '1.0.0');", "define('APP_VERSION', '2.0.0');", $configData); // Update the version
-    file_put_contents($configFilePath, $configData); // Write changes back to the file
+    if (file_exists($configFilePath) && is_writable($configFilePath)) {
+        $configData = file_get_contents($configFilePath); // Read the configuration file
+        $configData = str_replace("define('APP_VERSION', '1.0.0');", "define('APP_VERSION', '2.0.0');", $configData); // Update the version
+        file_put_contents($configFilePath, $configData); // Write changes back to the file
+    } else {
+        throw new Exception("Config file is not accessible or writable.");
+    }
 
     // Output a success message upon completion
     echo "Update completed successfully.";
