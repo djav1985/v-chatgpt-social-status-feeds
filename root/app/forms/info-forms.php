@@ -30,13 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
+        // Hash the password before storing it
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
         // Initialize database object
         $db = new Database();
 
         // Update password in the database
         $db->query("UPDATE users SET password = :password WHERE username = :username");
         $db->bind(':username', $username);
-        $db->bind(':password', $password); // No hashing for the password
+        $db->bind(':password', $hashedPassword); // Store the hashed password
         $db->execute();
 
         // Add success message

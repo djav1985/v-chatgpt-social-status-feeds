@@ -48,10 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->bind(':username', $username);
             $userExists = $db->single();
 
+            // Hash the password before storing it
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
             if ($userExists) {
                 $db->query("UPDATE users SET password = :password, total_accounts = :totalAccounts, max_api_calls = :maxApiCalls, used_api_calls = :usedApiCalls, admin = :admin, expires = :expires WHERE username = :username");
             } else {
-                $db->query("INSERT INTO users (username, password, total_accounts, max_api_calls, used_api_calls, admin, expires) VALUES (:username, :password, :totalAccounts, :maxApiCalls, :usedApiCalls, :expires, :admin)");
+                $db->query("INSERT INTO users (username, password, total_accounts, max_api_calls, used_api_calls, expires, admin) VALUES (:username, :password, :totalAccounts, :maxApiCalls, :usedApiCalls, :expires, :admin)");
                 // Create directory for images if user is being created
                 $userImagePath = __DIR__ .  '/../../public/images/' . $username;
                 if (!file_exists($userImagePath)) {
@@ -62,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             $db->bind(':username', $username);
-            $db->bind(':password', $password);
+            $db->bind(':password', $hashedPassword); // Store the hashed password
             $db->bind(':totalAccounts', $totalAccounts);
             $db->bind(':maxApiCalls', $maxApiCalls);
             $db->bind(':usedApiCalls', $usedApiCalls);

@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Retrieve user information based on the provided username
         $userInfo = getUserInfo($username);
 
-        // Perform login authentication logic
-        if ($userInfo && $password === $userInfo->password) { // Check if user exists and passwords match
+        // Perform login authentication logic using hashed password verification
+        if ($userInfo && password_verify($password, $userInfo->password)) { // Verify the password hash
             $_SESSION['logged_in'] = true; // Set logged in status
             $_SESSION['username'] = $username; // Store the username in session
             $_SESSION['timeout'] = time();  // Set the session timeout time to the current time
