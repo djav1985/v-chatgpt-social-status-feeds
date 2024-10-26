@@ -15,8 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST["edit_account"])) {
         $accountOwner = $_SESSION["username"]; // Retrieve the username of the account owner from the session
 
-        // Format the account name to lowercase and replace spaces with hyphens
-        $accountName = strtolower(str_replace(' ', '-', trim($_POST["account"])));
+        // Format and sanitize the account name
+        $accountName = preg_replace('/[^a-z0-9-]/', '', strtolower(str_replace(' ', '-', trim($_POST["account"]))));
 
         // Get and trim inputs from the form
         $prompt = trim($_POST["prompt"]);
@@ -25,31 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $link = trim($_POST["link"]);
         $imagePrompt = trim($_POST["image_prompt"]);
 
-        // Check if the 'cron' field is submitted and process it accordingly
-        if (isset($_POST["cron"]) && in_array("off", $_POST["cron"], true)) {
-            $cron = null; // If "Off" is selected, set cron to null
-        } elseif (!empty($_POST["cron"])) {
-            $cron = implode(',', $_POST["cron"]); // Concatenate all selected crontab times into a single string
-        } else {
-            $cron = null; // Set cron to null if no time is selected
-        }
+        // Simplified cron handling: convert the cron array into a comma-separated string or set it to 'null' if it's just 'null'
+        $cron = (count($_POST["cron"]) === 1 && $_POST["cron"][0] === 'null') ? 'null' : implode(',', $_POST["cron"]);
 
-        // Process the 'days' field, defaulting to 'everyday' if no days are selected
-        $days = isset($_POST["days"]) ? implode(',', $_POST["days"]) : 'everyday';
+        $days = (count($_POST["days"]) === 1 && $_POST["days"][0] === 'everyday') ? 'everyday' : implode(',', $_POST["days"]);
 
-        // Validate platform and days
-        if (!in_array($platform, ['facebook', 'twitter', 'instagram'])) {
-            $_SESSION['messages'][] = "Invalid platform selected.";
-        }
-        if (array_diff((array)$days, ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'])) {
-            $_SESSION['messages'][] = "Invalid day(s) selected.";
+        if (empty($cron) || empty($days) || empty($platform)) {
+            $_SESSION['messages'][] = "Error processing input.";
         }
 
         // Validate account name, link, prompt, image prompt, and cron settings with regex patterns
         if (!preg_match('/^[a-z0-9-]{8,18}$/', $accountName)) {
             $_SESSION['messages'][] = "Account name must be 8-18 characters long, alphanumeric and hyphens only.";
         }
-        if (!preg_match('/^https:\/\/[\w.-]+(\/[\w.-]*)*\/?$/', $link)) {
+        // Validate link (must be a valid URL)
+        if (!filter_var($link, FILTER_VALIDATE_URL)) {
             $_SESSION['messages'][] = "Link must be a valid URL starting with https://.";
         }
         if (empty($prompt)) {
@@ -57,9 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (empty($imagePrompt)) {
             $_SESSION['messages'][] = "Image prompt cannot be empty.";
-        }
-        if ($cron === null && !in_array("off", $_POST["cron"], true)) {
-            $_SESSION['messages'][] = "Please select at least one cron value or set it to 'Off'.";
         }
 
         // Check if any error messages have been added to the session

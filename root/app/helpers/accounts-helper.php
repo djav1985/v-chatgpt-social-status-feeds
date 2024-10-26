@@ -47,3 +47,76 @@ function generateAccountDetails()
     }
     return $output; // Return the generated HTML content
 }
+
+/**
+ * Generates the options for the days dropdown.
+ *
+ * @return string HTML options for the days dropdown.
+ */
+function generateDaysOptions()
+{
+    $days = ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    $options = '';
+    foreach ($days as $day) {
+        $options .= "<option value=\"$day\">" . ucfirst($day) . "</option>";
+    }
+    return $options;
+}
+
+/**
+ * Generates the options for the cron dropdown.
+ *
+ * @return string HTML options for the cron dropdown.
+ */
+function generateCronOptions()
+{
+    $options = '<option value="null" selected>Off</option>';
+    for ($hour = 6; $hour <= 22; $hour++) {
+        $amPm = ($hour < 12) ? 'am' : 'pm';
+        $displayHour = ($hour <= 12) ? $hour : $hour - 12;
+        $displayTime = "{$displayHour} {$amPm}";
+        $value = ($hour < 10) ? "0{$hour}" : "{$hour}";
+        $options .= "<option value=\"{$value}\">{$displayTime}</option>";
+    }
+    return $options;
+}
+
+/**
+ * Generates the account list for the logged-in user.
+ *
+ * @return string HTML output containing the account list.
+ */
+function generateAccountList()
+{
+    $username = $_SESSION['username'];
+    $accounts = getAllUserAccts($username);
+
+    $output = '';
+    foreach ($accounts as $account) {
+        $accountName = $account->account;
+        $accountData = getAcctInfo($username, $accountName);
+
+        // Prepare data attributes for JavaScript interaction
+        $dataAttributes = "data-account-name=\"{$accountName}\" ";
+        $dataAttributes .= "data-prompt=\"" . htmlspecialchars($accountData->prompt) . "\" ";
+        $dataAttributes .= "data-link=\"" . htmlspecialchars($accountData->link) . "\" ";
+        $dataAttributes .= "data-image_prompt=\"" . htmlspecialchars($accountData->image_prompt) . "\" ";
+        $dataAttributes .= "data-hashtags=\"" . ($accountData->hashtags ? '1' : '0') . "\" ";
+        $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $accountData->cron))) . "\" ";
+        $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $accountData->days))) . "\" ";
+        $dataAttributes .= "data-platform=\"" . htmlspecialchars($accountData->platform) . "\"";
+
+        // Generate the HTML for each account
+        $output .= "<div class=\"item-box\">";
+        $output .= "<h3>" . htmlspecialchars($accountName) . "</h3>";
+        $output .= "<button class=\"update-account-button green-button\" id=\"update-button\" {$dataAttributes}>Update</button>";
+        $output .= "<form class=\"delete-account-form\" action=\"/accounts\" method=\"POST\">";
+        $output .= "<input type=\"hidden\" name=\"account\" value=\"" . htmlspecialchars($accountName) . "\">";
+        $output .= "<input type=\"hidden\" name=\"csrf_token\" value=\"" . $_SESSION['csrf_token'] . "\">";
+        $output .= "<button class=\"delete-account-button red-button\" name=\"delete_account\">Delete</button>";
+        $output .= "</form>";
+        $output .= "</div>";
+    }
+
+    return $output;
+}
