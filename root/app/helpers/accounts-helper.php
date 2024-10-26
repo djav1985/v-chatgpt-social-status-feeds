@@ -34,12 +34,16 @@ function generateAccountDetails()
         // Format the expiration date to DD/MM/YYYY
         $expiresFormatted = $expires ? (new DateTime($expires))->format('d/m/Y') : 'N/A';
 
+        // Get total cost for the user
+        $total_cost = getTotalCostByUsername($accountOwner);
+
         // Format the data into a visually appealing box
         $output = "<div class=\"account-details\">"; // Start of the account details container
         $output .= "<p>Max Accounts: " . htmlentities($totalAccounts) . "</p>"; // Display the maximum accounts
         $output .= "<p>Max API Calls: " . htmlentities($maxApiCalls) . "</p>"; // Display the max API calls
         $output .= "<p>Used API Calls: " . htmlentities($usedApiCalls) . "</p>"; // Display the used API calls
         $output .= "<p>Expires: " . htmlentities($expiresFormatted) . "</p>"; // Display the expiration date
+        $output .= "<p>Total Cost: $" . htmlentities($total_cost) . "</p>"; // Display the total cost as money
         $output .= "</div>"; // End of the account details container
     } else {
         // If userInfo is not found, set a message indicating no account details are available

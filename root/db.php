@@ -148,6 +148,19 @@ if (!defined('INSTALLED') || !INSTALLED) {
 );");
     $db->execute(); // Execute the table creation
 
+    // Create the logs table if it doesn't exist
+    $db->query("CREATE TABLE IF NOT EXISTS logs (
+        account VARCHAR(255) NOT NULL,
+        username VARCHAR(255) NOT NULL,
+        input_tokens INT DEFAULT 0,
+        output_tokens INT DEFAULT 0,
+        image_retries INT DEFAULT 0,
+        cost DECIMAL(10, 10) DEFAULT 0.00,
+        INDEX account_idx (account),
+        INDEX username_idx (username)
+    );");
+    $db->execute(); // Execute the table creation
+
     // Insert an example account into the accounts table
     $db->query("INSERT INTO accounts (account, username, prompt, hashtags, link, cron, image_prompt, platform)
     VALUES ('admin', 'admin', 'Write a Facebook status update for my business page.', TRUE, 'https://domain.com/', '6,12,18', 'image_prompt_example.jpg', 'facebook');");
@@ -197,6 +210,19 @@ if (defined('INSTALLED') && INSTALLED === true && defined('APP_VERSION') && APP_
     // Add the new 'expires' column to the 'users' table
     $db->query("ALTER TABLE users ADD COLUMN expires DATE DEFAULT '9999-12-31' AFTER used_api_calls;");
     $db->execute(); // Execute the table alteration
+
+    // Create the logs table if it doesn't exist
+    $db->query("CREATE TABLE IF NOT EXISTS logs (
+        account VARCHAR(255) NOT NULL,
+        username VARCHAR(255) NOT NULL,
+        input_tokens INT DEFAULT 0,
+        output_tokens INT DEFAULT 0,
+        image_retries INT DEFAULT 0,
+        cost DECIMAL(10, 10) DEFAULT 0.00,
+        INDEX account_idx (account),
+        INDEX username_idx (username)
+    );");
+    $db->execute(); // Execute the table creation
 
     // Retrieve all users from the users table to hash passwords
     $db->query("SELECT username, password FROM users");

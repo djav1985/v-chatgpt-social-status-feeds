@@ -374,3 +374,100 @@ function updateMaxApiCalls($username, $maxApiCalls)
 
     $db->execute(); // Execute the update query
 }
+
+function updateTokens($accountName, $accountOwner, $prompt_tokens, $completion_tokens)
+{
+    $db = new Database();
+    // Calculate cost
+    $cost = (0.00000015 * $prompt_tokens) + (0.0000006 * $completion_tokens);
+
+    // Update tokens and cost
+    $update_sql = "UPDATE logs SET input_tokens = input_tokens + :prompt_tokens, output_tokens = output_tokens + :completion_tokens, cost = cost + :cost WHERE account = :account AND username = :username";
+
+    $db->query($update_sql);
+    $db->bind(':prompt_tokens', $prompt_tokens);
+    $db->bind(':completion_tokens', $completion_tokens);
+    $db->bind(':cost', $cost);
+    $db->bind(':account', $accountName);
+    $db->bind(':username', $accountOwner);
+    $db->execute();
+}
+
+function executeApiRequest($endpoint, $data)
+{
+    // Set up headers for the API request including content type and authorization
+    $headers = [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . API_KEY,
+    ];
+
+    // Initialize cURL session for the API request
+    $ch = curl_init($endpoint);
+    curl_setopt($ch, CURLOPT_POST, true); // Set the request method to POST
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // Set the JSON encoded request data
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Set the request headers
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Ensure the response is returned as a string
+    $response = curl_exec($ch); // Execute the API request and fetch response
+    curl_close($ch); // Close cURL session
+
+    return $response;
+}
+
+function updateCost($accountName, $accountOwner)
+{
+    $db = new Database();
+    $update_sql = "UPDATE logs SET cost = cost + 0.080 WHERE account = :account AND username = :username";
+    $db->query($update_sql);
+    $db->bind(':account', $accountName);
+    $db->bind(':username', $accountOwner);
+    $db->execute();
+}
+
+function updateImageRetries($accountName, $accountOwner)
+{
+    $db = new Database();
+    $update_sql = "UPDATE logs SET image_retries = image_retries + 1 WHERE account = :account AND username = :username";
+    $db->query($update_sql);
+    $db->bind(':account', $accountName);
+    $db->bind(':username', $accountOwner);
+    $db->execute();
+}
+
+function saveStatus($accountName, $accountOwner, $status_content, $image_name)
+{
+    // Create a new instance of the Database class
+    $db = new Database();
+
+    // SQL query to insert a new status update into the database
+    $sql = "INSERT INTO status_updates (username, account, status, created_at, status_image) VALUES (:username, :account, :status, NOW(), :status_image)";
+
+    // Prepare the SQL statement for execution
+    $db->query($sql);
+
+    // Bind the parameters to the SQL query
+    $db->bind(':username', $accountOwner); // Bind the account owner's username
+    $db->bind(':account', $accountName);   // Bind the account name
+    $db->bind(':status', $status_content); // Bind the status content
+    $db->bind(':status_image', $image_name); // Bind the image file name
+
+    // Execute the SQL statement to insert the data into the database
+    $db->execute();
+}
+
+
+function getTotalCostByUsername($accountOwner)
+{
+    $db = new Database();
+
+    // Query to get the sum of the cost column for the provided username
+    $query = "SELECT SUM(cost) as total_cost FROM logs WHERE username = :username";
+
+    $db->query($query);
+    $db->bind(':username', $accountOwner);
+    $result = $db->single();
+
+    // Extract the total cost
+    $total_cost = $result['total_cost'];
+
+    return $total_cost;
+}
