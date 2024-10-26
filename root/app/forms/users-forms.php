@@ -48,8 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->bind(':username', $username);
             $userExists = $db->single();
 
-            // Hash the password before storing it
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            // Check if the password is already hashed
+            if (!password_verify($password, $userExists->password)) {
+                $password = password_hash($password, PASSWORD_DEFAULT);
+            }
 
             if ($userExists) {
                 $db->query("UPDATE users SET password = :password, total_accounts = :totalAccounts, max_api_calls = :maxApiCalls, used_api_calls = :usedApiCalls, admin = :admin, expires = :expires WHERE username = :username");

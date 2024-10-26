@@ -1,12 +1,12 @@
 <?php
 /*
-* Project: ChatGPT API
-* Author: Vontainment
-* Version: 2.0.0
-* URL: https://vontainment.com
-* File: /pages/users.php
-* Description: ChatGPT API Status Generator
-*/
+ * Project: ChatGPT API
+ * Author: Vontainment
+ * URL: https://vontainment.com
+ * Version: 2.0.0
+ * File: ../app/pages/users.php
+ * Description: ChatGPT API Status Generator
+ */
 ?>
 
 <main class="flex-container">
@@ -49,42 +49,10 @@
         </form>
         <div id="error-msg"><?php echo display_and_clear_messages(); ?></div>
     </section>
-
     <section id="right-col">
-        <?php
-        $users = getAllUsers(); // Assuming this function fetches all users from the database
-        foreach ($users as $user) {
-            $dataAttributes = 'data-username="' . htmlspecialchars($user->username) . '" ';
-            $dataAttributes .= 'data-password="' . urlencode($user->password) . '" ';
-            $dataAttributes .= 'data-admin="' . $user->admin . '" ';
-            $dataAttributes .= 'data-total-accounts="' . $user->total_accounts . '" ';
-            $dataAttributes .= 'data-max-api-calls="' . $user->max_api_calls . '" ';
-            $dataAttributes .= 'data-used-api-calls="' . $user->used_api_calls . '" ';
-            $dataAttributes .= 'data-expires="' . $user->expires . '" ';
-        ?>
-            <div class="item-box">
-                <h3><?php echo htmlspecialchars($user->username); ?></h3>
-                <button class="update-user-button green-button" id="update-btn"
-                    <?php echo $dataAttributes; ?>>Update</button>
-                <form class="delete-user-form" action="/users" method="POST">
-                    <input type="hidden" name="username" value="<?php echo htmlspecialchars($user->username); ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                    <button class="delete-user-button red-button" name="delete_user">Delete</button>
-                </form>
-                <?php if ($user->username !== $_SESSION['username']) : ?>
-                    <form class="login-as-form" action="/users" method="POST">
-                        <input type="hidden" name="username" value="<?php echo htmlspecialchars($user->username); ?>">
-                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                        <button class="login-as-button blue-button" name="login_as">Login</button>
-                    </form>
-                <?php endif; ?>
-            </div>
-        <?php
-        }
-        ?>
+        <?php echo generateUserList(); ?>
     </section>
 </main>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const updateButtons = document.querySelectorAll('#update-btn');
@@ -97,7 +65,6 @@
                 const usedApiCallsSelect = document.querySelector('#used-api-calls');
                 const expiresField = document.querySelector('#expires');
                 const adminSelect = document.querySelector('#admin');
-
                 // Set form fields from data attributes
                 usernameField.value = this.dataset.username;
                 passwordField.value = decodeURIComponent(this.dataset.password);
@@ -107,7 +74,6 @@
                     `<option value="${this.dataset.usedApiCalls}">${this.dataset.usedApiCalls}</option><option value="0">0</option>`;
                 expiresField.value = this.dataset.expires;
                 adminSelect.value = this.dataset.admin;
-
                 // Set the username field as readonly when updating
                 usernameField.readOnly = true;
             });

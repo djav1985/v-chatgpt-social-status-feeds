@@ -30,8 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $days = (count($_POST["days"]) === 1 && $_POST["days"][0] === 'everyday') ? 'everyday' : implode(',', $_POST["days"]);
 
-        if (empty($cron) || empty($days) || empty($platform)) {
+        // Check if any of the required fields are empty or invalid
+        if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
             $_SESSION['messages'][] = "Error processing input.";
+        }
+
+        if (empty($prompt) || empty($imagePrompt)) {
+            $_SESSION['messages'][] = "Missing required field(s).";
         }
 
         // Validate account name, link, prompt, image prompt, and cron settings with regex patterns
@@ -41,12 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Validate link (must be a valid URL)
         if (!filter_var($link, FILTER_VALIDATE_URL)) {
             $_SESSION['messages'][] = "Link must be a valid URL starting with https://.";
-        }
-        if (empty($prompt)) {
-            $_SESSION['messages'][] = "Prompt cannot be empty.";
-        }
-        if (empty($imagePrompt)) {
-            $_SESSION['messages'][] = "Image prompt cannot be empty.";
         }
 
         // Check if any error messages have been added to the session
