@@ -2,9 +2,9 @@
 
 /**
  * Project: ChatGPT API
- * Version: 3.0.0
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: config.php
  * Description: Defines configuration settings such as API keys, endpoints, model preferences, domain, system messages, and database connection details for the ChatGPT API Status Generator.
  */
@@ -47,3 +47,6 @@ define('DB_NAME', '  '); // Name of the database schema
 
 // Flag to check if the system has been installed correctly
 define('INSTALLED', false);
+
+// The current version of app
+define('APP_VERSION', '1.0.0');

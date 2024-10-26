@@ -4,6 +4,7 @@
  * Project: ChatGPT API
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: /db.php
  * Description: This script sets up the database connection using PDO and initializes required tables.
  */
@@ -141,6 +142,7 @@ if (!defined('INSTALLED') || !INSTALLED) {
     days VARCHAR(255), // New days field for scheduling
     image_prompt VARCHAR(255),
     platform VARCHAR(255) NOT NULL,
+    cta VARCHAR(255),
     PRIMARY KEY (account), // Primary key on account name
     INDEX username_idx (username) // Index on username for faster queries
 );");
@@ -155,6 +157,7 @@ if (!defined('INSTALLED') || !INSTALLED) {
     $db->query("CREATE TABLE IF NOT EXISTS users (
         username VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
+        expires DATETIME DEFAULT NULL,
         total_accounts INT DEFAULT 10,
         max_api_calls BIGINT DEFAULT 9999999999,
         used_api_calls BIGINT DEFAULT 0,
@@ -176,4 +179,27 @@ if (!defined('INSTALLED') || !INSTALLED) {
 
     // Output a success message upon completion
     echo "Installation completed successfully.";
+}
+
+// Check if the application is installed and the version is 1.0.0
+if (defined('INSTALLED') && INSTALLED === true && defined('APP_VERSION') && APP_VERSION === '1.0.0') {
+    // Create a new instance of the Database class
+    $db = new Database();
+
+    // Alter the accounts table to add a new column cta
+    $db->query("ALTER TABLE accounts ADD COLUMN cta VARCHAR(255);");
+    $db->execute(); // Execute the table alteration
+
+    // Alter the users table to add a new column expires
+    $db->query("ALTER TABLE users ADD COLUMN expires DATETIME DEFAULT NULL;");
+    $db->execute(); // Execute the table alteration
+
+    // Update the APP_VERSION in config.php
+    $configFilePath = __DIR__ . '/config.php';
+    $configData = file_get_contents($configFilePath); // Read the configuration file
+    $configData = str_replace("define('APP_VERSION', '1.0.0');", "define('APP_VERSION', '2.0.0');", $configData); // Update the version
+    file_put_contents($configFilePath, $configData); // Write changes back to the file
+
+    // Output a success message upon completion
+    echo "Update completed successfully.";
 }

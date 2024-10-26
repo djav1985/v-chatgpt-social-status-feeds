@@ -4,6 +4,7 @@
  * Project: ChatGPT API
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: cron.php
  * Description: Handles scheduled tasks such as resetting API usage, running status updates, clearing the IP blacklist, and purging old images.
  */
@@ -62,6 +63,16 @@ function runStatusUpdateJobs()
                     $acctInfo = getAcctInfo($accountOwner, $accountName);
                     $userInfo = getUserInfo($accountOwner);
 
+                    // Check if the user's account has expired
+                    $currentDateTime = new DateTime();
+                    $expiresDateTime = new DateTime($userInfo->expires);
+
+                    if ($currentDateTime > $expiresDateTime) {
+                        // Set max_api_calls to 0 if the account has expired
+                        $userInfo->max_api_calls = 0;
+                        updateMaxApiCalls($accountOwner, 0);
+                    }
+
                     // Only proceed if the user has remaining API calls
                     if ($userInfo && $userInfo->used_api_calls < $userInfo->max_api_calls) {
                         $userInfo->used_api_calls += 1; // Increment used API calls for the user
@@ -90,8 +101,7 @@ function cleanupStatuses()
         $accountOwner = $account->username;
 
         // Count the current number of statuses for the account
-        $result = countStatuses($accountName);
-        $statusCount = $result->count;
+        $statusCount = countStatuses($accountName);
 
         // Check if the number of statuses exceeds the maximum allowed
         if ($statusCount > MAX_STATUSES) {

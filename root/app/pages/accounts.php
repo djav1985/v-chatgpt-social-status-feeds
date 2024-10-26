@@ -3,10 +3,10 @@
  * Project: ChatGPT API
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: ../app/pages/accounts.php
  * Description: ChatGPT API Status Generator
  */
-
 ?>
 
 <main class="flex-container">
@@ -67,11 +67,12 @@
                 ?>
             </select>
 
-            <!-- Checkbox to include hashtags in the status -->
-            <div class="hashtags">
-                <label for="hashtags">Include Hashtags:</label>
-                <input type="checkbox" name="hashtags" id="hashtags">
-            </div>
+            <!-- Dropdown for including hashtags -->
+            <label for="hashtags">Include Hashtags:</label>
+            <select name="hashtags" id="hashtags">
+                <option value="0" selected>No</option>
+                <option value="1">Yes</option>
+            </select>
 
             <!-- Hidden input to include CSRF token for security -->
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
@@ -102,11 +103,10 @@
             $dataAttributes .= "data-prompt=\"" . htmlspecialchars($accountData->prompt) . "\" ";
             $dataAttributes .= "data-link=\"" . htmlspecialchars($accountData->link) . "\" ";
             $dataAttributes .= "data-image_prompt=\"" . htmlspecialchars($accountData->image_prompt) . "\" ";
-            $dataAttributes .= "data-hashtags=\"" . ($accountData->hashtags ? 'true' : 'false') . "\" ";
+            $dataAttributes .= "data-hashtags=\"" . ($accountData->hashtags ? '1' : '0') . "\" ";
             $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $accountData->cron))) . "\" ";
             $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $accountData->days))) . "\" ";
             $dataAttributes .= "data-platform=\"" . htmlspecialchars($accountData->platform) . "\""; // Ensure this is correctly added
-
         ?>
 
         <!-- Display each account with update/delete options -->
@@ -128,7 +128,6 @@
     </section>
 </main>
 
-
 <script>
 // Wait for the DOM content to be fully loaded before executing code
 document.addEventListener('DOMContentLoaded', function() {
@@ -145,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const promptField = document.querySelector('#add-prompt');
             const linkField = document.querySelector('#link');
             const imagePromptField = document.querySelector('#image_prompt');
-            const hashtagCheckbox = document.querySelector('#hashtags');
+            const hashtagsSelect = document.querySelector('#hashtags');
             const cronField = document.querySelector('#cron');
             const daysField = document.querySelector('#days');
             const platformSelect = document.querySelector('#platform');
@@ -156,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
             linkField.value = decodeURIComponent(this.dataset.link.replace(/\+/g, ' '));
             imagePromptField.value = decodeURIComponent(this.dataset.image_prompt.replace(/\+/g,
                 ' '));
-            hashtagCheckbox.checked = this.dataset.hashtags === 'true';
+            hashtagsSelect.value = this.dataset.hashtags;
 
             // Clear all selections in multiselect fields before setting new options
             Array.from(cronField.options).forEach(option => {

@@ -3,6 +3,7 @@
  * Project: ChatGPT API
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: login.php
  * Description: ChatGPT API Status Generator
  */

@@ -3,6 +3,7 @@
  * Project: ChatGPT API
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: ../lib/common.php
  * Description: ChatGPT API Status Generator
  */
@@ -350,6 +351,25 @@ function updateUsedApiCalls($username, $usedApiCalls)
     // Update the user's used API calls with the provided count
     $db->query("UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username");
     $db->bind(':used_api_calls', $usedApiCalls); // Bind the used API calls parameter to the query
+    $db->bind(':username', $username); // Bind the username parameter to the query
+
+    $db->execute(); // Execute the update query
+}
+
+
+/**
+ * Update the maximum API calls count for a specific user.
+ *
+ * @param string $username The username of the user to update.
+ * @param int $maxApiCalls The maximum number of API calls to set.
+ */
+function updateMaxApiCalls($username, $maxApiCalls)
+{
+    $db = new Database(); // Instantiate database object
+
+    // Update the user's maximum API calls with the provided count
+    $db->query("UPDATE users SET max_api_calls = :max_api_calls WHERE username = :username");
+    $db->bind(':max_api_calls', $maxApiCalls); // Bind the maximum API calls parameter to the query
     $db->bind(':username', $username); // Bind the username parameter to the query
 
     $db->execute(); // Execute the update query

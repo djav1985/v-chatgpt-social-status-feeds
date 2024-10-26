@@ -3,6 +3,7 @@
  * Project: ChatGPT API
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: ../app/helpers/accounts-helper.php
  * Description: ChatGPT API Status Generator
  */
@@ -28,12 +29,17 @@ function generateAccountDetails()
         $totalAccounts = $userInfo->total_accounts; // Total number of accounts associated with the user
         $maxApiCalls = $userInfo->max_api_calls; // Maximum number of API calls allowed for the user
         $usedApiCalls = $userInfo->used_api_calls; // Number of API calls that have been used by the user
+        $expires = $userInfo->expires; // Expiration date of the user's account
+
+        // Format the expiration date to DD/MM/YYYY
+        $expiresFormatted = $expires ? (new DateTime($expires))->format('d/m/Y') : 'N/A';
 
         // Format the data into a visually appealing box
         $output = "<div class=\"account-details\">"; // Start of the account details container
         $output .= "<p>Max Accounts: " . htmlentities($totalAccounts) . "</p>"; // Display the maximum accounts
         $output .= "<p>Max API Calls: " . htmlentities($maxApiCalls) . "</p>"; // Display the max API calls
         $output .= "<p>Used API Calls: " . htmlentities($usedApiCalls) . "</p>"; // Display the used API calls
+        $output .= "<p>Expires: " . htmlentities($expiresFormatted) . "</p>"; // Display the expiration date
         $output .= "</div>"; // End of the account details container
     } else {
         // If userInfo is not found, set a message indicating no account details are available

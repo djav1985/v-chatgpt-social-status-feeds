@@ -4,6 +4,7 @@
  * Project: ChatGPT API
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: feeds.php
  * Description: This file generates an RSS feed for the ChatGPT API based on user accounts.
  */

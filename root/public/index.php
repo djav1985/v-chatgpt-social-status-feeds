@@ -4,6 +4,7 @@
  * Project: ChatGPT API
  * Author: Vontainment
  * URL: https://vontainment.com
+ * Version: 2.0.0
  * File: index.php
  * Description: This is the main dashboard file for the ChatGPT API Status Generator. It serves as the entry point for the admin interface.
  */
