@@ -14,24 +14,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'];
         $password2 = $_POST['password2'];
 
-        if ($password === $password2) {
-            // Initialize database object
-            $db = new Database();
-
-            // Update password in the database
-            $db->query("UPDATE users SET password = :password WHERE username = :username");
-            $db->bind(':username', $username);
-            $db->bind(':password', $password); // Consider using password_hash($password, PASSWORD_DEFAULT) for security
-            if ($db->execute()) {
-                $_SESSION['messages'][] = "Password Updated!";
-            } else {
-                $_SESSION['messages'][] = "Failed to update password.";
-            }
-        } else {
+        // Check if passwords match
+        if ($password !== $password2) {
             $_SESSION['messages'][] = "Passwords do not match. Please try again.";
         }
 
-        header("Location: " . $_SERVER['PHP_SELF']);
+        // Validate password
+        if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/', $password)) {
+            $_SESSION['messages'][] = "Password must be 8-16 characters long, including at least one letter, one number, and one symbol.";
+        }
+
+        // If there are any error messages, redirect and exit
+        if (!empty($_SESSION['messages'])) {
+            header("Location: /info");
+            exit;
+        }
+
+        // Initialize database object
+        $db = new Database();
+
+        // Update password in the database
+        $db->query("UPDATE users SET password = :password WHERE username = :username");
+        $db->bind(':username', $username);
+        $db->bind(':password', $password); // No hashing for the password
+        $db->execute();
+
+        // Add success message
+        $_SESSION['messages'][] = "Password Updated!";
+        header("Location: /info");
         exit;
     }
 }

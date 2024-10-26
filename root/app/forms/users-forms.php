@@ -15,15 +15,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $totalAccounts = $_POST['total-accounts'];
         $maxApiCalls = $_POST['max-api-calls'];
         $usedApiCalls = $_POST['used-api-calls'];
-        $admin = $_POST['admin']; // Use the value directly from the POST data
-        $expires = $_POST['expires']; // New expires field
+        $expires = $_POST['expires'];
+        $admin = $_POST['admin'];
 
         // Validate username and password
         if (!preg_match('/^[a-z0-9]{8,18}$/', $username)) {
             $_SESSION['messages'][] = "Username must be 8-18 characters long, lowercase letters and numbers only.";
-        } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/', $password)) {
+        }
+        if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/', $password)) {
             $_SESSION['messages'][] = "Password must be 8-16 characters long, including at least one letter, one number, and one symbol.";
-        } elseif (!empty($username) && !empty($password) && !empty($totalAccounts) && !empty($maxApiCalls)) {
+        }
+
+        // Validate other fields
+        if (
+            !filter_var($totalAccounts, FILTER_VALIDATE_INT) ||
+            !filter_var($maxApiCalls, FILTER_VALIDATE_INT) ||
+            !filter_var($usedApiCalls, FILTER_VALIDATE_INT) ||
+            !preg_match('/^\d{4}-\d{2}-\d{2}$/', $expires) || !strtotime($expires) ||
+            !in_array($admin, ['0', '1'])
+        ) {
+            $_SESSION['messages'][] = "There was an error processing input.";
+        }
+
+        // Check if any error messages have been added to the session
+        if (!empty($_SESSION['messages'])) {
+            header("Location: /users");
+            exit;
+        } else {
             $db = new Database();
 
             $db->query("SELECT * FROM users WHERE username = :username");
@@ -33,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($userExists) {
                 $db->query("UPDATE users SET password = :password, total_accounts = :totalAccounts, max_api_calls = :maxApiCalls, used_api_calls = :usedApiCalls, admin = :admin, expires = :expires WHERE username = :username");
             } else {
-                $db->query("INSERT INTO users (username, password, total_accounts, max_api_calls, used_api_calls, admin, expires) VALUES (:username, :password, :totalAccounts, :maxApiCalls, :usedApiCalls, :admin, :expires)");
+                $db->query("INSERT INTO users (username, password, total_accounts, max_api_calls, used_api_calls, admin, expires) VALUES (:username, :password, :totalAccounts, :maxApiCalls, :usedApiCalls, :expires, :admin)");
                 // Create directory for images if user is being created
                 $userImagePath = __DIR__ .  '/../../public/images/' . $username;
                 if (!file_exists($userImagePath)) {
@@ -48,15 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->bind(':totalAccounts', $totalAccounts);
             $db->bind(':maxApiCalls', $maxApiCalls);
             $db->bind(':usedApiCalls', $usedApiCalls);
-            $db->bind(':admin', $admin);
             $db->bind(':expires', $expires);
+            $db->bind(':admin', $admin);
             $db->execute();
 
             $_SESSION['messages'][] = "User has been created or modified.";
-            header("Location: /users");
-            exit;
-        } else {
-            $_SESSION['messages'][] = "A field is missing or has incorrect data. Please try again.";
             header("Location: /users");
             exit;
         }

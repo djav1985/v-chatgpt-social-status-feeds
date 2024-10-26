@@ -37,14 +37,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process the 'days' field, defaulting to 'everyday' if no days are selected
         $days = isset($_POST["days"]) ? implode(',', $_POST["days"]) : 'everyday';
 
-        // Validate account name, link, and cron settings with regex patterns
+        // Validate platform and days
+        if (!in_array($platform, ['facebook', 'twitter', 'instagram'])) {
+            $_SESSION['messages'][] = "Invalid platform selected.";
+        }
+        if (array_diff((array)$days, ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'])) {
+            $_SESSION['messages'][] = "Invalid day(s) selected.";
+        }
+
+        // Validate account name, link, prompt, image prompt, and cron settings with regex patterns
         if (!preg_match('/^[a-z0-9-]{8,18}$/', $accountName)) {
-            $_SESSION['messages'][] = "Account name must be 8-18 characters long, alphanumeric and hyphens only."; // Error message for invalid account name
-        } elseif (!preg_match('/^https:\/\/[\w.-]+(\/[\w.-]*)*\/?$/', $link)) {
-            $_SESSION['messages'][] = "Link must be a valid URL starting with https://"; // Error message for invalid link
-        } elseif ($cron === null && !in_array("off", $_POST["cron"], true)) {
-            $_SESSION['messages'][] = "Please select at least one cron value or set it to 'Off'."; // Error for missing cron setting
-        } elseif (!empty($accountName) && !empty($prompt) && !empty($platform) && !empty($link) && !empty($imagePrompt) && ($cron !== null || in_array("off", $_POST["cron"], true))) {
+            $_SESSION['messages'][] = "Account name must be 8-18 characters long, alphanumeric and hyphens only.";
+        }
+        if (!preg_match('/^https:\/\/[\w.-]+(\/[\w.-]*)*\/?$/', $link)) {
+            $_SESSION['messages'][] = "Link must be a valid URL starting with https://.";
+        }
+        if (empty($prompt)) {
+            $_SESSION['messages'][] = "Prompt cannot be empty.";
+        }
+        if (empty($imagePrompt)) {
+            $_SESSION['messages'][] = "Image prompt cannot be empty.";
+        }
+        if ($cron === null && !in_array("off", $_POST["cron"], true)) {
+            $_SESSION['messages'][] = "Please select at least one cron value or set it to 'Off'.";
+        }
+
+        // Check if any error messages have been added to the session
+        if (!empty($_SESSION['messages'])) {
+            header("Location: /accounts");
+            exit;
+        } else {
             $db = new Database(); // Create a new database object
 
             // Check if the account already exists in the database
@@ -83,11 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->bind(':days', $days);
             $db->execute(); // Execute the query to save the account data
 
-            $_SESSION['messages'][] = "Account has been created or modified"; // Success message
-            header("Location: /accounts"); // Redirect back to the accounts page
-            exit; // Terminate script execution
-        } else {
-            $_SESSION['messages'][] = "A field is missing or has incorrect data. Please try again."; // Error message for incomplete or incorrect data
+            $_SESSION['messages'][] = "Account has been created or modified."; // Success message
             header("Location: /accounts"); // Redirect back to the accounts page
             exit; // Terminate script execution
         }
@@ -109,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db->bind(':accountName', $accountName); // Bind the account name
         $db->execute(); // Execute the delete query for the account
 
-        $_SESSION['messages'][] = "Account Deleted"; // Success message
+        $_SESSION['messages'][] = "Account Deleted."; // Success message
         header("Location: /accounts"); // Redirect back to the accounts page
         exit; // Terminate script execution
     }

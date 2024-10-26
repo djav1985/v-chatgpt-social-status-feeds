@@ -139,7 +139,7 @@ if (!defined('INSTALLED') || !INSTALLED) {
     hashtags BOOLEAN DEFAULT FALSE,
     link VARCHAR(255),
     cron VARCHAR(255),
-    days VARCHAR(255), // New days field for scheduling
+    days VARCHAR(255),
     image_prompt VARCHAR(255),
     platform VARCHAR(255) NOT NULL,
     cta VARCHAR(255),
@@ -157,10 +157,10 @@ if (!defined('INSTALLED') || !INSTALLED) {
     $db->query("CREATE TABLE IF NOT EXISTS users (
         username VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
-        expires DATETIME DEFAULT NULL,
         total_accounts INT DEFAULT 10,
         max_api_calls BIGINT DEFAULT 9999999999,
         used_api_calls BIGINT DEFAULT 0,
+        expires DATE DEFAULT '9999-12-31',
         admin TINYINT DEFAULT 0,
         PRIMARY KEY (username) // Primary key on username
     );");
@@ -186,12 +186,11 @@ if (defined('INSTALLED') && INSTALLED === true && defined('APP_VERSION') && APP_
     // Create a new instance of the Database class
     $db = new Database();
 
-    // Alter the accounts table to add a new column cta
-    $db->query("ALTER TABLE accounts ADD COLUMN cta VARCHAR(255);");
+    $db->query("ALTER TABLE accounts ADD COLUMN cta VARCHAR(255) AFTER platform;");
     $db->execute(); // Execute the table alteration
 
-    // Alter the users table to add a new column expires
-    $db->query("ALTER TABLE users ADD COLUMN expires DATETIME DEFAULT NULL;");
+    // Alter the users table to add a new column expires in the correct order
+    $db->query("ALTER TABLE users ADD COLUMN expires DATE DEFAULT '9999-12-31' AFTER used_api_calls;");
     $db->execute(); // Execute the table alteration
 
     // Update the APP_VERSION in config.php

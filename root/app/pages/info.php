@@ -19,6 +19,7 @@
             <input type="password" name="password" id="password" required>
             <label for="password2">Confirm New Password:</label>
             <input type="password" name="password2" id="password2" required>
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             <button type="submit" class="green-button" name="change_password">Change Password</button>
         </form>
         <?php echo display_and_clear_messages(); ?>

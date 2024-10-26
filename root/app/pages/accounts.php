@@ -53,7 +53,7 @@
 
             <!-- Multi-select dropdown for setting post schedule times -->
             <label for="cron">Post Schedule:</label>
-            <select name="cron[]" id="cron" multiple>
+            <select name="cron[]" id="cron" multiple required>
                 <option value="off" selected>Off</option>
                 <?php
                 // Loop to generate time options from 6 AM to 10 PM
@@ -69,7 +69,7 @@
 
             <!-- Dropdown for including hashtags -->
             <label for="hashtags">Include Hashtags:</label>
-            <select name="hashtags" id="hashtags">
+            <select name="hashtags" id="hashtags" required>
                 <option value="0" selected>No</option>
                 <option value="1">Yes</option>
             </select>
