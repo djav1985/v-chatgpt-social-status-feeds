@@ -14,6 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'];
         $password2 = $_POST['password2'];
 
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+        }
+
         // Check if passwords match
         if ($password !== $password2) {
             $_SESSION['messages'][] = "Passwords do not match. Please try again.";

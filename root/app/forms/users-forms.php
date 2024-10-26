@@ -18,6 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $expires = $_POST['expires'];
         $admin = $_POST['admin'];
 
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+        }
+
         // Validate username and password
         if (!preg_match('/^[a-z0-9]{8,18}$/', $username)) {
             $_SESSION['messages'][] = "Username must be 8-18 characters long, lowercase letters and numbers only.";

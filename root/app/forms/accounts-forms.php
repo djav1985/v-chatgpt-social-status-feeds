@@ -30,6 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $days = (count($_POST["days"]) === 1 && $_POST["days"][0] === 'everyday') ? 'everyday' : implode(',', $_POST["days"]);
 
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+        }
+
         // Check if any of the required fields are empty or invalid
         if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
             $_SESSION['messages'][] = "Error processing input.";
