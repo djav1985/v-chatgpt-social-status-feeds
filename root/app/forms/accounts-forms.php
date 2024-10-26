@@ -104,6 +104,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $accountName = trim($_POST["account"]); // Get and trim the account name from the form
         $accountOwner = $_SESSION["username"]; // Retrieve the username of the account owner from the session
 
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+            header("Location: /accounts");
+            exit;
+        }
+
         $db = new Database(); // Create a new database object
 
         // Delete all statuses related to this account

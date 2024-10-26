@@ -16,6 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $accountOwner = trim($_POST["username"]);
         $statusId = (int) $_POST["id"];  // Use 'id' from POST, ensuring it matches your form input
 
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+            header("Location: /accounts");
+            exit;
+        }
+
         $db = new Database();
         // First, retrieve the image file name
         $db->query("SELECT status_image FROM status_updates WHERE id = :statusId AND account = :account AND username = :username");
@@ -44,6 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST["generate_status"])) {
         $accountName = trim($_POST["account"]);
         $accountOwner = trim($_POST["username"]);
+
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+            header("Location: /accounts");
+            exit;
+        }
 
         // Check if user has available API calls
         $userInfo = getUserInfo($accountOwner);

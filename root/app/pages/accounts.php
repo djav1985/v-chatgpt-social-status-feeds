@@ -32,7 +32,7 @@
 
             <!-- Input field for adding a link -->
             <label for="link">Link:</label>
-            <input type="text" name="link" id="link" required value="https://domain.com">
+            <input type="url" name="link" id="link" required value="https://domain.com">
 
             <!-- Textarea for providing image instructions -->
             <label for="image_prompt">Image Instructions:</label>

@@ -91,6 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($username === $_SESSION['username']) {
             $_SESSION['messages'][] = "Sorry, you can't delete your own account.";
         } else {
+
+            // CSRF token validation
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+                header("Location: /accounts");
+                exit;
+            }
+
             $db = new Database();
 
             // Remove the user from the user table
@@ -115,6 +123,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } elseif (isset($_POST['login_as']) && isset($_POST['username'])) {
         $username = $_POST['username'];
+
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+            header("Location: /accounts");
+            exit;
+        }
 
         $user = getUserInfo($username);
         if ($user) {
