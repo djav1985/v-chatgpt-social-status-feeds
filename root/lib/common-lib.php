@@ -8,7 +8,7 @@
  * Description: ChatGPT API Status Generator
  */
 
-// Utility Functions
+// --- Utility Functions ---
 
 /**
  * Sanitize user input to prevent security vulnerabilities.
@@ -18,18 +18,12 @@
  */
 function sanitize_input($data)
 {
-    // Trim whitespace and remove HTML tags from the input
     $data = trim(strip_tags($data));
-
-    // Filter the input using appropriate filters to prevent XSS
     $data = filter_var($data, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-
-    // Add additional security measures by removing potentially harmful code snippets
     $data = str_replace(array("<?", "?>", "<%", "%>"), "", $data);
     $data = str_replace(array("<script", "</script"), "", $data);
     $data = str_replace(array("/bin/sh", "exec(", "system(", "passthru(", "shell_exec(", "phpinfo("), "", $data);
-
-    return $data; // Return the cleaned data
+    return $data;
 }
 
 /**
@@ -40,14 +34,11 @@ function sanitize_input($data)
  */
 function contains_disallowed_chars($str)
 {
-    global $disallowed_chars; // Access the global disallowed characters array
+    global $disallowed_chars;
     foreach ($disallowed_chars as $char) {
-        // Check for existence of each disallowed character in the string
-        if (strpos($str, $char) !== false) {
-            return true; // Found disallowed character
-        }
+        if (strpos($str, $char) !== false) return true;
     }
-    return false; // No disallowed characters found
+    return false;
 }
 
 /**
@@ -58,38 +49,31 @@ function contains_disallowed_chars($str)
  */
 function contains_disallowed_patterns($str)
 {
-    global $disallowed_patterns; // Access the global disallowed patterns array
+    global $disallowed_patterns;
     foreach ($disallowed_patterns as $pattern) {
-        // Check for existence of each disallowed pattern in the string
-        if (strpos($str, $pattern) !== false) {
-            return true; // Found disallowed pattern
-        }
+        if (strpos($str, $pattern) !== false) return true;
     }
-    return false; // No disallowed patterns found
+    return false;
 }
 
-// Session and Message Handling Functions
+// --- Session and Message Handling ---
 
 /**
  * Display messages stored in the session and clear them afterwards.
  */
 function display_and_clear_messages()
 {
-    // Check if there are any messages to display
     if (isset($_SESSION['messages']) && count($_SESSION['messages']) > 0) {
-        echo '<div class="messages">'; // Start message container
+        echo '<div class="messages">';
         foreach ($_SESSION['messages'] as $message) {
-            // Display each message safely
             echo '<p>' . htmlspecialchars($message) . '</p>';
         }
-        echo '</div>'; // End message container
-
-        // Clear messages after displaying
+        echo '</div>';
         unset($_SESSION['messages']);
     }
 }
 
-// IP Blacklist Management Functions
+// --- IP Blacklist Management ---
 
 /**
  * Update login attempts for an IP address and handle blacklisting if necessary.
@@ -98,31 +82,25 @@ function display_and_clear_messages()
  */
 function update_failed_attempts($ip)
 {
-    $db = new Database(); // Instantiate database object
-
-    // Check if the IP already exists in the blacklist table
+    $db = new Database();
     $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip");
     $db->bind(':ip', $ip);
     $result = $db->single();
 
     if ($result) {
-        // If IP exists, increment login attempts and check for blacklisting
         $attempts = $result['login_attempts'] + 1;
-        $is_blacklisted = ($attempts >= 3) ? true : false; // Set blacklisting status based on attempts
-        $timestamp = ($is_blacklisted) ? time() : $result['timestamp']; // Update timestamp if blacklisted
-
-        // Update the attempts and blacklist status in the database
+        $is_blacklisted = ($attempts >= 3) ? true : false;
+        $timestamp = ($is_blacklisted) ? time() : $result['timestamp'];
         $db->query("UPDATE ip_blacklist SET login_attempts = :attempts, blacklisted = :blacklisted, timestamp = :timestamp WHERE ip_address = :ip");
         $db->bind(':attempts', $attempts);
         $db->bind(':blacklisted', $is_blacklisted);
         $db->bind(':timestamp', $timestamp);
     } else {
-        // If IP does not exist, insert it as a new entry with initial login attempt
         $db->query("INSERT INTO ip_blacklist (ip_address, login_attempts, blacklisted, timestamp) VALUES (:ip, 1, FALSE, :timestamp)");
         $db->bind(':ip', $ip);
         $db->bind(':timestamp', time());
     }
-    $db->execute(); // Execute the database query
+    $db->execute();
 }
 
 /**
@@ -133,24 +111,21 @@ function update_failed_attempts($ip)
  */
 function is_blacklisted($ip)
 {
-    $db = new Database(); // Instantiate database object
-    // Query the blacklist for the given IP address
+    $db = new Database();
     $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip AND blacklisted = TRUE");
     $db->bind(':ip', $ip);
     $result = $db->single();
 
     if ($result) {
-        // Check if the blacklist timestamp is older than three days
         if (time() - $result['timestamp'] > (3 * 24 * 60 * 60)) {
-            // Update to remove the IP from the blacklist after three days
             $db->query("UPDATE ip_blacklist SET blacklisted = FALSE WHERE ip_address = :ip");
             $db->bind(':ip', $ip);
             $db->execute();
-            return false; // IP is no longer blacklisted
+            return false;
         }
-        return true; // IP is still blacklisted
+        return true;
     }
-    return false; // IP is not blacklisted
+    return false;
 }
 
 /**
@@ -158,12 +133,12 @@ function is_blacklisted($ip)
  */
 function clearIpBlacklist()
 {
-    $db = new Database(); // Instantiate database object
-    $db->query("DELETE FROM ip_blacklist"); // Delete all entries from the IP blacklist
-    $db->execute(); // Execute the delete query
+    $db = new Database();
+    $db->query("DELETE FROM ip_blacklist");
+    $db->execute();
 }
 
-// User Information Functions
+// --- User Information Management ---
 
 /**
  * Retrieve user information based on username.
@@ -173,11 +148,10 @@ function clearIpBlacklist()
  */
 function getUserInfo($username)
 {
-    $db = new Database(); // Instantiate database object
-    // Query the users table for the specified username
+    $db = new Database();
     $db->query("SELECT * FROM users WHERE username = :username");
     $db->bind(':username', $username);
-    return $db->single(); // Return the user information
+    return $db->single();
 }
 
 /**
@@ -187,12 +161,12 @@ function getUserInfo($username)
  */
 function getAllUsers()
 {
-    $db = new Database(); // Instantiate database object
-    $db->query("SELECT * FROM users"); // Select all users
-    return $db->resultSet(); // Return an array of user objects
+    $db = new Database();
+    $db->query("SELECT * FROM users");
+    return $db->resultSet();
 }
 
-// Account Information Functions
+// --- Account Information Management ---
 
 /**
  * Get account information for a specific user and account.
@@ -203,12 +177,11 @@ function getAllUsers()
  */
 function getAcctInfo($username, $account)
 {
-    $db = new Database(); // Instantiate database object
-    // Query the accounts table for the specified username and account
+    $db = new Database();
     $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
     $db->bind(':username', $username);
     $db->bind(':account', $account);
-    return $db->single(); // Return the account information
+    return $db->single();
 }
 
 /**
@@ -219,11 +192,10 @@ function getAcctInfo($username, $account)
  */
 function getAllUserAccts($username)
 {
-    $db = new Database(); // Instantiate database object
-    // Query the accounts table for all accounts belonging to the specified user
+    $db = new Database();
     $db->query("SELECT account FROM accounts WHERE username = :username");
     $db->bind(':username', $username);
-    return $db->resultSet(); // Return an array of account objects
+    return $db->resultSet();
 }
 
 /**
@@ -233,12 +205,12 @@ function getAllUserAccts($username)
  */
 function getAllAccounts()
 {
-    $db = new Database(); // Instantiate database object
-    $db->query("SELECT * FROM accounts"); // Select all accounts
-    return $db->resultSet(); // Return the result set
+    $db = new Database();
+    $db->query("SELECT * FROM accounts");
+    return $db->resultSet();
 }
 
-// Status Information Functions
+// --- Status Information Management ---
 
 /**
  * Retrieve status updates for a specific user and account, ordered by created date.
@@ -249,15 +221,11 @@ function getAllAccounts()
  */
 function getStatusInfo($username, $account)
 {
-    $db = new Database(); // Instantiate database object to interact with the database
-
-    // Query the status_updates table for the specified username and account,
-    // ordering the results by the creation date in descending order
+    $db = new Database();
     $db->query("SELECT * FROM status_updates WHERE username = :username AND account = :account ORDER BY created_at DESC");
-    $db->bind(':username', $username); // Bind the username parameter to the query
-    $db->bind(':account', $account); // Bind the account parameter to the query
-
-    return $db->resultSet(); // Return the result set of status updates as an array
+    $db->bind(':username', $username);
+    $db->bind(':account', $account);
+    return $db->resultSet();
 }
 
 /**
@@ -268,13 +236,10 @@ function getStatusInfo($username, $account)
  */
 function countStatuses($accountName)
 {
-    $db = new Database(); // Instantiate database object
-
-    // Query to count the number of status updates for the specified account
+    $db = new Database();
     $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account");
-    $db->bind(':account', $accountName); // Bind the account parameter to the query
-
-    return $db->single(); // Return the single count result
+    $db->bind(':account', $accountName);
+    return $db->single();
 }
 
 /**
@@ -285,15 +250,11 @@ function countStatuses($accountName)
  */
 function deleteOldStatuses($accountName, $deleteCount)
 {
-    $db = new Database(); // Instantiate database object
-
-    // Query to delete the oldest status updates for the specified account,
-    // ordering by creation date in ascending order and limiting the number of deletions
+    $db = new Database();
     $db->query("DELETE FROM status_updates WHERE account = :account ORDER BY created_at ASC LIMIT :deleteCount");
-    $db->bind(':account', $accountName); // Bind the account parameter to the query
-    $db->bind(':deleteCount', $deleteCount); // Bind the limit parameter to the query
-
-    $db->execute(); // Execute the delete query
+    $db->bind(':account', $accountName);
+    $db->bind(':deleteCount', $deleteCount);
+    $db->execute();
 }
 
 /**
@@ -306,168 +267,215 @@ function deleteOldStatuses($accountName, $deleteCount)
  */
 function hasStatusBeenPosted($accountName, $accountOwner, $currentTimeSlot)
 {
-    $db = new Database(); // Instantiate database object
-
-    // Calculate the time window of +/- 15 minutes around the current time slot
+    $db = new Database();
     $startTime = date('Y-m-d H:i:s', strtotime($currentTimeSlot . ' -15 minutes'));
     $endTime = date('Y-m-d H:i:s', strtotime($currentTimeSlot . ' +15 minutes'));
 
-    // Query to check for existing status updates within the calculated time window
     $db->query("SELECT COUNT(*) as count FROM status_updates WHERE username = :username AND account = :account AND created_at BETWEEN :startTime AND :endTime");
-    $db->bind(':username', $accountOwner); // Bind the account owner parameter to the query
-    $db->bind(':account', $accountName); // Bind the account parameter to the query
-    $db->bind(':startTime', $startTime); // Bind the start time parameter to the query
-    $db->bind(':endTime', $endTime); // Bind the end time parameter to the query
+    $db->bind(':username', $accountOwner);
+    $db->bind(':account', $accountName);
+    $db->bind(':startTime', $startTime);
+    $db->bind(':endTime', $endTime);
 
-    $result = $db->single(); // Get the single count result
-
-    return $result->count > 0; // Return true if a status has been posted; false otherwise
+    $result = $db->single();
+    return $result->count > 0;
 }
 
-// API Usage Functions
+/**
+ * Save a status update to the database.
+ *
+ * @param string $accountName The name of the account.
+ * @param string $accountOwner The owner of the account.
+ * @param string $status_content The content of the status update.
+ * @param string $image_name The name of the associated image file.
+ */
+function saveStatus($accountName, $accountOwner, $status_content, $image_name)
+{
+    $db = new Database(); // Instantiate the database object.
+
+    // SQL query to insert a new status update.
+    $sql = "INSERT INTO status_updates (username, account, status, created_at, status_image) VALUES (:username, :account, :status, NOW(), :status_image)";
+    $db->query($sql);
+
+    // Bind parameters to the query for secure execution.
+    $db->bind(':username', $accountOwner);
+    $db->bind(':account', $accountName);
+    $db->bind(':status', $status_content);
+    $db->bind(':status_image', $image_name);
+
+    // Execute the query to save the status update to the database.
+    $db->execute();
+}
+
+
+// --- API Usage Tracking ---
 
 /**
- * Reset the used API call counts for all users to zero.
+ * Reset the used API call counts for all users and clear token usage, retries, and costs in the logs table.
  */
 function resetAllApiUsage()
 {
-    $db = new Database(); // Instantiate database object
+    $db = new Database(); // Instantiate database object.
 
-    // Update all users to reset their used API calls to 0
+    // Reset used API calls for all users to zero
     $db->query("UPDATE users SET used_api_calls = 0");
-    $db->execute(); // Execute the update query
+    $db->execute();
+
+    // Reset token usage, retries, and cost for all accounts in the logs table
+    $db->query("UPDATE logs SET input_tokens = 0, output_tokens = 0, image_retries = 0, cost = 0.00000000");
+    $db->execute();
 }
 
 /**
  * Update the used API calls count for a specific user.
  *
- * @param string $username The username of the user to update.
- * @param int $usedApiCalls The number of used API calls to set.
+ * @param string $username The username of the user.
+ * @param int $usedApiCalls The number of API calls to set.
  */
 function updateUsedApiCalls($username, $usedApiCalls)
 {
-    $db = new Database(); // Instantiate database object
-
-    // Update the user's used API calls with the provided count
+    $db = new Database(); // Instantiate database object.
     $db->query("UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username");
-    $db->bind(':used_api_calls', $usedApiCalls); // Bind the used API calls parameter to the query
-    $db->bind(':username', $username); // Bind the username parameter to the query
-
-    $db->execute(); // Execute the update query
+    $db->bind(':used_api_calls', $usedApiCalls);
+    $db->bind(':username', $username);
+    $db->execute(); // Execute the update.
 }
 
-
 /**
- * Update the maximum API calls count for a specific user.
+ * Update the maximum API calls allowed for a specific user.
  *
- * @param string $username The username of the user to update.
- * @param int $maxApiCalls The maximum number of API calls to set.
+ * @param string $username The username of the user.
+ * @param int $maxApiCalls The maximum number of API calls allowed.
  */
 function updateMaxApiCalls($username, $maxApiCalls)
 {
-    $db = new Database(); // Instantiate database object
-
-    // Update the user's maximum API calls with the provided count
+    $db = new Database(); // Instantiate database object.
     $db->query("UPDATE users SET max_api_calls = :max_api_calls WHERE username = :username");
-    $db->bind(':max_api_calls', $maxApiCalls); // Bind the maximum API calls parameter to the query
-    $db->bind(':username', $username); // Bind the username parameter to the query
-
-    $db->execute(); // Execute the update query
+    $db->bind(':max_api_calls', $maxApiCalls);
+    $db->bind(':username', $username);
+    $db->execute(); // Execute the update.
 }
 
+/**
+ * Update token counts and cost for a given account.
+ *
+ * @param string $accountName The name of the account.
+ * @param string $accountOwner The owner of the account.
+ * @param int $prompt_tokens Number of prompt tokens.
+ * @param int $completion_tokens Number of completion tokens.
+ */
 function updateTokens($accountName, $accountOwner, $prompt_tokens, $completion_tokens)
 {
-    $db = new Database();
-    // Calculate cost
-    $cost = (0.00000015 * $prompt_tokens) + (0.0000006 * $completion_tokens);
+    $db = new Database(); // Instantiate database object.
+    $cost = number_format((0.00000015 * $prompt_tokens) + (0.0000006 * $completion_tokens), 8, '.', ''); // Calculate cost.
 
-    // Update tokens and cost
-    $update_sql = "UPDATE logs SET input_tokens = input_tokens + :prompt_tokens, output_tokens = output_tokens + :completion_tokens, cost = cost + :cost WHERE account = :account AND username = :username";
+    // SQL statement for inserting or updating the log with token and cost details.
+    $upsert_sql = "
+        INSERT INTO logs (account, username, input_tokens, output_tokens, cost)
+        VALUES (:account, :username, :prompt_tokens, :completion_tokens, :cost)
+        ON DUPLICATE KEY UPDATE
+            input_tokens = input_tokens + VALUES(input_tokens),
+            output_tokens = output_tokens + VALUES(output_tokens),
+            cost = cost + VALUES(cost)
+    ";
 
-    $db->query($update_sql);
-    $db->bind(':prompt_tokens', $prompt_tokens);
-    $db->bind(':completion_tokens', $completion_tokens);
-    $db->bind(':cost', $cost);
+    $db->query($upsert_sql);
     $db->bind(':account', $accountName);
     $db->bind(':username', $accountOwner);
-    $db->execute();
+    $db->bind(':prompt_tokens', $prompt_tokens ?? 0);
+    $db->bind(':completion_tokens', $completion_tokens ?? 0);
+    $db->bind(':cost', $cost);
+    $db->execute(); // Execute the upsert.
 }
 
+/**
+ * Increment cost by a fixed amount for a specified account.
+ * Inserts a row if the account and username do not exist.
+ *
+ * @param string $accountName The name of the account.
+ * @param string $accountOwner The owner of the account.
+ */
+function updateCost($accountName, $accountOwner)
+{
+    $db = new Database(); // Instantiate database object.
+
+    // Upsert query to increment cost or insert a new row if it doesn't exist
+    $upsert_sql = "
+        INSERT INTO logs (account, username, cost)
+        VALUES (:account, :username, 0.080)
+        ON DUPLICATE KEY UPDATE
+        cost = cost + 0.080
+    ";
+    $db->query($upsert_sql);
+    $db->bind(':account', $accountName);
+    $db->bind(':username', $accountOwner);
+    $db->execute(); // Execute the upsert.
+}
+
+/**
+ * Increment image retries for an account.
+ * Inserts a row if the account and username do not exist.
+ *
+ * @param string $accountName The name of the account.
+ * @param string $accountOwner The owner of the account.
+ */
+function updateImageRetries($accountName, $accountOwner)
+{
+    $db = new Database(); // Instantiate database object.
+
+    // Upsert query to increment image_retries or insert a new row if it doesn't exist
+    $upsert_sql = "
+        INSERT INTO logs (account, username, image_retries)
+        VALUES (:account, :username, 1)
+        ON DUPLICATE KEY UPDATE
+        image_retries = image_retries + 1
+    ";
+    $db->query($upsert_sql);
+    $db->bind(':account', $accountName);
+    $db->bind(':username', $accountOwner);
+    $db->execute(); // Execute the upsert.
+}
+
+/**
+ * Retrieve the total cost incurred by a specific user.
+ *
+ * @param string $accountOwner The username of the account owner.
+ * @return float The total cost incurred.
+ */
+function getTotalCostByUsername($accountOwner)
+{
+    $db = new Database(); // Instantiate database object.
+    $query = "SELECT SUM(cost) as total_cost FROM logs WHERE username = :username";
+    $db->query($query);
+    $db->bind(':username', $accountOwner);
+    $result = $db->single();
+    return $result->total_cost;
+}
+
+// --- External API Communication ---
+
+/**
+ * Execute an API request to the specified endpoint with provided data.
+ *
+ * @param string $endpoint The API endpoint URL.
+ * @param array $data The data to be sent in the request.
+ * @return string The API response.
+ */
 function executeApiRequest($endpoint, $data)
 {
-    // Set up headers for the API request including content type and authorization
     $headers = [
         'Content-Type: application/json',
         'Authorization: Bearer ' . API_KEY,
     ];
 
-    // Initialize cURL session for the API request
+    // Initialize cURL session for the API request.
     $ch = curl_init($endpoint);
-    curl_setopt($ch, CURLOPT_POST, true); // Set the request method to POST
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // Set the JSON encoded request data
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Set the request headers
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Ensure the response is returned as a string
-    $response = curl_exec($ch); // Execute the API request and fetch response
-    curl_close($ch); // Close cURL session
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch); // Close cURL session.
 
-    return $response;
-}
-
-function updateCost($accountName, $accountOwner)
-{
-    $db = new Database();
-    $update_sql = "UPDATE logs SET cost = cost + 0.080 WHERE account = :account AND username = :username";
-    $db->query($update_sql);
-    $db->bind(':account', $accountName);
-    $db->bind(':username', $accountOwner);
-    $db->execute();
-}
-
-function updateImageRetries($accountName, $accountOwner)
-{
-    $db = new Database();
-    $update_sql = "UPDATE logs SET image_retries = image_retries + 1 WHERE account = :account AND username = :username";
-    $db->query($update_sql);
-    $db->bind(':account', $accountName);
-    $db->bind(':username', $accountOwner);
-    $db->execute();
-}
-
-function saveStatus($accountName, $accountOwner, $status_content, $image_name)
-{
-    // Create a new instance of the Database class
-    $db = new Database();
-
-    // SQL query to insert a new status update into the database
-    $sql = "INSERT INTO status_updates (username, account, status, created_at, status_image) VALUES (:username, :account, :status, NOW(), :status_image)";
-
-    // Prepare the SQL statement for execution
-    $db->query($sql);
-
-    // Bind the parameters to the SQL query
-    $db->bind(':username', $accountOwner); // Bind the account owner's username
-    $db->bind(':account', $accountName);   // Bind the account name
-    $db->bind(':status', $status_content); // Bind the status content
-    $db->bind(':status_image', $image_name); // Bind the image file name
-
-    // Execute the SQL statement to insert the data into the database
-    $db->execute();
-}
-
-
-function getTotalCostByUsername($accountOwner)
-{
-    $db = new Database();
-
-    // Query to get the sum of the cost column for the provided username
-    $query = "SELECT SUM(cost) as total_cost FROM logs WHERE username = :username";
-
-    $db->query($query);
-    $db->bind(':username', $accountOwner);
-    $result = $db->single();
-
-    // Extract the total cost
-    $total_cost = $result['total_cost'];
-
-    return $total_cost;
+    return $response; // Return the API response.
 }

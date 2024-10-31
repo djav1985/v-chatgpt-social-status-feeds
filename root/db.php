@@ -119,7 +119,7 @@ if (!defined('INSTALLED') || !INSTALLED) {
     );");
     $db->execute(); // Execute the table creation
 
-    // Create the status updates table if it doesn't exist
+    // Create the status updates table with index on username
     $db->query("CREATE TABLE IF NOT EXISTS status_updates (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(255) NOT NULL,
@@ -127,43 +127,44 @@ if (!defined('INSTALLED') || !INSTALLED) {
         status TEXT,
         created_at DATETIME,
         status_image VARCHAR(255),
-        INDEX (username) // Index on username for faster queries
+        INDEX (username) -- Index on username for faster queries
     );");
-    $db->execute(); // Execute the table creation
+    $db->execute();
 
-    // Create the accounts table with various fields and an index on username
+    // Create the accounts table with a primary key and indexed username
     $db->query("CREATE TABLE IF NOT EXISTS accounts (
-    account VARCHAR(255) NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    prompt TEXT,
-    hashtags BOOLEAN DEFAULT FALSE,
-    link VARCHAR(255),
-    cron VARCHAR(255),
-    days VARCHAR(255),
-    image_prompt VARCHAR(255),
-    platform VARCHAR(255) NOT NULL,
-    cta VARCHAR(255),
-    PRIMARY KEY (account), // Primary key on account name
-    INDEX username_idx (username) // Index on username for faster queries
-);");
-    $db->execute(); // Execute the table creation
+        account VARCHAR(255) NOT NULL,
+        username VARCHAR(255) NOT NULL,
+        prompt TEXT,
+        hashtags BOOLEAN DEFAULT FALSE,
+        link VARCHAR(255),
+        cron VARCHAR(255),
+        days VARCHAR(255),
+        image_prompt VARCHAR(255),
+        platform VARCHAR(255) NOT NULL,
+        cta VARCHAR(255),
+        PRIMARY KEY (account), -- Primary key on account name
+        INDEX username_idx (username) -- Index on username for faster queries
+    );");
+    $db->execute();
 
     // Create the logs table if it doesn't exist
     $db->query("CREATE TABLE IF NOT EXISTS logs (
-        account VARCHAR(255) NOT NULL,
-        username VARCHAR(255) NOT NULL,
-        input_tokens INT DEFAULT 0,
-        output_tokens INT DEFAULT 0,
-        image_retries INT DEFAULT 0,
-        cost DECIMAL(10, 10) DEFAULT 0.00,
-        INDEX account_idx (account),
-        INDEX username_idx (username)
-    );");
+    account VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    input_tokens INT DEFAULT 0,
+    output_tokens INT DEFAULT 0,
+    image_retries INT DEFAULT 0,
+    cost DECIMAL(12,8) DEFAULT 0.00000000,
+    UNIQUE KEY unique_account_username (account, username), -- Unique key constraint
+    INDEX account_idx (account),
+    INDEX username_idx (username)
+);");
     $db->execute(); // Execute the table creation
 
     // Insert an example account into the accounts table
     $db->query("INSERT INTO accounts (account, username, prompt, hashtags, link, cron, image_prompt, platform)
-    VALUES ('admin', 'admin', 'Write a Facebook status update for my business page.', TRUE, 'https://domain.com/', '6,12,18', 'image_prompt_example.jpg', 'facebook');");
+        VALUES ('admin', 'admin', 'Write a Facebook status update for my business page.', TRUE, 'https://domain.com/', '6,12,18', 'image_prompt_example.jpg', 'facebook');");
     $db->execute(); // Execute the insert
 
     // Create the users table with fields for user management
@@ -175,7 +176,7 @@ if (!defined('INSTALLED') || !INSTALLED) {
         used_api_calls BIGINT DEFAULT 0,
         expires DATE DEFAULT '9999-12-31',
         admin TINYINT DEFAULT 0,
-        PRIMARY KEY (username) // Primary key on username
+        PRIMARY KEY (username) -- Primary key on username
     );");
     $db->execute(); // Execute the table creation
 
@@ -213,15 +214,16 @@ if (defined('INSTALLED') && INSTALLED === true && defined('APP_VERSION') && APP_
 
     // Create the logs table if it doesn't exist
     $db->query("CREATE TABLE IF NOT EXISTS logs (
-        account VARCHAR(255) NOT NULL,
-        username VARCHAR(255) NOT NULL,
-        input_tokens INT DEFAULT 0,
-        output_tokens INT DEFAULT 0,
-        image_retries INT DEFAULT 0,
-        cost DECIMAL(10, 10) DEFAULT 0.00,
-        INDEX account_idx (account),
-        INDEX username_idx (username)
-    );");
+    account VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    input_tokens INT DEFAULT 0,
+    output_tokens INT DEFAULT 0,
+    image_retries INT DEFAULT 0,
+    cost DECIMAL(12,8) DEFAULT 0.00000000,
+    UNIQUE KEY unique_account_username (account, username), -- Unique key constraint
+    INDEX account_idx (account),
+    INDEX username_idx (username)
+);");
     $db->execute(); // Execute the table creation
 
     // Retrieve all users from the users table to hash passwords

@@ -148,7 +148,9 @@ button:hover {
 textarea,
 select,
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="date"],
+input[type="url"] {
   display: block;
   padding: 8px 6px;
   margin-bottom: 20px;

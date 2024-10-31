@@ -43,6 +43,8 @@ function generateStatus($accountName, $accountOwner)
             // Update cost in the database if image is generated successfully
             updateCost($accountName, $accountOwner);
         } else {
+            // Log the failure and retry attempt
+            error_log("Image generation failed for $accountOwner on account $accountName. Attempt #$attempts.");
             // Update image_retries count in the database if image generation fails
             updateImageRetries($accountName, $accountOwner);
             list($generated_image_prompt, $image_prompt_tokens, $image_completion_tokens) = getImagePrompt($status_content, $image_prompt);

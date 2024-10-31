@@ -23,11 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $platform = trim($_POST["platform"]);
         $hashtags = isset($_POST["hashtags"]) ? 1 : 0; // Set hashtags flag based on user input
         $link = trim($_POST["link"]);
-        $imagePrompt = trim($_POST["image_prompt"]);
+        $imagePrompt = trim($_POST["image_prompt"]); // Ensure correct image prompt is stored
 
         // Simplified cron handling: convert the cron array into a comma-separated string or set it to 'null' if it's just 'null'
         $cron = (count($_POST["cron"]) === 1 && $_POST["cron"][0] === 'null') ? 'null' : implode(',', $_POST["cron"]);
-
         $days = (count($_POST["days"]) === 1 && $_POST["days"][0] === 'everyday') ? 'everyday' : implode(',', $_POST["days"]);
 
         // CSRF token validation
@@ -86,12 +85,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Bind parameters for the account data
             $db->bind(':accountOwner', $accountOwner);
-            $db->bind(':accountName', $accountName);
+            $db->bind(':accountName', $accountName); // Use distinct account name
             $db->bind(':prompt', $prompt);
             $db->bind(':platform', $platform);
             $db->bind(':hashtags', $hashtags);
             $db->bind(':link', $link);
-            $db->bind(':imagePrompt', $imagePrompt);
+            $db->bind(':imagePrompt', $imagePrompt); // Save correct image prompt
             $db->bind(':cron', $cron);
             $db->bind(':days', $days);
             $db->execute(); // Execute the query to save the account data

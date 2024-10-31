@@ -10,7 +10,7 @@
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['edit_users'])) {
-        $username = $_POST['username']; // Convert username to lowercase and replace spaces with hyphens
+        $username = $_POST['username'];
         $password = $_POST['password'];
         $totalAccounts = $_POST['total-accounts'];
         $maxApiCalls = $_POST['max-api-calls'];
@@ -27,9 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!preg_match('/^[a-z0-9]{8,18}$/', $username)) {
             $_SESSION['messages'][] = "Username must be 8-18 characters long, lowercase letters and numbers only.";
         }
-        if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/', $password)) {
+
+        // Validate if the password is either already a bcrypt hash or meets the strength requirements
+        if (
+            !preg_match('/^\$2[ayb]\$/', $password) && // Skip if it's a bcrypt hash
+            !preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/', $password) // Validate strength for plain text
+        ) {
             $_SESSION['messages'][] = "Password must be 8-16 characters long, including at least one letter, one number, and one symbol.";
         }
+
 
         // Validate other fields
         if (
@@ -65,14 +71,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Create directory for images if user is being created
                 $userImagePath = __DIR__ .  '/../../public/images/' . $username;
                 if (!file_exists($userImagePath)) {
-                    mkdir($userImagePath, 0777, true); // Create the directory recursively
+                    mkdir($userImagePath, 0777, true);
                     // Create index.php in the new directory
                     $indexFilePath = $userImagePath . '/index.php';
                     file_put_contents($indexFilePath, '<?php die(); ?>');
                 }
             }
             $db->bind(':username', $username);
-            $db->bind(':password', $hashedPassword); // Store the hashed password
+            $db->bind(':password', $password); // Store the hashed password
             $db->bind(':totalAccounts', $totalAccounts);
             $db->bind(':maxApiCalls', $maxApiCalls);
             $db->bind(':usedApiCalls', $usedApiCalls);
@@ -91,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($username === $_SESSION['username']) {
             $_SESSION['messages'][] = "Sorry, you can't delete your own account.";
         } else {
-
             // CSRF token validation
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
@@ -101,26 +106,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $db = new Database();
 
-            // Remove the user from the user table
+            // Remove the user from the users table
             $db->query("DELETE FROM users WHERE username = :username");
             $db->bind(':username', $username);
             $db->execute();
 
-            // Remove all accounts associated with the user from the account table
+            // Remove all accounts associated with the user from the accounts table
             $db->query("DELETE FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
             $db->execute();
 
-            // Remove all statuses associated with the user from the status table
+            // Remove all statuses associated with the user from the status_updates table
             $db->query("DELETE FROM status_updates WHERE username = :username");
             $db->bind(':username', $username);
             $db->execute();
 
-            $_SESSION['messages'][] = "User Deleted";
-        }
+            // Remove all log entries associated with the user from the logs table
+            $db->query("DELETE FROM logs WHERE username = :username");
+            $db->bind(':username', $username);
+            $db->execute();
 
-        header("Location: /users");
-        exit;
+            $_SESSION['messages'][] = "User Deleted";
+            header("Location: /accounts");
+            exit;
+        }
     } elseif (isset($_POST['login_as']) && isset($_POST['username'])) {
         $username = $_POST['username'];
 
