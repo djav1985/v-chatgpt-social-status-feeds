@@ -1,7 +1,7 @@
 <p align="center">
-    <img src=".png" align="center" width="30%">
+    <img src="v-chatgpt-social-status-feeds.png" align="center" width="30%">
 </p>
-<p align="center"><h1 align="center"><code>❯ REPLACE-ME</code></h1></p>
+<p align="center"><h1 align="center"><code>❯ v-chatgpt-social-status-feeds</code></h1></p>
 <p align="center">
 	<em>Empowering Your API Experience, Effortlessly!</em>
 </p>
