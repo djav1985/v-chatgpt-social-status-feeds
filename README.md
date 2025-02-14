@@ -1,9 +1,9 @@
 <p align="center">
     <img src=".png" align="center" width="30%">
 </p>
-<p align="center"><h1 align="center"><code>❯ REPLACE-ME</code></h1></p>
+<p align="center"><h1 align="center"><code>❯v-chatgpt-social-status-feeds</code></h1></p>
 <p align="center">
-	<em>Streamline Your AI Status, Effortlessly!</em>
+	<em>Streamline Your Social Statuses, Effortlessly!</em>
 </p>
 <p align="center">
 	<!-- local repository, no metadata badges. --></p>
@@ -19,10 +19,7 @@ I. [ Overview](#-overview)
 II. [ Features](#-features)
 III. [ Project Structure](#-project-structure)
 IV. [ Getting Started](#-getting-started)
-V. [ Project Roadmap](#-project-roadmap)
-VI. [ Contributing](#-contributing)
-VII. [ License](#-license)
-VIII. [ Acknowledgments](#-acknowledgments)
+V. [ License](#-license)
 
 ---
 
