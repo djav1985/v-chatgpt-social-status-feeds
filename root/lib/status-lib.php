@@ -15,9 +15,9 @@
  *
  * @param string $accountName The name of the account.
  * @param string $accountOwner The owner of the account.
- * @return bool|null True if successful, null if failed.
+ * @return array|null Array with success status and message, or null if failed.
  */
-function generateStatus(string $accountName, string $accountOwner): ?bool
+function generateStatus(string $accountName, string $accountOwner): ?array
 {
     // Sanitize inputs
     $accountName = filter_var($accountName, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -29,8 +29,9 @@ function generateStatus(string $accountName, string $accountOwner): ?bool
     $userInfo = UserHandler::getUserInfo($accountOwner);
 
     if (!$accountInfo || !$userInfo) {
-        ErrorHandler::logMessage("Error: Account or user not found for $accountOwner / $accountName", 'error');
-        return false; // Fail
+        $error = "Error: Account or user not found for $accountOwner / $accountName";
+        ErrorHandler::logMessage($error, 'error');
+        return ['success' => false, 'message' => $error];
     }
 
     $prompt = $accountInfo->prompt;
@@ -58,17 +59,20 @@ function generateStatus(string $accountName, string $accountOwner): ?bool
     // Generate status
     $statusResponse = generate_social_status($systemMessage, $prompt, $link, $hashtags, $totalTags, $statusTokens, $accountName, $accountOwner);
 
-    if ($statusResponse === "error") {
-        ErrorHandler::logMessage("Status generation failed for $accountName owned by $accountOwner.", 'error');
-        return false; // Fail
+    if (isset($statusResponse['error'])) {
+        $error = "Status generation failed for $accountName owned by $accountOwner: " . $statusResponse['error'];
+        ErrorHandler::logMessage($error, 'error');
+        return ['success' => false, 'message' => $error];
     }
 
     $statusContent = $statusResponse['status'] ?? '';
     $cta = $statusResponse['cta'] ?? '';
     $imagePrompt = $statusResponse['image_prompt'] ?? '';
 
-    // Append CTA
-    $statusContent .= ' ' . $cta;
+    // Append CTA if platform is not google-business
+    if ($platform !== 'google-business') {
+        $statusContent .= ' ' . $cta;
+    }
 
     // Append hashtags if needed
     if ($hashtags && isset($statusResponse['hashtags'])) {
@@ -77,17 +81,18 @@ function generateStatus(string $accountName, string $accountOwner): ?bool
 
     // Generate image
     $imageResponse = generate_social_image($imagePrompt, $accountName, $accountOwner);
-    if ($imageResponse === "error") {
-        ErrorHandler::logMessage("Image generation failed for $accountName owned by $accountOwner.", 'error');
-        return false; // Fail
+    if (isset($imageResponse['error'])) {
+        $error = "Image generation failed for $accountName owned by $accountOwner: " . $imageResponse['error'];
+        ErrorHandler::logMessage($error, 'error');
+        return ['success' => false, 'message' => $error];
     }
 
-    $imageName = $imageResponse;
+    $imageName = $imageResponse['image_name'];
 
     // Save final status
     StatusHandler::saveStatus($accountName, $accountOwner, $statusContent, $imageName);
 
-    return true; // Success
+    return ['success' => true, 'message' => 'Status generated successfully'];
 }
 
 /**
@@ -116,8 +121,9 @@ function openai_api_request(string $endpoint, ?array $data = null): array
     curl_close($ch);
 
     if ($response === false) {
-        ErrorHandler::logMessage("Failed to make API request to $endpoint", 'error');
-        return "error";
+        $error = curl_error($ch);
+        ErrorHandler::logMessage("Failed to make API request to $endpoint: $error", 'error');
+        return ["error" => "Failed to make API request to $endpoint: $error"];
     }
 
     return json_decode($response, true);
@@ -134,9 +140,9 @@ function openai_api_request(string $endpoint, ?array $data = null): array
  * @param int $statusTokens The number of tokens for the status.
  * @param string $accountName The name of the account.
  * @param string $accountOwner The owner of the account.
- * @return array|string API response containing structured data.
+ * @return array API response containing structured data.
  */
-function generate_social_status(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array|string
+function generate_social_status(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array
 {
     // Define the structured response schema
     $jsonSchema = [
@@ -190,12 +196,13 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
     // Make the API request
     $response = openai_api_request("/chat/completions", $data);
 
-    if ($response === "error" || !isset($response['choices'][0]['message']['content'])) {
-        ErrorHandler::logMessage("Error generating status for $accountName owned by $accountOwner.", 'error');
-        return "error";
+    if (isset($response['error']) || !isset($response['choices'][0]['message']['content'])) {
+        $error = $response['error'] ?? 'Unknown error';
+        ErrorHandler::logMessage("Error generating status for $accountName owned by $accountOwner: $error", 'error');
+        return ["error" => "Error generating status for $accountName owned by $accountOwner: $error"];
     }
 
-    return json_decode($response['choices'][0]['message']['content'], true) ?? ["error" => true];
+    return json_decode($response['choices'][0]['message']['content'], true) ?? ["error" => "Invalid response format"];
 }
 
 /**
@@ -204,9 +211,9 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
  * @param string $imagePrompt The prompt describing the image.
  * @param string $accountName The name of the account.
  * @param string $accountOwner The owner of the account.
- * @return string Image filename or an error string.
+ * @return array Image filename or an error array.
  */
-function generate_social_image(string $imagePrompt, string $accountName, string $accountOwner): string
+function generate_social_image(string $imagePrompt, string $accountName, string $accountOwner): array
 {
     $data = [
         "model" => "dall-e-3",
@@ -218,9 +225,10 @@ function generate_social_image(string $imagePrompt, string $accountName, string 
 
     $response = openai_api_request("/images/generations", $data);
 
-    if ($response === "error" || !isset($response['data'][0]['url'])) {
-        ErrorHandler::logMessage("Error generating image for $accountName owned by $accountOwner.", 'error');
-        return "error";
+    if (isset($response['error']) || !isset($response['data'][0]['url'])) {
+        $error = $response['error'] ?? 'Unknown error';
+        ErrorHandler::logMessage("Error generating image for $accountName owned by $accountOwner: $error", 'error');
+        return ["error" => "Error generating image for $accountName owned by $accountOwner: $error"];
     }
 
     $image_url = $response['data'][0]['url'];
@@ -228,14 +236,16 @@ function generate_social_image(string $imagePrompt, string $accountName, string 
     $image_path = $_SERVER['DOCUMENT_ROOT'] . "/images/$accountOwner/$accountName/$random_name";
 
     if (!is_dir(dirname($image_path)) && !mkdir(dirname($image_path), 0777, true) && !is_dir(dirname($image_path))) {
-        ErrorHandler::logMessage("Failed to create image directory for $accountOwner / $accountName.", 'error');
-        return "error";
+        $error = "Failed to create image directory for $accountOwner / $accountName.";
+        ErrorHandler::logMessage($error, 'error');
+        return ["error" => $error];
     }
 
     if (file_put_contents($image_path, file_get_contents($image_url)) === false) {
-        ErrorHandler::logMessage("Failed to save image for $accountName owned by $accountOwner.", 'error');
-        return "error";
+        $error = "Failed to save image for $accountName owned by $accountOwner.";
+        ErrorHandler::logMessage($error, 'error');
+        return ["error" => $error];
     }
 
-    return $random_name;
+    return ["image_name" => $random_name];
 }

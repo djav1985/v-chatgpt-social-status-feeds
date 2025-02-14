@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Delete status record from the database
         StatusHandler::deleteStatus($statusId, $accountName, $accountOwner);
-        $_SESSION['messages'][] = "Sucessfully deleted status.";
+        $_SESSION['messages'][] = "Successfully deleted status.";
         header("Location: /home");
         exit;
     } elseif (isset($_POST["generate_status"])) {
@@ -55,15 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        if (generateStatus($accountName, $accountOwner) === false) {
-            $_SESSION['messages'][] = "Failed to generate status.";
+        $statusResult = generateStatus($accountName, $accountOwner);
+        if ($statusResult['success'] === false) {
+            $_SESSION['messages'][] = "Failed to generate status: " . $statusResult['message'];
             header("Location: /home");
             exit;
         }
 
         $userInfo->used_api_calls += 1;
         UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-        $_SESSION['messages'][] = "Sucessfullys generate status.";
+        $_SESSION['messages'][] = "Successfully generated status.";
         header("Location: /home");
         exit;
     }
