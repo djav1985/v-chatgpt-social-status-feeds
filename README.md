@@ -45,7 +45,6 @@ Version 2.0.0 introduces several improvements, including better database handlin
 
 ```sh
 └── /
-    ├── CHANGELOG.md
     ├── LICENSE
     ├── README.md
     ├── root
