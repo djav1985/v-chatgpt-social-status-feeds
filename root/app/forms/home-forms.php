@@ -1,88 +1,69 @@
 <?php
-/*
+
+/**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: ../app/forms/home-forms.php
- * Description: ChatGPT API Status Generator
+ * File: home-forms.php
+ * Description: Handles form submissions for deleting and generating statuses.
+ * License: MIT
  */
 
 require_once __DIR__ . '/../../lib/status-lib.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check CSRF token validity
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+        header("Location: /accounts");
+        exit;
+    }
+
+    // Handle status deletion
     if (isset($_POST["delete_status"])) {
         $accountName = trim($_POST["account"]);
         $accountOwner = trim($_POST["username"]);
-        $statusId = (int) $_POST["id"];  // Use 'id' from POST, ensuring it matches your form input
+        $statusId = (int) $_POST["id"];
 
-        // CSRF token validation
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
-            header("Location: /accounts");
-            exit;
-        }
+        // Retrieve status image path
+        $statusImagePath = StatusHandler::getStatusImagePath($statusId, $accountName, $accountOwner);
 
-        $db = new Database();
-        // First, retrieve the image file name
-        $db->query("SELECT status_image FROM status_updates WHERE id = :statusId AND account = :account AND username = :username");
-        $db->bind(':statusId', $statusId);
-        $db->bind(':account', $accountName);
-        $db->bind(':username', $accountOwner);
-        $status = $db->single();
-
-        if ($status && $status->status_image) {
-            // Delete the image file if it exists
-            $imagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName . '/' . $status->status_image;
+        // Delete status image if it exists
+        if ($statusImagePath) {
+            $imagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName . '/' . $statusImagePath;
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
         }
 
-        // Then delete the status
-        $db->query("DELETE FROM status_updates WHERE id = :statusId AND account = :account AND username = :username");
-        $db->bind(':statusId', $statusId);
-        $db->bind(':account', $accountName);
-        $db->bind(':username', $accountOwner);
-        $db->execute();
-
+        // Delete status record from the database
+        StatusHandler::deleteStatus($statusId, $accountName, $accountOwner);
+        $_SESSION['messages'][] = "Sucessfully deleted status.";
         header("Location: /home");
         exit;
     } elseif (isset($_POST["generate_status"])) {
+        // Handle status generation
         $accountName = trim($_POST["account"]);
         $accountOwner = trim($_POST["username"]);
 
-        // CSRF token validation
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
-            header("Location: /accounts");
-            exit;
-        }
-
         // Check if user has available API calls
-        $userInfo = getUserInfo($accountOwner);
+        $userInfo = UserHandler::getUserInfo($accountOwner);
         if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
-            // Redirect with a message if API calls are exhausted
             $_SESSION['messages'][] = "Sorry, your available API calls have run out.";
             header("Location: /home");
             exit;
         }
 
-        // Call the function to generate the status
-        generateStatus($accountName, $accountOwner);
+        if (generateStatus($accountName, $accountOwner) === false) {
+            $_SESSION['messages'][] = "Failed to generate status.";
+            header("Location: /home");
+            exit;
+        }
 
-        // Increment used API calls
         $userInfo->used_api_calls += 1;
-
-        // Update user's used API calls in the database
-        $db = new Database();
-        $sql = "UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username";
-        $db->query($sql);
-        $db->bind(':used_api_calls', $userInfo->used_api_calls);
-        $db->bind(':username', $accountOwner);
-        $db->execute();
-
-        // Redirect to avoid form resubmission
+        UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+        $_SESSION['messages'][] = "Sucessfullys generate status.";
         header("Location: /home");
         exit;
     }

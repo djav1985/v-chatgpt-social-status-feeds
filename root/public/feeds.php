@@ -1,30 +1,46 @@
 <?php
-
 /**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
  * File: feeds.php
- * Description: This file generates an RSS feed for the ChatGPT API based on user accounts.
+ * Description: Generates an RSS feed for the ChatGPT API based on user accounts.
+ * License: MIT
  */
 
-// Include necessary files from the base directory
-require_once __DIR__ . '/../config.php'; // Configuration settings
-require_once __DIR__ . '/../db.php'; // Database functions
-require_once __DIR__ . '/../lib/common-lib.php'; // Common utility functions
-require_once __DIR__ . '/../lib/rss-lib.php'; // RSS feed generation library
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../autoload.php';
+require_once __DIR__ . '/../lib/rss-lib.php';
+// Instantiate the ErrorHandler to register handlers
+new ErrorHandler();
 
-// Check if the required query parameters 'user' and 'acct' are present in the URL
+/**
+ * Check if the required query parameters 'user' and 'acct' are present.
+ * If not, display an error message and exit.
+ */
 if (!isset($_GET['user']) || !isset($_GET['acct'])) {
-    // Output an error message if the required parameters are missing
     echo 'Error: Missing required parameters';
-    exit();
-} elseif (isset($_GET['user']) && isset($_GET['acct'])) {
-    // Sanitize and store the parameters to prevent security issues such as XSS
-    $accountOwner = htmlspecialchars($_GET['user']);
-    $accountName = htmlspecialchars($_GET['acct']);
+    die(1);
+}
 
-    // Call the function to output the RSS feed for the given account owner and name
+// Sanitize and store the parameters
+$accountOwner = htmlspecialchars($_GET['user'], ENT_QUOTES, 'UTF-8');
+$accountName = htmlspecialchars($_GET['acct'], ENT_QUOTES, 'UTF-8');
+
+// Validate the sanitized parameters
+if (empty($accountOwner) || empty($accountName)) {
+    echo 'Error: Invalid parameters';
+    die(1);
+}
+
+/**
+ * Output the RSS feed for the given account owner and name.
+ * Catch any exceptions and display an error message.
+ */
+try {
     outputRssFeed($accountName, $accountOwner);
+} catch (Exception $e) {
+    echo 'Error: ' . $e->getMessage();
+    die(1);
 }

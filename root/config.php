@@ -13,10 +13,10 @@
 define('API_KEY', '');
 
 // Endpoint for OpenAI's chat completion API
-define('API_ENDPOINT', 'https://api.openai.com/v1/chat/completions');
+define('API_ENDPOINT', 'https://api.openai.com/v1/');
 
 // Model identifier for the AI (e.g., GPT-3.5 or GPT-4)
-define('MODEL', 'gpt-4-turbo');
+define('MODEL', 'gpt-4o-mini');
 
 // Temperature setting for the AI's creativity (0 to 2 where higher values mean more creative responses)
 define('TEMPERATURE', 1);
@@ -25,7 +25,7 @@ define('TEMPERATURE', 1);
 define('TOKENS', 256);
 
 // Domain where the status service is hosted
-define('DOMAIN', 'https://domain.com');
+define('DOMAIN', 'https://spectre3.hugev.xyz');
 
 // System prompt that guides the AI's output
 define('SYSTEM_MSG', 'You are a social media marketer. You will respond with professional but fun social status update and nothing else.');
@@ -40,13 +40,20 @@ define('MAX_STATUSES', 30);
 define('IMG_AGE', 360);
 
 // MySQL Database Connection Constants
-define('DB_HOST', 'localhost'); // Database host or server address
-define('DB_USER', '  '); // Username for the database connection
-define('DB_PASSWORD', '  '); // Password for the database connection
-define('DB_NAME', '  '); // Name of the database schema
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASSWORD', '');
+define('DB_NAME', 'localhost3');
 
-// Flag to check if the system has been installed correctly
-define('INSTALLED', false);
+// SMTP settings for sending emails
+define('SMTP_HOST', 'smtp.example.com');
+define('SMTP_PORT', 587);
+define('SMTP_USER', 'user@example.com');
+define('SMTP_PASSWORD', 'password');
+define('SMTP_FROM_EMAIL', 'no-reply@example.com');
+define('SMTP_FROM_NAME', 'ChatGPT API');
 
-// The current version of app
-define('APP_VERSION', '1.0.0');
+// Generate CSRF token if not already set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}

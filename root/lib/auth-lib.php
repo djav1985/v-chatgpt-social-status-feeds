@@ -1,65 +1,67 @@
 <?php
-/*
+/**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: ../lib/auth-lib.php
- * Description: ChatGPT API Status Generator
+ * File: auth-lib.php
+ * Description: Handles user authentication and session management.
+ * License: MIT
  */
 
-// Check if the request method is POST, indicating a form submission
+/**
+ * Handles POST requests for user authentication and session management.
+ * This includes login and logout functionality.
+ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check if the logout button has been pressed
+    // Handle logout request
     if (isset($_POST["logout"])) {
-        // Check if the session contains a 'isReally' variable
+        // If the user is logged in, log them out and redirect to home
         if (isset($_SESSION['isReally'])) {
-            // If 'isReally' exists, set the username back to its original value
             $_SESSION['username'] = $_SESSION['isReally'];
-            unset($_SESSION['isReally']); // Remove the 'isReally' variable from the session
-            header("Location: /home"); // Redirect to home page
-            exit; // Terminate script execution
+            unset($_SESSION['isReally']);
+            header("Location: /home");
+            die(1);
         } else {
-            // Destroy the current session and redirect to login page
-            session_destroy(); // End the session
-            header("Location: login.php"); // Redirect to login page
-            exit; // Terminate script execution
+            // Destroy session and redirect to login page
+            session_destroy();
+            header("Location: login.php");
+            die(1);
         }
-    } elseif (isset($_POST['username']) && isset($_POST['password'])) { // Check if username and password are provided
-        $username = sanitize_input($_POST['username']); // Sanitize the username input
-        $password = sanitize_input($_POST['password']); // Sanitize the password input
+    }
+    // Handle login request
+    elseif (isset($_POST['username']) && isset($_POST['password'])) {
+        $username = ($_POST['username']);
+        $password = ($_POST['password']);
 
-        // Retrieve user information based on the provided username
-        $userInfo = getUserInfo($username);
+        $userInfo = UserHandler::getUserInfo($username);
 
-        // Perform login authentication logic using hashed password verification
-        if ($userInfo && password_verify($password, $userInfo->password)) { // Verify the password hash
-            $_SESSION['logged_in'] = true; // Set logged in status
-            $_SESSION['username'] = $username; // Store the username in session
-            $_SESSION['timeout'] = time();  // Set the session timeout time to the current time
-            $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT']; // Store the User-Agent string for security checks
-            session_regenerate_id(true); // Regenerate the session ID to prevent fixation attacks
-            // Generate and store a secure CSRF token to protect against cross-site request forgery
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Create a random CSRF token
+        // Verify user credentials
+        if ($userInfo && password_verify($password, $userInfo->password)) {
+            // Set session variables and regenerate session ID for security
+            $_SESSION['logged_in'] = true;
+            $_SESSION['username'] = $username;
+            $_SESSION['timeout'] = time();
+            $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+            session_regenerate_id(true);
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            $_SESSION['is_admin'] = $userInfo->admin == 1;
 
-            header('Location: /home'); // Redirect to the home page after successful login
-            exit; // Terminate script execution
+            header('Location: /home');
+            die(1);
         } else {
-            // Handle failed login attempt
-            $ip = $_SERVER['REMOTE_ADDR']; // Get the user's IP address
+            $ip = $_SERVER['REMOTE_ADDR'];
 
-            // Check if the IP address is blacklisted
-            if (is_blacklisted($ip)) {
-                // If the IP is blacklisted, set an error message in the session
+            // Check if IP is blacklisted due to multiple failed login attempts
+            if (UtilityHandler::isBlacklisted($ip)) {
                 $_SESSION['error']  = "Your IP has been blacklisted due to multiple failed login attempts.";
             } else {
-                // Update the number of failed login attempts for the given IP address
-                update_failed_attempts($ip);
-                $_SESSION['error'] = "Invalid username or password."; // Set invalid credentials message
+                // Update failed login attempts for the IP
+                UtilityHandler::updateFailedAttempts($ip);
+                $_SESSION['error'] = "Invalid username or password.";
             }
-
-            header("Location: login.php"); // Redirect back to the login page
-            exit; // Terminate script execution
+            header("Location: login.php");
+            die(1);
         }
     }
 }

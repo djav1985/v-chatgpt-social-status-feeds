@@ -1,106 +1,201 @@
 <?php
-/*
+
+/**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: ../app/pages/home.php
- * Description: ChatGPT API Status Generator
+ * File: home.php
+ * Description: Displays user accounts and statuses.
+ * License: MIT
  */
 ?>
 
 <main class="container">
     <?php
-    $accountOwner = $_SESSION['username'];
-    $accounts = getAllUserAccts($accountOwner);
+    // Retrieve the account owner from the session and fetch all user accounts
+    $accountOwner = htmlspecialchars($_SESSION['username'], ENT_QUOTES);
+    $accounts = AccountHandler::getAllUserAccts($accountOwner);
 
+    // Display a message if no accounts are found
     if (empty($accounts)) {
-        echo '<div id="no-account"><p>Please set up an account!</p></div>';
+        echo '<div id="no-account" class="empty"><p class="empty-title">Please set up an account!</p></div>';
         return;
     }
 
-    foreach ($accounts as $index => $account) {
-        $accountName = $account->account;
-        $acctInfo = getAcctInfo($accountOwner, $accountName);
-        $statuses = getStatusInfo($accountOwner, $accountName);
-        $feedUrl = htmlspecialchars("/feeds.php?user={$accountOwner}&acct={$accountName}");
-        $isOpen = $index === 0 ? 'block' : 'none';
-        $buttonText = $index === 0 ? '-' : '+';
-    ?>
-        <div class="status-container">
-            <div class="status-header">
+    // Iterate through each account and display its statuses
+    foreach ($accounts as $index => $account) : ?>
+        <?php
+        $accountName = htmlspecialchars($account->account, ENT_QUOTES);
+        $acctInfo = AccountHandler::getAcctInfo($accountOwner, $accountName);
+        $statuses = StatusHandler::getStatusInfo($accountOwner, $accountName);
+        $feedUrl = htmlspecialchars("/feeds.php?user={$accountOwner}&acct={$accountName}", ENT_QUOTES);
+        $isOpen = $index === 0 ? 'flex' : 'none';
+        $buttonIcon = $index === 0 ? 'icon-arrow-up' : 'icon-arrow-right';
+        $accountActionDisplay = $index === 0 ? 'flex' : 'none';
+        ?>
+
+        <div class="status-container card">
+            <div class="status-header card-header">
                 <button class="collapse-button" onclick="toggleSection(this)">
-                    <?= $buttonText ?>
+                    <i class="icon <?= $buttonIcon ?>"></i>
                 </button>
-                <h3>Status Campaign: #<?= htmlspecialchars($accountName) ?></h3>
+                <h3 class="status-campaign card-title">Status Campaign: #<?= htmlspecialchars($accountName) ?></h3>
             </div>
-            <div class="status-content" style="display: <?= $isOpen ?>;">
-                <?php if (!empty($statuses)) : ?>
-                    <ul>
-                        <?php foreach ($statuses as $status) : ?>
-                            <?php if (!empty($status->status)) : ?>
-                                <li>
-                                    <img src="<?= htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image">
+
+            <?php if (!empty($statuses)) : ?>
+                <div class="status-content columns" style="display: <?= $isOpen ?>;">
+                    <?php foreach ($statuses as $status) : ?>
+                        <?php if (!empty($status->status)) : ?>
+                            <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
+                                <div class="status-item card">
+                                    <img src="<?= htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive">
                                     <p class="status-text">
                                         <?= htmlspecialchars($status->status) ?>
                                     </p>
-                                    <strong class="status-info">
-                                        <?= date('m/d/y g:ia', strtotime($status->created_at)) ?>
-                                    </strong>
-                                    <?php echo shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
-                                </li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php else : ?>
-                    <div id="no-status">
-                        <p>No statuses available.</p>
-                    </div>
-                <?php endif; ?>
-
-                <div class="account-action-container">
-                    <button class="view-feed-button blue-button" onclick="location.href='<?= $feedUrl ?>';">View Feed</button>
-                    <form class="account-action-form" action="/home" method="POST">
-                        <input type="hidden" name="account" value="<?= htmlspecialchars($accountName) ?>">
-                        <input type="hidden" name="username" value="<?= htmlspecialchars($accountOwner) ?>">
-                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                        <button type="submit" class="generate-status-button green-button" name="generate_status">Generate Status</button>
-                    </form>
+                                    <div class="status-meta">
+                                        <strong class="status-info">
+                                            <?= date('m/d/y g:ia', strtotime($status->created_at)) ?>
+                                        </strong>
+                                        <?php echo shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                 </div>
+            <?php else : ?>
+                <div id="no-status" class="empty">
+                    <p class="empty-title">No statuses available.</p>
+                </div>
+            <?php endif; ?>
+
+            <div class="account-action-container" style="display: <?= $accountActionDisplay ?>;">
+                <button class="view-feed-button btn btn-primary" onclick="location.href='<?= $feedUrl ?>';">View Feed</button>
+                <form class="account-action-form" action="/home" method="POST">
+                    <input type="hidden" name="account" value="<?= htmlspecialchars($accountName, ENT_QUOTES) ?>">
+                    <input type="hidden" name="username" value="<?= htmlspecialchars($accountOwner, ENT_QUOTES) ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
+                    <button type="submit" class="generate-status-button btn btn-success" name="generate_status">Generate Status</button>
+                </form>
             </div>
         </div>
-    <?php } ?>
+    <?php endforeach; ?>
 </main>
 
 <script>
+    /**
+     * Toggles the visibility of the status content and account action container.
+     * Ensures only one section is open at a time.
+     * @param {HTMLElement} button - The button that was clicked to toggle the section.
+     */
+    function toggleSection(button) {
+        console.log("toggleSection called");
+        const statusContainer = button.closest('.status-container');
+        if (!statusContainer) {
+            console.log("statusContainer not found");
+            return;
+        }
+
+        const statusContent = statusContainer.querySelector('.status-content') || statusContainer.querySelector('#no-status');
+        const accountActionContainer = statusContainer.querySelector('.account-action-container');
+        console.log("statusContent:", statusContent);
+        console.log("accountActionContainer:", accountActionContainer);
+        if (!statusContent) {
+            console.log("statusContent not found");
+            return;
+        }
+        if (!accountActionContainer) {
+            console.log("accountActionContainer not found");
+            return;
+        }
+
+        const allStatusContents = document.querySelectorAll('.status-content, #no-status');
+        const allAccountActionContainers = document.querySelectorAll('.account-action-container');
+        const allButtons = document.querySelectorAll('.collapse-button');
+
+        // Close all other sections
+        allStatusContents.forEach(content => {
+            if (content !== statusContent) content.style.display = 'none';
+        });
+
+        allAccountActionContainers.forEach(container => {
+            if (container !== accountActionContainer) container.style.display = 'none';
+        });
+
+        allButtons.forEach(btn => {
+            if (btn !== button) btn.querySelector('i').className = 'icon icon-arrow-right';
+        });
+
+        // Toggle the clicked section
+        const isOpen = statusContent.style.display === 'flex';
+        statusContent.style.display = isOpen ? 'none' : 'flex';
+        accountActionContainer.style.display = isOpen ? 'none' : 'flex';
+        button.querySelector('i').className = isOpen ? 'icon icon-arrow-right' : 'icon icon-arrow-up';
+        console.log("Section toggled", {
+            isOpen
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.combined-button').forEach(button => {
+        // Close all sections except the first one
+        const allStatusContents = document.querySelectorAll('.status-content, #no-status');
+        const allAccountActionContainers = document.querySelectorAll('.account-action-container');
+        const allButtons = document.querySelectorAll('.collapse-button');
+
+        allStatusContents.forEach((content, index) => {
+            if (index !== 0) content.style.display = 'none';
+        });
+
+        allAccountActionContainers.forEach((container, index) => {
+            if (index !== 0) container.style.display = 'none';
+        });
+
+        allButtons.forEach((button, index) => {
+            if (index !== 0) button.querySelector('i').className = 'icon icon-arrow-right';
+        });
+
+        document.querySelectorAll('.copy-button').forEach(button => {
             button.addEventListener('click', async () => {
                 const text = button.getAttribute('data-text');
                 const imageUrl = button.getAttribute('data-url');
 
                 try {
                     // Copy text to clipboard
-                    await navigator.clipboard.writeText(text);
-                    showToast('Text copied to clipboard');
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(text);
+                        showToast('Text copied to clipboard');
+                    } else {
+                        const tempTextarea = document.createElement('textarea');
+                        tempTextarea.value = text;
+                        document.body.appendChild(tempTextarea);
+                        tempTextarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempTextarea);
+                        showToast('Text copied to clipboard (fallback)');
+                    }
 
-                    // Fetch the image and download it
-                    const response = await fetch(imageUrl);
-                    const blob = await response.blob();
-                    const file = new File([blob], 'image.png', {
-                        type: blob.type
+                    // Download image
+                    const response = await fetch(imageUrl, {
+                        mode: 'cors'
                     });
+                    if (!response.ok) throw new Error('Image download failed');
+
+                    const blob = await response.blob();
+                    const blobUrl = URL.createObjectURL(blob);
 
                     const a = document.createElement('a');
-                    a.href = URL.createObjectURL(file);
+                    a.href = blobUrl;
                     a.download = 'image.png';
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
+                    URL.revokeObjectURL(blobUrl);
 
-                    console.log('Image downloaded');
+                    console.log('Image downloaded successfully');
                 } catch (error) {
                     console.error('Error:', error);
+                    showToast('Error copying or downloading.');
                 }
             });
         });
@@ -112,10 +207,25 @@
 
                 try {
                     // Copy text to clipboard
-                    await navigator.clipboard.writeText(text);
-                    showToast('Text copied to clipboard');
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(text);
+                        showToast('Text copied to clipboard');
+                    } else {
+                        const tempTextarea = document.createElement('textarea');
+                        tempTextarea.value = text;
+                        document.body.appendChild(tempTextarea);
+                        tempTextarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempTextarea);
+                        showToast('Text copied to clipboard (fallback)');
+                    }
 
-                    const response = await fetch(imageUrl);
+                    // Fetch image for sharing
+                    const response = await fetch(imageUrl, {
+                        mode: 'cors'
+                    });
+                    if (!response.ok) throw new Error('Image fetch failed');
+
                     const blob = await response.blob();
                     const file = new File([blob], 'image.png', {
                         type: blob.type
@@ -126,53 +236,19 @@
                         files: [file]
                     };
 
-                    if (navigator.canShare && navigator.canShare(shareData)) {
+                    // Share content if supported
+                    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
                         await navigator.share(shareData);
-                        console.log('Thanks for sharing!');
+                        console.log('Content shared successfully');
                     } else {
-                        console.log('Your system doesn\'t support sharing these files.');
+                        console.log('Sharing not supported.');
+                        showToast('Sharing not supported on this device.');
                     }
                 } catch (error) {
                     console.error('Error sharing:', error);
+                    showToast('Error occurred while sharing.');
                 }
             });
         });
     });
-
-    function toggleSection(button) {
-        const statusContainer = button.closest('.status-container');
-        const statusContent = statusContainer.querySelector('.status-content');
-        const allStatusContents = document.querySelectorAll('.status-content');
-        const allButtons = document.querySelectorAll('.collapse-button');
-
-        allStatusContents.forEach((content) => {
-            if (content !== statusContent) {
-                content.style.display = 'none';
-            }
-        });
-
-        allButtons.forEach((btn) => {
-            if (btn !== button) {
-                btn.textContent = '+';
-            }
-        });
-
-        const isOpen = statusContent.style.display === 'block';
-        statusContent.style.display = isOpen ? 'none' : 'block';
-        button.textContent = isOpen ? '+' : '-';
-    }
-
-    function showToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 10);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            document.body.removeChild(toast);
-        }, 3000);
-    }
 </script>

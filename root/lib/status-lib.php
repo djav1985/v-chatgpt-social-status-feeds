@@ -1,203 +1,230 @@
 <?php
-/*
+
+/**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: ../lib/status-lib.php
- * Description: ChatGPT API Status Generator
+ * File: status-lib.php
+ * Description: Library functions for generating statuses and images.
+ * License: MIT
  */
 
-function generateStatus($accountName, $accountOwner)
+/**
+ * Generates a status update and associated image for a given account.
+ *
+ * @param string $accountName The name of the account.
+ * @param string $accountOwner The owner of the account.
+ * @return bool|null True if successful, null if failed.
+ */
+function generateStatus(string $accountName, string $accountOwner): ?bool
 {
-    // Use the predefined system message constant for generating statuses
-    $system_message = SYSTEM_MSG;
+    // Sanitize inputs
+    $accountName = filter_var($accountName, FILTER_SANITIZE_SPECIAL_CHARS);
+    $accountOwner = filter_var($accountOwner, FILTER_SANITIZE_SPECIAL_CHARS);
 
-    // Retrieve account information from the database using the account owner's and name's details
-    $accountInfo = getAcctInfo($accountOwner, $accountName);
+    // Get account info
+    $systemMessage = SYSTEM_MSG;
+    $accountInfo = AccountHandler::getAcctInfo($accountOwner, $accountName);
+    $userInfo = UserHandler::getUserInfo($accountOwner);
 
-    // Extract relevant data from account information
-    $prompt = $accountInfo->prompt;         // The prompt used for generating the status update
-    $link = $accountInfo->link;             // Link to be included in the status
-    $hashtags = $accountInfo->hashtags;     // Hashtags that may be appended to the status
-    $image_prompt = $accountInfo->image_prompt; // Image prompt for generating an associated image
-    $platform = $accountInfo->platform;     // Platform type (e.g., Facebook, Twitter)
-
-    // Call the function to retrieve the status content from the API based on provided info
-    list($status_content, $status_prompt_tokens, $status_completion_tokens) = getStatus($link, $prompt, $platform, $system_message);
-    updateTokens($accountName, $accountOwner, $status_prompt_tokens, $status_completion_tokens);
-
-    // Generate the image prompt based on the status content and initial image prompt
-    list($generated_image_prompt, $image_prompt_tokens, $image_completion_tokens) = getImagePrompt($status_content, $image_prompt);
-    updateTokens($accountName, $accountOwner, $image_prompt_tokens, $image_completion_tokens);
-
-    // Attempt to generate the actual image associated with the status
-    $attempts = 0;
-    $max_attempts = 5;
-    $image_name = '';
-
-    while (empty($image_name) && $attempts < $max_attempts) {
-        $image_name = getImage($accountName, $accountOwner, $generated_image_prompt);
-
-        if (!empty($image_name)) {
-            // Update cost in the database if image is generated successfully
-            updateCost($accountName, $accountOwner);
-        } else {
-            // Log the failure and retry attempt
-            error_log("Image generation failed for $accountOwner on account $accountName. Attempt #$attempts.");
-            // Update image_retries count in the database if image generation fails
-            updateImageRetries($accountName, $accountOwner);
-            list($generated_image_prompt, $image_prompt_tokens, $image_completion_tokens) = getImagePrompt($status_content, $image_prompt);
-            $attempts++;
-        }
+    if (!$accountInfo || !$userInfo) {
+        ErrorHandler::logMessage("Error: Account or user not found for $accountOwner / $accountName", 'error');
+        return false; // Fail
     }
 
-    if (empty($image_name)) {
-        exit('Image generation failed after maximum retries.');
+    $prompt = $accountInfo->prompt;
+    $link = $accountInfo->link;
+    $hashtags = $accountInfo->hashtags;
+    $platform = $accountInfo->platform;
+
+    // Add user profile information to the system message
+    $systemMessage .= " You work for " . $userInfo->who . " located in " . $userInfo->where . ". " . $userInfo->what . " Your goal is " . $userInfo->goal . ".";
+
+    // Determine tags & tokens
+    $statusTokens = match ($platform) {
+        'facebook', 'google-business' => 256,
+        'twitter' => 64,
+        'instagram' => 128,
+        default => 100
+    };
+    $totalTags = match ($platform) {
+        'facebook', 'google-business' => '3 to 5',
+        'twitter' => '3',
+        'instagram' => '20 to 30',
+        default => '5 to 10'
+    };
+
+    // Generate status
+    $statusResponse = generate_social_status($systemMessage, $prompt, $platform, $link, $totalTags, $statusTokens, $accountName, $accountOwner);
+
+    if ($statusResponse === "error") {
+        ErrorHandler::logMessage("Status generation failed for $accountName owned by $accountOwner.", 'error');
+        return false; // Fail
     }
 
-    // Conditionally append hashtags to the status content if they are requested
-    if ($hashtags) {
-        // Get appropriate hashtags based on the status content and platform being used
-        $hashtag_content = getHashtags($status_content, $platform); // Adjust number of hashtags based on platform
-        // Append the retrieved hashtags to the status content
-        $status_content .= ' ' . $hashtag_content;
+    $statusContent = $statusResponse['status'] ?? '';
+    $imagePrompt = $statusResponse['image_prompt'] ?? '';
+
+    // Generate image
+    $imageResponse = generate_social_image($imagePrompt, $accountName, $accountOwner);
+    if ($imageResponse === "error") {
+        ErrorHandler::logMessage("Image generation failed for $accountName owned by $accountOwner.", 'error');
+        return false; // Fail
     }
 
-    // Save the final generated status along with the associated image name in the database
-    saveStatus($accountName, $accountOwner, $status_content, $image_name);
+    $imageName = $imageResponse;
+
+    // Append hashtags if needed
+    if ($hashtags && isset($statusResponse['hashtags'])) {
+        $statusContent .= ' ' . implode(' ', $statusResponse['hashtags']);
+    }
+
+    // Save final status
+    StatusHandler::saveStatus($accountName, $accountOwner, $statusContent, $imageName);
+
+    return true; // Success
 }
 
-function getStatus($link, $prompt, $platform, $system_message)
+/**
+ * Make an HTTP request to OpenAI API.
+ *
+ * @param string $endpoint API endpoint to call.
+ * @param array|null $data Optional data to send in the request body.
+ * @return array API response.
+ */
+function openai_api_request(string $endpoint, ?array $data = null): array
 {
-    // Determine the maximum token limit based on the specified platform
-    if ($platform === 'facebook') {
-        $statusTokens = 256; // Token limit for Facebook
-    } elseif ($platform === 'twitter') {
-        $statusTokens = 64;  // Token limit for Twitter
-    } elseif ($platform === 'instagram') {
-        $statusTokens = 128; // Token limit for Instagram
+    $url = API_ENDPOINT . $endpoint;
+    $headers = [
+        "Authorization: Bearer " . API_KEY,
+        "Content-Type: application/json"
+    ];
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if ($response === false) {
+        ErrorHandler::logMessage("Failed to make API request to $endpoint", 'error');
+        return ["error"];
     }
 
-    // Prepare the data for the API request to generate a status update
-    $status_data = [
-        'model' => MODEL,
-        'messages' => [
-            ['role' => 'system', 'content' => $system_message],
-            ['role' => 'user', 'content' => 'Create a compelling status update ' . $prompt . ' Keep it under 256 characters with NO hashtags and add the following CTA: Visit: ' . $link]
+    return json_decode($response, true);
+}
+
+/**
+ * Generate structured social media post with image prompt.
+ *
+ * @param string $systemMessage The system message for generating content.
+ * @param string $prompt The user prompt for generating content.
+ * @param string $link The link to be included in the post.
+ * @param string $totalTags The total number of hashtags.
+ * @param int $statusTokens The number of tokens for the status.
+ * @return array API response containing structured data.
+ */
+function generate_social_status(string $systemMessage, string $prompt, string $link, string $totalTags, int $statusTokens, $accountName, $accountOwner): array
+{
+    // Define the structured response schema
+    $jsonSchema = [
+        "type" => "object",
+        "properties" => [
+            "status" => [
+                "type" => "string",
+                "description" => "A catchy and engaging text for the social media post, ideally between 100-150 characters."
+            ],
+            "cta" => [
+                "type" => "string",
+                "description" => "A clear and concise call to action, encouraging users to engage at $link."
+            ],
+            "hashtags" => [
+                "type" => "array",
+                "items" => ["type" => "string"],
+                "description" => "A list of $totalTags relevant hashtags for social media, ideally 3-5 trending tags."
+            ],
+            "image_prompt" => [
+                "type" => "string",
+                "description" => "Write a prompt to generate an image to go with this status."
+            ]
         ],
-        'temperature' => TEMPERATURE,
-        'max_tokens' => $statusTokens,
+        "required" => ["status", "cta", "hashtags", "image_prompt"],
+        "additionalProperties" => false
     ];
 
-    // Execute API request
-    $status_response = executeApiRequest(API_ENDPOINT, $status_data);
-
-    // Check if the API call was unsuccessful
-    if ($status_response === false) {
-        exit; // Return an error message if the request failed
-    }
-
-    // Decode the JSON response to extract the generated status update
-    $status_response_data = json_decode($status_response, true);
-
-    $prompt_tokens = $status_response_data['usage']['prompt_tokens'] ?? 0;
-    $completion_tokens = $status_response_data['usage']['completion_tokens'] ?? 0;
-
-    return [$status_response_data['choices'][0]['message']['content'] ?? '', $prompt_tokens, $completion_tokens];
-}
-
-function getImagePrompt($status_content, $image_prompt)
-{
-    // Prepare the data for the API request to generate an image prompt
-    $prompt_data = [
-        'model' => MODEL,
-        'messages' => [
-            ['role' => 'system', 'content' => 'Your job is to write a G-rated image generation prompt based on a status update that aligns with content policies. Ensure the prompt excludes any elements of violence, gore, explicit or adult content, hate speech, harmful themes or illegal activities. The prompt should focus on safe, respectful themes suitable for a broad audience. (Do not comment before or after the prompt)'],
-            ['role' => 'user', 'content' => 'Based on the following status, write an image generation prompt: ' . $status_content . ' Include instructions to: ' . $image_prompt]
+    // Prepare the API request payload
+    $data = [
+        "model" => MODEL,
+        "messages" => [
+            ["role" => "system", "content" => $systemMessage],
+            ["role" => "user", "content" => $prompt]
         ],
-        'temperature' => TEMPERATURE,
-        'max_tokens' => 256, // Limit the response size to 256 tokens
-    ];
-
-    // Execute API request
-    $prompt_response = executeApiRequest(API_ENDPOINT, $prompt_data);
-
-    // Check if the API call was unsuccessful
-    if ($prompt_response === false) {
-        exit; // Return an error message if the request failed
-    }
-
-    // Decode the JSON response to extract the generated image prompt
-    $prompt_response_data = json_decode($prompt_response, true);
-
-    $prompt_tokens = $prompt_response_data['usage']['prompt_tokens'] ?? 0;
-    $completion_tokens = $prompt_response_data['usage']['completion_tokens'] ?? 0;
-
-    return [$prompt_response_data['choices'][0]['message']['content'] ?? '', $prompt_tokens, $completion_tokens];
-}
-
-function getImage($accountName, $accountOwner, $generated_image_prompt)
-{
-    // Prepare the data for the API to generate the image
-    $image_data = [
-        'model' => 'dall-e-3',          // Specify the model to use for image generation
-        'prompt' => $generated_image_prompt, // The prompt for generating the image
-        'n' => 1,                         // Number of images to generate
-        'quality' => "standard",         // Quality setting for the image
-        'size' => "1792x1024"            // Dimensions of the generated image
-    ];
-
-    // Execute API request
-    $image_response = executeApiRequest('https://api.openai.com/v1/images/generations', $image_data);
-
-    // Decode the JSON response to extract the image URL
-    $image_response_data = json_decode($image_response, true);
-    $image_url = $image_response_data['data'][0]['url'] ?? ''; // Get the URL of the generated image
-
-    // If an image URL exists, save the image locally
-    if (!empty($image_url)) {
-        $random_name = uniqid() . '.png'; // Generate a unique name for the image
-        $image_path = __DIR__ . '/../public/images/' . $accountOwner . '/' . $accountName . '/' . $random_name; // Define the path for saving the image
-        file_put_contents($image_path, file_get_contents($image_url)); // Save the image to the specified path
-        return $random_name; // Return the name of the saved image
-    }
-    return ''; // Return an empty string if no image URL was found
-}
-
-function getHashtags($status_content, $platform)
-{
-    // Determine the number of hashtags and tokens based on the platform
-    if ($platform === 'facebook') {
-        $totaltags = '3 to 5';       // Total tags allowed for Facebook
-        $hashtagTokens = 60;         // Maximum tokens for response
-    } elseif ($platform === 'twitter') {
-        $totaltags = '3';            // Total tags allowed for Twitter
-        $hashtagTokens = 30;         // Maximum tokens for response
-    } elseif ($platform === 'instagram') {
-        $totaltags = '20 to 30';     // Total tags allowed for Instagram
-        $hashtagTokens = 128;        // Maximum tokens for response
-    }
-
-    // Prepare the data for the API request to generate hashtags
-    $hashtag_data = [
-        'model' => MODEL,
-        'messages' => [
-            ['role' => 'user', 'content' => 'Generate and only reply with ' . $totaltags . ' relevant hashtags based on this status: ' . $status_content]
+        "response_format" => [
+            "type" => "json_schema",
+            "json_schema" => [
+                "name" => "generate_post",
+                "schema" => $jsonSchema,
+                "strict" => true
+            ]
         ],
-        'temperature' => TEMPERATURE,
-        'max_tokens' => $hashtagTokens,
+        "max_tokens" => $statusTokens,
+        "temperature" => TEMPERATURE
     ];
 
-    // Execute API request
-    $hashtag_response = executeApiRequest(API_ENDPOINT, $hashtag_data);
+    // Make the API request
+    $response = openai_api_request("/chat/completions", $data);
 
-    // Check if the API call failed
-    if ($hashtag_response === false) {
-        exit;
+    if ($response === "error" || !isset($response['choices'][0]['message']['content'])) {
+        ErrorHandler::logMessage("Error generating status for $accountName owned by $accountOwner.", 'error');
+        return "error";
     }
 
-    // Decode the JSON response to extract the hashtags
-    $hashtag_response_data = json_decode($hashtag_response, true);
-    return $hashtag_response_data['choices'][0]['message']['content'] ?? ''; // Return the generated hashtags or an empty string
+    return json_decode($response['choices'][0]['message']['content'], true) ?? "error";
+}
+
+/**
+ * Generate an image using OpenAI's DALL·E API.
+ *
+ * @param string $imagePrompt The prompt describing the image.
+ * @param string $accountName The name of the account.
+ * @param string $accountOwner The owner of the account.
+ * @return string|array Image filename or an error array.
+ */
+function generate_social_image(string $imagePrompt, string $accountName, string $accountOwner): string
+{
+    $data = [
+        "model" => "dall-e-3",
+        "prompt" => $imagePrompt,
+        "n" => 1,
+        "quality" => "standard",
+        "size" => "1792x1024"
+    ];
+
+    $response = openai_api_request("/images/generations", $data);
+
+    if ($response === "error" || !isset($response['data'][0]['url'])) {
+        ErrorHandler::logMessage("Error generating image for $accountName owned by $accountOwner.", 'error');
+        return "error";
+    }
+
+    $image_url = $response['data'][0]['url'];
+    $random_name = uniqid() . '.png';
+    $image_path = $_SERVER['DOCUMENT_ROOT'] . "/images/$accountOwner/$accountName/$random_name";
+
+    if (!is_dir(dirname($image_path)) && !mkdir(dirname($image_path), 0777, true) && !is_dir(dirname($image_path))) {
+        ErrorHandler::logMessage("Failed to create image directory for $accountOwner / $accountName.", 'error');
+        return "error";
+    }
+
+    if (file_put_contents($image_path, file_get_contents($image_url)) === false) {
+        ErrorHandler::logMessage("Failed to save image for $accountName owned by $accountOwner.", 'error');
+        return "error";
+    }
+
+    return $random_name;
 }

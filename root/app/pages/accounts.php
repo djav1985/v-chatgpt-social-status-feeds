@@ -1,108 +1,94 @@
 <?php
-/*
+
+/**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: ../app/pages/accounts.php
- * Description: ChatGPT API Status Generator
+ * File: accounts.php
+ * Description: Manages user accounts and their settings.
+ * License: MIT
  */
 ?>
 
-<main class="flex-container">
-    <section id="left-col">
-        <h3>Add/Update New Account</h3>
-        <!-- Form for adding/updating account information -->
-        <form class="edit-account-form" action="/accounts" method="POST">
-            <!-- Input field for account name -->
-            <label for="account">Account Name:</label>
-            <input type="text" name="account" id="account" required>
+<main class="container">
+    <div class="columns">
+        <!-- Account Management Section -->
+        <div class="account-left card column col-4 col-md-4 col-sm-12">
+            <div class="account-header card-header">
+                <h3 class="account-name card-title">Manage Accounts</h3>
+            </div>
+            <form class="form-group columns" action="/accounts" method="POST">
+                <!-- Account name input field -->
+                <label for="account">Account Name:</label>
+                <input class="form-input" type="text" name="account" id="account" required>
 
-            <!-- Dropdown to select the social media platform -->
-            <label for="platform">Platform:</label>
-            <select name="platform" id="platform" required>
-                <option value="facebook">Facebook</option>
-                <option value="twitter">Twitter</option>
-                <option value="instagram">Instagram</option>
-            </select>
-
-            <!-- Textarea for entering a status update prompt -->
-            <label for="add-prompt">Prompt:</label>
-            <textarea name="prompt" id="add-prompt" required>Create a compelling status update...</textarea>
-
-            <!-- Input field for adding a link -->
-            <label for="link">Link:</label>
-            <input type="url" name="link" id="link" required value="https://domain.com">
-
-            <!-- Textarea for providing image instructions -->
-            <label for="image_prompt">Image Instructions:</label>
-            <textarea name="image_prompt" id="image_prompt" required>Include instructions to...</textarea>
-
-            <!-- Multi-select dropdown for choosing days to schedule posts -->
-            <label for="days">Days:</label>
-            <select name="days[]" id="days" multiple required>
-                <?php echo generateDaysOptions(); ?>
-            </select>
-
-            <!-- Multi-select dropdown for setting post schedule times -->
-            <label for="cron">Post Schedule:</label>
-            <select name="cron[]" id="cron" multiple required>
-                <?php echo generateCronOptions(); ?>
-            </select>
-
-            <!-- Dropdown for including hashtags -->
-            <label for="hashtags">Include Hashtags:</label>
-            <select name="hashtags" id="hashtags" required>
-                <option value="0" selected>No</option>
-                <option value="1">Yes</option>
-            </select>
-
-            <!-- Hidden input to include CSRF token for security -->
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-
-            <!-- Submit button to add or update the account -->
-            <button type="submit" class="edit-account-button green-button" name="edit_account">Add/Update Account</button>
-        </form>
-
-        <!-- Display any error messages and account details -->
-        <div id="error-msg"><?php echo display_and_clear_messages(); ?></div>
-        <?php echo generateAccountDetails(); ?>
-    </section>
-
-    <section id="right-col">
-        <?php echo generateAccountList(); ?>
-    </section>
+                <!-- Platform selection dropdown -->
+                <label for="platform">Platform:</label>
+                <select class="form-select" name="platform" id="platform" required>
+                    <option value="facebook">Facebook</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="google-business">Google Business</option>
+                </select>
+                <!-- Prompt textarea -->
+                <label for="add-prompt">Prompt:</label>
+                <textarea class="form-input" rows="5" name="prompt" id="add-prompt" required>Create a compelling status update...</textarea>
+                <!-- Link input field -->
+                <label for="link">Link:</label>
+                <input class="form-input" type="url" name="link" id="link" required value="https://domain.com">
+                <!-- Days selection dropdown (multiple) -->
+                <label for="days">Days:</label>
+                <select class="form-select" name="days[]" id="days" multiple required>
+                    <?php echo generateDaysOptions(); ?>
+                </select>
+                <!-- Post schedule selection dropdown (multiple) -->
+                <label for="cron">Post Schedule:</label>
+                <select class="form-select" name="cron[]" id="cron" multiple required>
+                    <?php echo generateCronOptions(); ?>
+                </select>
+                <!-- Hashtags inclusion dropdown -->
+                <label for="hashtags">Include Hashtags:</label>
+                <select class="form-select" name="hashtags" id="hashtags" required>
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
+                </select>
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <button type="submit" class="btn btn-primary btn-lg" name="edit_account">Add/Update Account</button>
+            </form>
+        </div>
+        <!-- Account List Section -->
+        <div class="account-right card column col-8 col-md-8 col-sm-12">
+            <div class="account-header card-header">
+                <h3 class="account-name card-title">Account List</h3>
+            </div>
+            <div class="columns">
+                <?php echo generateAccountList(); ?>
+            </div>
+        </div>
+    </div>
 </main>
 
 <script>
-    // Wait for the DOM content to be fully loaded before executing code
     document.addEventListener('DOMContentLoaded', function() {
-
-        // Select all elements with the ID 'update-button' and iterate over each button
         const updateButtons = document.querySelectorAll('#update-button');
         updateButtons.forEach(button => {
-
-            // Add click event listener to each update button
             button.addEventListener('click', function() {
-
-                // Retrieve input fields from the page using their IDs
                 const accountNameField = document.querySelector('#account');
                 const promptField = document.querySelector('#add-prompt');
                 const linkField = document.querySelector('#link');
-                const imagePromptField = document.querySelector('#image_prompt');
                 const hashtagsSelect = document.querySelector('#hashtags');
                 const cronField = document.querySelector('#cron');
                 const daysField = document.querySelector('#days');
                 const platformSelect = document.querySelector('#platform');
 
-                // Populate input fields with data attributes from the clicked button
+                // Populate form fields with the selected account's data
                 accountNameField.value = this.dataset.accountName;
                 promptField.value = decodeURIComponent(this.dataset.prompt.replace(/\+/g, ' '));
                 linkField.value = decodeURIComponent(this.dataset.link.replace(/\+/g, ' '));
-                imagePromptField.value = decodeURIComponent(this.dataset.image_prompt.replace(/\+/g, ' '));
                 hashtagsSelect.value = this.dataset.hashtags;
 
-                // Clear all selections in multiselect fields before setting new options
+                // Clear previous selections
                 Array.from(cronField.options).forEach(option => {
                     option.selected = false;
                 });
@@ -110,7 +96,7 @@
                     option.selected = false;
                 });
 
-                // Set selected options for multi-select 'cron' field based on dataset values
+                // Select the appropriate cron options
                 const selectedCronValues = this.dataset.cron ? this.dataset.cron.split(',') : [];
                 if (selectedCronValues.length === 0 || selectedCronValues.includes("off")) {
                     const offOption = cronField.querySelector('option[value="off"]');
@@ -124,7 +110,7 @@
                     });
                 }
 
-                // Set selected options for multi-select 'days' field based on dataset values
+                // Select the appropriate days options
                 const selectedDaysValues = this.dataset.days ? this.dataset.days.split(',') : [];
                 if (selectedDaysValues.length === 0 || selectedDaysValues.includes("everyday")) {
                     const everydayOption = daysField.querySelector('option[value="everyday"]');
@@ -138,29 +124,23 @@
                     });
                 }
 
-                // Select the appropriate platform based on dataset values
                 platformSelect.value = this.dataset.platform;
-
-                // Make the account name field read-only to prevent changes during updates
                 accountNameField.readOnly = true;
             });
         });
 
-        // Logic to handle special behavior when 'Everyday' is selected/deselected
         const daysField = document.querySelector('#days');
         daysField.addEventListener('change', function() {
             const selectedOptions = Array.from(daysField.selectedOptions).map(option => option.value);
 
-            // If 'Everyday' is selected, deselect all other options
+            // Ensure only 'everyday' or specific days are selected, not both
             if (selectedOptions.includes('everyday')) {
                 Array.from(daysField.options).forEach(option => {
                     if (option.value !== 'everyday') {
                         option.selected = false;
                     }
                 });
-            }
-            // If other options are selected, ensure 'Everyday' is not selected
-            else if (selectedOptions.length > 0) {
+            } else if (selectedOptions.length > 0) {
                 const everydayOption = daysField.querySelector('option[value="everyday"]');
                 everydayOption.selected = false;
             }

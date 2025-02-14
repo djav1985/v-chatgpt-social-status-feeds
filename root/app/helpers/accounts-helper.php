@@ -1,55 +1,48 @@
 <?php
-/*
+
+/**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: ../app/helpers/accounts-helper.php
- * Description: ChatGPT API Status Generator
+ * File: accounts-helper.php
+ * Description: Helper functions for account-related operations.
+ * License: MIT
  */
 
 /**
  * Generates the account details for the logged-in user.
  *
- * Retrieves information about the user's account, including the total number of accounts,
- * maximum allowed API calls, and the number of API calls used. If no user information is available,
- * a message indicating the absence of account details will be displayed.
- *
  * @return string HTML output containing account details or an error message.
  */
 function generateAccountDetails()
 {
-    $accountOwner = $_SESSION['username']; // Retrieve the username of the logged-in user from the session
+    // Get the username of the logged-in user
+    $accountOwner = $_SESSION['username'];
+    // Fetch user information from the database
+    $userInfo = UserHandler::getUserInfo($accountOwner);
 
-    // Use the common function to get user info based on the account owner
-    $userInfo = getUserInfo($accountOwner); // Fetch user information
-
-    if ($userInfo) { // Check if user information was retrieved successfully
-        // Extract the required fields from the user info object
-        $totalAccounts = $userInfo->total_accounts; // Total number of accounts associated with the user
-        $maxApiCalls = $userInfo->max_api_calls; // Maximum number of API calls allowed for the user
-        $usedApiCalls = $userInfo->used_api_calls; // Number of API calls that have been used by the user
-        $expires = $userInfo->expires; // Expiration date of the user's account
-
-        // Format the expiration date to DD/MM/YYYY
+    if ($userInfo) {
+        // Extract user information
+        $totalAccounts = $userInfo->total_accounts;
+        $maxApiCalls = $userInfo->max_api_calls;
+        $usedApiCalls = $userInfo->used_api_calls;
+        $expires = $userInfo->expires;
         $expiresFormatted = $expires ? (new DateTime($expires))->format('d/m/Y') : 'N/A';
 
-        // Get total cost for the user
-        $total_cost = getTotalCostByUsername($accountOwner);
-
-        // Format the data into a visually appealing box
-        $output = "<div class=\"account-details\">"; // Start of the account details container
-        $output .= "<p>Max Accounts: " . htmlentities($totalAccounts) . "</p>"; // Display the maximum accounts
-        $output .= "<p>Max API Calls: " . htmlentities($maxApiCalls) . "</p>"; // Display the max API calls
-        $output .= "<p>Used API Calls: " . htmlentities($usedApiCalls) . "</p>"; // Display the used API calls
-        $output .= "<p>Expires: " . htmlentities($expiresFormatted) . "</p>"; // Display the expiration date
-        $output .= "<p>Total Cost: $" . htmlentities($total_cost) . "</p>"; // Display the total cost as money
-        $output .= "</div>"; // End of the account details container
+        // Generate HTML for account details
+        $output = "<div class=\"card\">";
+        $output .= "<div class=\"card-body\">";
+        $output .= "<p><strong>Max Accounts:</strong> " . htmlentities($totalAccounts) . "</p>";
+        $output .= "<p><strong>Max API Calls:</strong> " . htmlentities($maxApiCalls) . "</p>";
+        $output .= "<p><strong>Used API Calls:</strong> " . htmlentities($usedApiCalls) . "</p>";
+        $output .= "<p><strong>Expires:</strong> " . htmlentities($expiresFormatted) . "</p>";
+        $output .= "</div></div>";
     } else {
-        // If userInfo is not found, set a message indicating no account details are available
-        $output = "<div class=\"account-details\">No account details available.</div>";
+        // Display message if no account details are available
+        $output = "<div class=\"card\"><div class=\"card-body\">No account details available.</div></div>";
     }
-    return $output; // Return the generated HTML content
+    return $output;
 }
 
 /**
@@ -59,9 +52,11 @@ function generateAccountDetails()
  */
 function generateDaysOptions()
 {
+    // Define the days of the week
     $days = ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     $options = '';
     foreach ($days as $day) {
+        // Generate HTML option for each day
         $options .= "<option value=\"$day\">" . ucfirst($day) . "</option>";
     }
     return $options;
@@ -74,7 +69,9 @@ function generateDaysOptions()
  */
 function generateCronOptions()
 {
+    // Start with the "Off" option
     $options = '<option value="null" selected>Off</option>';
+    // Generate options for hours from 6 AM to 10 PM
     for ($hour = 6; $hour <= 22; $hour++) {
         $amPm = ($hour < 12) ? 'am' : 'pm';
         $displayHour = ($hour <= 12) ? $hour : $hour - 12;
@@ -92,34 +89,43 @@ function generateCronOptions()
  */
 function generateAccountList()
 {
+    // Get the username of the logged-in user
     $username = $_SESSION['username'];
-    $accounts = getAllUserAccts($username);
+    // Fetch all accounts for the user
+    $accounts =  UserHandler::getAllUserAccts($username);
 
     $output = '';
     foreach ($accounts as $account) {
         $accountName = $account->account;
-        $accountData = getAcctInfo($username, $accountName);
+        // Fetch account information
+        $accountData = AccountHandler::getAcctInfo($username, $accountName);
 
-        // Prepare data attributes for JavaScript interaction
+        // Prepare data attributes for each account to be used in the HTML
         $dataAttributes = "data-account-name=\"{$accountName}\" ";
         $dataAttributes .= "data-prompt=\"" . htmlspecialchars($accountData->prompt) . "\" ";
         $dataAttributes .= "data-link=\"" . htmlspecialchars($accountData->link) . "\" ";
-        $dataAttributes .= "data-image_prompt=\"" . htmlspecialchars($accountData->image_prompt) . "\" ";
         $dataAttributes .= "data-hashtags=\"" . ($accountData->hashtags ? '1' : '0') . "\" ";
         $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $accountData->cron))) . "\" ";
         $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $accountData->days))) . "\" ";
         $dataAttributes .= "data-platform=\"" . htmlspecialchars($accountData->platform) . "\"";
 
-        // Generate the HTML for each account
-        $output .= "<div class=\"item-box\">";
-        $output .= "<h3>" . htmlspecialchars($accountName) . "</h3>";
-        $output .= "<button class=\"update-account-button green-button\" id=\"update-button\" {$dataAttributes}>Update</button>";
+        // Generate HTML for each account card
+        $output .= "<div class=\"column col-6 col-xl-6 col-md-12 col-sm-12\">";
+        $output .= "<div class=\"card account-list-card\">";
+        $output .= "<div class=\"card-header account-card\">";
+        $output .= "<div class=\"card-title h5\">#" . htmlspecialchars($accountName) . "</div>";
+        $output .= "<br>";
+        $output .= "<p><strong>Prompt:</strong> " . htmlspecialchars($accountData->prompt) . "</p>";
+        $output .= "<p><strong>Link:</strong> <a href=\"" . htmlspecialchars($accountData->link) . "\" target=\"_blank\">" . htmlspecialchars($accountData->link) . "</a></p>";
+        $output .= "</div>";
+        $output .= "<div class=\"card-body button-group\">";
+        $output .= "<button class=\"btn btn-primary\" id=\"update-button\" {$dataAttributes}>Update</button>";
         $output .= "<form class=\"delete-account-form\" action=\"/accounts\" method=\"POST\">";
         $output .= "<input type=\"hidden\" name=\"account\" value=\"" . htmlspecialchars($accountName) . "\">";
         $output .= "<input type=\"hidden\" name=\"csrf_token\" value=\"" . $_SESSION['csrf_token'] . "\">";
-        $output .= "<button class=\"delete-account-button red-button\" name=\"delete_account\">Delete</button>";
+        $output .= "<button class=\"btn btn-error\" name=\"delete_account\">Delete</button>";
         $output .= "</form>";
-        $output .= "</div>";
+        $output .= "</div></div></div>";
     }
 
     return $output;

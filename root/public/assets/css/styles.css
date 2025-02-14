@@ -1,14 +1,37 @@
 /* ================================================
-    GLOBAL STYLES
+GENERAL STYLES
 ================================================ */
+
 body {
-  margin: 0 0 70px 0;
+  margin: 0;
+  background: #ffffff;
   padding: 0;
-  overflow-x: hidden;
   width: 100%;
+  overflow-x: hidden;
   font-family: Arial, sans-serif;
-  background: #f0f0f0 url(/assets/images/background-marble.png) repeat;
 }
+
+main {
+  margin-bottom: 48px;
+}
+
+.container {
+  border-top: 4px solid #66cc33;
+  padding: 0;
+}
+
+.btn.btn-lg {
+  height: 60px;
+}
+
+.empty {
+  margin-bottom: 100px;
+  background: unset;
+}
+
+/* ================================================
+HEADER/FOOTER STYLES
+================================================ */
 
 header,
 footer {
@@ -20,167 +43,430 @@ footer {
 }
 
 header {
+  border-bottom: 4px solid #66cc33;
   background-color: #0366d6;
-  border-bottom: 2px solid #66cc33;
 }
 
-.logo img {
-  width: 300px;
+header.columns {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
+header .logo img {
+  max-width: 300px;
   height: auto;
 }
 
-.flex-container {
-  display: flex;
-  flex-direction: row;
-  border-radius: 20px 20px 0 0;
-  background-color: #ffffff;
-  min-height: calc(100vh - 200px);
-}
-.container {
-  border-radius: 20px 20px 0 0;
-  background-color: #ffffff;
-  min-height: calc(100vh - 180px);
+#logout {
+  height: 50px;
 }
 
 footer {
-  background-color: #66cc33;
-  text-align: center;
   position: fixed;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
   z-index: 99;
+  background-color: #66cc33;
+  text-align: center;
 }
 
-.footer-text {
+footer p {
   margin: 0;
+  color: #ffffff;
+  font-size: 0.9rem;
 }
 
 /* ================================================
-    TAB STYLES
+   NAVIGATION STYLES
 ================================================ */
-.tabcontent {
-  border-top: none;
-  display: none;
-  margin-bottom: 70px;
-}
 
 .tab {
-  background-color: #f1f1f1;
-  margin-left: 15px;
-  margin-right: 15px;
   display: flex;
-  overflow: hidden;
+  justify-content: center;
+  margin: 0;
+  border-bottom: 1px solid #ddd;
+  background-color: #f1f1f1;
+  padding: 5px 2px 2px 2px;
 }
 
-.tab button {
-  background-color: transparent;
-  color: #66cc33;
-  border: none;
-  border-radius: 4px 4px 0 0;
+.tab-item {
+  transition: background-color 0.3s, color 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-  float: left;
-  font-size: 1em;
-  outline: none;
-  padding: 14px 16px;
-  transition: 0.3s;
-  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 2px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  border-radius: 6px;
+  background-color: #f1f1f1;
+  padding: 10px 20px;
+  color: #66cc33;
+  font-size: 1rem;
+  text-align: center;
 }
 
-.tab button.active,
-.tab button:hover {
+.tab.tab-block .tab-item {
+  flex: 1 1 200px;
+}
+
+.tab .tab-item a {
+  border-bottom: unset;
+}
+
+.tab-item.active,
+.tab-item:hover {
   background-color: #ffffff;
-  box-shadow: unset;
+  color: #0366d6;
+}
+
+.tab-item:hover {
+  transform: scale(0.9);
 }
 
 /* ================================================
-    BUTTON STYLES
+   ACCOUNT COLLAPING STYLES
 ================================================ */
-.green-button {
+
+.collapse-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
   background-color: #66cc33;
+  padding: 24px;
+  width: 48px;
+  height: 48px;
+  color: #ffffff;
+  font-size: 20px;
 }
 
-.green-button:hover {
+.collapse-button:hover {
   background-color: #5cbf2a;
 }
 
-.red-button {
+/* ================================================
+  STATUS STYLES
+================================================ */
+
+.status-container {
+  padding: 20px;
+}
+
+.status-container.card {
+  border-bottom: 0.05rem solid #66cc33;
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.status-header .collapse-button {
+  margin-right: 10px;
+}
+
+.status-campaign {
+  margin-top: 0.3em;
+  margin-bottom: 0.5em;
+}
+
+.status-content {
+  display: none;
+  z-index: 1;
+  padding: 15px;
+}
+
+.status-wrapper {
+  padding-bottom: 20px;
+}
+
+.status-item {
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  border: 2px solid #66cc33;
+  border-bottom-width: 10px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  height: 100%;
+}
+
+.status-item:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
+}
+
+.status-meta {
+  margin-top: auto;
+  padding: 10px;
+}
+
+.status-text {
+  margin-top: 10px;
+  padding-right: 10px;
+  padding-left: 10px;
+  overflow-wrap: break-word;
+}
+
+.status-image {
+  margin-bottom: 10px;
+  border-radius: 4px;
+  width: 100%;
+  height: auto;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+/* ================================================
+   STATUS ACTIONS STYLES
+================================================ */
+
+.status-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.square-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s, background-color 0.3s;
+  border-radius: 4px;
+  width: 64px;
+  height: 64px;
+}
+
+/* Delete Button */
+
+.delete-button {
+  margin-left: auto;
   background-color: #c9302c;
 }
 
-.red-button:hover {
+.delete-button:hover {
   background-color: #d9534f;
 }
 
-.orange-button {
-  background-color: #ec971f;
-}
-
-.orange-button:hover {
-  background-color: #f0ad4e;
-}
-
-.blue-button {
-  background-color: #0366d6;
-}
-
-.blue-button:hover {
-  background-color: #3478d9;
-}
-
-button {
-  color: #fff;
-  border: none;
-  font-size: 18px;
-  padding: 10px 20px;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-  transition: box-shadow 0.3s;
-}
-
-button:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.delete-form {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-left: auto;
 }
 
 /* ================================================
-    FORM STYLES
+   MY ACCOUNT STYLES
 ================================================ */
-textarea,
-select,
-input[type="text"],
-input[type="password"],
-input[type="date"],
-input[type="url"] {
-  display: block;
-  padding: 8px 6px;
-  margin-bottom: 20px;
+
+.account-action-container {
+  display: none;
+  /* Hide initially */
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: -90px;
+  margin-right: -20px;
+  margin-bottom: -20px;
+  margin-left: -20px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  border-top: 2px solid #66cc33;
+  border-bottom: 2px solid #66cc33;
+  background: aliceblue;
+  padding: 80px 30px 20px 30px;
+}
+
+.account-action-container button {
   border-radius: 4px;
-  width: 97%;
-  border: 1px solid #66cc33;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px 40px;
+  width: 300px;
+  height: 80px;
+  font-size: 1.2rem;
 }
 
-input[type="submit"] {
-  color: #fff;
-  border: none;
-  font-size: 18px;
-  padding: 10px 20px;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-  transition: box-shadow 0.3s;
-}
-
-select {
-  width: 100% !important;
-}
-
-textarea {
-  height: 100px;
+.account-action-container > button:hover,
+.account-action-form > button:hover {
+  transform: scale(1.1);
 }
 
 /* ================================================
-    BOT STYLES
+   TOAST STYLES
 ================================================ */
-#dify-chatbot-bubble-button {
-    bottom: var(--dify-chatbot-bubble-button-bottom, 3rem)!important;
+
+.toast {
+  position: fixed;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  transition: bottom 4s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  border: 2px solid #66cc33;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 16px;
+  width: 300px;
+  min-height: 60px;
+  color: #333;
+  text-align: center;
+}
+
+.toast.show {
+  bottom: 80px;
+}
+
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ================================================
+   MY INFO STYLES
+================================================ */
+
+.info-left {
+  padding: 20px 40px;
+}
+
+.info-right {
+  padding: 20px 40px;
+}
+
+.info-header.card-header {
+  padding: 0;
+  padding-bottom: 40px;
+}
+
+/* Target .form-group inside .info-left and unset max-width */
+
+.info-left .form-group {
+  max-width: unset;
+}
+
+/* Target the first column inside .form-group and unset padding-left */
+
+.info-left .form-group .column:first-child {
+  padding-left: unset;
+}
+
+/* Target the second column inside .form-group and unset padding-right */
+
+.info-left .form-group .column:nth-child(2) {
+  padding-right: unset;
+}
+
+/* ================================================
+   MY ACCOUNT STYLES
+================================================ */
+
+.account-left {
+  padding: 20px 40px;
+}
+
+.account-right {
+  padding: 20px 40px;
+}
+
+.account-header.card-header {
+  padding: 0;
+  padding-bottom: 40px;
+}
+
+/* Target .form-group inside .account-left and unset max-width */
+
+.account-left .form-group {
+  max-width: unset;
+}
+
+.account-list-card {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  border: 2px solid #66cc33;
+  border-bottom-width: 10px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  height: 100%;
+}
+
+.account-card {
+  width: 100%;
+}
+
+.account-list-card .card-body {
+  flex-grow: 1;
+  margin-top: auto;
+}
+
+.account-right .column {
+  margin-bottom: 40px;
+}
+
+/* ================================================
+   BUTTON GROUP STYLES
+================================================ */
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.button-group .btn {
+  flex: 1;
+  height: 60px;
+}
+
+/* ================================================
+   MOBILE RESPONSIVE STYLES
+================================================ */
+
+@media (max-width: 768px) {
+  .info-left .form-group .column {
+    padding-right: unset;
+    padding-left: unset;
+  }
+  .account-action-container button,
+  .account-action-form,
+  .account-action-form button {
+    width: 100%;
+  }
+  .account-left .form-group .column {
+    padding-right: unset;
+    padding-left: unset;
+  }
 }

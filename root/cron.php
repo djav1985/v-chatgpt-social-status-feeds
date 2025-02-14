@@ -1,142 +1,203 @@
 <?php
-
 /**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
  * File: cron.php
  * Description: Handles scheduled tasks such as resetting API usage, running status updates, clearing the IP blacklist, and purging old images.
+ * License: MIT
  */
 
-// Including necessary configuration and library files for database access and utility functions
-require_once __DIR__ . '/config.php'; // Load application configuration
-require_once __DIR__ . '/db.php'; // Load database connection
-require_once __DIR__ . '/lib/common-lib.php'; // Load common utility functions
-require_once __DIR__ . '/lib/status-lib.php'; // Load functions related to status updates
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../autoload.php';
+require_once __DIR__ . '/lib/status-lib.php';
+// Instantiate the ErrorHandler to register handlers
+new ErrorHandler();
 
-// Define the constant for image age; images older than this will be purged
-define('IMG_AGE', 30); // Set it to 30 days for cleanup purposes
+define('IMG_AGE', 30); // Define the age of images to be purged in days
+define('MAX_STATUSES', 100); // Define the maximum number of statuses allowed per account
 
-// Checking for command line arguments to determine the job type
-$jobType = $argv[1] ?? 'run_status'; // Default to 'run_status' if no argument provided
-
-// Execute the appropriate function based on the job type received as an argument
-if ($jobType == 'reset_usage') {
-    resetAllApiUsage(); // Call the function to reset all API usage counters
-} elseif ($jobType == 'run_status') {
-    runStatusUpdateJobs(); // Call to run status update jobs
-} elseif ($jobType == 'clear_list') {
-    clearIpBlacklist(); // Call to clear entries in the IP blacklist
-} elseif ($jobType == 'cleanup') {
-    cleanupStatuses(); // Call to clean up old statuses from the database
-} elseif ($jobType == 'purge_images') {
-    purgeImages(); // Call to purge old images from the server storage
+$validJobTypes = ['reset_usage', 'run_status', 'clear_list', 'cleanup', 'purge_images'];
+$jobType = $argv[1] ?? 'run_status'; // Default job type is 'run_status'
+if (!in_array($jobType, $validJobTypes)) {
+    die("Invalid job type specified.");
 }
 
-// Function to run status update jobs for each account
+switch ($jobType) {
+    case 'reset_usage':
+        if (!resetApi()) die(1);
+        break;
+    case 'run_status':
+        if (!runStatusUpdateJobs()) die(1);
+        break;
+    case 'clear_list':
+        if (!clearList()) die(1);
+        break;
+    case 'cleanup':
+        if (!cleanupStatuses()) die(1);
+        break;
+    case 'purge_images':
+        if (!purgeImages()) die(1);
+        break;
+    default:
+        ErrorHandler::logMessage("Invalid job type specified: $jobType", 'error');
+        die(1);
+}        
+
+/**
+ * Run status update jobs for all accounts.
+ * This function checks the current time and day, and runs status updates for accounts scheduled at the current time.
+ * It ensures that the status is not posted more than once per scheduled hour and that the user has not exceeded their API call limit.
+ */
 function runStatusUpdateJobs()
 {
-    // Fetch all accounts from the database
-    $accounts = getAllAccounts();
+    try {
+        $accounts = AccountHandler::getAllAccounts();
+        if ($accounts === false) {
+            return false;
+        }
+        
+        $currentHour = date('H');
+        $currentDay = strtolower(date('l'));
+        $currentMinute = date('i');
+        $currentTimeSlot = sprintf("%02d", $currentHour) . ':' . $currentMinute;
 
-    // Get the current hour, day of the week, and minute for scheduling
-    $currentHour = date('H'); // Gets the current hour in 24-hour format
-    $currentDay = strtolower(date('l')); // Gets the current day in lowercase
-    $currentMinute = date('i'); // Gets the current minute
-    $currentTimeSlot = sprintf("%02d", $currentHour) . ':' . $currentMinute; // Current time slot in HH:MM format
+        foreach ($accounts as $account) {
+            $accountOwner = $account->username;
+            $accountName = $account->account;
+            $cron = explode(',', $account->cron);
+            $days = explode(',', $account->days);
 
-    // Iterate over each account to check their scheduling
-    foreach ($accounts as $account) {
-        // Extract account details
-        $accountOwner = $account->username;
-        $accountName = $account->account;
-        $cron = explode(',', $account->cron); // Split cron schedule into an array
-        $days = explode(',', $account->days); // Split allowed days into an array
+            foreach ($cron as $scheduledHour) {
+                // Allow a time window of 1 hour
+                $scheduledTime = DateTime::createFromFormat('H:i', $scheduledHour);
+                $currentTime = DateTime::createFromFormat('H:i', $currentTimeSlot);
+                $interval = $currentTime->diff($scheduledTime);
 
-        // Check if the current time and day match any scheduled task
-        foreach ($cron as $scheduledHour) {
-            if ($currentHour == $scheduledHour && (in_array('everyday', $days) || in_array($currentDay, $days))) {
-                // Only proceed if a status hasn't been generated for this time slot
-                if (!hasStatusBeenPosted($accountName, $accountOwner, $scheduledHour)) {
-                    // Retrieve account and user information
-                    $acctInfo = getAcctInfo($accountOwner, $accountName);
-                    $userInfo = getUserInfo($accountOwner);
+                if ($interval->h == 0 && $interval->i <= 59 && (in_array('everyday', $days) || in_array($currentDay, $days))) {
+                    if (!StatusHandler::hasStatusBeenPosted($accountName, $accountOwner, $scheduledHour)) {
+                        try {
+                            $userInfo = UserHandler::getUserInfo($accountOwner);
 
-                    // Check if the user's account has expired
-                    $currentDateTime = new DateTime();
-                    $expiresDateTime = new DateTime($userInfo->expires);
+                            // Check if the user's subscription has expired
+                            $currentDateTime = new DateTime();
+                            $expiresDateTime = new DateTime($userInfo->expires);
 
-                    if ($currentDateTime > $expiresDateTime) {
-                        // Set max_api_calls to 0 if the account has expired
-                        $userInfo->max_api_calls = 0;
-                        updateMaxApiCalls($accountOwner, 0);
-                    }
+                            if ($currentDateTime > $expiresDateTime) {
+                                $userInfo->max_api_calls = 0;
+                                UserHandler::updateMaxApiCalls($accountOwner, 0);
+                            }
 
-                    // Only proceed if the user has remaining API calls
-                    if ($userInfo && $userInfo->used_api_calls < $userInfo->max_api_calls) {
-                        $userInfo->used_api_calls += 1; // Increment used API calls for the user
-
-                        // Update user's used API calls in the database
-                        updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-
-                        // Generate the status update for the account
-                        generateStatus($accountName, $accountOwner);
+                            // Ensure the user has not exceeded their API call limit
+                            if ($userInfo && $userInfo->used_api_calls < $userInfo->max_api_calls) {
+                                $userInfo->used_api_calls += 1;
+                                UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+                                generateStatus($accountName, $accountOwner);
+                            }
+                        } catch (Exception $e) {
+                            ErrorHandler::logMessage("CRON: Status generation failed for {$accountName} - " . $e->getMessage(), 'exception');
+                            return false;
+                        }
                     }
                 }
             }
         }
+    } catch (Exception $e) {
+        ErrorHandler::logMessage("CRON: Status update job failed - " . $e->getMessage(), 'exception');
+        return false;
     }
+    return true;
 }
 
-// New function to cleanup old statuses based on a defined maximum
+/**
+ * Clean up old statuses for all accounts.
+ * This function checks the number of statuses for each account and deletes the oldest ones if they exceed the maximum allowed.
+ * This helps to manage storage and keep the database performant.
+ */
 function cleanupStatuses()
 {
-    // Fetch all accounts from the database
-    $accounts = getAllAccounts();
+    try {
+        $accounts = AccountHandler::getAllAccounts();
 
-    // Iterate over each account to check for status count
-    foreach ($accounts as $account) {
-        $accountName = $account->account;
-        $accountOwner = $account->username;
+        foreach ($accounts as $account) {
+            $accountName = $account->account;
+            $statusCount = StatusHandler::countStatuses($accountName);
 
-        // Count the current number of statuses for the account
-        $statusCount = countStatuses($accountName);
-
-        // Check if the number of statuses exceeds the maximum allowed
-        if ($statusCount > MAX_STATUSES) {
-            // Calculate how many statuses need to be deleted
-            $deleteCount = $statusCount - MAX_STATUSES;
-
-            // Delete the oldest statuses to maintain limit
-            deleteOldStatuses($accountName, $deleteCount);
-        }
-    }
-}
-
-// Function to purge old images from the server based on age
-function purgeImages()
-{
-    $imageDir = __DIR__ . '/public/images/'; // Directory containing the images
-    // Create an iterator to go through the directory recursively
-    $files = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::CHILD_FIRST
-    );
-
-    // Get the current timestamp for age comparison
-    $now = time();
-
-    // Iterate through all files in the image directory
-    foreach ($files as $fileinfo) {
-        if ($fileinfo->isFile() && $fileinfo->getExtension() == 'png') { // Process only PNG files
-            $filePath = $fileinfo->getRealPath(); // Get the full path of the file
-            $fileAge = ($now - $fileinfo->getMTime()) / 86400; // Convert file age to days
-
-            // Delete the file if it's older than the defined IMG_AGE
-            if ($fileAge > IMG_AGE) {
-                unlink($filePath); // Remove the file
+            if ($statusCount > MAX_STATUSES) {
+                $deleteCount = $statusCount - MAX_STATUSES;
+                StatusHandler::deleteOldStatuses($accountName, $deleteCount);
             }
         }
+    } catch (Exception $e) {
+        ErrorHandler::logMessage("CRON: Cleanup statuses job failed - " . $e->getMessage(), 'exception');
+        return false;
     }
+    return true;
+}
+
+/**
+ * Purge old images from the public/images directory.
+ * This function deletes image files that are older than the defined image age.
+ * This helps to free up disk space and remove potentially outdated or unused images.
+ */
+function purgeImages()
+{
+    try {
+        $imageDir = __DIR__ . '/public/images/';
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        $now = time();
+
+        foreach ($files as $fileinfo) {
+            if ($fileinfo->isFile() && $fileinfo->getExtension() == 'png') {
+                $filePath = $fileinfo->getRealPath();
+                $fileAge = ($now - $fileinfo->getMTime()) / 86400;
+
+                if ($fileAge > IMG_AGE) {
+                    unlink($filePath);
+                }
+            }
+        }
+    } catch (Exception $e) {
+        ErrorHandler::logMessage("CRON: Image purge failed - " . $e->getMessage(), 'exception');
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Reset API usage for all users.
+ * This function resets the API usage count for all users to zero.
+ * This is typically run at the start of a new billing cycle.
+ */
+function resetApi()
+{
+    try {
+        UserHandler::resetAllApiUsage();
+    } catch (Exception $e) {
+        ErrorHandler::logMessage("CRON: Reset API usage job failed - " . $e->getMessage(), 'exception');
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Clear the IP blacklist.
+ * This function clears the IP blacklist, removing all entries.
+ * This is typically run periodically to ensure that the blacklist does not grow indefinitely.
+ */
+function clearList()
+{
+    try {
+        UtilityHandler::clearIpBlacklist();
+    } catch (Exception $e) {
+        ErrorHandler::logMessage("CRON: Clear IP blacklist job failed - " . $e->getMessage(), 'exception');
+        return false;
+    }
+    return true;
 }

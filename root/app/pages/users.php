@@ -1,80 +1,104 @@
 <?php
-/*
+
+/**
  * Project: ChatGPT API
  * Author: Vontainment
- * URL: https://vontainment.com
+ * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: ../app/pages/users.php
- * Description: ChatGPT API Status Generator
+ * File: users.php
+ * Description: Handles user addition and updates.
+ * License: MIT
  */
 ?>
 
-<main class="flex-container">
-    <section id="left-col">
-        <h3>Add/Update User</h3>
-        <form class="edit-user-form" action="/users" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" name="username" id="username" required>
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required>
-            <label for="total-accounts">Total Accounts:</label>
-            <select name="total-accounts" id="total-accounts" required>
-                <?php for ($i = 1; $i <= 10; $i++) : ?>
-                    <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                <?php endfor; ?>
-            </select>
-            <label for="max-api-calls">Max API Calls:</label>
-            <select name="max-api-calls" id="max-api-calls" required>
-                <option value="0">Off</option>
-                <option value="30">30</option>
-                <option value="60">60</option>
-                <option value="90">90</option>
-                <option value="120">120</option>
-                <option value="150">150</option>
-                <option value="9999999999">Unlimited</option>
-            </select>
-            <label for="used-api-calls">Used API Calls:</label>
-            <select name="used-api-calls" id="used-api-calls" required>
-                <option value="0">0</option>
-            </select>
-            <label for="expires">Expires:</label>
-            <input type="date" name="expires" id="expires" required>
-            <label for="admin">Admin:</label>
-            <select name="admin" id="admin" required>
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-            </select>
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-            <button class="edit-user-button green-button" type="submit" name="edit_users">Add/Update User</button>
-        </form>
-        <div id="error-msg"><?php echo display_and_clear_messages(); ?></div>
-    </section>
-    <section id="right-col">
-        <?php echo generateUserList(); ?>
-    </section>
+<main class="container">
+    <div class="columns">
+        <!-- User Management Section -->
+        <div class="account-left card column col-4 col-md-4 col-sm-12">
+            <div class="account-header card-header">
+                <h3 class="account-name card-title">Add/Update User</h3>
+            </div>
+            <form class="form-group columns" action="/users" method="POST">
+                <!-- Username input field -->
+                <label for="username">Username:</label>
+                <input class="form-input" type="text" name="username" id="username" required>
+
+                <!-- Password input field -->
+                <label for="password">Password:</label>
+                <input class="form-input" type="password" name="password" id="password">
+
+                <!-- Total Accounts dropdown -->
+                <label for="total-accounts">Total Accounts:</label>
+                <select class="form-select" name="total-accounts" id="total-accounts" required>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                </select>
+
+                <!-- Max API Calls dropdown -->
+                <label for="max-api-calls">Max API Calls:</label>
+                <select class="form-select" name="max-api-calls" id="max-api-calls" required>
+                    <option value="0">Off</option>
+                    <option value="30">30</option>
+                    <option value="90">90</option>
+                    <option value="150">300</option>
+                    <option value="9999999999">Unlimited</option>
+                </select>
+
+                <!-- Used API Calls dropdown -->
+                <label for="used-api-calls">Used API Calls:</label>
+                <select class="form-select" name="used-api-calls" id="used-api-calls" required>
+                    <option value="0">0</option>
+                </select>
+
+                <!-- Expiry date input field -->
+                <label for="expires">Expires:</label>
+                <input class="form-input" type="date" name="expires" id="expires" required>
+
+                <!-- Admin status dropdown -->
+                <label for="admin">Admin:</label>
+                <select class="form-select" name="admin" id="admin" required>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+
+                <!-- CSRF token for security -->
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <button class="btn btn-primary btn-lg" type="submit" name="edit_users">Add/Update User</button>
+            </form>
+        </div>
+        <!-- User List Section -->
+        <div class="account-right card column col-8 col-md-8 col-sm-12">
+            <div class="account-header card-header">
+                <h3 class="account-name card-title">User List</h3>
+            </div>
+            <div class="columns">
+                <?php echo generateUserList(); ?>
+            </div>
+        </div>
+    </div>
 </main>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const updateButtons = document.querySelectorAll('#update-btn');
         updateButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const usernameField = document.querySelector('#username');
-                const passwordField = document.querySelector('#password');
                 const totalAccountsSelect = document.querySelector('#total-accounts');
                 const maxApiCallsSelect = document.querySelector('#max-api-calls');
                 const usedApiCallsSelect = document.querySelector('#used-api-calls');
                 const expiresField = document.querySelector('#expires');
                 const adminSelect = document.querySelector('#admin');
-                // Set form fields from data attributes
+                // Populate form fields with data attributes from the clicked button
                 usernameField.value = this.dataset.username;
-                passwordField.value = decodeURIComponent(this.dataset.password);
                 totalAccountsSelect.value = this.dataset.totalAccounts;
                 maxApiCallsSelect.value = this.dataset.maxApiCalls;
                 usedApiCallsSelect.innerHTML =
                     `<option value="${this.dataset.usedApiCalls}">${this.dataset.usedApiCalls}</option><option value="0">0</option>`;
                 expiresField.value = this.dataset.expires;
                 adminSelect.value = this.dataset.admin;
-                // Set the username field as readonly when updating
+                // Make username field readonly when updating
                 usernameField.readOnly = true;
             });
         });
