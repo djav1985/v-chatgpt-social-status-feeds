@@ -25,9 +25,9 @@ V. [ License](#-license)
 
 ## Overview
 
-The ChatGPT API Status Generator addresses the need for seamless user management and real-time status updates across social media platforms. Key features include user authentication, IP monitoring, and customizable account setups, ensuring enhanced security and engagement. Ideal for social media managers and developers, this project simplifies account oversight and content sharing.
+The ChatGPT API Status Generator streamlines user management and provides real-time status updates across social media platforms. With features like user authentication, IP monitoring, and customizable account setups, it enhances security and engagement. Designed for social media managers and developers, it simplifies account oversight and content sharing.
 
----
+Version 2.0.0 introduces several improvements, including better database handling with all operations moved to dedicated classes, an upgraded user interface for a smoother experience, and new user settings to assist with prompt customization. Additionally, a structured API schema enhances efficiency in request handling, making the platform more robust and user-friendly.
 
 ## Features
 
