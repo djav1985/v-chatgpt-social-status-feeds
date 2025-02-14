@@ -37,4 +37,4 @@ if ($conn->multi_query($sql)) {
 $conn->close();
 
 // Delete this script
-unlink(__FILE__);
+//unlink(__FILE__);

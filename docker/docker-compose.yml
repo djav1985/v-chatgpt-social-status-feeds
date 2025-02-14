@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      API_KEY: ''
+      API_ENDPOINT: 'https://api.openai.com/v1/'
+      MODEL: 'gpt-4o-mini'
+      TEMPERATURE: 1
+      TOKENS: 256
+      DOMAIN: 'https://spectre3.hugev.xyz'
+      SYSTEM_MSG: 'You are a social media marketer. You will respond with professional, fun, emoji loaded social status update and nothing else.'
+      MAX_WIDTH: 720
+      MAX_STATUSES: 30
+      IMG_AGE: 360
+      DB_HOST: 'db'
+      DB_USER: 'root'
+      DB_PASSWORD: ''
+      DB_NAME: 'vsocialai'
+      SMTP_HOST: 'smtp.example.com'
+      SMTP_PORT: 587
+      SMTP_USER: 'user@example.com'
+      SMTP_PASSWORD: 'password'
+      SMTP_FROM_EMAIL: 'no-reply@example.com'
+      SMTP_FROM_NAME: 'ChatGPT API'
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_DATABASE: 'vsocialai'
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
