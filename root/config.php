@@ -10,7 +10,7 @@
  */
 
 // OpenAI API key for authentication
-define('API_KEY', 'sk-');
+define('API_KEY', '');
 
 // Endpoint for OpenAI's chat completion API
 define('API_ENDPOINT', 'https://api.openai.com/v1/chat/completions');
