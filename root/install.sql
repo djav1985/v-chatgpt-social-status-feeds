@@ -1,7 +1,3 @@
--- Ensure the database exists before proceeding
-CREATE DATABASE IF NOT EXISTS `localhost3`;
-USE `localhost3`;
-
 -- Create the ip_blacklist table if it doesn't exist
 CREATE TABLE IF NOT EXISTS ip_blacklist (
     ip_address VARCHAR(255) NOT NULL,
