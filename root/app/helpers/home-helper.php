@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Project: ChatGPT API
  * Author: Vontainment
@@ -19,7 +20,7 @@
  * @param int $statusId The unique identifier of the status.
  * @return string HTML string containing the buttons for sharing and deleting the status.
  */
-function shareButton($statusText, $imagePath, $accountOwner, $accountName, $statusId)
+function shareButton(string $statusText, string $imagePath, string $accountOwner, string $accountName, int $statusId): string
 {
     // Extract the filename from the image path
     $filename = basename($imagePath);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Project: ChatGPT API
  * Author: Vontainment
@@ -44,21 +45,21 @@ switch ($jobType) {
     default:
         ErrorHandler::logMessage("Invalid job type specified: $jobType", 'error');
         die(1);
-}        
+}
 
 /**
  * Run status update jobs for all accounts.
  * This function checks the current time and day, and runs status updates for accounts scheduled at the current time.
  * It ensures that the status is not posted more than once per scheduled hour and that the user has not exceeded their API call limit.
  */
-function runStatusUpdateJobs()
+function runStatusUpdateJobs(): bool
 {
     try {
         $accounts = AccountHandler::getAllAccounts();
         if ($accounts === false) {
             return false;
         }
-        
+
         $currentHour = date('H');
         $currentDay = strtolower(date('l'));
         $currentMinute = date('i');
@@ -116,7 +117,7 @@ function runStatusUpdateJobs()
  * This function checks the number of statuses for each account and deletes the oldest ones if they exceed the maximum allowed.
  * This helps to manage storage and keep the database performant.
  */
-function cleanupStatuses()
+function cleanupStatuses(): bool
 {
     try {
         $accounts = AccountHandler::getAllAccounts();
@@ -142,7 +143,7 @@ function cleanupStatuses()
  * This function deletes image files that are older than the defined image age.
  * This helps to free up disk space and remove potentially outdated or unused images.
  */
-function purgeImages()
+function purgeImages(): bool
 {
     try {
         $imageDir = __DIR__ . '/public/images/';
@@ -175,7 +176,7 @@ function purgeImages()
  * This function resets the API usage count for all users to zero.
  * This is typically run at the start of a new billing cycle.
  */
-function resetApi()
+function resetApi(): bool
 {
     try {
         UserHandler::resetAllApiUsage();
@@ -191,7 +192,7 @@ function resetApi()
  * This function clears the IP blacklist, removing all entries.
  * This is typically run periodically to ensure that the blacklist does not grow indefinitely.
  */
-function clearList()
+function clearList(): bool
 {
     try {
         UtilityHandler::clearIpBlacklist();

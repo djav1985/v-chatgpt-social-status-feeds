@@ -15,7 +15,7 @@
  *
  * @return string HTML output containing the user list.
  */
-function generateUserList()
+function generateUserList(): string
 {
     // Fetch all users from the database
     $users = UserHandler::getAllUsers();

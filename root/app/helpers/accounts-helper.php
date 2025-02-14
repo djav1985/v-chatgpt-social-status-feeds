@@ -15,7 +15,7 @@
  *
  * @return string HTML output containing account details or an error message.
  */
-function generateAccountDetails()
+function generateAccountDetails(): string
 {
     // Get the username of the logged-in user
     $accountOwner = $_SESSION['username'];
@@ -50,7 +50,7 @@ function generateAccountDetails()
  *
  * @return string HTML options for the days dropdown.
  */
-function generateDaysOptions()
+function generateDaysOptions(): string
 {
     // Define the days of the week
     $days = ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -67,7 +67,7 @@ function generateDaysOptions()
  *
  * @return string HTML options for the cron dropdown.
  */
-function generateCronOptions()
+function generateCronOptions(): string
 {
     // Start with the "Off" option
     $options = '<option value="null" selected>Off</option>';
@@ -87,7 +87,7 @@ function generateCronOptions()
  *
  * @return string HTML output containing the account list.
  */
-function generateAccountList()
+function generateAccountList(): string
 {
     // Get the username of the logged-in user
     $username = $_SESSION['username'];

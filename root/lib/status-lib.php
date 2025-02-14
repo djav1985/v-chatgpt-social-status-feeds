@@ -56,7 +56,7 @@ function generateStatus(string $accountName, string $accountOwner): ?bool
     };
 
     // Generate status
-    $statusResponse = generate_social_status($systemMessage, $prompt, $platform, $link, $totalTags, $statusTokens, $accountName, $accountOwner);
+    $statusResponse = generate_social_status($systemMessage, $prompt, $link, $hashtags, $totalTags, $statusTokens, $accountName, $accountOwner);
 
     if ($statusResponse === "error") {
         ErrorHandler::logMessage("Status generation failed for $accountName owned by $accountOwner.", 'error');
@@ -64,7 +64,16 @@ function generateStatus(string $accountName, string $accountOwner): ?bool
     }
 
     $statusContent = $statusResponse['status'] ?? '';
+    $cta = $statusResponse['cta'] ?? '';
     $imagePrompt = $statusResponse['image_prompt'] ?? '';
+
+    // Append CTA
+    $statusContent .= ' ' . $cta;
+
+    // Append hashtags if needed
+    if ($hashtags && isset($statusResponse['hashtags'])) {
+        $statusContent .= ' ' . implode(' ', $statusResponse['hashtags']);
+    }
 
     // Generate image
     $imageResponse = generate_social_image($imagePrompt, $accountName, $accountOwner);
@@ -74,11 +83,6 @@ function generateStatus(string $accountName, string $accountOwner): ?bool
     }
 
     $imageName = $imageResponse;
-
-    // Append hashtags if needed
-    if ($hashtags && isset($statusResponse['hashtags'])) {
-        $statusContent .= ' ' . implode(' ', $statusResponse['hashtags']);
-    }
 
     // Save final status
     StatusHandler::saveStatus($accountName, $accountOwner, $statusContent, $imageName);
@@ -113,7 +117,7 @@ function openai_api_request(string $endpoint, ?array $data = null): array
 
     if ($response === false) {
         ErrorHandler::logMessage("Failed to make API request to $endpoint", 'error');
-        return ["error"];
+        return "error";
     }
 
     return json_decode($response, true);
@@ -125,11 +129,14 @@ function openai_api_request(string $endpoint, ?array $data = null): array
  * @param string $systemMessage The system message for generating content.
  * @param string $prompt The user prompt for generating content.
  * @param string $link The link to be included in the post.
+ * @param bool $includeHashtags Whether to include hashtags in the post.
  * @param string $totalTags The total number of hashtags.
  * @param int $statusTokens The number of tokens for the status.
- * @return array API response containing structured data.
+ * @param string $accountName The name of the account.
+ * @param string $accountOwner The owner of the account.
+ * @return array|string API response containing structured data.
  */
-function generate_social_status(string $systemMessage, string $prompt, string $link, string $totalTags, int $statusTokens, $accountName, $accountOwner): array
+function generate_social_status(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array|string
 {
     // Define the structured response schema
     $jsonSchema = [
@@ -141,21 +148,25 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
             ],
             "cta" => [
                 "type" => "string",
-                "description" => "A clear and concise call to action, encouraging users to engage at $link."
-            ],
-            "hashtags" => [
-                "type" => "array",
-                "items" => ["type" => "string"],
-                "description" => "A list of $totalTags relevant hashtags for social media, ideally 3-5 trending tags."
+                "description" => "A clear and concise call to action, encouraging users to engage at $link"
             ],
             "image_prompt" => [
                 "type" => "string",
                 "description" => "Write a prompt to generate an image to go with this status."
             ]
         ],
-        "required" => ["status", "cta", "hashtags", "image_prompt"],
+        "required" => ["status", "cta", "image_prompt"],
         "additionalProperties" => false
     ];
+
+    if ($includeHashtags) {
+        $jsonSchema['properties']['hashtags'] = [
+            "type" => "array",
+            "items" => ["type" => "string"],
+            "description" => "A list of relevant hashtags for social media, ideally $totalTags trending tags."
+        ];
+        $jsonSchema['required'][] = "hashtags";
+    }
 
     // Prepare the API request payload
     $data = [
@@ -184,7 +195,7 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
         return "error";
     }
 
-    return json_decode($response['choices'][0]['message']['content'], true) ?? "error";
+    return json_decode($response['choices'][0]['message']['content'], true) ?? ["error" => true];
 }
 
 /**
@@ -193,7 +204,7 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
  * @param string $imagePrompt The prompt describing the image.
  * @param string $accountName The name of the account.
  * @param string $accountOwner The owner of the account.
- * @return string|array Image filename or an error array.
+ * @return string Image filename or an error string.
  */
 function generate_social_image(string $imagePrompt, string $accountName, string $accountOwner): string
 {

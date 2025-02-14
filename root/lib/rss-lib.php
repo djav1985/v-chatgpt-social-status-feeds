@@ -16,7 +16,7 @@
  * @param string $accountName   The name of the account for which to generate the feed.
  * @param string $accountOwner  The owner of the account (username) that owns the statuses.
  */
-function outputRssFeed($accountName, $accountOwner)
+function outputRssFeed(string $accountName, string $accountOwner): void
 {
     // Sanitize input to prevent XSS attacks
     $accountName = htmlspecialchars(strip_tags($accountName));

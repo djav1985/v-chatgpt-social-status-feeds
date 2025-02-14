@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $accountName = preg_replace('/[^a-z0-9-]/', '', strtolower(str_replace(' ', '-', trim($_POST["account"]))));
         $prompt = trim($_POST["prompt"]);
         $platform = trim($_POST["platform"]);
-        $hashtags = isset($_POST["hashtags"]) ? 1 : 0;
+        $hashtags = isset($_POST["hashtags"]) ? (int)$_POST["hashtags"] : 0;
         $link = trim($_POST["link"]);
         $cron = (count($_POST["cron"]) === 1 && $_POST["cron"][0] === 'null') ? 'null' : implode(',', $_POST["cron"]);
         $days = isset($_POST["days"]) ? (count($_POST["days"]) === 1 && $_POST["days"][0] === 'everyday' ? 'everyday' : implode(',', $_POST["days"])) : '';
