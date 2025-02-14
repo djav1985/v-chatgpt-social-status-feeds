@@ -1,5 +1,5 @@
 <p align="center">
-    <img src=".png" align="center" width="100%">
+    <img src="v-chatgpt-social-status-feeds.png" align="center" width="100%">
 </p>
 <p align="center"><h1 align="center"><code>❯v-chatgpt-social-status-feeds</code></h1></p>
 <p align="center">
@@ -19,7 +19,8 @@ I. [ Overview](#-overview)
 II. [ Features](#-features)
 III. [ Project Structure](#-project-structure)
 IV. [ Getting Started](#-getting-started)
-V. [ License](#-license)
+V. [ Additional Information](#-additional-information)
+VI. [ License](#-license)
 
 ---
 
@@ -28,6 +29,12 @@ V. [ License](#-license)
 The ChatGPT API Status Generator streamlines user management and provides real-time status updates across social media platforms. With features like user authentication, IP monitoring, and customizable account setups, it enhances security and engagement. Designed for social media managers and developers, it simplifies account oversight and content sharing.
 
 Version 2.0.0 introduces several improvements, including better database handling with all operations moved to dedicated classes, an upgraded user interface for a smoother experience, and new user settings to assist with prompt customization. Additionally, a structured API schema enhances efficiency in request handling, making the platform more robust and user-friendly.
+
+- **CSRF Protection:** All forms include CSRF tokens to prevent cross-site request forgery attacks.
+- **Input Validation:** User inputs are validated and sanitized to prevent SQL injection and XSS attacks.
+- **Session Management:** Secure session handling to prevent session fixation and hijacking.
+- **IP Blacklisting:** Monitors and blacklists suspicious IP addresses to prevent brute-force attacks.
+- **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
 
 ## Features
 
@@ -153,7 +160,7 @@ Version 2.0.0 introduces several improvements, including better database handlin
 					</tr>
 					<tr>
 						<td><b><a href='/root/public/robots.txt'>robots.txt</a></b></td>
-						<td>- Defines crawling instructions for web robots within the HestiaCP project, promoting effective and controlled indexing of site content<br>- By specifying a crawl delay, it aims to manage server load and optimize the interaction between search engines and the website<br>- This contributes to the overall web presence strategy, ensuring that important resources are accessible while maintaining performance.</td>
+						<td>- Defines crawling instructions for web robots within the project, promoting effective and controlled indexing of site content<br>- By specifying a crawl delay, it aims to manage server load and optimize the interaction between search engines and the website<br>- This contributes to the overall web presence strategy, ensuring that important resources are accessible while maintaining performance.</td>
 					</tr>
 					<tr>
 						<td><b><a href='/root/public/feeds.php'>feeds.php</a></b></td>
@@ -301,7 +308,7 @@ Install the project using the following steps:
 
 4. **Install Database:**
 
-   - Load the application in your web browser. The application will automatically install the database.
+   - Load the application in your web browser. Go to /install.php and the application will automatically install the database.
 
 5. **Default Login:**
 
