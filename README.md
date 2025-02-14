@@ -87,16 +87,7 @@ The ChatGPT API Status Generator addresses the need for seamless user management
 
 ### Project Index
 
-<details open>
-	<summary><b><code>/</code></b></summary>
-	<details> <!-- __root__ Submodule -->
-		<summary><b>__root__</b></summary>
-		<blockquote>
-			<table>
-			</table>
-		</blockquote>
-	</details>
-	<details> <!-- root Submodule -->
+<details open><!-- root Submodule -->
 		<summary><b>root</b></summary>
 		<blockquote>
 			<table>
