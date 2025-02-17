@@ -36,6 +36,8 @@ Version 2.0.0 introduces several improvements, including better database handlin
 - **IP Blacklisting:** Monitors and blacklists suspicious IP addresses to prevent brute-force attacks.
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
 
+In upcoming updates I plan on optimizing the cron system with a task query to prevent timeouts of there are many statuses to create.Also look at any other ways to secure the app. 
+
 ## Features
 
 |     |      Feature      | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
