@@ -11,14 +11,10 @@
  */
 
 require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/../autoload.php';
+require_once __DIR__ . '/autoload.php';
 require_once __DIR__ . '/lib/status-lib.php';
 // Instantiate the ErrorHandler to register handlers
 new ErrorHandler();
-
-define('IMG_AGE', 30); // Define the age of images to be purged in days
-define('MAX_STATUSES', 100); // Define the maximum number of statuses allowed per account
 
 $validJobTypes = ['reset_usage', 'run_status', 'clear_list', 'cleanup', 'purge_images'];
 $jobType = $argv[1] ?? 'run_status'; // Default job type is 'run_status'
