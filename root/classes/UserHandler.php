@@ -159,7 +159,8 @@ class UserHandler
             $db = new Database();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
-            return $db->single();
+            $result = $db->single();
+            return $result ? (array) $result : null; // Convert stdClass to array
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving user info: " . $e->getMessage(), 'error');
             return null;
