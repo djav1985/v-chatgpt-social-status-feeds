@@ -100,6 +100,28 @@ function generateAccountList(): string
         // Fetch account information
         $accountData = AccountHandler::getAcctInfo($username, $accountName);
 
+        // Parse and format days
+        $daysArr = array_map('trim', explode(',', $accountData->days));
+        $daysArr = array_map('ucfirst', $daysArr);
+        $daysStr = implode(', ', $daysArr);
+
+        // Parse and format cron times
+        $cronArr = array_filter(array_map('trim', explode(',', $accountData->cron)), function ($hour) {
+            return is_numeric($hour) && $hour !== '';
+        });
+        $timesStr = 'Off';
+        if (!empty($cronArr)) {
+            $times = array_map(function ($hour) {
+                $hour = (int)$hour;
+                if ($hour === 0) return '12 am';
+                if ($hour === 12) return '12 pm';
+                $amPm = ($hour < 12) ? 'am' : 'pm';
+                $displayHour = ($hour <= 12) ? $hour : $hour - 12;
+                return $displayHour . ' ' . $amPm;
+            }, $cronArr);
+            $timesStr = implode(', ', $times);
+        }
+
         // Prepare data attributes for each account to be used in the HTML
         $dataAttributes = "data-account-name=\"{$accountName}\" ";
         $dataAttributes .= "data-prompt=\"" . htmlspecialchars($accountData->prompt) . "\" ";
@@ -116,6 +138,8 @@ function generateAccountList(): string
         $output .= "<div class=\"card-title h5\">#" . htmlspecialchars($accountName) . "</div>";
         $output .= "<br>";
         $output .= "<p><strong>Prompt:</strong> " . htmlspecialchars($accountData->prompt) . "</p>";
+        $output .= "<p><strong>Days:</strong> " . htmlspecialchars($daysStr) . "</p>";
+        $output .= "<p><strong>Times:</strong> " . htmlspecialchars($timesStr) . "</p>";
         $output .= "<p><strong>Link:</strong> <a href=\"" . htmlspecialchars($accountData->link) . "\" target=\"_blank\">" . htmlspecialchars($accountData->link) . "</a></p>";
         $output .= "</div>";
         $output .= "<div class=\"card-body button-group\">";

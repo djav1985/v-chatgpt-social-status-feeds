@@ -78,6 +78,7 @@ class UtilityHandler
 
     /**
      * Clear the IP blacklist.
+     * This function clears the IP blacklist, removing entries older than 3 days.
      *
      * @return void
      */
@@ -85,7 +86,9 @@ class UtilityHandler
     {
         try {
             $db = new Database();
-            $db->query("DELETE FROM ip_blacklist");
+            $threeDaysAgo = time() - (3 * 24 * 60 * 60);
+            $db->query("DELETE FROM ip_blacklist WHERE timestamp < :threeDaysAgo");
+            $db->bind(':threeDaysAgo', $threeDaysAgo);
             $db->execute();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error clearing IP blacklist: " . $e->getMessage(), 'error');

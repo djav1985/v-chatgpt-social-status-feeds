@@ -49,7 +49,7 @@
                         <?php if (!empty($status->status)) : ?>
                             <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
                                 <div class="status-item card">
-                                    <img src="<?= htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive">
+                                    <img src="<?= htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive" loading="lazy">
                                     <p class="status-text">
                                         <?= htmlspecialchars($status->status) ?>
                                     </p>
@@ -87,28 +87,16 @@
     /**
      * Toggles the visibility of the status content and account action container.
      * Ensures only one section is open at a time.
+     * Saves the toggle state in localStorage.
      * @param {HTMLElement} button - The button that was clicked to toggle the section.
      */
     function toggleSection(button) {
-        console.log("toggleSection called");
         const statusContainer = button.closest('.status-container');
-        if (!statusContainer) {
-            console.log("statusContainer not found");
-            return;
-        }
+        if (!statusContainer) return;
 
         const statusContent = statusContainer.querySelector('.status-content') || statusContainer.querySelector('#no-status');
         const accountActionContainer = statusContainer.querySelector('.account-action-container');
-        console.log("statusContent:", statusContent);
-        console.log("accountActionContainer:", accountActionContainer);
-        if (!statusContent) {
-            console.log("statusContent not found");
-            return;
-        }
-        if (!accountActionContainer) {
-            console.log("accountActionContainer not found");
-            return;
-        }
+        if (!statusContent || !accountActionContainer) return;
 
         const allStatusContents = document.querySelectorAll('.status-content, #no-status');
         const allAccountActionContainers = document.querySelectorAll('.account-action-container');
@@ -132,27 +120,28 @@
         statusContent.style.display = isOpen ? 'none' : 'flex';
         accountActionContainer.style.display = isOpen ? 'none' : 'flex';
         button.querySelector('i').className = isOpen ? 'icon icon-arrow-right' : 'icon icon-arrow-up';
-        console.log("Section toggled", {
-            isOpen
-        });
+
+        // Save the state to localStorage (only one open at a time)
+        const accountName = statusContainer.querySelector('.status-campaign').textContent.trim();
+        localStorage.clear(); // Clear all previous entries
+        if (!isOpen) {
+            localStorage.setItem(accountName, true);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Close all sections except the first one
         const allStatusContents = document.querySelectorAll('.status-content, #no-status');
         const allAccountActionContainers = document.querySelectorAll('.account-action-container');
         const allButtons = document.querySelectorAll('.collapse-button');
 
         allStatusContents.forEach((content, index) => {
-            if (index !== 0) content.style.display = 'none';
-        });
+            const statusContainer = content.closest('.status-container');
+            const accountName = statusContainer.querySelector('.status-campaign').textContent.trim();
+            const isOpen = localStorage.getItem(accountName) === 'true';
 
-        allAccountActionContainers.forEach((container, index) => {
-            if (index !== 0) container.style.display = 'none';
-        });
-
-        allButtons.forEach((button, index) => {
-            if (index !== 0) button.querySelector('i').className = 'icon icon-arrow-right';
+            content.style.display = isOpen ? 'flex' : 'none';
+            allAccountActionContainers[index].style.display = isOpen ? 'flex' : 'none';
+            allButtons[index].querySelector('i').className = isOpen ? 'icon icon-arrow-up' : 'icon icon-arrow-right';
         });
 
         document.querySelectorAll('.copy-button').forEach(button => {

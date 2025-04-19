@@ -20,33 +20,36 @@ II. [ Features](#-features)
 III. [ Project Structure](#-project-structure)
 IV. [ Getting Started](#-getting-started)
 V. [ Additional Information](#-additional-information)
-VI. [ License](#-license)
+VI. [ Changelog](#-changelog)
+VII. [ License](#-license)
 
 ---
 
 ## Overview
 
-The ChatGPT API Status Generator streamlines user management and provides real-time status updates across social media platforms. With features like user authentication, IP monitoring, and customizable account setups, it enhances security and engagement. Designed for social media managers and developers, it simplifies account oversight and content sharing.
+v-chatgpt-social-status-feeds is a modular PHP application for managing, scheduling, and distributing social media status updates. It features user authentication, account management, status scheduling, and real-time RSS feeds, all with a focus on security and extensibility. Built for social media managers and developers, it streamlines multi-account status posting and automation.
 
-Version 2.0.0 introduces several improvements, including better database handling with all operations moved to dedicated classes, an upgraded user interface for a smoother experience, and new user settings to assist with prompt customization. Additionally, a structured API schema enhances efficiency in request handling, making the platform more robust and user-friendly.
+Version 2.0.0 introduces improvements such as dedicated classes for all database operations, a more intuitive user interface, and enhanced user settings for prompt customization. The API schema is now more structured, and the platform is more robust and user-friendly.
 
 - **CSRF Protection:** All forms include CSRF tokens to prevent cross-site request forgery attacks.
 - **Input Validation:** User inputs are validated and sanitized to prevent SQL injection and XSS attacks.
 - **Session Management:** Secure session handling to prevent session fixation and hijacking.
 - **IP Blacklisting:** Monitors and blacklists suspicious IP addresses to prevent brute-force attacks.
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
+- **Modular Classes:** Core logic is organized into classes such as Database, UserHandler, AccountHandler, StatusHandler, UtilityHandler, and ErrorHandler for maintainability and scalability.
 
-In upcoming updates I plan on optimizing the cron system with a task query to prevent timeouts of there are many statuses to create.Also look at any other ways to secure the app. 
+In upcoming updates, the cron system will be optimized to handle large numbers of statuses efficiently, and additional security improvements are planned.
 
 ## Features
 
-|     |      Feature      | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| :-- | :---------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>Utilizes a robust architectural pattern that includes a configuration file for managing critical parameters like <code>API authentication</code> and <code>database connections</code>.</li><li>Emphasizes <code>modularity</code> through autoloader functionality, allowing for clean organization and easy maintenance (<code>root/autoload.php</code>).</li><li>Incorporates <code>Cron</code> tasks for automated management of system operations, aiding resource management and user experience (<code>root/cron.php</code>).</li></ul> |
-| 🔩  | **Code Quality**  | <ul><li>Follows best practices for code organization and modularity, with classes dedicated to specific functionalities (e.g., <code>UserHandler</code>, <code>StatusHandler</code>).</li><li>Centralized <code>Database</code> management using PDO for improved security and performance (<code>root/classes/Database.php</code>).</li><li>Includes comprehensive error handling via the <code>ErrorHandler</code> class, transforming errors into manageable exceptions (<code>root/classes/ErrorHandler.php</code>).</li></ul>                     |
-| 📄  | **Documentation** | <ul><li>Documentation includes basic usage commands and installation processes, enhancing user onboarding.</li><li>Primarily written in <code>PHP</code> with additional <code>SQL</code> and <code>text</code> files for configuration and data handling.</li><li>Includes detailed inline comments and documentation within key files, aiding future developers in understanding code functionalities.</li></ul>                                                                                                                                     |
-| 🔌  | **Integrations**  | <ul><li>Supports integration with social media platforms for status updates, utilizing libraries to generate and manage content dynamically (<code>root/lib/status-lib.php</code>).</li><li>Provides an RSS feed for real-time updates, enhancing user engagement (<code>root/lib/rss-lib.php</code>).</li><li>Implements user authentication and session management through external libraries, ensuring secure data access (<code>root/lib/auth-lib.php</code>).</li></ul>                                                                           |
-| 🧩  |  **Modularity**   | <ul><li>Components are organized into separate classes for better maintainability and scalability (e.g., <code>AccountHandler</code>, <code>UtilityHandler</code>).</li><li>Autoloading mechanism minimizes the need for manual loading of class files, improving development efficiency (<code>root/autoload.php</code>).</li><li>Facilitates reuse of code across different parts of the application, allowing for streamlined development processes.</li></ul>                                                                                      |
+|     |      Feature      | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| :-- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ⚙️  | **Architecture**  | <ul><li>Uses a modular architecture with dedicated classes for <code>Database</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>UtilityHandler</code>, and <code>ErrorHandler</code> (see <code>root/classes/</code>).</li><li>Configuration is centralized in <code>root/config.php</code>.</li><li>Autoloading is handled by <code>root/autoload.php</code> for efficient class management.</li><li>Automated tasks are managed via <code>root/cron.php</code> and server cron jobs.</li></ul> |
+| 🔩  | **Code Quality**  | <ul><li>Follows best practices for code organization and modularity.</li><li>Centralized database management using PDO (<code>Database.php</code>).</li><li>Comprehensive error handling via <code>ErrorHandler.php</code>.</li><li>Detailed inline comments and documentation in key files.</li></ul>                                                                                                                                                                                                                                          |
+| 📄  | **Documentation** | <ul><li>Includes usage commands and installation steps for onboarding.</li><li>Primarily written in <code>PHP</code> with <code>SQL</code> for database setup and <code>text</code> files for configuration.</li></ul>                                                                                                                                                                                                                                                                                                                          |
+| 🔌  | **Integrations**  | <ul><li>Supports integration with social media platforms for status updates via <code>status-lib.php</code>.</li><li>Provides RSS feeds for real-time updates (<code>rss-lib.php</code>).</li><li>Implements user authentication and session management (<code>auth-lib.php</code>).</li></ul>                                                                                                                                                                                                                                                  |
+| 🧩  |  **Modularity**   | <ul><li>Components are organized into separate classes for maintainability and scalability.</li><li>Autoloading minimizes manual file loading.</li><li>Code is reusable across the application.</li></ul>                                                                                                                                                                                                                                                                                                                                       |
+| 🔒  |   **Security**    | <ul><li>CSRF protection on all forms.</li><li>Input validation and sanitization throughout.</li><li>Session management and IP blacklisting for brute-force protection.</li></ul>                                                                                                                                                                                                                                                                                                                                                                |
 
 ---
 
@@ -111,7 +114,6 @@ In upcoming updates I plan on optimizing the cron system with a task query to pr
 			<tr>
 				<td><b><a href='/root/cron.php'>cron.php</a></b></td>
 				<td>- Cron functionality within the ChatGPT API project manages essential scheduled tasks to ensure system efficiency and user experience<br>- It enables the resetting of API usage, executing status updates, clearing the IP blacklist, and purging outdated images<br>- This proactive maintenance aids in resource management, prevents system overload, and ensures compliance with user limits and subscription conditions, thereby supporting the overall architecture's robustness.</td>
-			</tr>
 			</table>
 			<details>
 				<summary><b>classes</b></summary>
@@ -171,7 +173,6 @@ In upcoming updates I plan on optimizing the cron system with a task query to pr
 					<tr>
 						<td><b><a href='/root/public/install.php'>install.php</a></b></td>
 						<td>- Installation of the database is facilitated through a PHP script that establishes a connection to the database using credentials from a configuration file<br>- It reads and executes an SQL script to set up the database schema and initial data<br>- Upon successful execution, it reports the status and ensures cleanup by deleting the script itself, thereby playing a critical role in the project’s deployment and setup process.</td>
-					</tr>
 					</table>
 				</blockquote>
 			</details>
@@ -272,7 +273,6 @@ In upcoming updates I plan on optimizing the cron system with a task query to pr
 					<tr>
 						<td><b><a href='/root/lib/load-lib.php'>load-lib.php</a></b></td>
 						<td>- Facilitates the loading of necessary helper, forms, and page files in the ChatGPT API project by verifying user session validity and permissions<br>- It ensures that only authenticated and authorized users can access specific resources while implementing security measures against blacklisted IP addresses and XSS attacks<br>- This file plays a critical role in maintaining the overall functionality and security of the codebase architecture.</td>
-					</tr>
 					</table>
 				</blockquote>
 			</details>
@@ -289,7 +289,7 @@ In upcoming updates I plan on optimizing the cron system with a task query to pr
 Before getting started with the installation, ensure your runtime environment meets the following requirements:
 
 - **Web Server:** Apache
-- **Programming Language:** PHP 7.4+
+- **Programming Language:** PHP 8.0+
 - **Database:** MySQL
 
 ### ⚙️ Installation
@@ -350,6 +350,10 @@ Login as `admin` with the password `admin`. Follow these steps:
    - Click **Add/Update**.
 
 Statuses are generated on schedule and added to the respective account feed and the user's collective omni feed. Use the feed with tools like IFTTT to update social media.
+
+---
+
+## Changelog
 
 ---
 

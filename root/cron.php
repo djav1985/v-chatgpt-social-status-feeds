@@ -24,29 +24,73 @@ new ErrorHandler();
 // Increase the maximum execution time to prevent timeouts
 set_time_limit(0);
 
+// Add a helper function for logging
+function logDebug($message)
+{
+    global $debugMode;
+    if ($debugMode) {
+        $logFile = __DIR__ . '/cron.log';
+        $timestamp = date('Y-m-d H:i:s');
+        file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
+    }
+}
+
 $validJobTypes = ['reset_usage', 'run_status', 'clear_list', 'cleanup', 'purge_images'];
 $jobType = $argv[1] ?? 'run_status'; // Default job type is 'run_status'
+
+// Check for debug mode
+$debugMode = isset($argv[2]) && $argv[2] === 'debug';
+logDebug("Starting cron job with job type: $jobType");
+
 if (!in_array($jobType, $validJobTypes)) {
+    logDebug("Invalid job type specified: $jobType");
     die("Invalid job type specified.");
 }
 
+// Update switch cases to include logging
 switch ($jobType) {
     case 'reset_usage':
-        if (!resetApi()) die(1);
+        logDebug("Executing reset_usage job.");
+        if (!resetApi()) {
+            logDebug("reset_usage job failed.");
+            die(1);
+        }
+        logDebug("reset_usage job completed successfully.");
         break;
     case 'run_status':
-        if (!runStatusUpdateJobs()) die(1);
+        logDebug("Executing run_status job.");
+        if (!runStatusUpdateJobs()) {
+            logDebug("run_status job failed.");
+            die(1);
+        }
+        logDebug("run_status job completed successfully.");
         break;
     case 'clear_list':
-        if (!clearList()) die(1);
+        logDebug("Executing clear_list job.");
+        if (!clearList()) {
+            logDebug("clear_list job failed.");
+            die(1);
+        }
+        logDebug("clear_list job completed successfully.");
         break;
     case 'cleanup':
-        if (!cleanupStatuses()) die(1);
+        logDebug("Executing cleanup job.");
+        if (!cleanupStatuses()) {
+            logDebug("cleanup job failed.");
+            die(1);
+        }
+        logDebug("cleanup job completed successfully.");
         break;
     case 'purge_images':
-        if (!purgeImages()) die(1);
+        logDebug("Executing purge_images job.");
+        if (!purgeImages()) {
+            logDebug("purge_images job failed.");
+            die(1);
+        }
+        logDebug("purge_images job completed successfully.");
         break;
     default:
+        logDebug("Invalid job type specified: $jobType");
         ErrorHandler::logMessage("Invalid job type specified: $jobType", 'error');
         die(1);
 }
@@ -58,41 +102,76 @@ switch ($jobType) {
  */
 function runStatusUpdateJobs(): bool
 {
+    global $debugMode;
+    logDebug("Fetching all accounts for status update.");
     $accounts = AccountHandler::getAllAccounts();
     if ($accounts === false) {
+        logDebug("Failed to get accounts.");
         ErrorHandler::logMessage("CRON: Failed to get accounts.", 'error');
         return false;
     }
 
     $currentHour = date('H');
     $currentDay = strtolower(date('l'));
+    logDebug("Current hour: $currentHour, Current day: $currentDay.");
 
     foreach ($accounts as $account) {
         $accountOwner = $account->username;
         $accountName = $account->account;
-        $cron = explode(',', $account->cron);
-        $days = explode(',', $account->days);
+        logDebug("Processing account: $accountName owned by $accountOwner.");
 
+        $days = array_map('strtolower', array_map('trim', explode(',', $account->days)));
+        // Check if this account should be processed today
+        $shouldProcess = in_array('everyday', $days) || in_array($currentDay, $days);
+        if (!$shouldProcess) {
+            logDebug("Skipping account: $accountName, not scheduled for today.");
+            continue;
+        }
+
+        // Check if cron field is null, empty, or the string 'null'
+        if (is_null($account->cron) || trim($account->cron) === '' || strtolower(trim($account->cron)) === 'null') {
+            logDebug("Skipping account: $accountName, cron field is null, empty, or 'null'.");
+            continue;
+        }
+
+        $cron = array_filter(array_map('trim', explode(',', $account->cron)), function ($hour) {
+            return is_numeric($hour) && $hour !== '';
+        });
+        if (empty($cron)) {
+            logDebug("Skipping account: $accountName, cron field contains no valid hours.");
+            continue;
+        }
         foreach ($cron as $scheduledHour) {
             $scheduledHour = sprintf('%02d', (int)$scheduledHour);
+            logDebug("Scheduled hour: $scheduledHour.");
 
-            if ($scheduledHour === $currentHour && (in_array('everyday', $days) || in_array($currentDay, $days))) {
+            if ($scheduledHour === $currentHour) {
+                logDebug("Scheduled time matches current time for account: $accountName.");
+
                 if (!StatusHandler::hasStatusBeenPosted($accountName, $accountOwner, $scheduledHour)) {
+                    logDebug("Status has not been posted yet for this hour.");
                     $userInfo = UserHandler::getUserInfo($accountOwner);
 
                     // Check if the user's subscription has expired
                     $now = new DateTime();
                     $expires = new DateTime($userInfo->expires);
                     if ($now > $expires) {
+                        logDebug("User subscription expired. Setting max API calls to 0.");
                         $userInfo->max_api_calls = 0;
                         UserHandler::updateMaxApiCalls($accountOwner, 0);
                     }
 
                     if ($userInfo->used_api_calls < $userInfo->max_api_calls) {
+                        logDebug("User has remaining API calls. Incrementing used API calls.");
                         $userInfo->used_api_calls += 1;
                         UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
                         generateStatus($accountName, $accountOwner);
+                        logDebug("Status generated for account: $accountName.");
+                    } else {
+                        logDebug("User has exceeded their API call limit.");
                     }
+                } else {
+                    logDebug("Status has already been posted for this hour.");
                 }
             }
         }
@@ -101,7 +180,6 @@ function runStatusUpdateJobs(): bool
     return true;
 }
 
-
 /**
  * Clean up old statuses for all accounts.
  * This function checks the number of statuses for each account and deletes the oldest ones if they exceed the maximum allowed.
@@ -109,19 +187,25 @@ function runStatusUpdateJobs(): bool
  */
 function cleanupStatuses(): bool
 {
+    global $debugMode;
+    logDebug("Fetching all accounts for cleanup.");
     $accounts = AccountHandler::getAllAccounts();
     if ($accounts === false) {
+        logDebug("Failed to get accounts.");
         ErrorHandler::logMessage("CRON: Failed to get accounts.", 'error');
         return false;
     }
 
     foreach ($accounts as $account) {
         $accountName = $account->account;
+        logDebug("Processing account: $accountName for cleanup.");
         $statusCount = StatusHandler::countStatuses($accountName);
 
         if ($statusCount > MAX_STATUSES) {
             $deleteCount = $statusCount - MAX_STATUSES;
+            logDebug("Deleting $deleteCount old statuses for account: $accountName.");
             if (!StatusHandler::deleteOldStatuses($accountName, $deleteCount)) {
+                logDebug("Failed to delete old statuses for account: $accountName.");
                 ErrorHandler::logMessage("CRON: Failed to delete old statuses for account: $accountName", 'error');
                 return false;
             }
@@ -137,6 +221,8 @@ function cleanupStatuses(): bool
  */
 function purgeImages(): bool
 {
+    global $debugMode;
+    logDebug("Purging old images.");
     $imageDir = __DIR__ . '/public/images/';
     $files = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
@@ -151,7 +237,9 @@ function purgeImages(): bool
             $fileAge = ($now - $fileinfo->getMTime()) / 86400;
 
             if ($fileAge > IMG_AGE) {
+                logDebug("Deleting image: $filePath.");
                 if (!unlink($filePath)) {
+                    logDebug("Failed to delete image: $filePath.");
                     ErrorHandler::logMessage("CRON: Failed to delete image: $filePath", 'error');
                     return false;
                 }
@@ -168,10 +256,14 @@ function purgeImages(): bool
  */
 function resetApi(): bool
 {
+    global $debugMode;
+    logDebug("Resetting API usage for all users.");
     if (!UserHandler::resetAllApiUsage()) {
+        logDebug("Failed to reset API usage.");
         ErrorHandler::logMessage("CRON: Failed to reset API usage.", 'error');
         return false;
     }
+    logDebug("API usage reset successfully.");
     return true;
 }
 
@@ -182,9 +274,13 @@ function resetApi(): bool
  */
 function clearList(): bool
 {
+    global $debugMode;
+    logDebug("Clearing IP blacklist.");
     if (!UtilityHandler::clearIpBlacklist()) {
+        logDebug("Failed to clear IP blacklist.");
         ErrorHandler::logMessage("CRON: Failed to clear IP blacklist.", 'error');
         return false;
     }
+    logDebug("IP blacklist cleared successfully.");
     return true;
 }

@@ -4,20 +4,15 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^images/.*\.png$ /assets/images/default.png [L]
 
-# redirect '/' to '/home' for external requests only
-RewriteCond %{THE_REQUEST} \s/\s [NC]
-RewriteRule ^$ /home [L,R=301]
+# Redirect '/' and '/index.php' to '/home' for external requests only
+RewriteCond %{THE_REQUEST} \s(/|/index\.php)\s [NC]
+RewriteRule ^(index\.php)?$ /home [L,R=301]
 
-# redirect '/index.php' to '/home' for external requests only
-RewriteCond %{THE_REQUEST} \s/index\.php\s [NC]
-RewriteRule ^index\.php$ /home [L,R=301]
-
-# Internally rewrite /home, /users, /accounts, to index.php?page=home, index.php?page=users, and index.php?page=accounts
+# Internally rewrite /home, /users, /accounts, /info to index.php?page=home, index.php?page=users, etc.
 RewriteCond %{REQUEST_URI} ^/(home|users|accounts|info)$
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([^/]*)$ /index.php?page=$1 [L]
-
+RewriteRule ^(home|users|accounts|info)$ /index.php?page=$1 [L]
 
 # Enable caching for certain file types
 <IfModule mod_expires.c>

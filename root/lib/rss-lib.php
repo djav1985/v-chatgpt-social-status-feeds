@@ -82,8 +82,8 @@ function outputRssFeed(string $accountName, string $accountOwner): void
         // Include image enclosure if available
         if (!empty($status->status_image)) {
             $imageUrl = DOMAIN . "/images/" . htmlspecialchars($accountOwner) . "/" . htmlspecialchars($status->account) . "/" . htmlspecialchars($status->status_image);
-            $imageFilePath = $_SERVER['DOCUMENT_ROOT'] . "/images/" . htmlspecialchars($accountOwner) . "/" . htmlspecialchars($status->account) . "/" . htmlspecialchars($status->status_image);
-            $imageFileSize = filesize($imageFilePath);
+            $imageFilePath = __DIR__ . '/../public/images/' . htmlspecialchars($accountOwner) . '/' . htmlspecialchars($status->account) . '/' . htmlspecialchars($status->status_image);
+            $imageFileSize = file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
             $enclosureTag = '<enclosure url="' . $imageUrl . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
         }
 
