@@ -177,23 +177,44 @@ class StatusHandler
      * @param string $currentTimeSlot
      * @return bool
      */
-    public static function hasStatusBeenPosted(string $accountName, string $accountOwner, string $currentTimeSlot): bool
+    public static function hasStatusBeenPosted(string $accountName, string $accountOwner, string $hour): bool
     {
         try {
             $db = new Database();
-            $startTime = date('Y-m-d H:i:s', strtotime($currentTimeSlot . ' -15 minutes'));
-            $endTime = date('Y-m-d H:i:s', strtotime($currentTimeSlot . ' +15 minutes'));
+            $start = date('Y-m-d ') . sprintf('%02d', $hour) . ':00:00';
+            $end = date('Y-m-d ') . sprintf('%02d', $hour) . ':59:59';
 
-            $db->query("SELECT COUNT(*) as count FROM status_updates WHERE username = :username AND account = :account AND created_at BETWEEN :startTime AND :endTime");
+            $db->query("SELECT COUNT(*) as count FROM status_updates WHERE username = :username AND account = :account AND created_at BETWEEN :start AND :end");
             $db->bind(':username', $accountOwner);
             $db->bind(':account', $accountName);
-            $db->bind(':startTime', $startTime);
-            $db->bind(':endTime', $endTime);
+            $db->bind(':start', $start);
+            $db->bind(':end', $end);
 
             return $db->single()->count > 0;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error checking if status has been posted: " . $e->getMessage(), 'error');
             return false;
+        }
+    }
+
+    /**
+     * Get the latest status update for a specific account.
+     *
+     * @param string $accountName
+     * @param string $accountOwner
+     * @return array|null
+     */
+    public static function getLatestStatusUpdate(string $accountName, string $accountOwner): ?array
+    {
+        try {
+            $db = new Database();
+            $db->query("SELECT * FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at DESC LIMIT 1");
+            $db->bind(':account', $accountName);
+            $db->bind(':username', $accountOwner);
+            return $db->single();
+        } catch (Exception $e) {
+            ErrorHandler::logMessage("Error retrieving latest status update: " . $e->getMessage(), 'error');
+            return null;
         }
     }
 }

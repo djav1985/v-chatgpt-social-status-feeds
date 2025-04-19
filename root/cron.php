@@ -10,11 +10,19 @@
  * License: MIT
  */
 
+ini_set('max_execution_time', 0); // Unlimited execution time
+set_time_limit(0);                // For compatibility
+ini_set('memory_limit', '512M'); // Adjust as needed
+
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/autoload.php';
 require_once __DIR__ . '/lib/status-lib.php';
+
 // Instantiate the ErrorHandler to register handlers
 new ErrorHandler();
+
+// Increase the maximum execution time to prevent timeouts
+set_time_limit(0);
 
 $validJobTypes = ['reset_usage', 'run_status', 'clear_list', 'cleanup', 'purge_images'];
 $jobType = $argv[1] ?? 'run_status'; // Default job type is 'run_status'
@@ -50,63 +58,49 @@ switch ($jobType) {
  */
 function runStatusUpdateJobs(): bool
 {
-    try {
-        $accounts = AccountHandler::getAllAccounts();
-        if ($accounts === false) {
-            return false;
-        }
+    $accounts = AccountHandler::getAllAccounts();
+    if ($accounts === false) {
+        ErrorHandler::logMessage("CRON: Failed to get accounts.", 'error');
+        return false;
+    }
 
-        $currentHour = date('H');
-        $currentDay = strtolower(date('l'));
-        $currentMinute = date('i');
-        $currentTimeSlot = sprintf("%02d", $currentHour) . ':' . $currentMinute;
+    $currentHour = date('H');
+    $currentDay = strtolower(date('l'));
 
-        foreach ($accounts as $account) {
-            $accountOwner = $account->username;
-            $accountName = $account->account;
-            $cron = explode(',', $account->cron);
-            $days = explode(',', $account->days);
+    foreach ($accounts as $account) {
+        $accountOwner = $account->username;
+        $accountName = $account->account;
+        $cron = explode(',', $account->cron);
+        $days = explode(',', $account->days);
 
-            foreach ($cron as $scheduledHour) {
-                // Allow a time window of 1 hour
-                $scheduledTime = DateTime::createFromFormat('H:i', $scheduledHour);
-                $currentTime = DateTime::createFromFormat('H:i', $currentTimeSlot);
-                $interval = $currentTime->diff($scheduledTime);
+        foreach ($cron as $scheduledHour) {
+            $scheduledHour = sprintf('%02d', (int)$scheduledHour);
 
-                if ($interval->h == 0 && $interval->i <= 59 && (in_array('everyday', $days) || in_array($currentDay, $days))) {
-                    if (!StatusHandler::hasStatusBeenPosted($accountName, $accountOwner, $scheduledHour)) {
-                        try {
-                            $userInfo = UserHandler::getUserInfo($accountOwner);
+            if ($scheduledHour === $currentHour && (in_array('everyday', $days) || in_array($currentDay, $days))) {
+                if (!StatusHandler::hasStatusBeenPosted($accountName, $accountOwner, $scheduledHour)) {
+                    $userInfo = UserHandler::getUserInfo($accountOwner);
 
-                            // Check if the user's subscription has expired
-                            $currentDateTime = new DateTime();
-                            $expiresDateTime = new DateTime($userInfo->expires);
+                    // Check if the user's subscription has expired
+                    $now = new DateTime();
+                    $expires = new DateTime($userInfo->expires);
+                    if ($now > $expires) {
+                        $userInfo->max_api_calls = 0;
+                        UserHandler::updateMaxApiCalls($accountOwner, 0);
+                    }
 
-                            if ($currentDateTime > $expiresDateTime) {
-                                $userInfo->max_api_calls = 0;
-                                UserHandler::updateMaxApiCalls($accountOwner, 0);
-                            }
-
-                            // Ensure the user has not exceeded their API call limit
-                            if ($userInfo && $userInfo->used_api_calls < $userInfo->max_api_calls) {
-                                $userInfo->used_api_calls += 1;
-                                UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-                                generateStatus($accountName, $accountOwner);
-                            }
-                        } catch (Exception $e) {
-                            ErrorHandler::logMessage("CRON: Status generation failed for {$accountName} - " . $e->getMessage(), 'exception');
-                            return false;
-                        }
+                    if ($userInfo->used_api_calls < $userInfo->max_api_calls) {
+                        $userInfo->used_api_calls += 1;
+                        UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+                        generateStatus($accountName, $accountOwner);
                     }
                 }
             }
         }
-    } catch (Exception $e) {
-        ErrorHandler::logMessage("CRON: Status update job failed - " . $e->getMessage(), 'exception');
-        return false;
     }
+
     return true;
 }
+
 
 /**
  * Clean up old statuses for all accounts.
@@ -115,21 +109,23 @@ function runStatusUpdateJobs(): bool
  */
 function cleanupStatuses(): bool
 {
-    try {
-        $accounts = AccountHandler::getAllAccounts();
+    $accounts = AccountHandler::getAllAccounts();
+    if ($accounts === false) {
+        ErrorHandler::logMessage("CRON: Failed to get accounts.", 'error');
+        return false;
+    }
 
-        foreach ($accounts as $account) {
-            $accountName = $account->account;
-            $statusCount = StatusHandler::countStatuses($accountName);
+    foreach ($accounts as $account) {
+        $accountName = $account->account;
+        $statusCount = StatusHandler::countStatuses($accountName);
 
-            if ($statusCount > MAX_STATUSES) {
-                $deleteCount = $statusCount - MAX_STATUSES;
-                StatusHandler::deleteOldStatuses($accountName, $deleteCount);
+        if ($statusCount > MAX_STATUSES) {
+            $deleteCount = $statusCount - MAX_STATUSES;
+            if (!StatusHandler::deleteOldStatuses($accountName, $deleteCount)) {
+                ErrorHandler::logMessage("CRON: Failed to delete old statuses for account: $accountName", 'error');
+                return false;
             }
         }
-    } catch (Exception $e) {
-        ErrorHandler::logMessage("CRON: Cleanup statuses job failed - " . $e->getMessage(), 'exception');
-        return false;
     }
     return true;
 }
@@ -141,28 +137,26 @@ function cleanupStatuses(): bool
  */
 function purgeImages(): bool
 {
-    try {
-        $imageDir = __DIR__ . '/public/images/';
-        $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::CHILD_FIRST
-        );
+    $imageDir = __DIR__ . '/public/images/';
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
 
-        $now = time();
+    $now = time();
 
-        foreach ($files as $fileinfo) {
-            if ($fileinfo->isFile() && $fileinfo->getExtension() == 'png') {
-                $filePath = $fileinfo->getRealPath();
-                $fileAge = ($now - $fileinfo->getMTime()) / 86400;
+    foreach ($files as $fileinfo) {
+        if ($fileinfo->isFile() && $fileinfo->getExtension() == 'png') {
+            $filePath = $fileinfo->getRealPath();
+            $fileAge = ($now - $fileinfo->getMTime()) / 86400;
 
-                if ($fileAge > IMG_AGE) {
-                    unlink($filePath);
+            if ($fileAge > IMG_AGE) {
+                if (!unlink($filePath)) {
+                    ErrorHandler::logMessage("CRON: Failed to delete image: $filePath", 'error');
+                    return false;
                 }
             }
         }
-    } catch (Exception $e) {
-        ErrorHandler::logMessage("CRON: Image purge failed - " . $e->getMessage(), 'exception');
-        return false;
     }
     return true;
 }
@@ -174,10 +168,8 @@ function purgeImages(): bool
  */
 function resetApi(): bool
 {
-    try {
-        UserHandler::resetAllApiUsage();
-    } catch (Exception $e) {
-        ErrorHandler::logMessage("CRON: Reset API usage job failed - " . $e->getMessage(), 'exception');
+    if (!UserHandler::resetAllApiUsage()) {
+        ErrorHandler::logMessage("CRON: Failed to reset API usage.", 'error');
         return false;
     }
     return true;
@@ -190,10 +182,8 @@ function resetApi(): bool
  */
 function clearList(): bool
 {
-    try {
-        UtilityHandler::clearIpBlacklist();
-    } catch (Exception $e) {
-        ErrorHandler::logMessage("CRON: Clear IP blacklist job failed - " . $e->getMessage(), 'exception');
+    if (!UtilityHandler::clearIpBlacklist()) {
+        ErrorHandler::logMessage("CRON: Failed to clear IP blacklist.", 'error');
         return false;
     }
     return true;
