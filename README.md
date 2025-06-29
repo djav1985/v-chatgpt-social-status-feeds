@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./v-chatgpt-social-status-feeds.png" align="center" width="100%">
+    <img src="v-chatgpt-social-status-feeds.png" align="center" width="100%">
 </p>
 <p align="center"><h1 align="center"><code>❯v-chatgpt-social-status-feeds</code></h1></p>
 <p align="center">
