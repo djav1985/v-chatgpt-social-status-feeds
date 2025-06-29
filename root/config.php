@@ -11,7 +11,7 @@
  */
 
 // OpenAI API key for authentication
-define('API_KEY', 'sk-ai-statuses-rEhlPL4JBco1cf509j9LT3BlbkFJThsFGS38xo7y9VXXT41l');
+define('API_KEY', '');
 
 // Endpoint for OpenAI's chat completion API
 define('API_ENDPOINT', 'https://api.openai.com/v1/');
