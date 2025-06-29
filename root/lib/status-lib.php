@@ -133,13 +133,15 @@ function openai_api_request(string $endpoint, ?array $data = null): array
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 
     $response = curl_exec($ch);
-    curl_close($ch);
+    $error = curl_error($ch);
 
     if ($response === false) {
-        $error = curl_error($ch);
         ErrorHandler::logMessage("Failed to make API request to $endpoint: $error", 'error');
+        curl_close($ch);
         return ["error" => "Failed to make API request to $endpoint: $error"];
     }
+
+    curl_close($ch);
 
     return json_decode($response, true);
 }

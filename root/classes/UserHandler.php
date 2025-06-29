@@ -112,10 +112,6 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             $db->bind(':username', $username);
             $db->execute();
 
-            $db->query("DELETE FROM logs WHERE username = :username");
-            $db->bind(':username', $username);
-            $db->execute();
-
             $db->commit();
             return true;
         } catch (Exception $e) {

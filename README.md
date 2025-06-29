@@ -38,7 +38,7 @@ Version 2.0.0 introduces improvements such as dedicated classes for all database
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
 - **Modular Classes:** Core logic is organized into classes such as Database, UserHandler, AccountHandler, StatusHandler, UtilityHandler, and ErrorHandler for maintainability and scalability.
 
-In upcoming updates, the cron system will be optimized to handle large numbers of statuses efficiently, and additional security improvements are planned.
+In upcoming updates I plan on optimizing the cron system with a task queue to prevent timeouts if there are many statuses to create. Also look at any other ways to secure the app.
 
 ## Features
 
@@ -221,10 +221,6 @@ In upcoming updates, the cron system will be optimized to handle large numbers o
 							<tr>
 								<td><b><a href='/root/app/helpers/info-helper.php'>info-helper.php</a></b></td>
 								<td>- Facilitates user profile management by providing helper functions that generate HTML data attributes and construct personalized system messages based on user information<br>- These functions enhance the user experience within the ChatGPT API by integrating user-specific data, allowing for dynamic and contextual interactions, which are essential for tailoring responses and functionalities in the overall codebase architecture.</td>
-							</tr>
-							<tr>
-								<td><b><a href='/root/app/helpers/home-helper.php:Zone.Identifier'>home-helper.php:Zone.Identifier</a></b></td>
-								<td>- Facilitating the transfer of zone-related metadata, the home-helper.php component assists in managing contextual data linked to user interactions within the application<br>- This enhances the overall architectural integrity by ensuring that relevant information about the user’s environment is accurately captured, thereby supporting features that rely on geographical or contextual awareness across the broader codebase.</td>
 							</tr>
 							</table>
 						</blockquote>
