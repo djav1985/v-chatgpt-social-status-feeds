@@ -80,9 +80,9 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      * Clear the IP blacklist.
      * This function clears the IP blacklist, removing entries older than 3 days.
      *
-     * @return void
+     * @return bool True on success, false on failure
      */
-    public static function clearIpBlacklist(): void
+    public static function clearIpBlacklist(): bool
     {
         try {
             $db = new Database();
@@ -90,8 +90,10 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $db->query("DELETE FROM ip_blacklist WHERE timestamp < :threeDaysAgo");
             $db->bind(':threeDaysAgo', $threeDaysAgo);
             $db->execute();
+            return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error clearing IP blacklist: " . $e->getMessage(), 'error');
+            return false;
         }
     }
 

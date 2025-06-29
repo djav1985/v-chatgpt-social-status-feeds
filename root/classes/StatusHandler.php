@@ -202,9 +202,9 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
      *
      * @param string $accountName
      * @param string $accountOwner
-     * @return array|null
+     * @return object|null
      */
-    public static function getLatestStatusUpdate(string $accountName, string $accountOwner): ?array
+    public static function getLatestStatusUpdate(string $accountName, string $accountOwner): ?object
     {
         try {
             $db = new Database();
