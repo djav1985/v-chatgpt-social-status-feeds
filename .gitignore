@@ -396,3 +396,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Composer (PHP dependency manager)
+vendor/
+composer.lock
+composer.json
+phpcs.xml

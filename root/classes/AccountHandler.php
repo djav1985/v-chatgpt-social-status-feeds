@@ -10,7 +10,7 @@
  * License: MIT
  */
 
-class AccountHandler
+class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
     /**
      * Get all accounts from the database.

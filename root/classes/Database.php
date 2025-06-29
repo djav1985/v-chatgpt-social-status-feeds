@@ -10,7 +10,7 @@
  * License: MIT
  */
 
-class Database
+class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
     private static ?PDO $dbh = null;
     private static ?int $lastUsedTime = null; // Tracks the last time the connection was used
@@ -39,9 +39,9 @@ class Database
         if (self::$dbh === null) {
             $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME;
             $options = [
-                PDO::ATTR_PERSISTENT => true,
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-            ];
+                        PDO::ATTR_PERSISTENT => true,
+                        PDO::ATTR_ERRMODE    => PDO::ERRMODE_EXCEPTION,
+                       ];
 
             try {
                 self::$dbh = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
@@ -101,7 +101,7 @@ class Database
      * @param mixed $value
      * @param int|null $type
      */
-    public function bind(string $param, $value, int $type = null): void
+    public function bind(string $param, $value, ?int $type = null): void
     {
         if (is_null($type)) {
             switch (true) {
@@ -227,11 +227,11 @@ class Database
     private function isConnectionError(PDOException $e): bool
     {
         $connectionErrors = [
-            '2006', // MySQL server has gone away
-            '2013', // Lost connection to MySQL server during query
-            '1047', // Unknown command
-            '1049', // Unknown database
-        ];
+                             '2006', // MySQL server has gone away
+                             '2013', // Lost connection to MySQL server during query
+                             '1047', // Unknown command
+                             '1049', // Unknown database
+                            ];
 
         return in_array($e->getCode(), $connectionErrors);
     }

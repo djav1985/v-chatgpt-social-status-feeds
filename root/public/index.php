@@ -1,13 +1,17 @@
 <?php
 
+
 /**
  * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
- * File: index.php
- * Description: Main dashboard file for the ChatGPT API Status Generator.
- * License: MIT
+ * @category  Dashboard
+ * @package   ChatGPTSocialStatusFeeds
+ * @author    Vontainment <info@vontainment.com>
+ * @copyright 2023-2025 Vontainment
+ * @license   MIT https://opensource.org/licenses/MIT
+ * @link      https://vontainment.com/
+ * @version   2.0.0
+ * @file      index.php
+ * @desc      Main dashboard file for the ChatGPT API Status Generator.
  */
 
 session_start();

@@ -53,7 +53,16 @@ function generateAccountDetails(): string
 function generateDaysOptions(): string
 {
     // Define the days of the week
-    $days = ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    $days = [
+             'everyday',
+             'sunday',
+             'monday',
+             'tuesday',
+             'wednesday',
+             'thursday',
+             'friday',
+             'saturday',
+            ];
     $options = '';
     foreach ($days as $day) {
         // Generate HTML option for each day
@@ -113,8 +122,12 @@ function generateAccountList(): string
         if (!empty($cronArr)) {
             $times = array_map(function ($hour) {
                 $hour = (int)$hour;
-                if ($hour === 0) return '12 am';
-                if ($hour === 12) return '12 pm';
+                if ($hour === 0) {
+                    return '12 am';
+                }
+                if ($hour === 12) {
+                    return '12 pm';
+                }
                 $amPm = ($hour < 12) ? 'am' : 'pm';
                 $displayHour = ($hour <= 12) ? $hour : $hour - 12;
                 return $displayHour . ' ' . $amPm;

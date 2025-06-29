@@ -4,7 +4,7 @@
  * Class ErrorHandler
  * Handles error and exception logging and display.
  */
-class ErrorHandler
+class ErrorHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
     /**
      * ErrorHandler constructor.

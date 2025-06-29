@@ -1,4 +1,5 @@
 <?php
+
 // Autoload function to automatically include class files
 spl_autoload_register(function ($class_name) {
     $file = __DIR__ . '/classes/' . $class_name . '.php';

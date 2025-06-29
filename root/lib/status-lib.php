@@ -29,7 +29,10 @@ function generateStatus(string $accountName, string $accountOwner): ?array
     if (!$accountInfo || !$userInfo) {
         $error = "Error: Account or user not found for $accountOwner / $accountName";
         ErrorHandler::logMessage($error, 'error');
-        return ['success' => false, 'message' => $error];
+        return [
+                'success' => false,
+                'message' => $error,
+               ];
     }
 
     $prompt = $accountInfo->prompt;
@@ -69,7 +72,10 @@ function generateStatus(string $accountName, string $accountOwner): ?array
         $errorDetail = is_array($statusResponse['error']) ? json_encode($statusResponse['error']) : $statusResponse['error'];
         $error = "Status generation failed for $accountName owned by $accountOwner: $errorDetail";
         ErrorHandler::logMessage($error, 'error');
-        return ['success' => false, 'message' => $error];
+        return [
+                'success' => false,
+                'message' => $error,
+               ];
     }
 
     $statusText = trim($statusResponse['status'] ?? '');
@@ -89,13 +95,19 @@ function generateStatus(string $accountName, string $accountOwner): ?array
     if (isset($imageResponse['error'])) {
         $error = "Image generation failed for $accountName owned by $accountOwner: " . $imageResponse['error'];
         ErrorHandler::logMessage($error, 'error');
-        return ['success' => false, 'message' => $error];
+        return [
+                'success' => false,
+                'message' => $error,
+               ];
     }
 
     $imageName = $imageResponse['image_name'];
     StatusHandler::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
 
-    return ['success' => true, 'message' => 'Status generated successfully'];
+    return [
+            'success' => true,
+            'message' => 'Status generated successfully',
+           ];
 }
 
 /**
@@ -109,9 +121,9 @@ function openai_api_request(string $endpoint, ?array $data = null): array
 {
     $url = API_ENDPOINT . $endpoint;
     $headers = [
-        "Authorization: Bearer " . API_KEY,
-        "Content-Type: application/json"
-    ];
+                "Authorization: Bearer " . API_KEY,
+                "Content-Type: application/json",
+               ];
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -149,51 +161,61 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
 {
     // Build JSON Schema
     $jsonSchema = [
-        "type" => "object",
-        "properties" => [
-            "status" => [
-                "type" => "string",
-                "description" => "A catchy and engaging text for the social media post, ideally between 100-150 characters."
-            ],
-            "cta" => [
-                "type" => "string",
-                "description" => "A clear and concise call to action, encouraging users to engage at $link"
-            ],
-            "image_prompt" => [
-                "type" => "string",
-                "description" => "Write a prompt to generate an image to go with this status."
-            ]
-        ],
-        "required" => ["status", "cta", "image_prompt"],
-        "additionalProperties" => false
-    ];
+                   "type"                 => "object",
+                   "properties"           => [
+                                              "status"       => [
+                                                                 "type"        => "string",
+                                                                 "description" => "A catchy and engaging text for the social media post, ideally between 100-150 characters.",
+                                                                ],
+                                              "cta"          => [
+                                                                 "type"        => "string",
+                                                                 "description" => "A clear and concise call to action, encouraging users to engage at $link",
+                                                                ],
+                                              "image_prompt" => [
+                                                                 "type"        => "string",
+                                                                 "description" => "Write a prompt to generate an image to go with this status.",
+                                                                ],
+                                             ],
+                   "required"             => [
+                                              "status",
+                                              "cta",
+                                              "image_prompt",
+                                             ],
+                   "additionalProperties" => false,
+                  ];
 
     if ($includeHashtags) {
         $jsonSchema['properties']['hashtags'] = [
-            "type" => "string",
-            "description" => "A space-separated string of relevant hashtags for social media, ideally $totalTags trending tags."
-        ];
+                                                 "type"        => "string",
+                                                 "description" => "A space-separated string of relevant hashtags for social media, ideally $totalTags trending tags.",
+                                                ];
         $jsonSchema['required'][] = "hashtags";
     }
 
     // Prepare the chat/completions request with json_schema
     $data = [
-        "model" => MODEL,
-        "messages" => [
-            ["role" => "system", "content" => $systemMessage],
-            ["role" => "user", "content" => $prompt]
-        ],
-        "response_format" => [
-            "type" => "json_schema",
-            "json_schema" => [
-                "name" => "generate_status",
-                "schema" => $jsonSchema,
-                "strict" => true
-            ]
-        ],
-        "max_tokens" => $statusTokens,
-        "temperature" => TEMPERATURE
-    ];
+             "model"           => MODEL,
+             "messages"        => [
+                                   [
+                                    "role"    => "system",
+                                    "content" => $systemMessage,
+                                   ],
+                                   [
+                                    "role"    => "user",
+                                    "content" => $prompt,
+                                   ],
+                                  ],
+             "response_format" => [
+                                   "type"        => "json_schema",
+                                   "json_schema" => [
+                                                     "name"   => "generate_status",
+                                                     "schema" => $jsonSchema,
+                                                     "strict" => true,
+                                                    ],
+                                  ],
+             "max_tokens"      => $statusTokens,
+             "temperature"     => TEMPERATURE,
+            ];
 
     // API call to /v1/chat/completions
     $response = openai_api_request("/chat/completions", $data);
@@ -218,12 +240,12 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
 function generate_social_image(string $imagePrompt, string $accountName, string $accountOwner): array
 {
     $data = [
-        "model" => "dall-e-3",
-        "prompt" => $imagePrompt,
-        "n" => 1,
-        "quality" => "standard",
-        "size" => "1792x1024"
-    ];
+             "model"   => "dall-e-3",
+             "prompt"  => $imagePrompt,
+             "n"       => 1,
+             "quality" => "standard",
+             "size"    => "1792x1024",
+            ];
 
     $response = openai_api_request("/images/generations", $data);
 

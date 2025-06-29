@@ -9,6 +9,7 @@
  * Description: Manages user accounts and their settings.
  * License: MIT
  */
+
 ?>
 
 <main class="container">

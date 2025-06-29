@@ -10,7 +10,7 @@
  * License: MIT
  */
 
-class UserHandler
+class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
     /**
      * Get all users from the database.

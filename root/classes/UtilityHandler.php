@@ -10,7 +10,7 @@
  * License: MIT
  */
 
-class UtilityHandler
+class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
     /**
      * Update the failed login attempts for an IP address.

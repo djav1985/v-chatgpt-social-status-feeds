@@ -9,6 +9,7 @@
  * Description: Displays user accounts and statuses.
  * License: MIT
  */
+
 ?>
 
 <main class="container">

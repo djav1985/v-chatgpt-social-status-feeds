@@ -9,6 +9,7 @@
  * Description: Handles user addition and updates.
  * License: MIT
  */
+
 ?>
 
 <main class="container">

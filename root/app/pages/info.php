@@ -9,6 +9,7 @@
  * Description: Allows users to change their password.
  * License: MIT
  */
+
 require_once __DIR__ . '/../helpers/info-helper.php';
 ?>
 

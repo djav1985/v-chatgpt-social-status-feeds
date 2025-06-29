@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: ChatGPT API
@@ -35,7 +36,13 @@ function logDebug($message)
     }
 }
 
-$validJobTypes = ['reset_usage', 'run_status', 'clear_list', 'cleanup', 'purge_images'];
+$validJobTypes = [
+                  'reset_usage',
+                  'run_status',
+                  'clear_list',
+                  'cleanup',
+                  'purge_images',
+                 ];
 $jobType = $argv[1] ?? 'run_status'; // Default job type is 'run_status'
 
 // Check for debug mode

@@ -29,9 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: login.php");
             die(1);
         }
-    }
-    // Handle login request
-    elseif (isset($_POST['username']) && isset($_POST['password'])) {
+    } elseif (isset($_POST['username']) && isset($_POST['password'])) {
         $username = ($_POST['username']);
         $password = ($_POST['password']);
 
