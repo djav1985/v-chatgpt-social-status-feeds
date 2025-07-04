@@ -252,7 +252,8 @@ class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespac
     $random_name = uniqid() . '.png';
     $image_path = __DIR__ . '/../public/images/' . $accountOwner . '/' . $accountName . '/' . $random_name;
 
-    if (!is_dir(dirname($image_path)) && !mkdir(dirname($image_path), 0777, true)) {
+    $dirMode = defined('DIR_MODE') ? DIR_MODE : 0755;
+    if (!is_dir(dirname($image_path)) && !mkdir(dirname($image_path), $dirMode, true)) {
         $error = "Failed to create directory for $accountName owned by $accountOwner.";
         ErrorHandler::logMessage($error, 'error');
         return ["error" => $error];
