@@ -25,7 +25,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return $db->resultSet();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving all accounts: " . $e->getMessage(), 'error');
-            return [];
+            throw $e;
         }
     }
 
@@ -44,7 +44,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return $db->resultSet();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving all user accounts: " . $e->getMessage(), 'error');
-            return [];
+            throw $e;
         }
     }
 
@@ -65,7 +65,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return (bool) $db->single();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error checking if account exists: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -86,7 +86,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return $db->single();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving account info: " . $e->getMessage(), 'error');
-            return null;
+            throw $e;
         }
     }
 
@@ -108,7 +108,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return htmlspecialchars($acctInfo->link ?? '');
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving account link: " . $e->getMessage(), 'error');
-            return '';
+            throw $e;
         }
     }
 
@@ -145,7 +145,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
         } catch (Exception $e) {
             $db->rollBack();
             ErrorHandler::logMessage("Error updating account: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -182,7 +182,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
         } catch (Exception $e) {
             $db->rollBack();
             ErrorHandler::logMessage("Error creating account: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -213,7 +213,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
         } catch (Exception $e) {
             $db->rollBack();
             ErrorHandler::logMessage("Error deleting account: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 }

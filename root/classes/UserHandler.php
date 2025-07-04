@@ -25,7 +25,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return $db->resultSet();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving all users: " . $e->getMessage(), 'error');
-            return [];
+            throw $e;
         }
     }
 
@@ -44,7 +44,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return $db->single();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error checking if user exists: " . $e->getMessage(), 'error');
-            return null;
+            throw $e;
         }
     }
 
@@ -85,7 +85,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
         } catch (Exception $e) {
             $db->rollBack();
             ErrorHandler::logMessage("Error updating user: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -117,7 +117,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
         } catch (Exception $e) {
             $db->rollBack();
             ErrorHandler::logMessage("Error deleting user: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -139,7 +139,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error updating password: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -158,7 +158,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return $db->single();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving user info: " . $e->getMessage(), 'error');
-            return null;
+            throw $e;
         }
     }
 
@@ -177,7 +177,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return $db->resultSet();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving all user accounts: " . $e->getMessage(), 'error');
-            return [];
+            throw $e;
         }
     }
 
@@ -199,7 +199,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error updating used API calls: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -221,7 +221,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error updating max API calls: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -239,7 +239,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error resetting all API usage: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -267,7 +267,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error updating profile: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 }

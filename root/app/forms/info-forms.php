@@ -46,13 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Update user password in the database
         try {
             UserHandler::updatePassword($username, $hashedPassword);
+            $_SESSION['messages'][] = "Password Updated!";
         } catch (Exception $e) {
-            $_SESSION['messages'][] = "Password update failed.";
-            header("Location: /info");
-            exit;
+            $_SESSION['messages'][] = "Password update failed: " . $e->getMessage();
         }
-
-        $_SESSION['messages'][] = "Password Updated!";
         header("Location: /info");
         exit;
     } elseif (isset($_POST["update_profile"])) {
@@ -73,13 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Update user profile in the database
         try {
             UserHandler::updateProfile($username, $who, $where, $what, $goal);
+            $_SESSION['messages'][] = "Profile Updated!";
         } catch (Exception $e) {
-            $_SESSION['messages'][] = "Profile update failed.";
-            header("Location: /info");
-            exit;
+            $_SESSION['messages'][] = "Profile update failed: " . $e->getMessage();
         }
-
-        $_SESSION['messages'][] = "Profile Updated!";
         header("Location: /info");
         exit;
     }

@@ -26,20 +26,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $accountOwner = trim($_POST["username"]);
         $statusId = (int) $_POST["id"];
 
-        // Retrieve status image path
-        $statusImagePath = StatusHandler::getStatusImagePath($statusId, $accountName, $accountOwner);
+        try {
+            // Retrieve status image path
+            $statusImagePath = StatusHandler::getStatusImagePath($statusId, $accountName, $accountOwner);
 
-        // Delete status image if it exists
-        if ($statusImagePath) {
-            $imagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName . '/' . $statusImagePath;
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
+            // Delete status image if it exists
+            if ($statusImagePath) {
+                $imagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName . '/' . $statusImagePath;
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
             }
-        }
 
-        // Delete status record from the database
-        StatusHandler::deleteStatus($statusId, $accountName, $accountOwner);
-        $_SESSION['messages'][] = "Successfully deleted status.";
+            // Delete status record from the database
+            StatusHandler::deleteStatus($statusId, $accountName, $accountOwner);
+            $_SESSION['messages'][] = "Successfully deleted status.";
+        } catch (Exception $e) {
+            $_SESSION['messages'][] = "Failed to delete status: " . $e->getMessage();
+        }
         header("Location: /home");
         exit;
     } elseif (isset($_POST["generate_status"])) {
@@ -47,24 +51,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $accountName = trim($_POST["account"]);
         $accountOwner = trim($_POST["username"]);
 
-        // Check if user has available API calls
-        $userInfo = UserHandler::getUserInfo($accountOwner);
-        if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
-            $_SESSION['messages'][] = "Sorry, your available API calls have run out.";
-            header("Location: /home");
-            exit;
+        try {
+            // Check if user has available API calls
+            $userInfo = UserHandler::getUserInfo($accountOwner);
+            if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
+                $_SESSION['messages'][] = "Sorry, your available API calls have run out.";
+            } else {
+                $statusResult = generateStatus($accountName, $accountOwner);
+                if (isset($statusResult['error'])) {
+                    $_SESSION['messages'][] = "Failed to generate status: " . $statusResult['error'];
+                } else {
+                    $userInfo->used_api_calls += 1;
+                    UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+                    $_SESSION['messages'][] = "Successfully generated status.";
+                }
+            }
+        } catch (Exception $e) {
+            $_SESSION['messages'][] = "Failed to generate status: " . $e->getMessage();
         }
-
-        $statusResult = generateStatus($accountName, $accountOwner);
-        if ($statusResult['success'] === false) {
-            $_SESSION['messages'][] = "Failed to generate status: " . $statusResult['message'];
-            header("Location: /home");
-            exit;
-        }
-
-        $userInfo->used_api_calls += 1;
-        UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-        $_SESSION['messages'][] = "Successfully generated status.";
         header("Location: /home");
         exit;
     }

@@ -44,38 +44,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: /users");
             exit;
         } else {
-            // Check if user exists
-            $userExists = UserHandler::userExists($username);
-            // Hash password if it's not already hashed and provided
-            if (!empty($password) && (!$userExists || !password_verify($password, $userExists->password))) {
-                $password = password_hash($password, PASSWORD_DEFAULT);
-            } elseif ($userExists) {
-                // Keep the existing password if not provided
-                $password = $userExists->password;
-            }
-
-            // Update or insert user record
-            $isUpdate = $userExists !== null;
-            if (!$userExists) {
-                $isUpdate = false;
-            }
-            $result = UserHandler::updateUser($username, $password, $totalAccounts, $maxApiCalls, $usedApiCalls, $expires, $admin, $isUpdate);
-            if ($result) {
-                // Create user image directory if it doesn't exist
-                if (!$userExists) {
-                    $userImagePath = __DIR__ .  '/../../public/images/' . $username;
-                    if (!file_exists($userImagePath)) {
-                        mkdir($userImagePath, 0755, true);
-                        $indexFilePath = $userImagePath . '/index.php';
-                        file_put_contents($indexFilePath, '<?php die(); ?>');
-                    }
+            try {
+                // Check if user exists
+                $userExists = UserHandler::userExists($username);
+                // Hash password if it's not already hashed and provided
+                if (!empty($password) && (!$userExists || !password_verify($password, $userExists->password))) {
+                    $password = password_hash($password, PASSWORD_DEFAULT);
+                } elseif ($userExists) {
+                    // Keep the existing password if not provided
+                    $password = $userExists->password;
                 }
 
-                $_SESSION['messages'][] = "User has been created or modified.";
-            } else {
-                $_SESSION['messages'][] = "Failed to create or modify user.";
+                // Update or insert user record
+                $isUpdate = $userExists !== null;
+                if (!$userExists) {
+                    $isUpdate = false;
+                }
+                $result = UserHandler::updateUser($username, $password, $totalAccounts, $maxApiCalls, $usedApiCalls, $expires, $admin, $isUpdate);
+                if ($result) {
+                    // Create user image directory if it doesn't exist
+                    if (!$userExists) {
+                        $userImagePath = __DIR__ .  '/../../public/images/' . $username;
+                        if (!file_exists($userImagePath)) {
+                            mkdir($userImagePath, 0755, true);
+                            $indexFilePath = $userImagePath . '/index.php';
+                            file_put_contents($indexFilePath, '<?php die(); ?>');
+                        }
+                    }
+                    $_SESSION['messages'][] = "User has been created or modified.";
+                } else {
+                    $_SESSION['messages'][] = "Failed to create or modify user.";
+                }
+            } catch (Exception $e) {
+                $_SESSION['messages'][] = "Failed to create or modify user: " . $e->getMessage();
             }
-
             header("Location: /users");
             exit;
         }
@@ -90,34 +92,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Delete user and related records
             try {
                 UserHandler::deleteUser($username);
+                $_SESSION['messages'][] = "User Deleted";
             } catch (Exception $e) {
-                $_SESSION['messages'][] = "Failed to delete user.";
-                header("Location: /users");
-                exit;
+                $_SESSION['messages'][] = "Failed to delete user: " . $e->getMessage();
             }
-
-            $_SESSION['messages'][] = "User Deleted";
-            header("Location: /users");
-            exit;
         }
+        header("Location: /users");
+        exit;
     } elseif (isset($_POST['login_as']) && isset($_POST['username'])) {
         // Handle login as another user
         $username = $_POST['username'];
 
-        // Get user info and set session
-        $user = UserHandler::getUserInfo($username);
-        if ($user) {
-            if (!isset($_SESSION['isReally'])) {
-                $_SESSION['isReally'] = $_SESSION['username'];
+        try {
+            // Get user info and set session
+            $user = UserHandler::getUserInfo($username);
+            if ($user) {
+                if (!isset($_SESSION['isReally'])) {
+                    $_SESSION['isReally'] = $_SESSION['username'];
+                }
+                $_SESSION['username'] = $user->username;
+                $_SESSION['logged_in'] = true;
+                header("Location: /home");
+                exit;
+            } else {
+                $_SESSION['messages'][] = "Failed to login as user.";
             }
-            $_SESSION['username'] = $user->username;
-            $_SESSION['logged_in'] = true;
-            header("Location: /home");
-            exit;
-        } else {
-            $_SESSION['messages'][] = "Failed to login as user.";
-            header("Location: /users");
-            exit;
+        } catch (Exception $e) {
+            $_SESSION['messages'][] = "Failed to login as user: " . $e->getMessage();
         }
+        header("Location: /users");
+        exit;
     }
 }

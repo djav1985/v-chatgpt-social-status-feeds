@@ -43,6 +43,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $db->execute();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error updating failed attempts: " . $e->getMessage(), 'error');
+            throw $e;
         }
     }
 
@@ -72,7 +73,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return false;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error checking blacklist status: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -93,7 +94,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error clearing IP blacklist: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 

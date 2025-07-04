@@ -57,21 +57,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: /accounts");
             exit;
         } else {
-            // Check if account exists
-            if (AccountHandler::accountExists($accountOwner, $accountName)) {
-                AccountHandler::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
-            } else {
-                AccountHandler::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
-                // Create account image directory if it doesn't exist
-                $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
-                if (!file_exists($acctImagePath)) {
-                    mkdir($acctImagePath, 0755, true);
-                    $indexFilePath = $acctImagePath . '/index.php';
-                    file_put_contents($indexFilePath, '<?php die(); ?>');
+            try {
+                // Check if account exists
+                if (AccountHandler::accountExists($accountOwner, $accountName)) {
+                    AccountHandler::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                } else {
+                    AccountHandler::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                    // Create account image directory if it doesn't exist
+                    $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
+                    if (!file_exists($acctImagePath)) {
+                        mkdir($acctImagePath, 0755, true);
+                        $indexFilePath = $acctImagePath . '/index.php';
+                        file_put_contents($indexFilePath, '<?php die(); ?>');
+                    }
                 }
+                $_SESSION['messages'][] = "Account has been created or modified.";
+            } catch (Exception $e) {
+                $_SESSION['messages'][] = "Failed to create or modify account: " . $e->getMessage();
             }
-
-            $_SESSION['messages'][] = "Account has been created or modified.";
             header("Location: /accounts");
             exit;
         }
@@ -79,9 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Handle account deletion
         $accountName = trim($_POST["account"]);
         $accountOwner = $_SESSION["username"];
-        AccountHandler::deleteAccount($accountOwner, $accountName);
-
-        $_SESSION['messages'][] = "Account Deleted.";
+        try {
+            AccountHandler::deleteAccount($accountOwner, $accountName);
+            $_SESSION['messages'][] = "Account Deleted.";
+        } catch (Exception $e) {
+            $_SESSION['messages'][] = "Failed to delete account: " . $e->getMessage();
+        }
         header("Location: /accounts");
         exit;
     }

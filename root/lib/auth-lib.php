@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: login.php");
             exit;
         }
-        
+
         $username = trim(htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8'));
         $password = $_POST['password'];
 

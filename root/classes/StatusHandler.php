@@ -32,7 +32,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return $status ? $status->status_image : null;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving status image path: " . $e->getMessage(), 'error');
-            return null;
+            throw $e;
         }
     }
 
@@ -56,7 +56,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error deleting status: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -77,7 +77,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return $db->resultSet();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving status info: " . $e->getMessage(), 'error');
-            return [];
+            throw $e;
         }
     }
 
@@ -104,7 +104,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error saving status: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -125,7 +125,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return $db->resultSet();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving status updates: " . $e->getMessage(), 'error');
-            return [];
+            throw $e;
         }
     }
     /**
@@ -143,7 +143,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return $db->single()->count;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error counting statuses: " . $e->getMessage(), 'error');
-            return 0;
+            throw $e;
         }
     }
 
@@ -165,7 +165,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return true;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error deleting old statuses: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -193,7 +193,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return $db->single()->count > 0;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error checking if status has been posted: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -214,7 +214,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             return $db->single();
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving latest status update: " . $e->getMessage(), 'error');
-            return null;
+            throw $e;
         }
     }
 }

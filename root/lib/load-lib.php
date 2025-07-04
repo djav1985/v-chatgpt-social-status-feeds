@@ -26,7 +26,6 @@ if ($ip && UtilityHandler::isBlacklisted($ip)) {
 } elseif (isset($_GET['page'])) {
     // Sanitize the page parameter to prevent XSS attacks and path traversal
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS);
-    
     // Additional validation for page parameter to prevent path traversal
     if ($page && (strpos($page, '../') !== false || strpos($page, '/') !== false || strpos($page, '\\') !== false)) {
         ErrorHandler::logMessage("Potential path traversal attempt with page parameter: " . $page, 'warning');

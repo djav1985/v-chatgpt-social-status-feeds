@@ -29,10 +29,7 @@ function generateStatus(string $accountName, string $accountOwner): ?array
     if (!$accountInfo || !$userInfo) {
         $error = "Error: Account or user not found for $accountOwner / $accountName";
         ErrorHandler::logMessage($error, 'error');
-        return [
-                'success' => false,
-                'message' => $error,
-               ];
+        return ["error" => $error];
     }
 
     $prompt = $accountInfo->prompt;
@@ -72,10 +69,7 @@ function generateStatus(string $accountName, string $accountOwner): ?array
         $errorDetail = is_array($statusResponse['error']) ? json_encode($statusResponse['error']) : $statusResponse['error'];
         $error = "Status generation failed for $accountName owned by $accountOwner: $errorDetail";
         ErrorHandler::logMessage($error, 'error');
-        return [
-                'success' => false,
-                'message' => $error,
-               ];
+        return ["error" => $error];
     }
 
     $statusText = trim($statusResponse['status'] ?? '');
@@ -95,19 +89,13 @@ function generateStatus(string $accountName, string $accountOwner): ?array
     if (isset($imageResponse['error'])) {
         $error = "Image generation failed for $accountName owned by $accountOwner: " . $imageResponse['error'];
         ErrorHandler::logMessage($error, 'error');
-        return [
-                'success' => false,
-                'message' => $error,
-               ];
+        return ["error" => $error];
     }
 
     $imageName = $imageResponse['image_name'];
     StatusHandler::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
 
-    return [
-            'success' => true,
-            'message' => 'Status generated successfully',
-           ];
+    return ['success' => true];
 }
 
 /**
@@ -136,9 +124,10 @@ function openai_api_request(string $endpoint, ?array $data = null): array
     $error = curl_error($ch);
 
     if ($response === false) {
-        ErrorHandler::logMessage("Failed to make API request to $endpoint: $error", 'error');
+        $error = "Failed to make API request to $endpoint: $error";
+        ErrorHandler::logMessage($error, 'error');
         curl_close($ch);
-        return ["error" => "Failed to make API request to $endpoint: $error"];
+        return ["error" => $error];
     }
 
     curl_close($ch);
@@ -223,9 +212,9 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
     $response = openai_api_request("/chat/completions", $data);
 
     if (isset($response['error']) || !isset($response['choices'][0]['message']['content'])) {
-        $error = $response['error']['message'] ?? 'Unknown error';
-        ErrorHandler::logMessage("Error generating status for $accountName owned by $accountOwner: $error", 'error');
-        return ["error" => "Error generating status for $accountName owned by $accountOwner: $error"];
+        $error = "Error generating status for $accountName owned by $accountOwner: " . ($response['error']['message'] ?? 'Unknown error');
+        ErrorHandler::logMessage($error, 'error');
+        return ["error" => $error];
     }
 
     return json_decode($response['choices'][0]['message']['content'], true) ?? ["error" => "Invalid structured output"];
@@ -252,9 +241,9 @@ function generate_social_image(string $imagePrompt, string $accountName, string 
     $response = openai_api_request("/images/generations", $data);
 
     if (isset($response['error']) || !isset($response['data'][0]['url'])) {
-        $error = $response['error'] ?? 'Unknown error';
-        ErrorHandler::logMessage("Error generating image for $accountName owned by $accountOwner: $error", 'error');
-        return ["error" => "Error generating image for $accountName owned by $accountOwner: $error"];
+        $error = "Error generating image for $accountName owned by $accountOwner: " . ($response['error'] ?? 'Unknown error');
+        ErrorHandler::logMessage($error, 'error');
+        return ["error" => $error];
     }
 
     $image_url = $response['data'][0]['url'];
