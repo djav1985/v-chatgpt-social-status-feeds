@@ -20,7 +20,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function getAllUsers(): array
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT * FROM users");
             return $db->resultSet();
         } catch (Exception $e) {
@@ -38,7 +38,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function userExists(string $username): mixed
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
             return $db->single();
@@ -64,7 +64,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function updateUser(string $username, string $password, int $totalAccounts, int $maxApiCalls, int $usedApiCalls, string $expires, int $admin, bool $isUpdate): bool
     {
         ErrorHandler::logMessage("updateUser called with username: $username, isUpdate: $isUpdate", 'info');
-        $db = new Database();
+        $db = new DatabaseHandler();
         $db->beginTransaction();
         try {
             if ($isUpdate) {
@@ -97,7 +97,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function deleteUser(string $username): bool
     {
-        $db = new Database();
+        $db = new DatabaseHandler();
         $db->beginTransaction();
         try {
             $db->query("DELETE FROM users WHERE username = :username");
@@ -131,7 +131,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function updatePassword(string $username, string $hashedPassword): bool
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("UPDATE users SET password = :password WHERE username = :username");
             $db->bind(':username', $username);
             $db->bind(':password', $hashedPassword);
@@ -152,7 +152,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function getUserInfo(string $username): mixed
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
             return $db->single();
@@ -171,7 +171,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function getAllUserAccts(string $username): array
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT * FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
             return $db->resultSet();
@@ -191,7 +191,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function updateUsedApiCalls(string $username, int $usedApiCalls): bool
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username");
             $db->bind(':used_api_calls', $usedApiCalls);
             $db->bind(':username', $username);
@@ -213,7 +213,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function updateMaxApiCalls(string $username, int $maxApiCalls): bool
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("UPDATE users SET max_api_calls = :max_api_calls WHERE username = :username");
             $db->bind(':max_api_calls', $maxApiCalls);
             $db->bind(':username', $username);
@@ -233,7 +233,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function resetAllApiUsage(): bool
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("UPDATE users SET used_api_calls = 0");
             $db->execute();
             return true;
@@ -256,7 +256,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
     public static function updateProfile(string $username, string $who, string $where, string $what, string $goal): bool
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("UPDATE users SET who = :who, `where` = :where, what = :what, goal = :goal WHERE username = :username");
             $db->bind(':username', $username);
             $db->bind(':who', $who);

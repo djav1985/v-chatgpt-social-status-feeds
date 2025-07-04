@@ -20,7 +20,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     public static function getAllAccounts(): array
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT * FROM accounts");
             return $db->resultSet();
         } catch (Exception $e) {
@@ -38,7 +38,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     public static function getAllUserAccts(string $username): array
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT account FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
             return $db->resultSet();
@@ -58,7 +58,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     public static function accountExists(string $accountOwner, string $accountName): bool
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT 1 FROM accounts WHERE username = :accountOwner AND account = :accountName LIMIT 1");
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
@@ -79,7 +79,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     public static function getAcctInfo(string $username, string $account): mixed
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $username);
             $db->bind(':account', $account);
@@ -100,7 +100,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     public static function getAccountLink(string $username, string $account): string
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT link FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $username);
             $db->bind(':account', $account);
@@ -127,7 +127,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function updateAccount(string $accountOwner, string $accountName, string $prompt, string $platform, int $hashtags, string $link, string $cron, string $days): bool
     {
-        $db = new Database();
+        $db = new DatabaseHandler();
         $db->beginTransaction();
         try {
             $db->query("UPDATE accounts SET prompt = :prompt, platform = :platform, hashtags = :hashtags, link = :link, cron = :cron, days = :days WHERE username = :accountOwner AND account = :accountName");
@@ -164,7 +164,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function createAccount(string $accountOwner, string $accountName, string $prompt, string $platform, int $hashtags, string $link, string $cron, string $days): bool
     {
-        $db = new Database();
+        $db = new DatabaseHandler();
         $db->beginTransaction();
         try {
             $db->query("INSERT INTO accounts (username, account, prompt, platform, hashtags, link, cron, days) VALUES (:accountOwner, :accountName, :prompt, :platform, :hashtags, :link, :cron, :days)");
@@ -195,7 +195,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function deleteAccount(string $accountOwner, string $accountName): bool
     {
-        $db = new Database();
+        $db = new DatabaseHandler();
         $db->beginTransaction();
         try {
             $db->query("DELETE FROM status_updates WHERE username = :accountOwner AND account = :accountName");

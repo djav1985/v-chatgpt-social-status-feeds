@@ -21,7 +21,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     public static function updateFailedAttempts(string $ip): void
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip");
             $db->bind(':ip', $ip);
             $result = $db->single();
@@ -56,7 +56,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     public static function isBlacklisted(string $ip): bool
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip AND blacklisted = TRUE");
             $db->bind(':ip', $ip);
             $result = $db->single();
@@ -86,7 +86,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     public static function clearIpBlacklist(): bool
     {
         try {
-            $db = new Database();
+            $db = new DatabaseHandler();
             $threeDaysAgo = time() - (3 * 24 * 60 * 60);
             $db->query("DELETE FROM ip_blacklist WHERE timestamp < :threeDaysAgo");
             $db->bind(':threeDaysAgo', $threeDaysAgo);

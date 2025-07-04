@@ -5,12 +5,12 @@
  * Author: Vontainment
  * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: db.php
+ * File: DatabaseHandler.php
  * Description: Manages database connection and queries using PDO.
  * License: MIT
  */
 
-class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class DatabaseHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
     private static ?PDO $dbh = null;
     private static ?int $lastUsedTime = null; // Tracks the last time the connection was used
