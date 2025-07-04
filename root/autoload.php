@@ -6,6 +6,8 @@ spl_autoload_register(function ($class_name) {
     if (file_exists($file)) {
         require_once $file;
     } else {
-        die("Class file not found: " . $file);
+        // Log the error instead of using die()
+        error_log("Class file not found: " . $file);
+        throw new Exception("Class file not found: " . $class_name);
     }
 });

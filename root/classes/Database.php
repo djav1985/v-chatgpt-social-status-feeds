@@ -31,7 +31,7 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
     private function connect(): void
     {
         // Check if the connection exists and if it has been idle for too long
-        if (self::$dbh !== null && (time() - self::$lastUsedTime) > self::$idleTimeout) {
+        if (self::$dbh !== null && self::$lastUsedTime !== null && (time() - self::$lastUsedTime) > self::$idleTimeout) {
             $this->closeConnection(); // Close the connection if it has been idle for too long
         }
 

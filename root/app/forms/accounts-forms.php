@@ -26,8 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $platform = trim($_POST["platform"]);
         $hashtags = isset($_POST["hashtags"]) ? (int)$_POST["hashtags"] : 0;
         $link = trim($_POST["link"]);
-        $cron = (count($_POST["cron"]) === 1 && $_POST["cron"][0] === 'null') ? 'null' : implode(',', $_POST["cron"]);
-        $days = isset($_POST["days"]) ? (count($_POST["days"]) === 1 && $_POST["days"][0] === 'everyday' ? 'everyday' : implode(',', $_POST["days"])) : '';
+        $cron = '';
+        if (isset($_POST["cron"]) && is_array($_POST["cron"])) {
+            $cron = (count($_POST["cron"]) === 1 && $_POST["cron"][0] === 'null') ? 'null' : implode(',', $_POST["cron"]);
+        }
+        $days = '';
+        if (isset($_POST["days"]) && is_array($_POST["days"])) {
+            $days = (count($_POST["days"]) === 1 && $_POST["days"][0] === 'everyday') ? 'everyday' : implode(',', $_POST["days"]);
+        }
 
         // Validate form inputs
         if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
@@ -59,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Create account image directory if it doesn't exist
                 $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
                 if (!file_exists($acctImagePath)) {
-                    mkdir($acctImagePath, 0777, true);
+                    mkdir($acctImagePath, 0755, true);
                     $indexFilePath = $acctImagePath . '/index.php';
                     file_put_contents($indexFilePath, '<?php die(); ?>');
                 }

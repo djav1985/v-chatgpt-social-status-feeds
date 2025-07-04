@@ -24,8 +24,14 @@ if ($ip && UtilityHandler::isBlacklisted($ip)) {
     header('Location: login.php');
     die(1);
 } elseif (isset($_GET['page'])) {
-    // Sanitize the page parameter to prevent XSS attacks
+    // Sanitize the page parameter to prevent XSS attacks and path traversal
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS);
+    
+    // Additional validation for page parameter to prevent path traversal
+    if ($page && (strpos($page, '../') !== false || strpos($page, '/') !== false || strpos($page, '\\') !== false)) {
+        ErrorHandler::logMessage("Potential path traversal attempt with page parameter: " . $page, 'warning');
+        $page = null;
+    }
 
     // Update session timeout
     $_SESSION['timeout'] = time();
@@ -33,7 +39,7 @@ if ($ip && UtilityHandler::isBlacklisted($ip)) {
     // Retrieve user information
     $user = UserHandler::getUserInfo($_SESSION['username']);
 
-    if ($user) {
+    if ($user && $page) {
         // Load helper file if it exists and user has permission
         $helperFile = "../app/helpers/" . $page . "-helper.php";
         if (file_exists($helperFile)) {

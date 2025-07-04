@@ -58,3 +58,21 @@ define('SMTP_FROM_NAME', 'ChatGPT API');
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
+// Validate required configuration constants
+$required_constants = ['DB_HOST', 'DB_USER', 'DB_NAME', 'API_KEY'];
+$missing_config = [];
+
+foreach ($required_constants as $constant) {
+    if (!defined($constant) || empty(constant($constant))) {
+        $missing_config[] = $constant;
+    }
+}
+
+if (!empty($missing_config)) {
+    error_log("Missing required configuration: " . implode(', ', $missing_config));
+    if (php_sapi_name() !== 'cli') {
+        http_response_code(500);
+        die("Configuration error: Missing required settings. Please check server logs.");
+    }
+}
