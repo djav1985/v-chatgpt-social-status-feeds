@@ -17,6 +17,15 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle logout request
     if (isset($_POST["logout"])) {
+        // Validate CSRF token before processing logout
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $ip = $_SERVER['REMOTE_ADDR'];
+            ErrorHandler::logMessage("Invalid CSRF token on logout attempt from IP: $ip", 'warning');
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+            http_response_code(403);
+            exit;
+        }
+
         // If the user is logged in, log them out and redirect to home
         if (isset($_SESSION['isReally'])) {
             $_SESSION['username'] = $_SESSION['isReally'];
