@@ -43,6 +43,9 @@ define('IMG_AGE', 180);
 // Session timeout limit in seconds (default: 30 minutes)
 define('SESSION_TIMEOUT_LIMIT', 1800);
 
+// Default permissions for creating directories
+define('DIR_MODE', 0755);
+
 // MySQL Database Connection Constants
 define('DB_HOST', 'localhost'); // Database host or server
 define('DB_USER', ''); // Database username

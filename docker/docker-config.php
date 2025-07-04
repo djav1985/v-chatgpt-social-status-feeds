@@ -39,6 +39,9 @@ define('MAX_STATUSES', getenv('MAX_STATUSES'));
 // Maximum age of images in days before they are removed (should be over 360 days)
 define('IMG_AGE', getenv('IMG_AGE'));
 
+// Default permissions for creating directories
+define('DIR_MODE', 0755);
+
 // MySQL Database Connection Constants
 define('DB_HOST', getenv('DB_HOST'));
 define('DB_USER', getenv('DB_USER'));

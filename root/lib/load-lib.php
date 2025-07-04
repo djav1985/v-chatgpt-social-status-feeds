@@ -23,25 +23,24 @@ if ($ip && UtilityHandler::isBlacklisted($ip)) {
     // Redirect to login page if the user is not logged in
     header('Location: login.php');
     die(1);
-}
+} elseif (isset($_GET['page'])) {
+    // Enforce session timeout and user agent consistency
+    $timeoutLimit = defined('SESSION_TIMEOUT_LIMIT') ? SESSION_TIMEOUT_LIMIT : 1800;
+    $timeoutExceeded = isset($_SESSION['timeout']) && (time() - $_SESSION['timeout'] > $timeoutLimit);
+    $userAgentChanged = isset($_SESSION['user_agent']) && $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT'];
+    if ($timeoutExceeded || $userAgentChanged) {
+        session_unset();
+        session_destroy();
+        header('Location: login.php');
+        die(1);
+    }
+    // Allowed pages that can be loaded through the dashboard
+    $allowedPages = ['home', 'accounts', 'users', 'info'];
 
-// Enforce session timeout and user agent consistency
-$timeoutLimit = defined('SESSION_TIMEOUT_LIMIT') ? SESSION_TIMEOUT_LIMIT : 1800;
-$timeoutExceeded = isset($_SESSION['timeout']) && (time() - $_SESSION['timeout'] > $timeoutLimit);
-$userAgentChanged = isset($_SESSION['user_agent']) && $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT'];
-if ($timeoutExceeded || $userAgentChanged) {
-    session_unset();
-    session_destroy();
-    header('Location: login.php');
-    die(1);
-}
-
-if (isset($_GET['page'])) {
-    // Sanitize the page parameter to prevent XSS attacks and path traversal
+    // Sanitize and validate the requested page against the whitelist
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS);
-    // Additional validation for page parameter to prevent path traversal
-    if ($page && (strpos($page, '../') !== false || strpos($page, '/') !== false || strpos($page, '\\') !== false)) {
-        ErrorHandler::logMessage("Potential path traversal attempt with page parameter: " . $page, 'warning');
+    if (!$page || !in_array($page, $allowedPages, true)) {
+        ErrorHandler::logMessage("Invalid page request: " . $page, 'warning');
         $page = null;
     }
 
