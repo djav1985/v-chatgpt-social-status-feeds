@@ -126,10 +126,15 @@ class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespac
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
     $response = curl_exec($ch);
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $error = curl_error($ch);
 
-    if ($response === false) {
-        $error = "Failed to make API request to $endpoint: $error";
+    if ($response === false || $statusCode < 200 || $statusCode >= 300) {
+        if ($response === false) {
+            $error = "Failed to make API request to $endpoint: $error";
+        } else {
+            $error = "API request to $endpoint returned HTTP status $statusCode";
+        }
         ErrorHandler::logMessage($error, 'error');
         curl_close($ch);
         return ["error" => $error];
