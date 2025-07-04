@@ -174,7 +174,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
      *
      * @param string $accountName
      * @param string $accountOwner
-     * @param string $currentTimeSlot
+     * @param string $hour
      * @return bool
      */
     public static function hasStatusBeenPosted(string $accountName, string $accountOwner, string $hour): bool
