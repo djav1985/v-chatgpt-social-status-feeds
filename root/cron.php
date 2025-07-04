@@ -16,7 +16,6 @@ ini_set('memory_limit', '512M'); // Adjust as needed
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/autoload.php';
-require_once __DIR__ . '/lib/status-lib.php';
 
 // Instantiate the ErrorHandler to register handlers
 new ErrorHandler();
@@ -168,7 +167,7 @@ function runStatusUpdateJobs(): bool
                         logDebug("User has remaining API calls. Incrementing used API calls.");
                         $userInfo->used_api_calls += 1;
                         UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-                        generateStatus($accountName, $accountOwner);
+                        ApiHandler::generateStatus($accountName, $accountOwner);
                         logDebug("Status generated for account: $accountName.");
                     } else {
                         logDebug("User has exceeded their API call limit.");

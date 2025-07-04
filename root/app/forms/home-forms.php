@@ -10,7 +10,6 @@
  * License: MIT
  */
 
-require_once __DIR__ . '/../../lib/status-lib.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check CSRF token validity
@@ -57,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
                 $_SESSION['messages'][] = "Sorry, your available API calls have run out.";
             } else {
-                $statusResult = generateStatus($accountName, $accountOwner);
+                $statusResult = ApiHandler::generateStatus($accountName, $accountOwner);
                 if (isset($statusResult['error'])) {
                     $_SESSION['messages'][] = "Failed to generate status: " . $statusResult['error'];
                 } else {

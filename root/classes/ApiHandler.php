@@ -5,20 +5,22 @@
  * Author: Vontainment
  * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: status-lib.php
- * Description: Library functions for generating statuses and images.
+ * File: ApiHandler.php
+ * Description: Handles OpenAI API requests for generating statuses and images.
  * License: MIT
- */
+*/
 
-/**
- * Generates a status update and associated image for a given account.
- *
- * @param string $accountName The name of the account.
- * @param string $accountOwner The owner of the account.
- * @return array|null Returns an array with success status and message, or null if the operation fails.
- */
-function generateStatus(string $accountName, string $accountOwner): ?array
+class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
+    /**
+     * Generates a status update and associated image for a given account.
+     *
+     * @param string $accountName The name of the account.
+     * @param string $accountOwner The owner of the account.
+     * @return array|null Returns an array with success status and message, or null if the operation fails.
+     */
+    public static function generateStatus(string $accountName, string $accountOwner): ?array
+    {
     $accountName = filter_var($accountName, FILTER_SANITIZE_SPECIAL_CHARS);
     $accountOwner = filter_var($accountOwner, FILTER_SANITIZE_SPECIAL_CHARS);
 
@@ -54,7 +56,7 @@ function generateStatus(string $accountName, string $accountOwner): ?array
     };
 
     // Generate status using structured output
-    $statusResponse = generate_social_status(
+    $statusResponse = self::generate_social_status(
         $systemMessage,
         $prompt,
         $link,
@@ -85,7 +87,7 @@ function generateStatus(string $accountName, string $accountOwner): ?array
         $finalStatus .= ' ' . $hashtagsText;
     }
 
-    $imageResponse = generate_social_image($imagePrompt, $accountName, $accountOwner);
+    $imageResponse = self::generate_social_image($imagePrompt, $accountName, $accountOwner);
     if (isset($imageResponse['error'])) {
         $error = "Image generation failed for $accountName owned by $accountOwner: " . $imageResponse['error'];
         ErrorHandler::logMessage($error, 'error');
@@ -105,7 +107,7 @@ function generateStatus(string $accountName, string $accountOwner): ?array
  * @param array|null $data Optional data to send in the request body.
  * @return array Returns the API response as an associative array.
  */
-function openai_api_request(string $endpoint, ?array $data = null): array
+    private static function openaiApiRequest(string $endpoint, ?array $data = null): array
 {
     $url = API_ENDPOINT . $endpoint;
     $headers = [
@@ -148,7 +150,7 @@ function openai_api_request(string $endpoint, ?array $data = null): array
  * @param string $accountOwner The owner of the account.
  * @return array Returns the API response containing structured data or an error array.
  */
-function generate_social_status(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array
+    private static function generate_social_status(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array
 {
     // Build JSON Schema
     $jsonSchema = [
@@ -209,7 +211,7 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
             ];
 
     // API call to /v1/chat/completions
-    $response = openai_api_request("/chat/completions", $data);
+    $response = self::openaiApiRequest("/chat/completions", $data);
 
     if (isset($response['error']) || !isset($response['choices'][0]['message']['content'])) {
         $error = "Error generating status for $accountName owned by $accountOwner: " . ($response['error']['message'] ?? 'Unknown error');
@@ -228,7 +230,7 @@ function generate_social_status(string $systemMessage, string $prompt, string $l
  * @param string $accountOwner The owner of the account.
  * @return array Returns an array containing the image filename or an error message.
  */
-function generate_social_image(string $imagePrompt, string $accountName, string $accountOwner): array
+    private static function generate_social_image(string $imagePrompt, string $accountName, string $accountOwner): array
 {
     $data = [
              "model"   => "dall-e-3",
@@ -238,7 +240,7 @@ function generate_social_image(string $imagePrompt, string $accountName, string 
              "size"    => "1792x1024",
             ];
 
-    $response = openai_api_request("/images/generations", $data);
+    $response = self::openaiApiRequest("/images/generations", $data);
 
     if (isset($response['error']) || !isset($response['data'][0]['url'])) {
         $error = "Error generating image for $accountName owned by $accountOwner: " . ($response['error'] ?? 'Unknown error');
@@ -264,3 +266,7 @@ function generate_social_image(string $imagePrompt, string $accountName, string 
 
     return ["image_name" => $random_name];
 }
+
+}
+
+
