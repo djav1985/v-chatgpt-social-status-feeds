@@ -45,9 +45,12 @@ function outputRssFeed(string $accountName, string $accountOwner): void
         }
 
         // Sort statuses by creation date in descending order
-        usort($statuses, function ($a, $b) {
-            return strtotime($b->created_at) - strtotime($a->created_at);
-        });
+        usort(
+            $statuses,
+            function (object $a, object $b): int {
+                return strtotime($b->created_at) - strtotime($a->created_at);
+            }
+        );
     } else {
         // Retrieve account link
         $accountLink = AccountHandler::getAccountLink($accountOwner, $accountName);

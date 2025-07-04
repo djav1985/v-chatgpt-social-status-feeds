@@ -21,7 +21,7 @@ require_once __DIR__ . '/autoload.php';
 new ErrorHandler();
 
 // Add a helper function for logging
-function logDebug($message)
+function logDebug(string $message): void
 {
     global $debugMode;
     if ($debugMode) {
@@ -136,9 +136,12 @@ function runStatusUpdateJobs(): bool
             continue;
         }
 
-        $cron = array_filter(array_map('trim', explode(',', $account->cron)), function ($hour) {
-            return is_numeric($hour) && $hour !== '';
-        });
+        $cron = array_filter(
+            array_map('trim', explode(',', $account->cron)),
+            function (string $hour): bool {
+                return is_numeric($hour) && $hour !== '';
+            }
+        );
         if (empty($cron)) {
             logDebug("Skipping account: $accountName, cron field contains no valid hours.");
             continue;

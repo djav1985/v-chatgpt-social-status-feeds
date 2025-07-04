@@ -1,7 +1,7 @@
 <?php
 
 // Autoload function to automatically include class files
-spl_autoload_register(function ($class_name) {
+spl_autoload_register(function (string $class_name): void {
     $file = __DIR__ . '/classes/' . $class_name . '.php';
     if (file_exists($file)) {
         require_once $file;
