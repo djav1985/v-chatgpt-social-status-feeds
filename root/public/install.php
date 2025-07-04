@@ -1,4 +1,9 @@
 <?php
+// Only allow the install script when explicitly enabled
+if (getenv('INSTALL_ENABLED') !== '1') {
+    exit('Install script is disabled.');
+}
+
 require_once __DIR__ . '/../config.php';
 
 // Create connection
@@ -29,12 +34,14 @@ if ($conn->multi_query($sql)) {
         }
     } while ($conn->next_result());
     echo "Database installed successfully.";
+    $conn->close();
+
+    // Delete this script after successful installation unless disabled
+    if (getenv('KEEP_INSTALL') !== '1') {
+        @unlink(__FILE__);
+    }
+    exit;
 } else {
     echo "Error installing database: " . $conn->error;
+    $conn->close();
 }
-
-// Close the connection
-$conn->close();
-
-// Delete this script
-//unlink(__FILE__);
