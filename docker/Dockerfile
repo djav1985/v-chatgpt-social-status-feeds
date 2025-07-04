@@ -14,6 +14,8 @@ WORKDIR /var/www/
 
 # Copy application files from /root/ (since Dockerfile is in /)
 COPY root/ /var/www/
+# Bring in docker specific configuration
+COPY docker/docker-config.php /var/www/docker-config.php
 
 # Update Apache configuration to set the document root
 RUN sed -i 's|/var/www/html|/var/www/public|g' /etc/apache2/sites-available/000-default.conf
@@ -32,7 +34,7 @@ RUN echo "0 12 1 * * php /var/www/cron.php reset_usage" >> /etc/crontab && \
 RUN rm -f /var/www/public/install.php
 
 # Delete old config.php and rename docker-config.php to config.php
-RUN rm -f /var/www/public/config.php && mv /var/www/public/docker-config.php /var/www/public/config.php
+RUN rm -f /var/www/config.php && mv /var/www/docker-config.php /var/www/config.php
 
 # Expose port 80
 EXPOSE 80
