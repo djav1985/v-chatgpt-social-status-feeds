@@ -11,11 +11,12 @@
  * License: MIT
  */
 
-ini_set('max_execution_time', 0); // Unlimited execution time
-ini_set('memory_limit', '512M'); // Adjust as needed
-
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/autoload.php';
+
+// Apply configured runtime limits after loading settings
+ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
+ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M');
 
 // Instantiate the ErrorHandler to register handlers
 new ErrorHandler();

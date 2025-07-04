@@ -42,6 +42,10 @@ define('IMG_AGE', getenv('IMG_AGE'));
 // Default permissions for creating directories
 define('DIR_MODE', 0755);
 
+// Cron runtime limits
+define('CRON_MAX_EXECUTION_TIME', getenv('CRON_MAX_EXECUTION_TIME') ?: 0);
+define('CRON_MEMORY_LIMIT', getenv('CRON_MEMORY_LIMIT') ?: '512M');
+
 // MySQL Database Connection Constants
 define('DB_HOST', getenv('DB_HOST'));
 define('DB_USER', getenv('DB_USER'));
