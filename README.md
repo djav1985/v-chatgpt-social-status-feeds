@@ -34,6 +34,8 @@ Version 2.0.0 introduces improvements such as dedicated classes for all database
 - **CSRF Protection:** All forms include CSRF tokens to prevent cross-site request forgery attacks.
 - **Input Validation:** User inputs are validated and sanitized to prevent SQL injection and XSS attacks.
 - **Session Management:** Secure session handling to prevent session fixation and hijacking.
+- **Cookie Security:** Session cookies are configured via `session_set_cookie_params()`
+  with `httponly`, `secure`, and `SameSite=Lax` flags for better protection.
 - **IP Blacklisting:** Monitors and blacklists suspicious IP addresses to prevent brute-force attacks.
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
 - **Modular Classes:** Core logic is organized into classes such as Database, UserHandler, AccountHandler, StatusHandler, UtilityHandler, and ErrorHandler for maintainability and scalability.
