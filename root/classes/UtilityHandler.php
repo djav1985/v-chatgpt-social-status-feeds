@@ -107,7 +107,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     {
         if (isset($_SESSION['messages']) && count($_SESSION['messages']) > 0) {
             foreach ($_SESSION['messages'] as $message) {
-                echo "<script>showToast('" . htmlspecialchars($message) . "');</script>";
+                echo '<script>showToast(' . json_encode($message) . ');</script>';
             }
             unset($_SESSION['messages']);
         }
