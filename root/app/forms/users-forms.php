@@ -92,12 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 UserHandler::deleteUser($username);
             } catch (Exception $e) {
                 $_SESSION['messages'][] = "Failed to delete user.";
-                header("Location: /accounts");
+                header("Location: /users");
                 exit;
             }
 
             $_SESSION['messages'][] = "User Deleted";
-            header("Location: /accounts");
+            header("Location: /users");
             exit;
         }
     } elseif (isset($_POST['login_as']) && isset($_POST['username'])) {
@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } else {
             $_SESSION['messages'][] = "Failed to login as user.";
-            header("Location: /accounts");
+            header("Location: /users");
             exit;
         }
     }
