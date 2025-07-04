@@ -167,11 +167,15 @@ function runStatusUpdateJobs(): bool
                     }
 
                     if ($userInfo->used_api_calls < $userInfo->max_api_calls) {
-                        logDebug("User has remaining API calls. Incrementing used API calls.");
-                        $userInfo->used_api_calls += 1;
-                        UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-                        ApiHandler::generateStatus($accountName, $accountOwner);
-                        logDebug("Status generated for account: $accountName.");
+                        logDebug("User has remaining API calls.");
+                        $statusResult = ApiHandler::generateStatus($accountName, $accountOwner);
+                        if (isset($statusResult['success'])) {
+                            logDebug("Status generated for account: $accountName.");
+                            $userInfo->used_api_calls += 1;
+                            UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+                        } else {
+                            logDebug("Failed to generate status for account: $accountName.");
+                        }
                     } else {
                         logDebug("User has exceeded their API call limit.");
                     }
