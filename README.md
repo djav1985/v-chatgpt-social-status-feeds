@@ -346,6 +346,12 @@ Statuses are generated on schedule and added to the respective account feed and 
 
 ## Changelog
 
+### 2025-07-05
+
+- Switched feed URLs to `/feeds/{user}/{account}` and `/feeds/{user}/all`.
+- Redirected direct `feeds.php` access to `/home` and added rewrite for new feed paths.
+- Updated navigation links to use the new structure.
+
 ### 2025-07-04
 
 - Moved RSS feed generation into `UtilityHandler` and removed `rss-lib.php`.

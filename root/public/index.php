@@ -75,7 +75,7 @@ new ErrorHandler();
         ?>
         <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/info') echo 'active'; ?>"><a href="/info">My Info</a></li>
 
-        <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/feeds.php?user=' . htmlspecialchars($_SESSION['username']) . '&acct=all') echo 'active'; ?>"><a href="/feeds.php?user=<?php echo htmlspecialchars($_SESSION['username']); ?>&acct=all">Omni</a></li>
+        <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/feeds/' . htmlspecialchars($_SESSION['username']) . '/all') echo 'active'; ?>"><a href="/feeds/<?php echo htmlspecialchars($_SESSION['username']); ?>/all">Omni</a></li>
     </ul>
 
     <?php
