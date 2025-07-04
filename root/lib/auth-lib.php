@@ -30,8 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             die(1);
         }
     } elseif (isset($_POST['username']) && isset($_POST['password'])) {
-        $username = ($_POST['username']);
-        $password = ($_POST['password']);
+        // Check CSRF token validity for login
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
+            header("Location: login.php");
+            exit;
+        }
+        
+        $username = trim(htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8'));
+        $password = $_POST['password'];
 
         $userInfo = UserHandler::getUserInfo($username);
 
@@ -53,11 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Check if IP is blacklisted due to multiple failed login attempts
             if (UtilityHandler::isBlacklisted($ip)) {
-                $_SESSION['error']  = "Your IP has been blacklisted due to multiple failed login attempts.";
+                $_SESSION['messages'][] = "Your IP has been blacklisted due to multiple failed login attempts.";
             } else {
                 // Update failed login attempts for the IP
                 UtilityHandler::updateFailedAttempts($ip);
-                $_SESSION['error'] = "Invalid username or password.";
+                $_SESSION['messages'][] = "Invalid username or password.";
             }
             header("Location: login.php");
             die(1);

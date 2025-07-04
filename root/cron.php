@@ -12,7 +12,6 @@
  */
 
 ini_set('max_execution_time', 0); // Unlimited execution time
-set_time_limit(0);                // For compatibility
 ini_set('memory_limit', '512M'); // Adjust as needed
 
 require_once __DIR__ . '/config.php';
@@ -21,9 +20,6 @@ require_once __DIR__ . '/lib/status-lib.php';
 
 // Instantiate the ErrorHandler to register handlers
 new ErrorHandler();
-
-// Increase the maximum execution time to prevent timeouts
-set_time_limit(0);
 
 // Add a helper function for logging
 function logDebug($message)
@@ -112,10 +108,10 @@ function runStatusUpdateJobs(): bool
     global $debugMode;
     logDebug("Fetching all accounts for status update.");
     $accounts = AccountHandler::getAllAccounts();
-    if ($accounts === false) {
-        logDebug("Failed to get accounts.");
-        ErrorHandler::logMessage("CRON: Failed to get accounts.", 'error');
-        return false;
+    if (empty($accounts)) {
+        logDebug("No accounts found or failed to get accounts.");
+        ErrorHandler::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
+        return true; // Return true as this is not necessarily an error condition
     }
 
     $currentHour = date('H');
@@ -197,10 +193,10 @@ function cleanupStatuses(): bool
     global $debugMode;
     logDebug("Fetching all accounts for cleanup.");
     $accounts = AccountHandler::getAllAccounts();
-    if ($accounts === false) {
-        logDebug("Failed to get accounts.");
-        ErrorHandler::logMessage("CRON: Failed to get accounts.", 'error');
-        return false;
+    if (empty($accounts)) {
+        logDebug("No accounts found or failed to get accounts.");
+        ErrorHandler::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
+        return true; // Return true as this is not necessarily an error condition
     }
 
     foreach ($accounts as $account) {
