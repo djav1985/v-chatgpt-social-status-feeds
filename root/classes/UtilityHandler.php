@@ -20,31 +20,26 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function updateFailedAttempts(string $ip): void
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip");
-            $db->bind(':ip', $ip);
-            $result = $db->single();
+        $db = new Database();
+        $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip");
+        $db->bind(':ip', $ip);
+        $result = $db->single();
 
-            if ($result) {
-                $attempts = $result->login_attempts + 1;
-                $is_blacklisted = ($attempts >= 3);
-                $timestamp = ($is_blacklisted) ? time() : $result->timestamp;
-                $db->query("UPDATE ip_blacklist SET login_attempts = :attempts, blacklisted = :blacklisted, timestamp = :timestamp WHERE ip_address = :ip");
-                $db->bind(':attempts', $attempts);
-                $db->bind(':blacklisted', $is_blacklisted);
-                $db->bind(':timestamp', $timestamp);
-                $db->bind(':ip', $ip);
-            } else {
-                $db->query("INSERT INTO ip_blacklist (ip_address, login_attempts, blacklisted, timestamp) VALUES (:ip, 1, FALSE, :timestamp)");
-                $db->bind(':ip', $ip);
-                $db->bind(':timestamp', time());
-            }
-            $db->execute();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error updating failed attempts: " . $e->getMessage(), 'error');
-            throw $e;
+        if ($result) {
+            $attempts = $result->login_attempts + 1;
+            $is_blacklisted = ($attempts >= 3);
+            $timestamp = ($is_blacklisted) ? time() : $result->timestamp;
+            $db->query("UPDATE ip_blacklist SET login_attempts = :attempts, blacklisted = :blacklisted, timestamp = :timestamp WHERE ip_address = :ip");
+            $db->bind(':attempts', $attempts);
+            $db->bind(':blacklisted', $is_blacklisted);
+            $db->bind(':timestamp', $timestamp);
+            $db->bind(':ip', $ip);
+        } else {
+            $db->query("INSERT INTO ip_blacklist (ip_address, login_attempts, blacklisted, timestamp) VALUES (:ip, 1, FALSE, :timestamp)");
+            $db->bind(':ip', $ip);
+            $db->bind(':timestamp', time());
         }
+        $db->execute();
     }
 
     /**
@@ -55,26 +50,21 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function isBlacklisted(string $ip): bool
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip AND blacklisted = TRUE");
-            $db->bind(':ip', $ip);
-            $result = $db->single();
+        $db = new Database();
+        $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip AND blacklisted = TRUE");
+        $db->bind(':ip', $ip);
+        $result = $db->single();
 
-            if ($result) {
-                if (time() - $result->timestamp > (3 * 24 * 60 * 60)) {
-                    $db->query("UPDATE ip_blacklist SET blacklisted = FALSE WHERE ip_address = :ip");
-                    $db->bind(':ip', $ip);
-                    $db->execute();
-                    return false;
-                }
-                return true;
+        if ($result) {
+            if (time() - $result->timestamp > (3 * 24 * 60 * 60)) {
+                $db->query("UPDATE ip_blacklist SET blacklisted = FALSE WHERE ip_address = :ip");
+                $db->bind(':ip', $ip);
+                $db->execute();
+                return false;
             }
-            return false;
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error checking blacklist status: " . $e->getMessage(), 'error');
-            throw $e;
+            return true;
         }
+        return false;
     }
 
     /**
@@ -85,17 +75,12 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function clearIpBlacklist(): bool
     {
-        try {
-            $db = new Database();
-            $threeDaysAgo = time() - (3 * 24 * 60 * 60);
-            $db->query("DELETE FROM ip_blacklist WHERE timestamp < :threeDaysAgo");
-            $db->bind(':threeDaysAgo', $threeDaysAgo);
-            $db->execute();
-            return true;
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error clearing IP blacklist: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $threeDaysAgo = time() - (3 * 24 * 60 * 60);
+        $db->query("DELETE FROM ip_blacklist WHERE timestamp < :threeDaysAgo");
+        $db->bind(':threeDaysAgo', $threeDaysAgo);
+        $db->execute();
+        return true;
     }
 
     /**

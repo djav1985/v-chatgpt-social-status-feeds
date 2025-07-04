@@ -15,6 +15,7 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
     private static ?PDO $dbh = null;
     private static ?int $lastUsedTime = null; // Tracks the last time the connection was used
     private static int $idleTimeout = 10; // Timeout in seconds (e.g., 10 seconds)
+    private static int $maxRetries = 3; // Maximum number of reconnection attempts
     private $stmt;
 
     /**
@@ -47,7 +48,7 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
                 self::$dbh = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
             } catch (PDOException $e) {
                 ErrorHandler::logMessage("Database connection failed: " . $e->getMessage(), 'error');
-                throw new Exception("Database connection failed");
+                throw $e; // Re-throw original PDOException to preserve details
             }
         }
 
@@ -77,19 +78,24 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
      * Prepares a query and ensures the connection is active.
      *
      * @param string $sql
+     * @throws PDOException
      */
     public function query(string $sql): void
     {
-        try {
-            $this->connect(); // Ensure the connection is active
-            $this->stmt = self::$dbh->prepare($sql);
-        } catch (PDOException $e) {
-            if ($this->isConnectionError($e)) {
-                ErrorHandler::logMessage("MySQL connection lost. Attempting to reconnect...", 'warning');
-                $this->reconnect();
-                $this->stmt = self::$dbh->prepare($sql); // Retry the query preparation
-            } else {
-                throw $e;
+        $retryCount = 0;
+        while ($retryCount <= self::$maxRetries) {
+            try {
+                $this->connect(); // Ensure the connection is active
+                $this->stmt = self::$dbh->prepare($sql);
+                return; // Success, exit the retry loop
+            } catch (PDOException $e) {
+                if ($this->isConnectionError($e) && $retryCount < self::$maxRetries) {
+                    ErrorHandler::logMessage("MySQL connection lost. Attempting to reconnect... (Attempt " . ($retryCount + 1) . "/" . (self::$maxRetries + 1) . ")", 'warning');
+                    $this->reconnect();
+                    $retryCount++;
+                } else {
+                    throw $e; // Re-throw if not a connection error or max retries exceeded
+                }
             }
         }
     }
@@ -125,21 +131,26 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
      * Executes the prepared statement and handles connection errors.
      *
      * @return bool
+     * @throws PDOException
      */
     public function execute(): bool
     {
-        try {
-            self::$lastUsedTime = time(); // Update the last used time
-            return $this->stmt->execute();
-        } catch (PDOException $e) {
-            if ($this->isConnectionError($e)) {
-                ErrorHandler::logMessage("MySQL connection lost during execution. Attempting to reconnect...", 'warning');
-                $this->reconnect();
-                return $this->stmt->execute(); // Retry the execution
-            } else {
-                throw $e;
+        $retryCount = 0;
+        while ($retryCount <= self::$maxRetries) {
+            try {
+                self::$lastUsedTime = time(); // Update the last used time
+                return $this->stmt->execute();
+            } catch (PDOException $e) {
+                if ($this->isConnectionError($e) && $retryCount < self::$maxRetries) {
+                    ErrorHandler::logMessage("MySQL connection lost during execution. Attempting to reconnect... (Attempt " . ($retryCount + 1) . "/" . (self::$maxRetries + 1) . ")", 'warning');
+                    $this->reconnect();
+                    $retryCount++;
+                } else {
+                    throw $e; // Re-throw if not a connection error or max retries exceeded
+                }
             }
         }
+        return false; // This should never be reached, but added for completeness
     }
 
     /**
@@ -178,44 +189,79 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
      * Begins a transaction and ensures the connection is active.
      *
      * @return bool
+     * @throws PDOException
      */
     public function beginTransaction(): bool
     {
-        try {
-            $this->connect(); // Ensure the connection is active
-            self::$lastUsedTime = time(); // Update the last used time
-            return self::$dbh->beginTransaction();
-        } catch (PDOException $e) {
-            if ($this->isConnectionError($e)) {
-                ErrorHandler::logMessage("MySQL connection lost during transaction. Attempting to reconnect...", 'warning');
-                $this->reconnect();
-                return self::$dbh->beginTransaction(); // Retry the transaction
-            } else {
-                throw $e;
+        $retryCount = 0;
+        while ($retryCount <= self::$maxRetries) {
+            try {
+                $this->connect(); // Ensure the connection is active
+                self::$lastUsedTime = time(); // Update the last used time
+                return self::$dbh->beginTransaction();
+            } catch (PDOException $e) {
+                if ($this->isConnectionError($e) && $retryCount < self::$maxRetries) {
+                    ErrorHandler::logMessage("MySQL connection lost during transaction. Attempting to reconnect... (Attempt " . ($retryCount + 1) . "/" . (self::$maxRetries + 1) . ")", 'warning');
+                    $this->reconnect();
+                    $retryCount++;
+                } else {
+                    throw $e; // Re-throw if not a connection error or max retries exceeded
+                }
             }
         }
+        return false; // This should never be reached, but added for completeness
     }
 
     /**
      * Commits a transaction.
      *
      * @return bool
+     * @throws PDOException
      */
     public function commit(): bool
     {
-        self::$lastUsedTime = time(); // Update the last used time
-        return self::$dbh->commit();
+        $retryCount = 0;
+        while ($retryCount <= self::$maxRetries) {
+            try {
+                self::$lastUsedTime = time(); // Update the last used time
+                return self::$dbh->commit();
+            } catch (PDOException $e) {
+                if ($this->isConnectionError($e) && $retryCount < self::$maxRetries) {
+                    ErrorHandler::logMessage("MySQL connection lost during commit. Attempting to reconnect... (Attempt " . ($retryCount + 1) . "/" . (self::$maxRetries + 1) . ")", 'warning');
+                    $this->reconnect();
+                    $retryCount++;
+                } else {
+                    throw $e; // Re-throw if not a connection error or max retries exceeded
+                }
+            }
+        }
+        return false; // This should never be reached, but added for completeness
     }
 
     /**
      * Rolls back a transaction.
      *
      * @return bool
+     * @throws PDOException
      */
     public function rollBack(): bool
     {
-        self::$lastUsedTime = time(); // Update the last used time
-        return self::$dbh->rollBack();
+        $retryCount = 0;
+        while ($retryCount <= self::$maxRetries) {
+            try {
+                self::$lastUsedTime = time(); // Update the last used time
+                return self::$dbh->rollBack();
+            } catch (PDOException $e) {
+                if ($this->isConnectionError($e) && $retryCount < self::$maxRetries) {
+                    ErrorHandler::logMessage("MySQL connection lost during rollback. Attempting to reconnect... (Attempt " . ($retryCount + 1) . "/" . (self::$maxRetries + 1) . ")", 'warning');
+                    $this->reconnect();
+                    $retryCount++;
+                } else {
+                    throw $e; // Re-throw if not a connection error or max retries exceeded
+                }
+            }
+        }
+        return false; // This should never be reached, but added for completeness
     }
 
     /**

@@ -19,14 +19,9 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function getAllUsers(): array
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT * FROM users");
-            return $db->resultSet();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving all users: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT * FROM users");
+        return $db->resultSet();
     }
 
     /**
@@ -37,15 +32,10 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function userExists(string $username): mixed
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT * FROM users WHERE username = :username");
-            $db->bind(':username', $username);
-            return $db->single();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error checking if user exists: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT * FROM users WHERE username = :username");
+        $db->bind(':username', $username);
+        return $db->single();
     }
 
     /**
@@ -63,7 +53,6 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function updateUser(string $username, string $password, int $totalAccounts, int $maxApiCalls, int $usedApiCalls, string $expires, int $admin, bool $isUpdate): bool
     {
-        ErrorHandler::logMessage("updateUser called with username: $username, isUpdate: $isUpdate", 'info');
         $db = new Database();
         $db->beginTransaction();
         try {
@@ -84,8 +73,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::logMessage("Error updating user: " . $e->getMessage(), 'error');
-            throw $e;
+            throw $e; // Re-throw without logging - let global handler deal with it
         }
     }
 
@@ -116,8 +104,7 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::logMessage("Error deleting user: " . $e->getMessage(), 'error');
-            throw $e;
+            throw $e; // Re-throw without logging - let global handler deal with it
         }
     }
 
@@ -130,17 +117,12 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function updatePassword(string $username, string $hashedPassword): bool
     {
-        try {
-            $db = new Database();
-            $db->query("UPDATE users SET password = :password WHERE username = :username");
-            $db->bind(':username', $username);
-            $db->bind(':password', $hashedPassword);
-            $db->execute();
-            return true;
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error updating password: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("UPDATE users SET password = :password WHERE username = :username");
+        $db->bind(':username', $username);
+        $db->bind(':password', $hashedPassword);
+        $db->execute();
+        return true;
     }
 
     /**
@@ -151,15 +133,10 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function getUserInfo(string $username): mixed
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT * FROM users WHERE username = :username");
-            $db->bind(':username', $username);
-            return $db->single();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving user info: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT * FROM users WHERE username = :username");
+        $db->bind(':username', $username);
+        return $db->single();
     }
 
     /**
@@ -170,15 +147,10 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function getAllUserAccts(string $username): array
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT * FROM accounts WHERE username = :username");
-            $db->bind(':username', $username);
-            return $db->resultSet();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving all user accounts: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT * FROM accounts WHERE username = :username");
+        $db->bind(':username', $username);
+        return $db->resultSet();
     }
 
     /**
@@ -190,17 +162,12 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function updateUsedApiCalls(string $username, int $usedApiCalls): bool
     {
-        try {
-            $db = new Database();
-            $db->query("UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username");
-            $db->bind(':used_api_calls', $usedApiCalls);
-            $db->bind(':username', $username);
-            $db->execute();
-            return true;
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error updating used API calls: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username");
+        $db->bind(':used_api_calls', $usedApiCalls);
+        $db->bind(':username', $username);
+        $db->execute();
+        return true;
     }
 
     /**
@@ -212,17 +179,12 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function updateMaxApiCalls(string $username, int $maxApiCalls): bool
     {
-        try {
-            $db = new Database();
-            $db->query("UPDATE users SET max_api_calls = :max_api_calls WHERE username = :username");
-            $db->bind(':max_api_calls', $maxApiCalls);
-            $db->bind(':username', $username);
-            $db->execute();
-            return true;
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error updating max API calls: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("UPDATE users SET max_api_calls = :max_api_calls WHERE username = :username");
+        $db->bind(':max_api_calls', $maxApiCalls);
+        $db->bind(':username', $username);
+        $db->execute();
+        return true;
     }
 
     /**
@@ -232,15 +194,10 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function resetAllApiUsage(): bool
     {
-        try {
-            $db = new Database();
-            $db->query("UPDATE users SET used_api_calls = 0");
-            $db->execute();
-            return true;
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error resetting all API usage: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("UPDATE users SET used_api_calls = 0");
+        $db->execute();
+        return true;
     }
 
     /**
@@ -255,19 +212,14 @@ class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespa
      */
     public static function updateProfile(string $username, string $who, string $where, string $what, string $goal): bool
     {
-        try {
-            $db = new Database();
-            $db->query("UPDATE users SET who = :who, `where` = :where, what = :what, goal = :goal WHERE username = :username");
-            $db->bind(':username', $username);
-            $db->bind(':who', $who);
-            $db->bind(':where', $where);
-            $db->bind(':what', $what);
-            $db->bind(':goal', $goal);
-            $db->execute();
-            return true;
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error updating profile: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("UPDATE users SET who = :who, `where` = :where, what = :what, goal = :goal WHERE username = :username");
+        $db->bind(':username', $username);
+        $db->bind(':who', $who);
+        $db->bind(':where', $where);
+        $db->bind(':what', $what);
+        $db->bind(':goal', $goal);
+        $db->execute();
+        return true;
     }
 }

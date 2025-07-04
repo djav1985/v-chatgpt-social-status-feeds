@@ -19,14 +19,9 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function getAllAccounts(): array
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT * FROM accounts");
-            return $db->resultSet();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving all accounts: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT * FROM accounts");
+        return $db->resultSet();
     }
 
     /**
@@ -37,15 +32,10 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function getAllUserAccts(string $username): array
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT account FROM accounts WHERE username = :username");
-            $db->bind(':username', $username);
-            return $db->resultSet();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving all user accounts: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT account FROM accounts WHERE username = :username");
+        $db->bind(':username', $username);
+        return $db->resultSet();
     }
 
     /**
@@ -57,16 +47,11 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function accountExists(string $accountOwner, string $accountName): bool
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT 1 FROM accounts WHERE username = :accountOwner AND account = :accountName LIMIT 1");
-            $db->bind(':accountOwner', $accountOwner);
-            $db->bind(':accountName', $accountName);
-            return (bool) $db->single();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error checking if account exists: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT 1 FROM accounts WHERE username = :accountOwner AND account = :accountName LIMIT 1");
+        $db->bind(':accountOwner', $accountOwner);
+        $db->bind(':accountName', $accountName);
+        return (bool) $db->single();
     }
 
     /**
@@ -78,16 +63,11 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function getAcctInfo(string $username, string $account): mixed
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
-            $db->bind(':username', $username);
-            $db->bind(':account', $account);
-            return $db->single();
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving account info: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
+        $db->bind(':username', $username);
+        $db->bind(':account', $account);
+        return $db->single();
     }
 
     /**
@@ -99,17 +79,12 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
      */
     public static function getAccountLink(string $username, string $account): string
     {
-        try {
-            $db = new Database();
-            $db->query("SELECT link FROM accounts WHERE username = :username AND account = :account");
-            $db->bind(':username', $username);
-            $db->bind(':account', $account);
-            $acctInfo = $db->single();
-            return htmlspecialchars($acctInfo->link ?? '');
-        } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving account link: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        $db = new Database();
+        $db->query("SELECT link FROM accounts WHERE username = :username AND account = :account");
+        $db->bind(':username', $username);
+        $db->bind(':account', $account);
+        $acctInfo = $db->single();
+        return htmlspecialchars($acctInfo->link ?? '');
     }
 
     /**
@@ -144,8 +119,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::logMessage("Error updating account: " . $e->getMessage(), 'error');
-            throw $e;
+            throw $e; // Re-throw without logging - let global handler deal with it
         }
     }
 
@@ -181,8 +155,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::logMessage("Error creating account: " . $e->getMessage(), 'error');
-            throw $e;
+            throw $e; // Re-throw without logging - let global handler deal with it
         }
     }
 
@@ -212,8 +185,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::logMessage("Error deleting account: " . $e->getMessage(), 'error');
-            throw $e;
+            throw $e; // Re-throw without logging - let global handler deal with it
         }
     }
 }
