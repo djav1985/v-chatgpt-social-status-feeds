@@ -37,7 +37,7 @@ class DatabaseHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNam
 
         // Establish a new connection if none exists
         if (self::$dbh === null) {
-            $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME;
+            $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
             $options = [
                         PDO::ATTR_PERSISTENT => true,
                         PDO::ATTR_ERRMODE    => PDO::ERRMODE_EXCEPTION,
