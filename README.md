@@ -47,7 +47,7 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 | ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>UtilityHandler</code>, <code>ErrorHandler</code>, and <code>ApiHandler</code> (see <code>root/classes/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by <code>root/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
 | 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using PDO in <code>DatabaseHandler.php</code>.</li><li>Robust error handling via <code>ErrorHandler.php</code>.</li><li>Clean inline documentation throughout core files.</li></ul> |
 | 📄  | **Documentation** | <ul><li>Includes install and usage steps.</li><li>Written in <code>PHP</code>, <code>SQL</code>, and <code>text</code> formats.</li><li>Simple onboarding for developers and admins.</li></ul> |
-| 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>ApiHandler.php</code>.</li><li>Real-time RSS feed generation using <code>rss-lib.php</code>.</li><li>Secure login and session control via <code>auth-lib.php</code>.</li></ul> |
+| 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>ApiHandler.php</code>.</li><li>Real-time RSS feed generation using <code>UtilityHandler::outputRssFeed()</code>.</li><li>Secure login and session control via <code>auth-lib.php</code>.</li></ul> |
 | 🧩  |  **Modularity**   | <ul><li>All logic encapsulated in single-purpose classes.</li><li>Autoloading supports scalability and clean structure.</li><li>Code reuse across handlers and views.</li></ul> |
 | 🔒  |   **Security**    | <ul><li>Full CSRF protection on form actions.</li><li>Strict input validation and sanitization.</li><li>Session hardening and IP blacklisting to block abuse.</li></ul> |
                                                                                                                                                         |
@@ -78,8 +78,7 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
     │   ├── install.sql
     │   ├── lib
     │   │   ├── auth-lib.php
-    │   │   ├── load-lib.php
-    │   │   └── rss-lib.php
+    │   │   └── load-lib.php
     │   └── public
     │       ├── .htaccess
     │       ├── assets
@@ -258,12 +257,8 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 				<summary><b>lib</b></summary>
 				<blockquote>
 					<table>
-					<tr>
-						<td><b><a href='/root/lib/rss-lib.php'>rss-lib.php</a></b></td>
-						<td>- Generates an RSS feed for user status updates, enabling users to subscribe and receive real-time notifications of new statuses<br>- It consolidates statuses from specified accounts or all accounts belonging to a user, sorting them by creation date<br>- By outputting the feed in XML format, it allows for easy integration with RSS readers and enhances user engagement through accessible updates.</td>
-					</tr>
-					<tr>
-						<td><b><a href='/root/lib/auth-lib.php'>auth-lib.php</a></b></td>
+                                        <tr>
+                                                <td><b><a href='/root/lib/auth-lib.php'>auth-lib.php</a></b></td>
 						<td>- User authentication and session management are facilitated through this component, which handles both login and logout processes<br>- It verifies user credentials and ensures secure session handling by managing session variables and addressing security concerns like session fixation and brute-force attacks<br>- This functionality is essential for maintaining user access control and protecting sensitive data within the ChatGPT API project.</td>
 					</tr>
 					<tr>

@@ -12,7 +12,7 @@
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../autoload.php';
-require_once __DIR__ . '/../lib/rss-lib.php';
+// RSS functionality is provided via UtilityHandler
 // Instantiate the ErrorHandler to register handlers
 new ErrorHandler();
 /**
@@ -38,7 +38,7 @@ if (empty($accountOwner) || empty($accountName)) {
  * Catch any exceptions and display an error message.
  */
 try {
-    outputRssFeed($accountName, $accountOwner);
+    UtilityHandler::outputRssFeed($accountName, $accountOwner);
 } catch (Exception $e) {
     echo 'Error: ' . $e->getMessage();
     ErrorHandler::logMessage("Error deleting old statuses: " . $e->getMessage(), 'error');
