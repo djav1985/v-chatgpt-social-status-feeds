@@ -346,6 +346,14 @@ Statuses are generated on schedule and added to the respective account feed and 
 
 ## Changelog
 
+### 2025-07-04
+
+- Moved RSS feed generation into `UtilityHandler` and removed `rss-lib.php`.
+- Added type hints across the codebase and improved error propagation.
+- Added error logging to `feeds.php` when RSS feed generation fails.
+- Refactored API interactions into `ApiHandler` and renamed `Database` to `DatabaseHandler`.
+- Various security fixes and bug improvements.
+
 ---
 
 ## 🎗 License
