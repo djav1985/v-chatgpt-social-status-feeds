@@ -121,6 +121,9 @@ class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespac
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    // Prevent hanging requests
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
     $response = curl_exec($ch);
     $error = curl_error($ch);
