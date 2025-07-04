@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     cron VARCHAR(255),
     days VARCHAR(255),
     platform VARCHAR(255) NOT NULL,
-    PRIMARY KEY (account)
+    PRIMARY KEY (username, account)
 );
 
 -- Ensure the accounts table has all the required columns (alter only if necessary)

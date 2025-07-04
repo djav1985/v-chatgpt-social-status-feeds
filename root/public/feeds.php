@@ -41,6 +41,9 @@ try {
     UtilityHandler::outputRssFeed($accountName, $accountOwner);
 } catch (Exception $e) {
     echo 'Error: ' . $e->getMessage();
-    ErrorHandler::logMessage("Error deleting old statuses: " . $e->getMessage(), 'error');
+    ErrorHandler::logMessage(
+        "RSS feed generation failed: " . $e->getMessage(),
+        'error'
+    );
     die(1);
 }
