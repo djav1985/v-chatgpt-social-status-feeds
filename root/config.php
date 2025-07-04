@@ -40,6 +40,9 @@ define('MAX_STATUSES', 8);
 // Maximum days to keep images. Should be over 360.
 define('IMG_AGE', 180);
 
+// Session timeout limit in seconds (default: 30 minutes)
+define('SESSION_TIMEOUT_LIMIT', 1800);
+
 // Default permissions for creating directories
 define('DIR_MODE', 0755);
 

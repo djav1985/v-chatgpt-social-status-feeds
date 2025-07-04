@@ -24,6 +24,16 @@ if ($ip && UtilityHandler::isBlacklisted($ip)) {
     header('Location: login.php');
     die(1);
 } elseif (isset($_GET['page'])) {
+    // Enforce session timeout and user agent consistency
+    $timeoutLimit = defined('SESSION_TIMEOUT_LIMIT') ? SESSION_TIMEOUT_LIMIT : 1800;
+    $timeoutExceeded = isset($_SESSION['timeout']) && (time() - $_SESSION['timeout'] > $timeoutLimit);
+    $userAgentChanged = isset($_SESSION['user_agent']) && $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT'];
+    if ($timeoutExceeded || $userAgentChanged) {
+        session_unset();
+        session_destroy();
+        header('Location: login.php');
+        die(1);
+    }
     // Allowed pages that can be loaded through the dashboard
     $allowedPages = ['home', 'accounts', 'users', 'info'];
 
