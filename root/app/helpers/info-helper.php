@@ -44,7 +44,7 @@ function buildSystemMessage(string $username): string
     if ($userInfo) {
         $systemMessage = "<span style=\"color: blue; font-weight: bold;\">" . SYSTEM_MSG . "</span>";
 
-        $systemMessage .= " <span style=\"color: blue; font-weight: bold;\">You work for</span> " . $userInfo->who . " <span style=\"color: blue; font-weight: bold;\">located in</span> " . $userInfo->where . ". " . $userInfo->what . " <span style=\"color: blue; font-weight: bold;\">Your goal is</span> " . $userInfo->goal . ".";
+        $systemMessage .= " <span style=\"color: blue; font-weight: bold;\">You work for</span> " . htmlspecialchars($userInfo->who) . " <span style=\"color: blue; font-weight: bold;\">located in</span> " . htmlspecialchars($userInfo->where) . ". " . htmlspecialchars($userInfo->what) . " <span style=\"color: blue; font-weight: bold;\">Your goal is</span> " . htmlspecialchars($userInfo->goal) . ".";
         return $systemMessage;
     }
 
