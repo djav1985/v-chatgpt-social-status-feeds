@@ -158,7 +158,7 @@ class DatabaseHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNam
      *
      * @return mixed
      */
-    public function single()
+    public function single(): mixed
     {
         $this->execute();
         return $this->stmt->fetch(PDO::FETCH_OBJ);

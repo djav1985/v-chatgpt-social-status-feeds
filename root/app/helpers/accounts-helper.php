@@ -115,12 +115,15 @@ function generateAccountList(): string
         $daysStr = implode(', ', $daysArr);
 
         // Parse and format cron times
-        $cronArr = array_filter(array_map('trim', explode(',', $accountData->cron)), function ($hour) {
-            return is_numeric($hour) && $hour !== '';
-        });
+        $cronArr = array_filter(
+            array_map('trim', explode(',', $accountData->cron)),
+            function (string $hour): bool {
+                return is_numeric($hour) && $hour !== '';
+            }
+        );
         $timesStr = 'Off';
         if (!empty($cronArr)) {
-            $times = array_map(function ($hour) {
+            $times = array_map(function (string $hour): string {
                 $hour = (int)$hour;
                 if ($hour === 0) {
                     return '12 am';
