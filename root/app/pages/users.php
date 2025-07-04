@@ -42,7 +42,7 @@
                     <option value="0">Off</option>
                     <option value="30">30</option>
                     <option value="90">90</option>
-                    <option value="150">300</option>
+                    <option value="300">300</option>
                     <option value="9999999999">Unlimited</option>
                 </select>
 

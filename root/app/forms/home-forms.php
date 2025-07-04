@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check CSRF token validity
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $_SESSION['messages'][] = "Invalid CSRF token. Please try again.";
-        header("Location: /accounts");
+        header("Location: /home");
         exit;
     }
 
