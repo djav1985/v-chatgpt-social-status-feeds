@@ -44,10 +44,12 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 
 |     |      Feature      | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | :-- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>Uses a modular architecture with dedicated classes for <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>UtilityHandler</code>, and <code>ErrorHandler</code> (see <code>root/classes/</code>).</li><li>Configuration is centralized in <code>root/config.php</code>.</li><li>Autoloading is handled by <code>root/autoload.php</code> for efficient class management.</li><li>Automated tasks are managed via <code>root/cron.php</code> and server cron jobs.</li></ul> |
+
+| ⚙️  | **Architecture**  | <ul><li>Uses a modular architecture with dedicated classes for <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>UtilityHandler</code>, <code>ErrorHandler</code>, and <code>ApiHandler</code> (see <code>root/classes/</code>).</li><li>Configuration is centralized in <code>root/config.php</code>.</li><li>Autoloading is handled by <code>root/autoload.php</code> for efficient class management.</li><li>Automated tasks are managed via <code>root/cron.php</code> and server cron jobs.</li></ul>
+
 | 🔩  | **Code Quality**  | <ul><li>Follows best practices for code organization and modularity.</li><li>Centralized database management using PDO (<code>DatabaseHandler.php</code>).</li><li>Comprehensive error handling via <code>ErrorHandler.php</code>.</li><li>Detailed inline comments and documentation in key files.</li></ul>                                                                                                                                                                                                                                          |
 | 📄  | **Documentation** | <ul><li>Includes usage commands and installation steps for onboarding.</li><li>Primarily written in <code>PHP</code> with <code>SQL</code> for database setup and <code>text</code> files for configuration.</li></ul>                                                                                                                                                                                                                                                                                                                          |
-| 🔌  | **Integrations**  | <ul><li>Supports integration with social media platforms for status updates via <code>status-lib.php</code>.</li><li>Provides RSS feeds for real-time updates (<code>rss-lib.php</code>).</li><li>Implements user authentication and session management (<code>auth-lib.php</code>).</li></ul>                                                                                                                                                                                                                                                  |
+| 🔌  | **Integrations**  | <ul><li>Supports integration with social media platforms for status updates via <code>ApiHandler.php</code>.</li><li>Provides RSS feeds for real-time updates (<code>rss-lib.php</code>).</li><li>Implements user authentication and session management (<code>auth-lib.php</code>).</li></ul>                                                                                                                                                                                                                                                  |
 | 🧩  |  **Modularity**   | <ul><li>Components are organized into separate classes for maintainability and scalability.</li><li>Autoloading minimizes manual file loading.</li><li>Code is reusable across the application.</li></ul>                                                                                                                                                                                                                                                                                                                                       |
 | 🔒  |   **Security**    | <ul><li>CSRF protection on all forms.</li><li>Input validation and sanitization throughout.</li><li>Session management and IP blacklisting for brute-force protection.</li></ul>                                                                                                                                                                                                                                                                                                                                                                |
 
@@ -69,6 +71,7 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
     │   │   ├── AccountHandler.php
     │   │   ├── DatabaseHandler.php
     │   │   ├── ErrorHandler.php
+    │   │   ├── ApiHandler.php
     │   │   ├── StatusHandler.php
     │   │   ├── UserHandler.php
     │   │   └── UtilityHandler.php
@@ -78,8 +81,7 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
     │   ├── lib
     │   │   ├── auth-lib.php
     │   │   ├── load-lib.php
-    │   │   ├── rss-lib.php
-    │   │   └── status-lib.php
+    │   │   └── rss-lib.php
     │   └── public
     │       ├── .htaccess
     │       ├── assets
@@ -139,11 +141,15 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 						<td><b><a href='/root/classes/DatabaseHandler.php'>DatabaseHandler.php</a></b></td>
 						<td>- Database management is streamlined through a class that centralizes the connection and interaction with the database using PDO<br>- It facilitates the execution of SQL queries, handles parameter binding, and manages transaction control<br>- By ensuring a single instance of the database connection, it enhances efficiency and error handling<br>- This functionality is crucial for the overall architecture of the ChatGPT API project, enabling smooth data operations.</td>
 					</tr>
-					<tr>
-						<td><b><a href='/root/classes/ErrorHandler.php'>ErrorHandler.php</a></b></td>
-						<td>- ErrorHandler ensures robust error management throughout the application by registering handlers for errors, exceptions, and shutdown events<br>- It transforms PHP errors into exceptions, logs uncaught exceptions, and manages critical shutdown errors, thereby enhancing the user experience with graceful error responses<br>- Additionally, it maintains a log of error messages, which aids in debugging and monitoring system health within the overall codebase architecture.</td>
-					</tr>
-					</table>
+                                        <tr>
+                                                <td><b><a href='/root/classes/ErrorHandler.php'>ErrorHandler.php</a></b></td>
+                                                <td>- ErrorHandler ensures robust error management throughout the application by registering handlers for errors, exceptions, and shutdown events<br>- It transforms PHP errors into exceptions, logs uncaught exceptions, and manages critical shutdown errors, thereby enhancing the user experience with graceful error responses<br>- Additionally, it maintains a log of error messages, which aids in debugging and monitoring system health within the overall codebase architecture.</td>
+                                        </tr>
+                                        <tr>
+                                                <td><b><a href='/root/classes/ApiHandler.php'>ApiHandler.php</a></b></td>
+                                                <td>- ApiHandler centralizes OpenAI API requests to generate structured social posts and images based on account details, returning formatted content for use throughout the project.</td>
+                                        </tr>
+                                        </table>
 				</blockquote>
 			</details>
 			<details>
@@ -261,10 +267,6 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 					<tr>
 						<td><b><a href='/root/lib/auth-lib.php'>auth-lib.php</a></b></td>
 						<td>- User authentication and session management are facilitated through this component, which handles both login and logout processes<br>- It verifies user credentials and ensures secure session handling by managing session variables and addressing security concerns like session fixation and brute-force attacks<br>- This functionality is essential for maintaining user access control and protecting sensitive data within the ChatGPT API project.</td>
-					</tr>
-					<tr>
-						<td><b><a href='/root/lib/status-lib.php'>status-lib.php</a></b></td>
-						<td>- Generates social media status updates and accompanying images for user accounts within the ChatGPT API project<br>- By integrating user and account information, it produces dynamic posts tailored to various platforms, ensuring compliance with character limits and hashtag guidelines<br>- This functionality enhances user engagement through personalized content, making the application versatile in managing social media presence effectively.</td>
 					</tr>
 					<tr>
 						<td><b><a href='/root/lib/load-lib.php'>load-lib.php</a></b></td>
