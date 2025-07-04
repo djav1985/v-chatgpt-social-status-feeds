@@ -300,6 +300,7 @@ Install the project using the following steps:
 3. **Update Configuration:**
 
    - Open `root/config.php` and update the necessary variables, including MySQL database credentials.
+   - Optionally adjust `CRON_MAX_EXECUTION_TIME` and `CRON_MEMORY_LIMIT` to control how long the cron script runs and how much memory it can use.
 
 4. **Install Database:**
 
