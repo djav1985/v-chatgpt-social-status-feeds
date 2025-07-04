@@ -30,7 +30,7 @@
         $accountName = htmlspecialchars($account->account, ENT_QUOTES);
         $acctInfo = AccountHandler::getAcctInfo($accountOwner, $accountName);
         $statuses = StatusHandler::getStatusInfo($accountOwner, $accountName);
-        $feedUrl = htmlspecialchars("/feeds.php?user={$accountOwner}&acct={$accountName}", ENT_QUOTES);
+        $feedUrl = htmlspecialchars("/feeds/{$accountOwner}/{$accountName}", ENT_QUOTES);
         $isOpen = $index === 0 ? 'flex' : 'none';
         $buttonIcon = $index === 0 ? 'icon-arrow-up' : 'icon-arrow-right';
         $accountActionDisplay = $index === 0 ? 'flex' : 'none';

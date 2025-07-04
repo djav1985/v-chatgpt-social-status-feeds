@@ -171,7 +171,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
         // Set the content type to RSS XML
         header('Content-Type: application/rss+xml; charset=utf-8');
 
-        $rssUrl = DOMAIN . '/feeds.php?user=' . urlencode($accountOwner) . '&amp;acct=' . ($isAllAccounts ? 'all' : urlencode($accountName));
+        $rssUrl = DOMAIN . '/feeds/' . urlencode($accountOwner) . '/' . ($isAllAccounts ? 'all' : urlencode($accountName));
 
         // Output RSS feed
         echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;

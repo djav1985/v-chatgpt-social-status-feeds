@@ -4,15 +4,18 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^images/.*\.png$ /assets/images/default.png [L]
 
-# Redirect '/' and '/index.php' to '/home' for external requests only
-RewriteCond %{THE_REQUEST} \s(/|/index\.php)\s [NC]
-RewriteRule ^(index\.php)?$ /home [L,R=301]
+# Redirect '/', '/index.php', and '/feeds.php' to '/home' for external requests only
+RewriteCond %{THE_REQUEST} \s(/|/index\.php|/feeds\.php) [NC]
+RewriteRule ^(index\.php|feeds\.php.*)?$ /home [L,R=301]
 
 # Internally rewrite /home, /users, /accounts, /info to index.php?page=home, index.php?page=users, etc.
 RewriteCond %{REQUEST_URI} ^/(home|users|accounts|info)$
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(home|users|accounts|info)$ /index.php?page=$1 [L]
+
+# Internally rewrite user feed URLs
+RewriteRule ^feeds/([^/]+)/([^/]+)$ /feeds.php?user=$1&acct=$2 [L,QSA]
 
 # Enable caching for certain file types
 <IfModule mod_expires.c>
