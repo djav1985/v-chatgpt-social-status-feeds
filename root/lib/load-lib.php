@@ -24,11 +24,13 @@ if ($ip && UtilityHandler::isBlacklisted($ip)) {
     header('Location: login.php');
     die(1);
 } elseif (isset($_GET['page'])) {
-    // Sanitize the page parameter to prevent XSS attacks and path traversal
+    // Allowed pages that can be loaded through the dashboard
+    $allowedPages = ['home', 'accounts', 'users', 'info'];
+
+    // Sanitize and validate the requested page against the whitelist
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS);
-    // Additional validation for page parameter to prevent path traversal
-    if ($page && (strpos($page, '../') !== false || strpos($page, '/') !== false || strpos($page, '\\') !== false)) {
-        ErrorHandler::logMessage("Potential path traversal attempt with page parameter: " . $page, 'warning');
+    if (!$page || !in_array($page, $allowedPages, true)) {
+        ErrorHandler::logMessage("Invalid page request: " . $page, 'warning');
         $page = null;
     }
 
