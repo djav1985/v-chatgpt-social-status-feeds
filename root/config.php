@@ -38,13 +38,17 @@ define('MAX_WIDTH', 720);
 define('MAX_STATUSES', 8);
 
 // Maximum days to keep images. Should be over 360.
-define('IMG_AGE', 180);
+define('IMG_AGE', 365);
 
 // Session timeout limit in seconds (default: 30 minutes)
 define('SESSION_TIMEOUT_LIMIT', 1800);
 
 // Default permissions for creating directories
 define('DIR_MODE', 0755);
+
+// Security settings
+define('MAX_LOGIN_ATTEMPTS', 3); // Max failed login attempts before IP blacklist
+define('IP_BLACKLIST_DURATION_SECONDS', 3 * 24 * 60 * 60); // 3 days in seconds
 
 // Cron runtime limits
 define('CRON_MAX_EXECUTION_TIME', getenv('CRON_MAX_EXECUTION_TIME') !== false ? getenv('CRON_MAX_EXECUTION_TIME') : 0);

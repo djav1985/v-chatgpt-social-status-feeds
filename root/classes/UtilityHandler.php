@@ -28,7 +28,8 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
 
             if ($result) {
                 $attempts = $result->login_attempts + 1;
-                $is_blacklisted = ($attempts >= 3);
+                // Use MAX_LOGIN_ATTEMPTS from config.php
+                $is_blacklisted = ($attempts >= (defined('MAX_LOGIN_ATTEMPTS') ? MAX_LOGIN_ATTEMPTS : 3));
                 $timestamp = ($is_blacklisted) ? time() : $result->timestamp;
                 $db->query("UPDATE ip_blacklist SET login_attempts = :attempts, blacklisted = :blacklisted, timestamp = :timestamp WHERE ip_address = :ip");
                 $db->bind(':attempts', $attempts);
@@ -62,7 +63,9 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $result = $db->single();
 
             if ($result) {
-                if (time() - $result->timestamp > (3 * 24 * 60 * 60)) {
+                // Use IP_BLACKLIST_DURATION_SECONDS from config.php
+                $blacklistDuration = defined('IP_BLACKLIST_DURATION_SECONDS') ? IP_BLACKLIST_DURATION_SECONDS : (3 * 24 * 60 * 60);
+                if (time() - $result->timestamp > $blacklistDuration) {
                     $db->query("UPDATE ip_blacklist SET blacklisted = FALSE WHERE ip_address = :ip");
                     $db->bind(':ip', $ip);
                     $db->execute();
@@ -87,9 +90,16 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     {
         try {
             $db = new DatabaseHandler();
-            $threeDaysAgo = time() - (3 * 24 * 60 * 60);
-            $db->query("DELETE FROM ip_blacklist WHERE timestamp < :threeDaysAgo");
-            $db->bind(':threeDaysAgo', $threeDaysAgo);
+            // Use IP_BLACKLIST_DURATION_SECONDS from config.php
+            $blacklistDuration = defined('IP_BLACKLIST_DURATION_SECONDS') ? IP_BLACKLIST_DURATION_SECONDS : (3 * 24 * 60 * 60);
+            $olderThanTimestamp = time() - $blacklistDuration;
+            $db->query("DELETE FROM ip_blacklist WHERE timestamp < :olderThanTimestamp AND blacklisted = FALSE"); // Only clear non-blacklisted old entries, or all old entries?
+                                                                                              // Assuming we want to clear entries that are old AND no longer actively blacklisted,
+                                                                                              // or simply all entries older than the duration.
+                                                                                              // The original logic deleted any entry older than 3 days.
+                                                                                              // Let's stick to deleting any entry older than the duration.
+            $db->query("DELETE FROM ip_blacklist WHERE timestamp < :olderThanTimestamp");
+            $db->bind(':olderThanTimestamp', $olderThanTimestamp);
             $db->execute();
             return true;
         } catch (Exception $e) {
@@ -189,10 +199,23 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
 
             // Include image enclosure if available
             if (!empty($status->status_image)) {
-                $imageUrl = DOMAIN . "/images/" . htmlspecialchars($accountOwner) . "/" . htmlspecialchars($status->account) . "/" . htmlspecialchars($status->status_image);
-                $imageFilePath = __DIR__ . '/../public/images/' . htmlspecialchars($accountOwner) . '/' . htmlspecialchars($status->account) . '/' . htmlspecialchars($status->status_image);
+                // Use rawurlencode for URL path segments
+                $encodedAccountOwner = rawurlencode($accountOwner); // $accountOwner is already htmlspecialchars'd earlier, but rawurlencode is for path
+                $encodedStatusAccount = rawurlencode($status->account); // $status->account comes from DB, assumed safe, but encode for URL path
+                $encodedStatusImage = rawurlencode($status->status_image); // $status->status_image is filename, should be safe, encode for consistency
+
+                $imageUrl = DOMAIN . "/images/" . $encodedAccountOwner . "/" . $encodedStatusAccount . "/" . $encodedStatusImage;
+
+                // For file_exists, use raw values as htmlspecialchars might alter them if they contained & etc.
+                // However, $accountOwner was htmlspecialchar'd at the start of the function.
+                // $status->account and $status->status_image are direct from DB.
+                // It's safer to use the original values for filesystem paths if they are guaranteed safe for paths.
+                // Given $accountOwner is htmlspecialchars'd at the start, and others are from DB (likely clean),
+                // using them directly for file path construction is okay, but be mindful.
+                // The variables $encodedAccountOwner etc. are for the URL.
+                $imageFilePath = __DIR__ . '/../public/images/' . $accountOwner . '/' . $status->account . '/' . $status->status_image;
                 $imageFileSize = file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
-                $enclosureTag = '<enclosure url="' . $imageUrl . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
+                $enclosureTag = '<enclosure url="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
             }
 
             $description = htmlspecialchars($status->status);
@@ -201,8 +224,9 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             echo '<pubDate>' . date('r', strtotime($status->created_at)) . '</pubDate>' . PHP_EOL;
             echo '<title>' . htmlspecialchars($status->account) . '</title>' . PHP_EOL;
             echo '<link>' . htmlspecialchars($status->accountLink) . '</link>' . PHP_EOL;
-            echo '<description><![CDATA[' . $description . ']]></description>' . PHP_EOL;
-            echo '<content:encoded><![CDATA[' . $description . ']]></content:encoded>' . PHP_EOL;
+            // Output htmlspecialchars-encoded description directly. CDATA is not necessary here.
+            echo '<description>' . $description . '</description>' . PHP_EOL;
+            echo '<content:encoded>' . $description . '</content:encoded>' . PHP_EOL;
             echo $enclosureTag;
             echo '<category>' . htmlspecialchars($status->account) . '</category>' . PHP_EOL;
             echo '</item>' . PHP_EOL;

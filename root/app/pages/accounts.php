@@ -54,7 +54,7 @@
                     <option value="0" selected>No</option>
                     <option value="1">Yes</option>
                 </select>
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
                 <button type="submit" class="btn btn-primary btn-lg" name="edit_account">Add/Update Account</button>
             </form>
         </div>
@@ -85,8 +85,10 @@
 
                 // Populate form fields with the selected account's data
                 accountNameField.value = this.dataset.accountName;
-                promptField.value = decodeURIComponent(this.dataset.prompt.replace(/\+/g, ' '));
-                linkField.value = decodeURIComponent(this.dataset.link.replace(/\+/g, ' '));
+                // HTML dataset attributes are automatically HTML-decoded by the browser.
+                // decodeURIComponent and replace are not needed here if PHP side used only htmlspecialchars.
+                promptField.value = this.dataset.prompt;
+                linkField.value = this.dataset.link;
                 hashtagsSelect.value = this.dataset.hashtags;
 
                 // Clear previous selections

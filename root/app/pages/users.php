@@ -64,7 +64,7 @@
                 </select>
 
                 <!-- CSRF token for security -->
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
                 <button class="btn btn-primary btn-lg" type="submit" name="edit_users">Add/Update User</button>
             </form>
         </div>

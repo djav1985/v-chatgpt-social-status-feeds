@@ -27,10 +27,22 @@
     // Iterate through each account and display its statuses
     foreach ($accounts as $index => $account) : ?>
         <?php
-        $accountName = htmlspecialchars($account->account, ENT_QUOTES);
-        $acctInfo = AccountHandler::getAcctInfo($accountOwner, $accountName);
-        $statuses = StatusHandler::getStatusInfo($accountOwner, $accountName);
-        $feedUrl = htmlspecialchars("/feeds/{$accountOwner}/{$accountName}", ENT_QUOTES);
+        // Use raw values for internal logic, escape at output
+        $rawAccountOwner = $_SESSION['username']; // Already available, no need for htmlspecialchars here for logic
+        $rawAccountName = $account->account; // Use raw account name for logic
+
+        // Fetch info using raw names
+        $acctInfo = AccountHandler::getAcctInfo($rawAccountOwner, $rawAccountName);
+        $statuses = StatusHandler::getStatusInfo($rawAccountOwner, $rawAccountName);
+
+        // Construct feed URL with rawurlencode for path segments, then htmlspecialchars for HTML attribute
+        $feedUrlPath = "/feeds/" . rawurlencode($rawAccountOwner) . "/" . rawurlencode($rawAccountName);
+        $feedUrl = htmlspecialchars($feedUrlPath, ENT_QUOTES, 'UTF-8');
+
+        // For display purposes, HTML escape the names
+        $displayAccountOwner = htmlspecialchars($rawAccountOwner, ENT_QUOTES, 'UTF-8');
+        $displayAccountName = htmlspecialchars($rawAccountName, ENT_QUOTES, 'UTF-8');
+
         $isOpen = $index === 0 ? 'flex' : 'none';
         $buttonIcon = $index === 0 ? 'icon-arrow-up' : 'icon-arrow-right';
         $accountActionDisplay = $index === 0 ? 'flex' : 'none';
@@ -41,24 +53,33 @@
                 <button class="collapse-button" onclick="toggleSection(this)">
                     <i class="icon <?= $buttonIcon ?>"></i>
                 </button>
-                <h3 class="status-campaign card-title">Status Campaign: #<?= htmlspecialchars($accountName) ?></h3>
+                <h3 class="status-campaign card-title">Status Campaign: #<?= $displayAccountName // Use HTML-escaped version for display ?></h3>
             </div>
 
             <?php if (!empty($statuses)) : ?>
                 <div class="status-content columns" style="display: <?= $isOpen ?>;">
                     <?php foreach ($statuses as $status) : ?>
                         <?php if (!empty($status->status)) : ?>
+                            <?php
+                            // Construct image src URL with rawurlencode for path segments, then htmlspecialchars for the attribute
+                            $rawStatusImageFilename = $status->status_image; // Assuming this is just the filename
+                            $imageSrcPath = $rawStatusImageFilename
+                                ? "images/" . rawurlencode($rawAccountOwner) . "/" . rawurlencode($rawAccountName) . "/" . rawurlencode($rawStatusImageFilename)
+                                : 'assets/images/default.png';
+                            $imageSrcAttr = htmlspecialchars($imageSrcPath, ENT_QUOTES, 'UTF-8');
+                            ?>
                             <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
                                 <div class="status-item card">
-                                    <img src="<?= htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive" loading="lazy">
+                                    <img src="<?= $imageSrcAttr ?>" class="status-image img-responsive" loading="lazy">
                                     <p class="status-text">
-                                        <?= htmlspecialchars($status->status) ?>
+                                        <?= htmlspecialchars($status->status, ENT_QUOTES, 'UTF-8') ?>
                                     </p>
                                     <div class="status-meta">
                                         <strong class="status-info">
                                             <?= date('m/d/y g:ia', strtotime($status->created_at)) ?>
                                         </strong>
-                                        <?php echo shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
+                                        <?php // Pass raw values to shareButton as it handles its own encoding
+                                        echo shareButton($status->status, $rawStatusImageFilename, $rawAccountOwner, $rawAccountName, $status->id); ?>
                                     </div>
                                 </div>
                             </div>
@@ -72,11 +93,11 @@
             <?php endif; ?>
 
             <div class="account-action-container" style="display: <?= $accountActionDisplay ?>;">
-                <button class="view-feed-button btn btn-primary" onclick="location.href='<?= $feedUrl ?>';">View Feed</button>
+                <button class="view-feed-button btn btn-primary" onclick="location.href='<?= $feedUrl // $feedUrl is already htmlspecialchars'd ?>';">View Feed</button>
                 <form class="account-action-form" action="/home" method="POST">
-                    <input type="hidden" name="account" value="<?= htmlspecialchars($accountName, ENT_QUOTES) ?>">
-                    <input type="hidden" name="username" value="<?= htmlspecialchars($accountOwner, ENT_QUOTES) ?>">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
+                    <input type="hidden" name="account" value="<?= $displayAccountName // Use HTML-escaped for form value ?>">
+                    <input type="hidden" name="username" value="<?= $displayAccountOwner // Use HTML-escaped for form value ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
                     <button type="submit" class="generate-status-button btn btn-success" name="generate_status">Generate Status</button>
                 </form>
             </div>
