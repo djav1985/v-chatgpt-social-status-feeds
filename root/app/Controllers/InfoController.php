@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: InfoController.php
  * Description: AI Social Status Generator
  */
+
 namespace App\Controllers;
 
 use App\Core\Controller;
@@ -73,7 +76,7 @@ class InfoController extends Controller
             }
         }
 
-        $this->render('info');
+        self::render('info');
     }
 
     public static function generateProfileDataAttributes(string $username): string

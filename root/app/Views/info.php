@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,10 +11,12 @@
  * File: info.php
  * Description: AI Social Status Generator
  */
+
 use App\Controllers\InfoController;
 ?>
 
-<?php require 'layouts/header.php'; ?>
+<?php
+ require 'layouts/header.php'; ?>
 
 <main class="container">
     <div class="columns">
@@ -21,7 +25,8 @@ use App\Controllers\InfoController;
             <div class="info-header card-header">
                 <h3 class="info-name card-title">Your Profile</h3>
             </div>
-            <form class="form-group columns" method="post" id="update-profile-form" <?php echo InfoController::generateProfileDataAttributes($_SESSION['username']); ?>>
+            <form class="form-group columns" method="post" id="update-profile-form" <?php
+ echo InfoController::generateProfileDataAttributes($_SESSION['username']); ?>>
                 <div class="column col-6 col-md-6 col-sm-12">
                     <!-- Who input field -->
                     <label for="who">Who:</label>
@@ -38,8 +43,10 @@ use App\Controllers\InfoController;
                 <!-- Goal input field -->
                 <label for="goal">Goal:</label>
                 <textarea class="form-input" rows="10" name="goal" id="goal" placeholder="Our goal is... (drive more sales)" maxlength="500" required></textarea>
-                <input name="csrf_token" type="hidden" value="<?php echo $_SESSION['csrf_token']; ?>">
-                <input name="accountOwner" type="hidden" value="<?php echo htmlspecialchars($_SESSION['username']); ?>">
+                <input name="csrf_token" type="hidden" value="<?php
+ echo $_SESSION['csrf_token']; ?>">
+                <input name="accountOwner" type="hidden" value="<?php
+ echo htmlspecialchars($_SESSION['username']); ?>">
                 <input class="btn btn-primary btn-lg" type="submit" name="update_profile">
             </form>
         </div>
@@ -51,7 +58,8 @@ use App\Controllers\InfoController;
             <form class="form-group" method="post">
                 <!-- Username input field (readonly) -->
                 <label for="username">Username:</label>
-                <input class="form-input" type="text" name="username" id="username" value="<?php echo htmlspecialchars($_SESSION['username']); ?>" readonly required>
+                <input class="form-input" type="text" name="username" id="username" value="<?php
+ echo htmlspecialchars($_SESSION['username']); ?>" readonly required>
                 <!-- New password input field -->
                 <label for="password">New Password:</label>
                 <input class="form-input" type="password" name="password" id="password" required>
@@ -59,7 +67,8 @@ use App\Controllers\InfoController;
                 <label for="password2">Confirm New Password:</label>
                 <input class="form-input" type="password" name="password2" id="password2" required>
                 <!-- CSRF token for security -->
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <input type="hidden" name="csrf_token" value="<?php
+ echo $_SESSION['csrf_token']; ?>">
                 <input type="submit" class="btn btn-primary btn-lg" name="change_password">
             </form>
             <iframe style="margin: auto;" width="100%" height="340px" src="https://www.youtube.com/embed/Hj-XiPXyqCg?si=TPG2nQ_u1Iz3y_T1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -73,7 +82,8 @@ use App\Controllers\InfoController;
                     <h3 class="card-title">System Message</h3>
                 </div>
                 <div class="card-body">
-                    <p><?php echo InfoController::buildSystemMessage($_SESSION['username']); ?></p>
+                    <p><?php
+ echo InfoController::buildSystemMessage($_SESSION['username']); ?></p>
                 </div>
             </div>
         </div>
@@ -97,4 +107,5 @@ use App\Controllers\InfoController;
     });
 </script>
 
-<?php require 'layouts/footer.php'; ?>
+<?php
+ require 'layouts/footer.php'; ?>

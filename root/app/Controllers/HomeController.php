@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: HomeController.php
  * Description: AI Social Status Generator
  */
+
 namespace App\Controllers;
 
 use App\Core\Controller;
@@ -74,7 +77,7 @@ class HomeController extends Controller
             }
         }
 
-        $this->render('home');
+        self::render('home');
     }
 
     public static function shareButton(string $statusText, string $imagePath, string $accountOwner, string $accountName, int $statusId): string

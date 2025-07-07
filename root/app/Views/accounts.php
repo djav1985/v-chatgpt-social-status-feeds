@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: accounts.php
  * Description: AI Social Status Generator
  */
+
 use App\Controllers\AccountsController;
 
 require 'layouts/header.php';
@@ -43,12 +46,14 @@ require 'layouts/header.php';
                 <!-- Days selection dropdown (multiple) -->
                 <label for="days">Days:</label>
                 <select class="form-select" name="days[]" id="days" multiple required>
-                    <?php echo AccountsController::generateDaysOptions(); ?>
+                    <?php
+ echo AccountsController::generateDaysOptions(); ?>
                 </select>
                 <!-- Post schedule selection dropdown (multiple) -->
                 <label for="cron">Post Schedule:</label>
                 <select class="form-select" name="cron[]" id="cron" multiple required>
-                    <?php echo AccountsController::generateCronOptions(); ?>
+                    <?php
+ echo AccountsController::generateCronOptions(); ?>
                 </select>
                 <!-- Hashtags inclusion dropdown -->
                 <label for="hashtags">Include Hashtags:</label>
@@ -56,7 +61,8 @@ require 'layouts/header.php';
                     <option value="0" selected>No</option>
                     <option value="1">Yes</option>
                 </select>
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <input type="hidden" name="csrf_token" value="<?php
+ echo $_SESSION['csrf_token']; ?>">
                 <button type="submit" class="btn btn-primary btn-lg" name="edit_account">Add/Update Account</button>
             </form>
         </div>
@@ -66,7 +72,8 @@ require 'layouts/header.php';
                 <h3 class="account-name card-title">Account List</h3>
             </div>
             <div class="columns">
-                <?php echo AccountsController::generateAccountList(); ?>
+                <?php
+ echo AccountsController::generateAccountList(); ?>
             </div>
         </div>
     </div>
@@ -151,4 +158,5 @@ require 'layouts/header.php';
     });
 </script>
 
-<?php require 'layouts/footer.php'; ?>
+<?php
+ require 'layouts/footer.php'; ?>

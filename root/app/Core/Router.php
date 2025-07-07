@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: Router.php
  * Description: AI Social Status Generator
  */
+
 namespace App\Core;
 
 use App\Core\AuthMiddleware;
@@ -29,22 +32,22 @@ class Router
         }
 
         switch ($route) {
-            case '/login':
-                \App\Controllers\AuthController::handleRequest();
-                break;
-            case '/accounts':
-                \App\Controllers\AccountsController::handleRequest();
-                break;
-            case '/users':
-                \App\Controllers\UsersController::handleRequest();
-                break;
-            case '/info':
-                \App\Controllers\InfoController::handleRequest();
-                break;
-            case '/':
-            case '/home':
-            default:
-                \App\Controllers\HomeController::handleRequest();
+        case '/login':
+            \App\Controllers\AuthController::handleRequest();
+            break;
+        case '/accounts':
+            \App\Controllers\AccountsController::handleRequest();
+            break;
+        case '/users':
+            \App\Controllers\UsersController::handleRequest();
+            break;
+        case '/info':
+            \App\Controllers\InfoController::handleRequest();
+            break;
+        case '/':
+        case '/home':
+        default:
+            \App\Controllers\HomeController::handleRequest();
         }
     }
 }

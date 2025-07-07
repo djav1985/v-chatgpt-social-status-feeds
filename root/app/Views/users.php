@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -68,7 +69,8 @@ require 'layouts/header.php';
                 </select>
 
                 <!-- CSRF token for security -->
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <input type="hidden" name="csrf_token" value="<?php
+ echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <button class="btn btn-primary btn-lg" type="submit" name="edit_users">Add/Update User</button>
             </form>
         </div>
@@ -78,7 +80,8 @@ require 'layouts/header.php';
                 <h3 class="account-name card-title">User List</h3>
             </div>
             <div class="columns">
-                <?php echo UsersController::generateUserList(); ?>
+                <?php
+ echo UsersController::generateUserList(); ?>
             </div>
         </div>
     </div>
@@ -110,4 +113,5 @@ require 'layouts/header.php';
     });
 </script>
 
-<?php require 'layouts/footer.php'; ?>
+<?php
+ require 'layouts/footer.php'; ?>

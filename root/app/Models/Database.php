@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,11 +11,13 @@
  * File: Database.php
  * Description: AI Social Status Generator
  */
+
 namespace App\Models;
 
 use PDO;
 use PDOException;
 use Exception;
+use App\Core\ErrorHandler;
 
 /**
  * Project: SocialRSS
@@ -25,6 +29,8 @@ use Exception;
  * File: Database.php
  * Description: AI Social Status Generator
  */
+
+
 
 class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {

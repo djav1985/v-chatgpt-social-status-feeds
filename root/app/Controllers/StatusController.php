@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: StatusController.php
  * Description: AI Social Status Generator
  */
+
 namespace App\Controllers;
 
 use Exception;
@@ -29,6 +32,8 @@ use App\Models\UtilityHandler;
  * File: StatusController.php
  * Description: AI Social Status Generator
  */
+
+
 
 class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
@@ -297,5 +302,3 @@ class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNa
 }
 
 }
-
-

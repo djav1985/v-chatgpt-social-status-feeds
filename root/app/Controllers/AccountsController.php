@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: AccountsController.php
  * Description: AI Social Status Generator
  */
+
 namespace App\Controllers;
 
 use App\Core\Controller;
@@ -72,7 +75,9 @@ class AccountsController extends Controller
                         if (!file_exists($acctImagePath)) {
                             mkdir($acctImagePath, 0755, true);
                             $indexFilePath = $acctImagePath . '/index.php';
-                            file_put_contents($indexFilePath, '<?php die(); ?>');
+                            file_put_contents(
+                                $indexFilePath, '<?php die(); ?>'
+                            );
                         }
                     }
                     $_SESSION['messages'][] = 'Account has been created or modified.';
@@ -95,7 +100,7 @@ class AccountsController extends Controller
             }
         }
 
-        $this->render('accounts');
+        self::render('accounts');
     }
 
     public static function generateDaysOptions(): string

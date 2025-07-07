@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: UsersController.php
  * Description: AI Social Status Generator
  */
+
 namespace App\Controllers;
 
 use App\Core\Controller;
@@ -64,7 +67,8 @@ class UsersController extends Controller
                             if (!file_exists($userImagePath)) {
                                 mkdir($userImagePath, 0755, true);
                                 $indexFilePath = $userImagePath . '/index.php';
-                                file_put_contents($indexFilePath, '<?php die(); ?>');
+                                file_put_contents($indexFilePath, '<?php
+ die(); ?>');
                             }
                         }
                         $_SESSION['messages'][] = 'User has been created or modified.';
@@ -113,7 +117,7 @@ class UsersController extends Controller
             }
         }
 
-        $this->render('users');
+        self::render('users');
     }
 
     public static function generateUserList(): string

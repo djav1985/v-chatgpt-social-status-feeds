@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,16 +11,16 @@
  * File: cron.php
  * Description: AI Social Status Generator
  */
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 require_once __DIR__ . '/app/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorHandler;
-use App\Core\UtilityHandler;
 use App\Controllers\StatusController;
 use App\Models\AccountHandler;
 use App\Models\UserHandler;
 use App\Models\StatusHandler;
+use App\Models\UtilityHandler;
 
 // Apply configured runtime limits after loading settings
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));

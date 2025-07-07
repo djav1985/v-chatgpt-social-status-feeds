@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,7 +11,6 @@
  * File: login.php
  * Description: AI Social Status Generator
  */
-// Login view
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +33,8 @@
             <img class="img-responsive" id="logo" src="assets/images/logo.png" alt="Logo">
             <!-- Login form -->
             <form class="form-group" method="post">
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <input type="hidden" name="csrf_token" value="<?php
+ echo $_SESSION['csrf_token']; ?>">
                 <label for="username">Username:</label>
                 <input class="form-input" id="username" type="text" name="username" autocomplete="username" required>
 
@@ -45,6 +47,7 @@
             <!-- Display error messages if any -->
         </div>
     </div>
-<?php echo App\Models\UtilityHandler::displayAndClearMessages(); ?>
+<?php
+ echo App\Models\UtilityHandler::displayAndClearMessages(); ?>
 </body>
 </html>

@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: home.php
  * Description: AI Social Status Generator
  */
+
 use App\Controllers\HomeController;
 use App\Models\AccountHandler;
 use App\Models\StatusHandler;
@@ -18,6 +21,7 @@ require 'layouts/header.php';
 
 <main class="container">
     <?php
+
     // Retrieve the account owner from the session and fetch all user accounts
     $accountOwner = htmlspecialchars($_SESSION['username'], ENT_QUOTES);
     $accounts = AccountHandler::getAllUserAccts($accountOwner);
@@ -31,6 +35,7 @@ require 'layouts/header.php';
     // Iterate through each account and display its statuses
     foreach ($accounts as $index => $account) : ?>
         <?php
+
         $accountName = htmlspecialchars($account->account, ENT_QUOTES);
         $acctInfo = AccountHandler::getAcctInfo($accountOwner, $accountName);
         $statuses = StatusHandler::getStatusInfo($accountOwner, $accountName);
@@ -43,49 +48,69 @@ require 'layouts/header.php';
         <div class="status-container card">
             <div class="status-header card-header">
                 <button class="collapse-button" onclick="toggleSection(this)">
-                    <i class="icon <?php echo $buttonIcon ?>"></i>
+                    <i class="icon <?php
+ echo $buttonIcon ?>"></i>
                 </button>
-                <h3 class="status-campaign card-title">Status Campaign: #<?php echo htmlspecialchars($accountName) ?></h3>
+                <h3 class="status-campaign card-title">Status Campaign: #<?php
+ echo htmlspecialchars($accountName) ?></h3>
             </div>
 
-            <?php if (!empty($statuses)) : ?>
-                <div class="status-content columns" style="display: <?php echo $isOpen ?>;">
-                    <?php foreach ($statuses as $status) : ?>
-                        <?php if (!empty($status->status)) : ?>
+            <?php
+ if (!empty($statuses)) : ?>
+                <div class="status-content columns" style="display: <?php
+ echo $isOpen ?>;">
+                    <?php
+ foreach ($statuses as $status) : ?>
+                        <?php
+ if (!empty($status->status)) : ?>
                             <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
                                 <div class="status-item card">
-                                    <img src="<?php echo htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive" loading="lazy">
+                                    <img src="<?php
+ echo htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive" loading="lazy">
                                     <p class="status-text">
-                                        <?php echo htmlspecialchars($status->status) ?>
+                                        <?php
+ echo htmlspecialchars($status->status) ?>
                                     </p>
                                     <div class="status-meta">
                                         <strong class="status-info">
-                                            <?php echo date('m/d/y g:ia', strtotime($status->created_at)) ?>
+                                            <?php
+ echo date('m/d/y g:ia', strtotime($status->created_at)) ?>
                                         </strong>
-                                        <?php echo HomeController::shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
+                                        <?php
+ echo HomeController::shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
                                     </div>
                                 </div>
                             </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
+                        <?php
+ endif; ?>
+                    <?php
+ endforeach; ?>
                 </div>
-            <?php else : ?>
+            <?php
+ else : ?>
                 <div id="no-status" class="empty">
                     <p class="empty-title">No statuses available.</p>
                 </div>
-            <?php endif; ?>
+            <?php
+ endif; ?>
 
-            <div class="account-action-container" style="display: <?php echo $accountActionDisplay ?>;">
-                <button class="view-feed-button btn btn-primary" onclick="location.href='<?php echo $feedUrl ?>';">View Feed</button>
+            <div class="account-action-container" style="display: <?php
+ echo $accountActionDisplay ?>;">
+                <button class="view-feed-button btn btn-primary" onclick="location.href='<?php
+ echo $feedUrl ?>';">View Feed</button>
                 <form class="account-action-form" action="/home" method="POST">
-                    <input type="hidden" name="account" value="<?php echo htmlspecialchars($accountName, ENT_QUOTES) ?>">
-                    <input type="hidden" name="username" value="<?php echo htmlspecialchars($accountOwner, ENT_QUOTES) ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
+                    <input type="hidden" name="account" value="<?php
+ echo htmlspecialchars($accountName, ENT_QUOTES) ?>">
+                    <input type="hidden" name="username" value="<?php
+ echo htmlspecialchars($accountOwner, ENT_QUOTES) ?>">
+                    <input type="hidden" name="csrf_token" value="<?php
+ echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
                     <button type="submit" class="generate-status-button btn btn-success" name="generate_status">Generate Status</button>
                 </form>
             </div>
         </div>
-    <?php endforeach; ?>
+    <?php
+ endforeach; ?>
 </main>
 
 <script>
@@ -247,4 +272,5 @@ require 'layouts/header.php';
     });
 </script>
 
-<?php require 'layouts/footer.php'; ?>
+<?php
+ require 'layouts/footer.php'; ?>

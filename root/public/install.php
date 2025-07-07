@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,7 @@
  * File: install.php
  * Description: AI Social Status Generator
  */
+
 // Only allow the install script when explicitly enabled
 if (getenv('INSTALL_ENABLED') !== '1') {
     exit('Install script is disabled.');

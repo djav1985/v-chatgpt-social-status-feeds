@@ -1,3 +1,18 @@
+<?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: header.php
+ * Description: AI Social Status Generator
+ */
+?>
+
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
@@ -28,11 +43,26 @@
     </div>
 </header>
 <ul class="tab tab-block">
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/home') echo 'active'; ?>"><a href="/home">Statuses</a></li>
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/accounts') echo 'active'; ?>"><a href="/accounts">Accts</a></li>
+    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/home') { echo 'active';
+                        } ?>">
+        <a href="/home">Statuses</a>
+    </li>
+    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/accounts') { echo 'active';
+                        } ?>">
+        <a href="/accounts">Accts</a>
+    </li>
     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) : ?>
-        <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/users') echo 'active'; ?>"><a href="/users">Users</a></li>
+        <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/users') { echo 'active';
+                            } ?>">
+            <a href="/users">Users</a>
+        </li>
     <?php endif; ?>
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/info') echo 'active'; ?>"><a href="/info">My Info</a></li>
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/feeds/' . htmlspecialchars($_SESSION['username']) . '/all') echo 'active'; ?>"><a href="/feeds/<?php echo htmlspecialchars($_SESSION['username']); ?>/all">Omni</a></li>
+    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/info') { echo 'active';
+                        } ?>">
+        <a href="/info">My Info</a>
+    </li>
+    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/feeds/' . htmlspecialchars($_SESSION['username']) . '/all') { echo 'active';
+                        } ?>">
+        <a href="/feeds/<?php echo htmlspecialchars($_SESSION['username']); ?>/all">Omni</a>
+    </li>
 </ul>

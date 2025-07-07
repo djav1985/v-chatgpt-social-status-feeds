@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -9,6 +11,8 @@
  * File: docker-config.php
  * Description: AI Social Status Generator
  */
+
+
 // OpenAI API key for authentication
 define('API_KEY', getenv('API_KEY'));
 
