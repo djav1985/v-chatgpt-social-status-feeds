@@ -2,55 +2,40 @@
 
 namespace App\Core;
 
-/**
- * Minimal router with GET and POST route handling.
- */
+use App\Core\AuthMiddleware;
+
 class Router
 {
-    /**
-     * @var array<string,array<string,callable>>
-     */
-    private array $routes = ['GET' => [], 'POST' => []];
-
-    /**
-     * Register a GET route.
-     */
-    public function get(string $path, callable $handler): void
+    public function dispatch(string $uri): void
     {
-        $this->routes['GET'][$path] = $handler;
-    }
+        $route = strtok($uri, '?');
 
-    /**
-     * Register a POST route.
-     */
-    public function post(string $path, callable $handler): void
-    {
-        $this->routes['POST'][$path] = $handler;
-    }
-
-    /**
-     * Dispatch the request to the matching route.
-     */
-    public function dispatch(string $method, string $uri): void
-    {
-        $path = parse_url($uri, PHP_URL_PATH) ?: '/';
-        $routes = $this->routes[$method] ?? [];
-
-        foreach ($routes as $route => $handler) {
-            $pattern = '#^' . preg_replace('#\{[^/]+\}#', '([^/]+)', $route) . '$#';
-            if (preg_match($pattern, $path, $matches)) {
-                array_shift($matches);
-
-                if ($route !== '/login') {
-                    AuthMiddleware::check();
-                }
-
-                call_user_func_array($handler, $matches);
-                return;
-            }
+        if ($route !== '/login') {
+            AuthMiddleware::check();
         }
 
-        http_response_code(404);
-        echo '404 Not Found';
+        if (preg_match('#^/feeds(?:/[^/]+/[^/]+)?$#', $route)) {
+            \App\Controllers\FeedController::handleRequest();
+            return;
+        }
+
+        switch ($route) {
+            case '/login':
+                \App\Controllers\AuthController::handleRequest();
+                break;
+            case '/accounts':
+                \App\Controllers\AccountsController::handleRequest();
+                break;
+            case '/users':
+                \App\Controllers\UsersController::handleRequest();
+                break;
+            case '/info':
+                \App\Controllers\InfoController::handleRequest();
+                break;
+            case '/':
+            case '/home':
+            default:
+                \App\Controllers\HomeController::handleRequest();
+        }
     }
 }

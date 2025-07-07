@@ -96,7 +96,6 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
     └── public
         ├── assets
         ├── index.php
-        ├── feeds.php
         └── .htaccess
 ```
 
@@ -176,10 +175,6 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 					<tr>
 						<td><b><a href='/root/public/robots.txt'>robots.txt</a></b></td>
 						<td>- Defines crawling instructions for web robots within the project, promoting effective and controlled indexing of site content<br>- By specifying a crawl delay, it aims to manage server load and optimize the interaction between search engines and the website<br>- This contributes to the overall web presence strategy, ensuring that important resources are accessible while maintaining performance.</td>
-					</tr>
-					<tr>
-						<td><b><a href='/root/public/feeds.php'>feeds.php</a></b></td>
-						<td>- Generates an RSS feed for the ChatGPT API by utilizing user account information<br>- It ensures the presence and validity of required parameters, sanitizes input to prevent security issues, and executes the feed output while handling potential exceptions<br>- This functionality enhances user engagement by providing a streamlined way for account owners to distribute updates via RSS feeds, contributing to the project's overall interactivity and user experience.</td>
 					</tr>
 					<tr>
 						<td><b><a href='/root/public/install.php'>install.php</a></b></td>
@@ -358,14 +353,14 @@ Statuses are generated on schedule and added to the respective account feed and 
 ### 2025-07-05
 
 - Switched feed URLs to `/feeds/{user}/{account}` and `/feeds/{user}/all`.
-- Redirected direct `feeds.php` access to `/home` and added rewrite for new feed paths.
+- Added rewrite for new feed paths under `/feeds/{user}/{account}`.
 - Updated navigation links to use the new structure.
 
 ### 2025-07-04
 
 - Moved RSS feed generation into `UtilityHandler` and removed `rss-lib.php`.
 - Added type hints across the codebase and improved error propagation.
-- Added error logging to `feeds.php` when RSS feed generation fails.
+- Improved error logging for RSS feed generation.
 - Refactored API interactions into `ApiHandler` and renamed `Database` to `DatabaseHandler`.
 - Various security fixes and bug improvements.
 
