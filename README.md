@@ -59,39 +59,45 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 
 ```sh
 └── /
-    ├── LICENSE
     ├── README.md
-    ├── root
-    │   ├── app
-    │   │   ├── forms
-    │   │   ├── helpers
-    │   │   └── pages
-    │   ├── autoload.php
-    │   ├── classes
-    │   │   ├── AccountHandler.php
-    │   │   ├── DatabaseHandler.php
+    ├── install.sql
+    ├── cron.php
+    ├── app
+    │   ├── config.php
+    │   ├── Core
+    │   │   ├── AuthMiddleware.php
+    │   │   ├── Controller.php
     │   │   ├── ErrorHandler.php
     │   │   ├── ApiHandler.php
-    │   │   ├── StatusHandler.php
-    │   │   ├── UserHandler.php
+    │   │   ├── Router.php
     │   │   └── UtilityHandler.php
-    │   ├── config.php
-    │   ├── cron.php
-    │   ├── install.sql
-    │   ├── lib
-    │   │   ├── auth-lib.php
-    │   │   └── load-lib.php
-    │   └── public
-    │       ├── .htaccess
-    │       ├── assets
-    │       ├── favicon.ico
-    │       ├── feeds.php
-    │       ├── images
-    │       ├── index.php
-    │       ├── install.php
+    │   ├── Controllers
+    │   │   ├── AuthController.php
+    │   │   ├── HomeController.php
+    │   │   ├── AccountsController.php
+    │   │   ├── InfoController.php
+    │   │   ├── UsersController.php
+    │   │   └── FeedController.php
+    │   ├── Models
+    │   │   ├── Account.php
+    │   │   ├── Home.php
+    │   │   ├── User.php
+    │   │   ├── Feed.php
+    │   │   └── Info.php
+    │   └── Views
+    │       ├── home.php
     │       ├── login.php
-    │       └── robots.txt
-    └── v-chatgpt-social-status-feeds.png
+    │       ├── accounts.php
+    │       ├── info.php
+    │       ├── users.php
+    │       └── layouts
+    │           ├── header.php
+    │           └── footer.php
+    └── public
+        ├── assets
+        ├── index.php
+        ├── feeds.php
+        └── .htaccess
 ```
 
 ### Project Index

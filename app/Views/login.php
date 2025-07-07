@@ -1,27 +1,5 @@
 <?php
-/**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
- * File: login.php
- * Description: ChatGPT API Status Generator login page.
- * License: MIT
- */
-
-// Set secure session cookie parameters before starting the session
-$secureFlag = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-session_set_cookie_params([
-    'httponly' => true,
-    'secure' => $secureFlag,
-    'samesite' => 'Lax'
-]);
-session_start();
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../autoload.php';
-require_once __DIR__ . '/../lib/auth-lib.php';
-// Instantiate the ErrorHandler to register handlers
-new ErrorHandler();
+// Login view
 ?>
 
 <!DOCTYPE html>
