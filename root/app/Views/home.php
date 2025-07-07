@@ -1,16 +1,8 @@
 <?php
 use App\Helpers\HomeHelper;
+use App\Models\AccountHandler;
 
-/**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
- * File: home.php
- * Description: Displays user accounts and statuses.
- * License: MIT
- */
-
+require 'layouts/header.php';
 ?>
 
 <main class="container">
@@ -40,24 +32,24 @@ use App\Helpers\HomeHelper;
         <div class="status-container card">
             <div class="status-header card-header">
                 <button class="collapse-button" onclick="toggleSection(this)">
-                    <i class="icon <?= $buttonIcon ?>"></i>
+                    <i class="icon <?php echo $buttonIcon ?>"></i>
                 </button>
-                <h3 class="status-campaign card-title">Status Campaign: #<?= htmlspecialchars($accountName) ?></h3>
+                <h3 class="status-campaign card-title">Status Campaign: #<?php echo htmlspecialchars($accountName) ?></h3>
             </div>
 
             <?php if (!empty($statuses)) : ?>
-                <div class="status-content columns" style="display: <?= $isOpen ?>;">
+                <div class="status-content columns" style="display: <?php echo $isOpen ?>;">
                     <?php foreach ($statuses as $status) : ?>
                         <?php if (!empty($status->status)) : ?>
                             <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
                                 <div class="status-item card">
-                                    <img src="<?= htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive" loading="lazy">
+                                    <img src="<?php echo htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive" loading="lazy">
                                     <p class="status-text">
-                                        <?= htmlspecialchars($status->status) ?>
+                                        <?php echo htmlspecialchars($status->status) ?>
                                     </p>
                                     <div class="status-meta">
                                         <strong class="status-info">
-                                            <?= date('m/d/y g:ia', strtotime($status->created_at)) ?>
+                                            <?php echo date('m/d/y g:ia', strtotime($status->created_at)) ?>
                                         </strong>
                                         <?php echo HomeHelper::shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
                                     </div>
@@ -72,12 +64,12 @@ use App\Helpers\HomeHelper;
                 </div>
             <?php endif; ?>
 
-            <div class="account-action-container" style="display: <?= $accountActionDisplay ?>;">
-                <button class="view-feed-button btn btn-primary" onclick="location.href='<?= $feedUrl ?>';">View Feed</button>
+            <div class="account-action-container" style="display: <?php echo $accountActionDisplay ?>;">
+                <button class="view-feed-button btn btn-primary" onclick="location.href='<?php echo $feedUrl ?>';">View Feed</button>
                 <form class="account-action-form" action="/home" method="POST">
-                    <input type="hidden" name="account" value="<?= htmlspecialchars($accountName, ENT_QUOTES) ?>">
-                    <input type="hidden" name="username" value="<?= htmlspecialchars($accountOwner, ENT_QUOTES) ?>">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
+                    <input type="hidden" name="account" value="<?php echo htmlspecialchars($accountName, ENT_QUOTES) ?>">
+                    <input type="hidden" name="username" value="<?php echo htmlspecialchars($accountOwner, ENT_QUOTES) ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
                     <button type="submit" class="generate-status-button btn btn-success" name="generate_status">Generate Status</button>
                 </form>
             </div>
@@ -243,3 +235,5 @@ use App\Helpers\HomeHelper;
         });
     });
 </script>
+
+<?php require 'layouts/footer.php'; ?>

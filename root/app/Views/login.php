@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="/assets/css/forms.css">
 </head>
 <body>
+    <?php include 'layouts/header.php'; ?>
+
     <div class="columns">
         <div class="column col-12 col-md-6 col-mx-auto" id="login-box">
             <!-- Logo for branding -->
@@ -36,5 +38,7 @@
         </div>
     </div>
     <?php echo UtilityHandler::displayAndClearMessages(); ?>
+
+    <?php include 'layouts/footer.php'; ?>
 </body>
 </html>

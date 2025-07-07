@@ -9,7 +9,7 @@ use App\Models\StatusHandler;
 
 class HomeController extends Controller
 {
-    public function index(): void
+    public static function handleRequest(): void
     {
         AuthMiddleware::checkSession();
 

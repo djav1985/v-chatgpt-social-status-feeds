@@ -16,4 +16,19 @@ class FeedController extends Controller
             echo 'Error: ' . $e->getMessage();
         }
     }
+
+    public static function handleRequest(): void
+    {
+        $user = $_GET['user'] ?? null;
+        $account = $_GET['account'] ?? null;
+
+        if (!$user || !$account) {
+            http_response_code(400);
+            echo 'Bad Request: Missing user or account parameter.';
+            return;
+        }
+
+        $controller = new self();
+        $controller->index($user, $account);
+    }
 }

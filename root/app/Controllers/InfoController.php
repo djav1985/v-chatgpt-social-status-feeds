@@ -7,7 +7,7 @@ use App\Models\UserHandler;
 
 class InfoController extends Controller
 {
-    public function index(): void
+    public static function handleRequest(): void
     {
         AuthMiddleware::checkSession();
 

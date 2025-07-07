@@ -11,6 +11,7 @@ use App\Helpers\UsersHelper;
  * License: MIT
  */
 
+include 'layouts/header.php';
 ?>
 
 <main class="container">
@@ -106,3 +107,5 @@ use App\Helpers\UsersHelper;
         });
     });
 </script>
+
+<?php include 'layouts/footer.php'; ?>

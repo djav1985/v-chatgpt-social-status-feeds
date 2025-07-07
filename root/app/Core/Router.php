@@ -1,32 +1,35 @@
 <?php
 namespace App\Core;
 
+use App\Core\AuthMiddleware;
+
 class Router
 {
-    private array $routes = [];
-
-    public function get(string $path, callable $handler): void
+    public function dispatch(string $uri): void
     {
-        $this->routes['GET'][$path] = $handler;
-    }
+        $route = strtok($uri, '?');
 
-    public function post(string $path, callable $handler): void
-    {
-        $this->routes['POST'][$path] = $handler;
-    }
-
-    public function dispatch(string $method, string $uri): void
-    {
-        $path = parse_url($uri, PHP_URL_PATH);
-        foreach ($this->routes[$method] ?? [] as $route => $handler) {
-            $pattern = '@^' . preg_replace('@\{([^/]+)\}@', '(?P<$1>[^/]+)', $route) . '$@';
-            if (preg_match($pattern, $path, $matches)) {
-                $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-                call_user_func_array($handler, $params);
-                return;
-            }
+        if ($route !== '/login') {
+            AuthMiddleware::check();
         }
-        http_response_code(404);
-        echo 'Not Found';
+
+        switch ($route) {
+            case '/login':
+                \App\Controllers\AuthController::handleRequest();
+                break;
+            case '/plugins':
+                \App\Controllers\PluginsController::handleRequest();
+                break;
+            case '/themes':
+                \App\Controllers\ThemesController::handleRequest();
+                break;
+            case '/logs':
+                \App\Controllers\LogsController::handleRequest();
+                break;
+            case '/':
+            case '/home':
+            default:
+                \App\Controllers\HomeController::handleRequest();
+        }
     }
 }

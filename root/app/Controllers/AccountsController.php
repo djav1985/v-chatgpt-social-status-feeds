@@ -7,7 +7,7 @@ use App\Models\AccountHandler;
 
 class AccountsController extends Controller
 {
-    public function index(): void
+    public static function handleRequest(): void
     {
         AuthMiddleware::checkSession();
 

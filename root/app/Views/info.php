@@ -13,6 +13,8 @@
 use App\Helpers\InfoHelper;
 ?>
 
+<?php require 'layouts/header.php'; ?>
+
 <main class="container">
     <div class="columns">
         <!-- User Profile Section -->
@@ -95,3 +97,5 @@ use App\Helpers\InfoHelper;
         }
     });
 </script>
+
+<?php require 'layouts/footer.php'; ?>

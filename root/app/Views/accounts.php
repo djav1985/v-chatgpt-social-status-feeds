@@ -1,16 +1,7 @@
 <?php
 use App\Helpers\AccountsHelper;
 
-/**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
- * File: accounts.php
- * Description: Manages user accounts and their settings.
- * License: MIT
- */
-
+require 'layouts/header.php';
 ?>
 
 <main class="container">
@@ -149,3 +140,5 @@ use App\Helpers\AccountsHelper;
         });
     });
 </script>
+
+<?php require 'layouts/footer.php'; ?>
