@@ -1,12 +1,12 @@
 <?php
-namespace App\Core;
+namespace App\Controllers;
 
 use Exception;
 use App\Models\AccountHandler;
 use App\Models\UserHandler;
 use App\Models\StatusHandler;
 use App\Core\ErrorHandler;
-use App\Core\UtilityHandler;
+use App\Models\UtilityHandler;
 
 
 /**
@@ -14,12 +14,12 @@ use App\Core\UtilityHandler;
  * Author: Vontainment
  * URL: https://vontainment.com/
  * Version: 2.0.0
- * File: ApiHandler.php
+ * File: StatusController.php
  * Description: Handles OpenAI API requests for generating statuses and images.
  * License: MIT
 */
 
-class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {
     /**
      * Generates a status update and associated image for a given account.

@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\AuthMiddleware;
-use App\Core\ApiHandler;
+use App\Controllers\StatusController;
 use App\Models\UserHandler;
 use App\Models\StatusHandler;
 
@@ -48,7 +48,7 @@ class HomeController extends Controller
                     if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
                         $_SESSION['messages'][] = 'Sorry, your available API calls have run out.';
                     } else {
-                        $statusResult = ApiHandler::generateStatus($accountName, $accountOwner);
+                        $statusResult = StatusController::generateStatus($accountName, $accountOwner);
                         if (isset($statusResult['error'])) {
                             $_SESSION['messages'][] = 'Failed to generate status: ' . $statusResult['error'];
                         } else {

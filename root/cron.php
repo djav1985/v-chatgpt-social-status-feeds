@@ -16,7 +16,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorHandler;
 use App\Core\UtilityHandler;
-use App\Core\ApiHandler;
+use App\Controllers\StatusController;
 use App\Models\AccountHandler;
 use App\Models\UserHandler;
 use App\Models\StatusHandler;
@@ -176,7 +176,7 @@ function runStatusUpdateJobs(): bool
 
                     if ($userInfo->used_api_calls < $userInfo->max_api_calls) {
                         logDebug("User has remaining API calls.");
-                        $statusResult = ApiHandler::generateStatus($accountName, $accountOwner);
+                        $statusResult = StatusController::generateStatus($accountName, $accountOwner);
                         if (isset($statusResult['success'])) {
                             logDebug("Status generated for account: $accountName.");
                             $userInfo->used_api_calls += 1;

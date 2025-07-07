@@ -35,6 +35,6 @@
             <!-- Display error messages if any -->
         </div>
     </div>
-<?php echo App\Core\UtilityHandler::displayAndClearMessages(); ?>
+<?php echo App\Models\UtilityHandler::displayAndClearMessages(); ?>
 </body>
 </html>

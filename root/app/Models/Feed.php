@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Exception;
 use PDO;
-use App\Models\DatabaseHandler;
+use App\Models\Database;
 use App\Core\ErrorHandler;
 
 /**
@@ -29,7 +29,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function getStatusImagePath(int $statusId, string $accountName, string $accountOwner): ?string
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $db->query("SELECT status_image FROM status_updates WHERE id = :statusId AND account = :account AND username = :username");
             $db->bind(':statusId', $statusId);
             $db->bind(':account', $accountName);
@@ -53,7 +53,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function deleteStatus(int $statusId, string $accountName, string $accountOwner): bool
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $db->query("DELETE FROM status_updates WHERE id = :statusId AND account = :account AND username = :username");
             $db->bind(':statusId', $statusId);
             $db->bind(':account', $accountName);
@@ -76,7 +76,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function getStatusInfo(string $username, string $account): array
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $db->query("SELECT * FROM status_updates WHERE username = :username AND account = :account ORDER BY created_at DESC");
             $db->bind(':username', $username);
             $db->bind(':account', $account);
@@ -99,7 +99,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function saveStatus(string $accountName, string $accountOwner, string $status_content, string $image_name): bool
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $sql = "INSERT INTO status_updates (username, account, status, created_at, status_image) VALUES (:username, :account, :status, NOW(), :status_image)";
             $db->query($sql);
             $db->bind(':username', $accountOwner);
@@ -124,7 +124,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function getStatusUpdates(string $username, string $account): array
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $db->query("SELECT * FROM status_updates WHERE account = :accountName AND username = :accountOwner ORDER BY created_at DESC");
             $db->bind(':accountName', $account);
             $db->bind(':accountOwner', $username);
@@ -143,7 +143,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function countStatuses(string $accountName): int
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account");
             $db->bind(':account', $accountName);
             return $db->single()->count;
@@ -163,7 +163,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function deleteOldStatuses(string $accountName, int $deleteCount): bool
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $db->query("DELETE FROM status_updates WHERE account = :account ORDER BY created_at ASC LIMIT :deleteCount");
             $db->bind(':account', $accountName);
             $db->bind(':deleteCount', $deleteCount, PDO::PARAM_INT);
@@ -186,7 +186,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function hasStatusBeenPosted(string $accountName, string $accountOwner, string $hour): bool
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $start = date('Y-m-d ') . sprintf('%02d', $hour) . ':00:00';
             $end = date('Y-m-d ') . sprintf('%02d', $hour) . ':59:59';
 
@@ -213,7 +213,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     public static function getLatestStatusUpdate(string $accountName, string $accountOwner): ?object
     {
         try {
-            $db = new DatabaseHandler();
+            $db = new Database();
             $db->query("SELECT * FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at DESC LIMIT 1");
             $db->bind(':account', $accountName);
             $db->bind(':username', $accountOwner);
