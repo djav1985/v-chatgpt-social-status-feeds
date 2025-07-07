@@ -1,5 +1,4 @@
 <?php
-use App\Controllers\UsersController;
 
 /**
  * Project: SocialRSS
@@ -12,7 +11,9 @@ use App\Controllers\UsersController;
  * Description: AI Social Status Generator
  */
 
-include 'layouts/header.php';
+use App\Controllers\UsersController;
+
+require 'layouts/header.php';
 ?>
 
 <main class="container">
@@ -109,4 +110,4 @@ include 'layouts/header.php';
     });
 </script>
 
-<?php include 'layouts/footer.php'; ?>
+<?php require 'layouts/footer.php'; ?>
