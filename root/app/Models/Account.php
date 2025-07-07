@@ -1,4 +1,9 @@
 <?php
+namespace App\Models;
+
+use Exception;
+use App\Models\DatabaseHandler;
+use App\Core\ErrorHandler;
 
 /**
  * Project: ChatGPT API

@@ -1,4 +1,8 @@
 <?php
+namespace App\Core;
+
+use ErrorException;
+use Throwable;
 
 /**
  * Class ErrorHandler

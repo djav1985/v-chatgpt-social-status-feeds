@@ -1,4 +1,5 @@
 <?php
+use App\Helpers\HomeHelper;
 
 /**
  * Project: ChatGPT API
@@ -58,7 +59,7 @@
                                         <strong class="status-info">
                                             <?= date('m/d/y g:ia', strtotime($status->created_at)) ?>
                                         </strong>
-                                        <?php echo shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
+                                        <?php echo HomeHelper::shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
                                     </div>
                                 </div>
                             </div>

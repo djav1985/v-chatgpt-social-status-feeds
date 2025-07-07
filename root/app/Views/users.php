@@ -1,4 +1,5 @@
 <?php
+use App\Helpers\UsersHelper;
 
 /**
  * Project: ChatGPT API
@@ -74,7 +75,7 @@
                 <h3 class="account-name card-title">User List</h3>
             </div>
             <div class="columns">
-                <?php echo generateUserList(); ?>
+                <?php echo UsersHelper::generateUserList(); ?>
             </div>
         </div>
     </div>
