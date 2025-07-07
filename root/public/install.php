@@ -1,4 +1,14 @@
 <?php
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: install.php
+ * Description: AI Social Status Generator
+ */
 // Only allow the install script when explicitly enabled
 if (getenv('INSTALL_ENABLED') !== '1') {
     exit('Install script is disabled.');
