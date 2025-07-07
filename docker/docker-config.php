@@ -1,14 +1,14 @@
 <?php
-
 /**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com
- * Version: 2.0.0
- * File: config.php
- * Description: Defines configuration settings such as API keys, endpoints, model preferences, domain, system messages, and database connection details for the ChatGPT API Status Generator.
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: docker-config.php
+ * Description: AI Social Status Generator
  */
-
 // OpenAI API key for authentication
 define('API_KEY', getenv('API_KEY'));
 

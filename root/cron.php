@@ -1,6 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
-
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -11,7 +9,7 @@
  * File: cron.php
  * Description: AI Social Status Generator
  */
-
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 require_once __DIR__ . '/app/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
