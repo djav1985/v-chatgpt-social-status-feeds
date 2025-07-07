@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -10,7 +9,6 @@
  * File: info.php
  * Description: AI Social Status Generator
  */
-
 use App\Controllers\InfoController;
 ?>
 

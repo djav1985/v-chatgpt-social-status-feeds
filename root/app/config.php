@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -10,7 +9,7 @@
  * File: config.php
  * Description: AI Social Status Generator
  */
-
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 // OpenAI API key for authentication
 define('API_KEY', '');
 
