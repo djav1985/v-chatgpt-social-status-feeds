@@ -10,14 +10,15 @@ use App\Models\UtilityHandler;
 
 
 /**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
  * File: StatusController.php
- * Description: Handles OpenAI API requests for generating statuses and images.
- * License: MIT
-*/
+ * Description: AI Social Status Generator
+ */
 
 class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 {

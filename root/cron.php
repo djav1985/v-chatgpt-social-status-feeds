@@ -2,13 +2,14 @@
 // phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
  * File: cron.php
- * Description: Handles scheduled tasks such as resetting API usage, running status updates, clearing the IP blacklist, and purging old images.
- * License: MIT
+ * Description: AI Social Status Generator
  */
 
 require_once __DIR__ . '/app/config.php';

@@ -6,13 +6,14 @@ use App\Models\Database;
 use App\Core\ErrorHandler;
 
 /**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
- * File: AccountHandler.php
- * Description: Manages account operations including checking existence, updating, inserting, and deleting accounts.
- * License: MIT
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: Account.php
+ * Description: AI Social Status Generator
  */
 
 class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace

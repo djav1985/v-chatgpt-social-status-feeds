@@ -2,13 +2,14 @@
 use App\Controllers\UsersController;
 
 /**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
  * File: users.php
- * Description: Handles user addition and updates.
- * License: MIT
+ * Description: AI Social Status Generator
  */
 
 include 'layouts/header.php';

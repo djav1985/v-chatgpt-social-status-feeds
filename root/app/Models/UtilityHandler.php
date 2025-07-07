@@ -6,13 +6,14 @@ use App\Models\Database;
 use App\Core\ErrorHandler;
 
 /**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
  * File: UtilityHandler.php
- * Description: Handles IP blacklist operations such as updating failed attempts, checking blacklist status, and clearing the blacklist.
- * License: MIT
+ * Description: AI Social Status Generator
  */
 
 class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
