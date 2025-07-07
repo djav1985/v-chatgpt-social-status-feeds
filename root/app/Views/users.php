@@ -1,5 +1,5 @@
 <?php
-use App\Helpers\UsersHelper;
+use App\Controllers\UsersController;
 
 /**
  * Project: ChatGPT API
@@ -76,7 +76,7 @@ include 'layouts/header.php';
                 <h3 class="account-name card-title">User List</h3>
             </div>
             <div class="columns">
-                <?php echo UsersHelper::generateUserList(); ?>
+                <?php echo UsersController::generateUserList(); ?>
             </div>
         </div>
     </div>
