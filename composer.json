@@ -1,12 +1,17 @@
 {
-    "name": "vontmnt/v-wp-dashboard",
-    "require-dev": {
-        "squizlabs/php_codesniffer": "^3.12",
-        "wp-coding-standards/wpcs": "^3.1"
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
+  "name": "vontmnt/v-wp-dashboard",
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.12",
+    "wp-coding-standards/wpcs": "^3.1"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  }
 }
