@@ -3,6 +3,6 @@
         <p>&copy; <?php echo date("Y"); ?> <a href="https://vontainment.com">Vontainment.com</a> All Rights Reserved.</p>
     </div>
 </footer>
-<?php echo App\Core\UtilityHandler::displayAndClearMessages(); ?>
+<?php echo App\Models\UtilityHandler::displayAndClearMessages(); ?>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <?php
 namespace App\Core;
 
-use App\Core\UtilityHandler;
+use App\Models\UtilityHandler;
 use App\Core\ErrorHandler;
 
 class AuthMiddleware

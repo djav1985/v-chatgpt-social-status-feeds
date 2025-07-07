@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\UtilityHandler;
+use App\Models\UtilityHandler;
 use App\Core\ErrorHandler;
 
 class AuthController
