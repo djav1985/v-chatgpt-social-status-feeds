@@ -1,6 +1,7 @@
 <?php
 use App\Helpers\HomeHelper;
 use App\Models\AccountHandler;
+use App\Models\StatusHandler;
 
 require 'layouts/header.php';
 ?>
