@@ -399,6 +399,4 @@ FodyWeavers.xsd
 
 # Composer (PHP dependency manager)
 vendor/
-composer.lock
-composer.json
 phpcs.xml
