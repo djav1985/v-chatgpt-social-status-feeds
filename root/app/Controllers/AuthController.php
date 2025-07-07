@@ -2,13 +2,14 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\AuthMiddleware;
 
 class AuthController extends Controller
 {
     public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require __DIR__ . '/../Core/AuthMiddleware.php';
+            AuthMiddleware::handle();
         }
         $this->render('login');
     }
@@ -16,6 +17,6 @@ class AuthController extends Controller
     public function logout(): void
     {
         $_POST['logout'] = true;
-        require __DIR__ . '/../Core/AuthMiddleware.php';
+        AuthMiddleware::handle();
     }
 }

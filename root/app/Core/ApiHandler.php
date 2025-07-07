@@ -1,4 +1,13 @@
 <?php
+namespace App\Core;
+
+use Exception;
+use App\Models\AccountHandler;
+use App\Models\UserHandler;
+use App\Models\StatusHandler;
+use App\Core\ErrorHandler;
+use App\Core\UtilityHandler;
+
 
 /**
  * Project: ChatGPT API

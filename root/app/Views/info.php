@@ -10,7 +10,7 @@
  * License: MIT
  */
 
-require_once __DIR__ . '/../helpers/info-helper.php';
+use App\Helpers\InfoHelper;
 ?>
 
 <main class="container">
@@ -20,7 +20,7 @@ require_once __DIR__ . '/../helpers/info-helper.php';
             <div class="info-header card-header">
                 <h3 class="info-name card-title">Your Profile</h3>
             </div>
-            <form class="form-group columns" method="post" id="update-profile-form" <?php echo generateProfileDataAttributes($_SESSION['username']); ?>>
+            <form class="form-group columns" method="post" id="update-profile-form" <?php echo InfoHelper::generateProfileDataAttributes($_SESSION['username']); ?>>
                 <div class="column col-6 col-md-6 col-sm-12">
                     <!-- Who input field -->
                     <label for="who">Who:</label>
@@ -72,7 +72,7 @@ require_once __DIR__ . '/../helpers/info-helper.php';
                     <h3 class="card-title">System Message</h3>
                 </div>
                 <div class="card-body">
-                    <p><?php echo buildSystemMessage($_SESSION['username']); ?></p>
+                    <p><?php echo InfoHelper::buildSystemMessage($_SESSION['username']); ?></p>
                 </div>
             </div>
         </div>
