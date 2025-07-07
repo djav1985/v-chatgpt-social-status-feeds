@@ -1,13 +1,14 @@
 <?php
 
 /**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com/
- * Version: 2.0.0
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
  * File: info.php
- * Description: Allows users to change their password.
- * License: MIT
+ * Description: AI Social Status Generator 
  */
 
 use App\Controllers\InfoController;
