@@ -14,6 +14,7 @@
 
 namespace App\Controllers;
 
+use App\Models\UserHandler;
 use App\Models\UtilityHandler;
 use App\Core\ErrorHandler;
 
@@ -32,10 +33,12 @@ class AuthController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = isset($_POST['username']) ? UtilityHandler::validateUsername($_POST['username']) : null;
-            $password = isset($_POST['password']) ? UtilityHandler::validatePassword($_POST['password']) : null;
+        $username = isset($_POST['username']) ? $_POST['username'] : null;
+        $password = isset($_POST['password']) ? $_POST['password'] : null;
+        $userInfo = UserHandler::getUserInfo($username);
 
-            if ($username === VALID_USERNAME && $password === VALID_PASSWORD) {
+        // Verify user credentials
+        if ($userInfo && password_verify($password, $userInfo->password)) {
                 $_SESSION['logged_in'] = true;
                 $_SESSION['username'] = $username;
                 $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
