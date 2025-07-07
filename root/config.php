@@ -2,12 +2,14 @@
 // phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
- * Project: ChatGPT API
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
  * Version: 3.0.0
- * Author: Vontainment
- * URL: https://vontainment.com
+ *
  * File: config.php
- * Description: Defines configuration settings such as API keys, endpoints, model preferences, domain, system messages, and database connection details for the ChatGPT API Status Generator.
+ * Description: AI Social Status Generator 
  */
 
 // OpenAI API key for authentication
