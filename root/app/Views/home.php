@@ -1,5 +1,5 @@
 <?php
-use App\Helpers\HomeHelper;
+use App\Controllers\HomeController;
 use App\Models\AccountHandler;
 
 require 'layouts/header.php';
@@ -51,7 +51,7 @@ require 'layouts/header.php';
                                         <strong class="status-info">
                                             <?php echo date('m/d/y g:ia', strtotime($status->created_at)) ?>
                                         </strong>
-                                        <?php echo HomeHelper::shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
+                                        <?php echo HomeController::shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
                                     </div>
                                 </div>
                             </div>

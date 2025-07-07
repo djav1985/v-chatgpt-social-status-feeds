@@ -1,35 +1,56 @@
 <?php
+
 namespace App\Core;
 
-use App\Core\AuthMiddleware;
-
+/**
+ * Minimal router with GET and POST route handling.
+ */
 class Router
 {
-    public function dispatch(string $uri): void
+    /**
+     * @var array<string,array<string,callable>>
+     */
+    private array $routes = ['GET' => [], 'POST' => []];
+
+    /**
+     * Register a GET route.
+     */
+    public function get(string $path, callable $handler): void
     {
-        $route = strtok($uri, '?');
+        $this->routes['GET'][$path] = $handler;
+    }
 
-        if ($route !== '/login') {
-            AuthMiddleware::check();
+    /**
+     * Register a POST route.
+     */
+    public function post(string $path, callable $handler): void
+    {
+        $this->routes['POST'][$path] = $handler;
+    }
+
+    /**
+     * Dispatch the request to the matching route.
+     */
+    public function dispatch(string $method, string $uri): void
+    {
+        $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+        $routes = $this->routes[$method] ?? [];
+
+        foreach ($routes as $route => $handler) {
+            $pattern = '#^' . preg_replace('#\{[^/]+\}#', '([^/]+)', $route) . '$#';
+            if (preg_match($pattern, $path, $matches)) {
+                array_shift($matches);
+
+                if ($route !== '/login') {
+                    AuthMiddleware::check();
+                }
+
+                call_user_func_array($handler, $matches);
+                return;
+            }
         }
 
-        switch ($route) {
-            case '/login':
-                \App\Controllers\AuthController::handleRequest();
-                break;
-            case '/plugins':
-                \App\Controllers\PluginsController::handleRequest();
-                break;
-            case '/themes':
-                \App\Controllers\ThemesController::handleRequest();
-                break;
-            case '/logs':
-                \App\Controllers\LogsController::handleRequest();
-                break;
-            case '/':
-            case '/home':
-            default:
-                \App\Controllers\HomeController::handleRequest();
-        }
+        http_response_code(404);
+        echo '404 Not Found';
     }
 }

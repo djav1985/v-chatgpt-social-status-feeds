@@ -10,7 +10,7 @@
  * License: MIT
  */
 
-use App\Helpers\InfoHelper;
+use App\Controllers\InfoController;
 ?>
 
 <?php require 'layouts/header.php'; ?>
@@ -22,7 +22,7 @@ use App\Helpers\InfoHelper;
             <div class="info-header card-header">
                 <h3 class="info-name card-title">Your Profile</h3>
             </div>
-            <form class="form-group columns" method="post" id="update-profile-form" <?php echo InfoHelper::generateProfileDataAttributes($_SESSION['username']); ?>>
+            <form class="form-group columns" method="post" id="update-profile-form" <?php echo InfoController::generateProfileDataAttributes($_SESSION['username']); ?>>
                 <div class="column col-6 col-md-6 col-sm-12">
                     <!-- Who input field -->
                     <label for="who">Who:</label>
@@ -74,7 +74,7 @@ use App\Helpers\InfoHelper;
                     <h3 class="card-title">System Message</h3>
                 </div>
                 <div class="card-body">
-                    <p><?php echo InfoHelper::buildSystemMessage($_SESSION['username']); ?></p>
+                    <p><?php echo InfoController::buildSystemMessage($_SESSION['username']); ?></p>
                 </div>
             </div>
         </div>
