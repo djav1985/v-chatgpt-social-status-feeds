@@ -23,7 +23,6 @@ session_set_cookie_params([
     'samesite' => 'Lax',
 ]);
 session_start();
-session_regenerate_id(true);
 
 require_once '../config.php';
 require_once '../autoload.php';
