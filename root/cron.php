@@ -15,7 +15,7 @@
 require_once __DIR__ . '/app/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Core\ErrorHandler;
+use App\Core\ErrorMiddleware;
 use App\Controllers\StatusController;
 use App\Models\AccountHandler;
 use App\Models\UserHandler;
@@ -26,8 +26,8 @@ use App\Models\UtilityHandler;
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
 ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M');
 
-// Instantiate the ErrorHandler to register handlers
-new ErrorHandler();
+// Register error handlers
+ErrorMiddleware::register();
 
 // Add a helper function for logging
 function logDebug(string $message): void
@@ -102,7 +102,7 @@ switch ($jobType) {
         break;
     default:
         logDebug("Invalid job type specified: $jobType");
-        ErrorHandler::logMessage("Invalid job type specified: $jobType", 'error');
+        ErrorMiddleware::logMessage("Invalid job type specified: $jobType", 'error');
         die(1);
 }
 
@@ -118,7 +118,7 @@ function runStatusUpdateJobs(): bool
     $accounts = AccountHandler::getAllAccounts();
     if (empty($accounts)) {
         logDebug("No accounts found or failed to get accounts.");
-        ErrorHandler::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
+        ErrorMiddleware::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
         return true; // Return true as this is not necessarily an error condition
     }
 
@@ -210,7 +210,7 @@ function cleanupStatuses(): bool
     $accounts = AccountHandler::getAllAccounts();
     if (empty($accounts)) {
         logDebug("No accounts found or failed to get accounts.");
-        ErrorHandler::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
+        ErrorMiddleware::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
         return true; // Return true as this is not necessarily an error condition
     }
 
@@ -224,7 +224,7 @@ function cleanupStatuses(): bool
             logDebug("Deleting $deleteCount old statuses for account: $accountName.");
             if (!StatusHandler::deleteOldStatuses($accountName, $deleteCount)) {
                 logDebug("Failed to delete old statuses for account: $accountName.");
-                ErrorHandler::logMessage("CRON: Failed to delete old statuses for account: $accountName", 'error');
+                ErrorMiddleware::logMessage("CRON: Failed to delete old statuses for account: $accountName", 'error');
                 return false;
             }
         }
@@ -258,7 +258,7 @@ function purgeImages(): bool
                 logDebug("Deleting image: $filePath.");
                 if (!unlink($filePath)) {
                     logDebug("Failed to delete image: $filePath.");
-                    ErrorHandler::logMessage("CRON: Failed to delete image: $filePath", 'error');
+                    ErrorMiddleware::logMessage("CRON: Failed to delete image: $filePath", 'error');
                     return false;
                 }
             }
@@ -278,7 +278,7 @@ function resetApi(): bool
     logDebug("Resetting API usage for all users.");
     if (!UserHandler::resetAllApiUsage()) {
         logDebug("Failed to reset API usage.");
-        ErrorHandler::logMessage("CRON: Failed to reset API usage.", 'error');
+        ErrorMiddleware::logMessage("CRON: Failed to reset API usage.", 'error');
         return false;
     }
     logDebug("API usage reset successfully.");
@@ -296,7 +296,7 @@ function clearList(): bool
     logDebug("Clearing IP blacklist.");
     if (!UtilityHandler::clearIpBlacklist()) {
         logDebug("Failed to clear IP blacklist.");
-        ErrorHandler::logMessage("CRON: Failed to clear IP blacklist.", 'error');
+        ErrorMiddleware::logMessage("CRON: Failed to clear IP blacklist.", 'error');
         return false;
     }
     logDebug("IP blacklist cleared successfully.");

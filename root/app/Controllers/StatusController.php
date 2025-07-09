@@ -18,7 +18,7 @@ use Exception;
 use App\Models\AccountHandler;
 use App\Models\UserHandler;
 use App\Models\StatusHandler;
-use App\Core\ErrorHandler;
+use App\Core\ErrorMiddleware;
 use App\Models\UtilityHandler;
 
 
@@ -55,7 +55,7 @@ class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNa
 
     if (!$accountInfo || !$userInfo) {
         $error = "Error: Account or user not found for $accountOwner / $accountName";
-        ErrorHandler::logMessage($error, 'error');
+        ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
     }
 
@@ -95,7 +95,7 @@ class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNa
     if (isset($statusResponse['error'])) {
         $errorDetail = is_array($statusResponse['error']) ? json_encode($statusResponse['error']) : $statusResponse['error'];
         $error = "Status generation failed for $accountName owned by $accountOwner: $errorDetail";
-        ErrorHandler::logMessage($error, 'error');
+        ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
     }
 
@@ -115,7 +115,7 @@ class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNa
     $imageResponse = self::generate_social_image($imagePrompt, $accountName, $accountOwner);
     if (isset($imageResponse['error'])) {
         $error = "Image generation failed for $accountName owned by $accountOwner: " . $imageResponse['error'];
-        ErrorHandler::logMessage($error, 'error');
+        ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
     }
 
@@ -160,7 +160,7 @@ class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNa
         } else {
             $error = "API request to $endpoint returned HTTP status $statusCode";
         }
-        ErrorHandler::logMessage($error, 'error');
+        ErrorMiddleware::logMessage($error, 'error');
         curl_close($ch);
         return ["error" => $error];
     }
@@ -248,7 +248,7 @@ class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNa
 
     if (isset($response['error']) || !isset($response['choices'][0]['message']['content'])) {
         $error = "Error generating status for $accountName owned by $accountOwner: " . ($response['error']['message'] ?? 'Unknown error');
-        ErrorHandler::logMessage($error, 'error');
+        ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
     }
 
@@ -277,7 +277,7 @@ class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNa
 
     if (isset($response['error']) || !isset($response['data'][0]['url'])) {
         $error = "Error generating image for $accountName owned by $accountOwner: " . ($response['error'] ?? 'Unknown error');
-        ErrorHandler::logMessage($error, 'error');
+        ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
     }
 
@@ -288,13 +288,13 @@ class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNa
     $dirMode = defined('DIR_MODE') ? DIR_MODE : 0755;
     if (!is_dir(dirname($image_path)) && !mkdir(dirname($image_path), $dirMode, true)) {
         $error = "Failed to create directory for $accountName owned by $accountOwner.";
-        ErrorHandler::logMessage($error, 'error');
+        ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
     }
 
     if (file_put_contents($image_path, file_get_contents($image_url)) === false) {
         $error = "Failed to save image for $accountName owned by $accountOwner.";
-        ErrorHandler::logMessage($error, 'error');
+        ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
     }
 

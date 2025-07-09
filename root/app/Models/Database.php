@@ -17,7 +17,7 @@ namespace App\Models;
 use PDO;
 use PDOException;
 use Exception;
-use App\Core\ErrorHandler;
+use App\Core\ErrorMiddleware;
 
 /**
  * Project: SocialRSS
@@ -68,7 +68,7 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
             try {
                 self::$dbh = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
             } catch (PDOException $e) {
-                ErrorHandler::logMessage("Database connection failed: " . $e->getMessage(), 'error');
+                ErrorMiddleware::logMessage("Database connection failed: " . $e->getMessage(), 'error');
                 throw new Exception("Database connection failed");
             }
         }
@@ -107,7 +107,7 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
             $this->stmt = self::$dbh->prepare($sql);
         } catch (PDOException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorHandler::logMessage("MySQL connection lost. Attempting to reconnect...", 'warning');
+                ErrorMiddleware::logMessage("MySQL connection lost. Attempting to reconnect...", 'warning');
                 $this->reconnect();
                 $this->stmt = self::$dbh->prepare($sql); // Retry the query preparation
             } else {
@@ -155,7 +155,7 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
             return $this->stmt->execute();
         } catch (PDOException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorHandler::logMessage("MySQL connection lost during execution. Attempting to reconnect...", 'warning');
+                ErrorMiddleware::logMessage("MySQL connection lost during execution. Attempting to reconnect...", 'warning');
                 $this->reconnect();
                 return $this->stmt->execute(); // Retry the execution
             } else {
@@ -209,7 +209,7 @@ class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
             return self::$dbh->beginTransaction();
         } catch (PDOException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorHandler::logMessage("MySQL connection lost during transaction. Attempting to reconnect...", 'warning');
+                ErrorMiddleware::logMessage("MySQL connection lost during transaction. Attempting to reconnect...", 'warning');
                 $this->reconnect();
                 return self::$dbh->beginTransaction(); // Retry the transaction
             } else {
