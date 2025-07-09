@@ -31,7 +31,7 @@ v-chatgpt-social-status-feeds is a modular PHP application for managing, schedul
 
 All PHP source files live inside the `root` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by `root/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
 
-Version 2.0.0 introduces improvements such as dedicated classes for all database operations, a more intuitive user interface, and enhanced user settings for prompt customization. The API schema is now more structured, and the platform is more robust and user-friendly.
+Version 3.0.0 introduces improvements such as dedicated classes for all database operations, a more intuitive user interface, and enhanced user settings for prompt customization. The API schema is now more structured, and the platform is more robust and user-friendly.
 
 - **CSRF Protection:** All forms include CSRF tokens to prevent cross-site request forgery attacks.
 - **Input Validation:** User inputs are validated and sanitized to prevent SQL injection and XSS attacks.
