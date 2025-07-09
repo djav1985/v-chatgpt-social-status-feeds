@@ -24,6 +24,7 @@ class AuthController
     {
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+                unset($_SESSION['is_admin']);
                 session_destroy();
                 header('Location: /login');
                 exit();
@@ -43,6 +44,7 @@ class AuthController
                 $_SESSION['username'] = $username;
                 $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                $_SESSION['is_admin'] = $userInfo->admin;
                 session_regenerate_id(true);
                 header('Location: /');
                 exit();
