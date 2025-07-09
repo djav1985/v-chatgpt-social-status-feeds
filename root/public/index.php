@@ -17,6 +17,7 @@ use App\Core\ErrorMiddleware;
 
 $secureFlag = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 session_set_cookie_params([
+    'path'     => '/',
     'httponly' => true,
     'secure'   => $secureFlag,
     'samesite' => 'Lax',
