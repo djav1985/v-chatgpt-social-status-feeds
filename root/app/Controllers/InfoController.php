@@ -76,7 +76,13 @@ class InfoController extends Controller
             }
         }
 
-        self::render('info');
+        $profileData = self::generateProfileDataAttributes($_SESSION['username']);
+        $systemMsg = self::buildSystemMessage($_SESSION['username']);
+
+        self::render('info', [
+            'profileData' => $profileData,
+            'systemMsg' => $systemMsg,
+        ]);
     }
 
     public static function generateProfileDataAttributes(string $username): string

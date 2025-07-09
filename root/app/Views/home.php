@@ -12,38 +12,27 @@
  * Description: AI Social Status Generator
  */
 
-use App\Controllers\HomeController;
-use App\Models\AccountHandler;
-use App\Models\StatusHandler;
+
 
 require 'layouts/header.php';
 ?>
 
 <main class="container">
     <?php
+    $accountOwnerEsc = htmlspecialchars($accountOwner, ENT_QUOTES);
 
-    // Retrieve the account owner from the session and fetch all user accounts
-    $accountOwner = htmlspecialchars($_SESSION['username'], ENT_QUOTES);
-    $accounts = AccountHandler::getAllUserAccts($accountOwner);
-
-    // Display a message if no accounts are found
-    if (empty($accounts)) {
+    if (empty($accountsData)) {
         echo '<div id="no-account" class="empty"><p class="empty-title">Please set up an account!</p></div>';
-        return;
-    }
-
-    // Iterate through each account and display its statuses
-    foreach ($accounts as $index => $account) : ?>
-        <?php
-
-        $accountName = htmlspecialchars($account->account, ENT_QUOTES);
-        $acctInfo = AccountHandler::getAcctInfo($accountOwner, $accountName);
-        $statuses = StatusHandler::getStatusInfo($accountOwner, $accountName);
-        $feedUrl = htmlspecialchars("/feeds/{$accountOwner}/{$accountName}", ENT_QUOTES);
-        $isOpen = $index === 0 ? 'flex' : 'none';
-        $buttonIcon = $index === 0 ? 'icon-arrow-up' : 'icon-arrow-right';
-        $accountActionDisplay = $index === 0 ? 'flex' : 'none';
-        ?>
+    } else {
+        foreach ($accountsData as $index => $acct) :
+            $accountName = htmlspecialchars($acct['name'], ENT_QUOTES);
+            $acctInfo = $acct['info'];
+            $statuses = $acct['statuses'];
+            $feedUrl = htmlspecialchars($acct['feedUrl'], ENT_QUOTES);
+            $isOpen = $index === 0 ? 'flex' : 'none';
+            $buttonIcon = $index === 0 ? 'icon-arrow-up' : 'icon-arrow-right';
+            $accountActionDisplay = $index === 0 ? 'flex' : 'none';
+    ?>
 
         <div class="status-container card">
             <div class="status-header card-header">
@@ -59,32 +48,24 @@ require 'layouts/header.php';
  if (!empty($statuses)) : ?>
                 <div class="status-content columns" style="display: <?php
  echo $isOpen ?>;">
-                    <?php
- foreach ($statuses as $status) : ?>
-                        <?php
- if (!empty($status->status)) : ?>
+            <?php foreach ($statuses as $status) : ?>
+                        <?php if (!empty($status['status'])) : ?>
                             <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
                                 <div class="status-item card">
-                                    <img src="<?php
- echo htmlspecialchars($status->status_image ? "images/{$accountOwner}/{$accountName}/{$status->status_image}" : 'assets/images/default.png') ?>" class="status-image img-responsive" loading="lazy">
+                                    <img src="<?php echo htmlspecialchars($status['status_image'] ? "images/{$accountOwnerEsc}/{$accountName}/{$status['status_image']}" : 'assets/images/default.png'); ?>" class="status-image img-responsive" loading="lazy">
                                     <p class="status-text">
-                                        <?php
- echo htmlspecialchars($status->status) ?>
+                                        <?php echo htmlspecialchars($status['status']); ?>
                                     </p>
                                     <div class="status-meta">
                                         <strong class="status-info">
-                                            <?php
- echo date('m/d/y g:ia', strtotime($status->created_at)) ?>
+                                            <?php echo date('m/d/y g:ia', strtotime($status['created_at'])); ?>
                                         </strong>
-                                        <?php
- echo HomeController::shareButton($status->status, $status->status_image, $accountOwner, $accountName, $status->id); ?>
+                                        <?php echo $status['share_button']; ?>
                                     </div>
                                 </div>
                             </div>
-                        <?php
- endif; ?>
-                    <?php
- endforeach; ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                 </div>
             <?php
  else : ?>
@@ -101,8 +82,7 @@ require 'layouts/header.php';
                 <form class="account-action-form" action="/home" method="POST">
                     <input type="hidden" name="account" value="<?php
  echo htmlspecialchars($accountName, ENT_QUOTES) ?>">
-                    <input type="hidden" name="username" value="<?php
- echo htmlspecialchars($accountOwner, ENT_QUOTES) ?>">
+                    <input type="hidden" name="username" value="<?php echo $accountOwnerEsc ?>">
                     <input type="hidden" name="csrf_token" value="<?php
  echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
                     <button type="submit" class="generate-status-button btn btn-success" name="generate_status">Generate Status</button>
@@ -110,7 +90,9 @@ require 'layouts/header.php';
             </div>
         </div>
     <?php
- endforeach; ?>
+        endforeach;
+    }
+    ?>
 </main>
 
 <script>

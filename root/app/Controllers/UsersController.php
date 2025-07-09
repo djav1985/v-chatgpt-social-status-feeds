@@ -117,7 +117,11 @@ class UsersController extends Controller
             }
         }
 
-        self::render('users');
+        $userList = self::generateUserList();
+
+        self::render('users', [
+            'userList' => $userList,
+        ]);
     }
 
     public static function generateUserList(): string
