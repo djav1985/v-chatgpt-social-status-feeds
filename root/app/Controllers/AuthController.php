@@ -33,6 +33,14 @@ class AuthController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                $error = 'Invalid CSRF token. Please try again.';
+                ErrorMiddleware::logMessage($error);
+                $_SESSION['messages'][] = $error;
+                include __DIR__ . '/../Views/login.php';
+                return;
+            }
+
         $username = isset($_POST['username']) ? $_POST['username'] : null;
         $password = isset($_POST['password']) ? $_POST['password'] : null;
         $userInfo = UserHandler::getUserInfo($username);
