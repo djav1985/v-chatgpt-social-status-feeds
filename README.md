@@ -19,7 +19,7 @@ I. [ Overview](#-overview)
 II. [ Features](#-features)
 III. [ Project Structure](#-project-structure)
 IV. [ Getting Started](#-getting-started)
-V. [ Additional Information](#-additional-information)
+V. [ Docker](#docker)
 VI. [ Changelog](#-changelog)
 VII. [ License](#-license)
 
@@ -28,6 +28,8 @@ VII. [ License](#-license)
 ## Overview
 
 v-chatgpt-social-status-feeds is a modular PHP application for managing, scheduling, and distributing social media status updates. It features user authentication, account management, status scheduling, and real-time RSS feeds, all with a focus on security and extensibility. Built for social media managers and developers, it streamlines multi-account status posting and automation.
+
+All PHP source files live inside the `root` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by `root/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
 
 Version 2.0.0 introduces improvements such as dedicated classes for all database operations, a more intuitive user interface, and enhanced user settings for prompt customization. The API schema is now more structured, and the platform is more robust and user-friendly.
 
@@ -60,43 +62,49 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 ```sh
 └── /
     ├── README.md
-    ├── install.sql
-    ├── cron.php
-    ├── app
-    │   ├── config.php
-    │   ├── Core
-    │   │   ├── AuthMiddleware.php
-    │   │   ├── ErrorMiddleware.php
-    │   │   ├── Controller.php
-    │   │   ├── ApiHandler.php
-    │   │   ├── Router.php
-    │   │   └── Utility.php
-    │   ├── Controllers
-    │   │   ├── AuthController.php
-    │   │   ├── HomeController.php
-    │   │   ├── AccountsController.php
-    │   │   ├── InfoController.php
-    │   │   ├── UsersController.php
-    │   │   └── FeedController.php
-    │   ├── Models
-    │   │   ├── Account.php
-    │   │   ├── Home.php
-    │   │   ├── User.php
-    │   │   ├── Feed.php
-    │   │   └── Info.php
-    │   └── Views
-    │       ├── home.php
-    │       ├── login.php
-    │       ├── accounts.php
-    │       ├── info.php
-    │       ├── users.php
-    │       └── layouts
-    │           ├── header.php
-    │           └── footer.php
-    └── public
-        ├── assets
-        ├── index.php
-        └── .htaccess
+    ├── composer.json
+    ├── composer.lock
+    ├── docker/
+    ├── v-chatgpt-social-status-feeds.png
+    └── root
+        ├── autoload.php
+        ├── config.php
+        ├── cron.php
+        ├── install.sql
+        ├── app
+        │   ├── Core
+        │   │   ├── AuthMiddleware.php
+        │   │   ├── ErrorMiddleware.php
+        │   │   ├── Controller.php
+        │   │   ├── ApiHandler.php
+        │   │   ├── Router.php
+        │   │   └── Utility.php
+        │   ├── Controllers
+        │   │   ├── AuthController.php
+        │   │   ├── HomeController.php
+        │   │   ├── AccountsController.php
+        │   │   ├── InfoController.php
+        │   │   ├── UsersController.php
+        │   │   └── FeedController.php
+        │   ├── Models
+        │   │   ├── Account.php
+        │   │   ├── Home.php
+        │   │   ├── User.php
+        │   │   ├── Feed.php
+        │   │   └── Info.php
+        │   └── Views
+        │       ├── home.php
+        │       ├── login.php
+        │       ├── accounts.php
+        │       ├── info.php
+        │       ├── users.php
+        │       └── layouts
+        │           ├── header.php
+        │           └── footer.php
+        └── public
+            ├── assets
+            ├── index.php
+            └── .htaccess
 ```
 
 ### Project Index
@@ -345,6 +353,16 @@ Login as `admin` with the password `admin`. Follow these steps:
    - Click **Add/Update**.
 
 Statuses are generated on schedule and added to the respective account feed and the user's collective omni feed. Use the feed with tools like IFTTT to update social media.
+
+## Docker
+
+The **docker** directory contains a `Dockerfile` and `docker-compose.yml` for running the project locally. Start the containers with:
+
+```sh
+docker compose up
+```
+
+This launches an Apache web server and MariaDB instance with configuration values taken from the compose file. Adjust the environment variables there to set API keys and database credentials.
 
 ---
 
