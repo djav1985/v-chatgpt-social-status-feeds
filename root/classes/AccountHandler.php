@@ -93,6 +93,9 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
     /**
      * Get the account link for a specific user and account.
      *
+     * Returns the sanitized account link or an empty string when the account
+     * is not found.
+     *
      * @param string $username
      * @param string $account
      * @return string
@@ -105,7 +108,12 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $db->bind(':username', $username);
             $db->bind(':account', $account);
             $acctInfo = $db->single();
-            return htmlspecialchars($acctInfo->link ?? '');
+
+            if (is_object($acctInfo) && isset($acctInfo->link)) {
+                return htmlspecialchars($acctInfo->link);
+            }
+
+            return '';
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error retrieving account link: " . $e->getMessage(), 'error');
             throw $e;
