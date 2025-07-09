@@ -77,7 +77,41 @@ class HomeController extends Controller
             }
         }
 
-        self::render('home');
+        $accountOwner = $_SESSION['username'];
+        $accounts = \App\Models\AccountHandler::getAllUserAccts($accountOwner);
+        $accountsData = [];
+        foreach ($accounts as $account) {
+            $name = $account->account;
+            $acctInfo = \App\Models\AccountHandler::getAcctInfo($accountOwner, $name);
+            $statuses = StatusHandler::getStatusInfo($accountOwner, $name);
+            $statusList = [];
+            foreach ($statuses as $status) {
+                $statusList[] = [
+                    'status' => $status->status,
+                    'status_image' => $status->status_image,
+                    'created_at' => $status->created_at,
+                    'id' => $status->id,
+                    'share_button' => self::shareButton(
+                        $status->status,
+                        $status->status_image,
+                        $accountOwner,
+                        $name,
+                        $status->id
+                    ),
+                ];
+            }
+            $accountsData[] = [
+                'name' => $name,
+                'info' => $acctInfo,
+                'feedUrl' => "/feeds/{$accountOwner}/{$name}",
+                'statuses' => $statusList,
+            ];
+        }
+
+        self::render('home', [
+            'accountOwner' => $accountOwner,
+            'accountsData' => $accountsData,
+        ]);
     }
 
     public static function shareButton(string $statusText, string $imagePath, string $accountOwner, string $accountName, int $statusId): string

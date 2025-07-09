@@ -100,7 +100,15 @@ class AccountsController extends Controller
             }
         }
 
-        self::render('accounts');
+        $daysOptions = self::generateDaysOptions();
+        $cronOptions = self::generateCronOptions();
+        $accountList = self::generateAccountList();
+
+        self::render('accounts', [
+            'daysOptions' => $daysOptions,
+            'cronOptions' => $cronOptions,
+            'accountList' => $accountList,
+        ]);
     }
 
     public static function generateDaysOptions(): string

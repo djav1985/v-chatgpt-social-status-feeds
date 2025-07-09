@@ -12,7 +12,7 @@
  * Description: AI Social Status Generator
  */
 
-use App\Controllers\UsersController;
+
 
 require 'layouts/header.php';
 ?>
@@ -80,8 +80,7 @@ require 'layouts/header.php';
                 <h3 class="account-name card-title">User List</h3>
             </div>
             <div class="columns">
-                <?php
- echo UsersController::generateUserList(); ?>
+                <?php echo $userList; ?>
             </div>
         </div>
     </div>

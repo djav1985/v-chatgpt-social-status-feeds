@@ -12,7 +12,7 @@
  * Description: AI Social Status Generator
  */
 
-use App\Controllers\AccountsController;
+
 
 require 'layouts/header.php';
 ?>
@@ -46,14 +46,12 @@ require 'layouts/header.php';
                 <!-- Days selection dropdown (multiple) -->
                 <label for="days">Days:</label>
                 <select class="form-select" name="days[]" id="days" multiple required>
-                    <?php
- echo AccountsController::generateDaysOptions(); ?>
+                    <?php echo $daysOptions; ?>
                 </select>
                 <!-- Post schedule selection dropdown (multiple) -->
                 <label for="cron">Post Schedule:</label>
                 <select class="form-select" name="cron[]" id="cron" multiple required>
-                    <?php
- echo AccountsController::generateCronOptions(); ?>
+                    <?php echo $cronOptions; ?>
                 </select>
                 <!-- Hashtags inclusion dropdown -->
                 <label for="hashtags">Include Hashtags:</label>
@@ -72,8 +70,7 @@ require 'layouts/header.php';
                 <h3 class="account-name card-title">Account List</h3>
             </div>
             <div class="columns">
-                <?php
- echo AccountsController::generateAccountList(); ?>
+                <?php echo $accountList; ?>
             </div>
         </div>
     </div>
