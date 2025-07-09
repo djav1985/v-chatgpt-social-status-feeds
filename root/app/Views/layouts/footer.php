@@ -23,6 +23,6 @@
     </div>
 </footer>
 <?php
- echo App\Models\UtilityHandler::displayAndClearMessages(); ?>
+  echo App\Core\ErrorHandler::displayAndClearMessages(); ?>
 </body>
 </html>

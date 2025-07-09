@@ -118,20 +118,4 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             throw $e;
         }
     }
-
-    /**
-     * Display and clear session messages.
-     *
-     * @return void
-     */
-    public static function displayAndClearMessages(): void
-    {
-        if (isset($_SESSION['messages']) && count($_SESSION['messages']) > 0) {
-            foreach ($_SESSION['messages'] as $message) {
-                echo '<script>showToast(' . json_encode($message) . ');</script>';
-            }
-            unset($_SESSION['messages']);
-        }
-    }
-
 }
