@@ -43,17 +43,19 @@ class AuthController extends Controller
                 return;
             }
 
-        $username = isset($_POST['username']) ? $_POST['username'] : null;
-        $password = isset($_POST['password']) ? $_POST['password'] : null;
-        $userInfo = UserHandler::getUserInfo($username);
+            $username = trim($_POST['username'] ?? '');
+            $password = trim($_POST['password'] ?? '');
 
-        // Verify user credentials
-        if ($userInfo && password_verify($password, $userInfo->password)) {
+            $userInfo = UserHandler::getUserInfo($username);
+
+            // Verify user credentials against hashed password
+            if ($userInfo && password_verify($password, $userInfo->password)) {
                 $_SESSION['logged_in'] = true;
-                $_SESSION['username'] = $username;
+                $_SESSION['username'] = $userInfo->username;
                 $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['is_admin'] = $userInfo->admin;
+                $_SESSION['timeout'] = time();
                 session_regenerate_id(true);
                 header('Location: /');
                 exit();
