@@ -174,8 +174,8 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 					</tr>
 					<tr>
 						<td><b><a href='/root/public/.htaccess'>.htaccess</a></b></td>
-						<td>- Provides URL rewriting and caching rules to enhance web application performance and user experience<br>- It serves a default image for missing PNG requests, redirects specific URLs to improve navigation, and ensures efficient resource loading through caching strategies<br>- This approach simplifies access to essential pages while managing resource delivery effectively within the overall project architecture.</td>
-					</tr>
+                                                <td>- Provides URL rewriting and caching rules to enhance web application performance and user experience<br>- It serves a default image for missing PNG requests, routes feed URLs and other paths through <code>index.php</code> so the router can handle them, and ensures efficient resource loading through caching strategies<br>- This approach simplifies access to essential pages while managing resource delivery effectively within the overall project architecture.</td>
+                                        </tr>
 					<tr>
 						<td><b><a href='/root/public/login.php'>login.php</a></b></td>
 						<td>- Facilitates user authentication for the ChatGPT API project by providing a secure login interface<br>- It incorporates session management, error handling, and responsive design elements while linking to external stylesheets for improved user experience<br>- This page is essential for accessing administrative features, ensuring that only authorized users can log in and manage the API's status and functionality.</td>
