@@ -20,7 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle password change form submission
     if (isset($_POST["change_password"])) {
-        $username = $_POST['username'];
+        // Always use the currently logged in user for password updates
+        $username = $_SESSION['username'];
         $password = $_POST['password'];
         $password2 = $_POST['password2'];
 
