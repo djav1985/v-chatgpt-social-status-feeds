@@ -283,7 +283,8 @@ class StatusController
 
     $image_url = $response['data'][0]['url'];
     $random_name = uniqid() . '.png';
-    $image_path = __DIR__ . '/../public/images/' . $accountOwner . '/' . $accountName . '/' . $random_name;
+    // Save under root/public/images/<owner>/<account>/
+    $image_path = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName . '/' . $random_name;
 
     $dirMode = defined('DIR_MODE') ? DIR_MODE : 0755;
     if (!is_dir(dirname($image_path)) && !mkdir(dirname($image_path), $dirMode, true)) {
