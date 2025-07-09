@@ -53,6 +53,11 @@ if ($conn->multi_query($sql)) {
     if (getenv('KEEP_INSTALL') !== '1') {
         @unlink(__FILE__);
     }
+
+    // Delete the SQL file after successful installation unless disabled
+    if (getenv('KEEP_INSTALL') !== '1') {
+        @unlink(__DIR__ . '/../install.sql');
+    }
     exit;
 } else {
     echo "Error installing database: " . $conn->error;
