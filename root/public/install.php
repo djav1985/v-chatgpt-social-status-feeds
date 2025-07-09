@@ -12,11 +12,6 @@
  * Description: AI Social Status Generator
  */
 
-// Only allow the install script when explicitly enabled
-if (getenv('INSTALL_ENABLED') !== '1') {
-    exit('Install script is disabled.');
-}
-
 require_once __DIR__ . '/../config.php';
 
 // Create connection
@@ -49,15 +44,11 @@ if ($conn->multi_query($sql)) {
     echo "Database installed successfully.";
     $conn->close();
 
-    // Delete this script after successful installation unless disabled
-    if (getenv('KEEP_INSTALL') !== '1') {
+    // Delete this script after successful installation
         @unlink(__FILE__);
-    }
-
-    // Delete the SQL file after successful installation unless disabled
-    if (getenv('KEEP_INSTALL') !== '1') {
+        
+    // Delete the SQL file after successful installation
         @unlink(__DIR__ . '/../install.sql');
-    }
     exit;
 } else {
     echo "Error installing database: " . $conn->error;
