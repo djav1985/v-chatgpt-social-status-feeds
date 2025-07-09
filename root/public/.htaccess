@@ -4,22 +4,6 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^images/.*\.png$ /assets/images/default.png [L]
 
-# Redirect '/' and '/index.php' to '/home' for external requests only
-RewriteCond %{THE_REQUEST} \s(/|/index\.php|/login\.php) [NC]
-RewriteRule ^index\.php$ /home [L,R=301]
-
-# Internally rewrite /login to login.php
-RewriteCond %{REQUEST_URI} ^/login$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^login$ /login.php [L]
-
-# Internally rewrite /home, /users, /accounts, /info to index.php?page=home, etc.
-RewriteCond %{REQUEST_URI} ^/(home|users|accounts|info)$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(home|users|accounts|info)$ /index.php?page=$1 [L]
-
 # Internally rewrite user feed URLs
 RewriteRule ^feeds/([^/]+)/([^/]+)$ /index.php?user=$1&account=$2 [L,QSA]
 
