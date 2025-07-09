@@ -21,7 +21,7 @@ services:
       CRON_MEMORY_LIMIT: 512M
       DB_HOST: 'db'
       DB_USER: 'root'
-      DB_PASSWORD: ''
+      DB_PASSWORD: 'fg78df6g87sdf6g876sd9f6g7'
       DB_NAME: 'vsocialai'
       SMTP_HOST: 'smtp.example.com'
       SMTP_PORT: 587
@@ -35,8 +35,7 @@ services:
   db:
     image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ''
-      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: '1'
+      MYSQL_ROOT_PASSWORD: 'fg78df6g87sdf6g876sd9f6g7'
       MYSQL_DATABASE: 'vsocialai'
     volumes:
       - db_data:/var/lib/mysql
