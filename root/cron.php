@@ -208,13 +208,14 @@ function cleanupStatuses(): bool
 
     foreach ($accounts as $account) {
         $accountName = $account->account;
+        $accountOwner = $account->username;
         logDebug("Processing account: $accountName for cleanup.");
-        $statusCount = StatusHandler::countStatuses($accountName);
+        $statusCount = StatusHandler::countStatuses($accountName, $accountOwner);
 
         if ($statusCount > MAX_STATUSES) {
             $deleteCount = $statusCount - MAX_STATUSES;
             logDebug("Deleting $deleteCount old statuses for account: $accountName.");
-            if (!StatusHandler::deleteOldStatuses($accountName, $deleteCount)) {
+            if (!StatusHandler::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
                 logDebug("Failed to delete old statuses for account: $accountName.");
                 ErrorHandler::logMessage("CRON: Failed to delete old statuses for account: $accountName", 'error');
                 return false;

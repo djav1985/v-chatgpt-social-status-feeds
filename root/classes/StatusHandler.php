@@ -129,17 +129,19 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
         }
     }
     /**
-     * Count the number of statuses for a specific account.
+     * Count the number of statuses for a specific account and owner.
      *
      * @param string $accountName
+     * @param string $accountOwner
      * @return int
      */
-    public static function countStatuses(string $accountName): int
+    public static function countStatuses(string $accountName, string $accountOwner): int
     {
         try {
             $db = new DatabaseHandler();
-            $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account");
+            $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account AND username = :accountOwner");
             $db->bind(':account', $accountName);
+            $db->bind(':accountOwner', $accountOwner);
             return $db->single()->count;
         } catch (Exception $e) {
             ErrorHandler::logMessage("Error counting statuses: " . $e->getMessage(), 'error');
@@ -148,18 +150,20 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
     }
 
     /**
-     * Delete old statuses for a specific account.
+     * Delete old statuses for a specific account and owner.
      *
      * @param string $accountName
+     * @param string $accountOwner
      * @param int $deleteCount
      * @return bool
      */
-    public static function deleteOldStatuses(string $accountName, int $deleteCount): bool
+    public static function deleteOldStatuses(string $accountName, string $accountOwner, int $deleteCount): bool
     {
         try {
             $db = new DatabaseHandler();
-            $db->query("DELETE FROM status_updates WHERE account = :account ORDER BY created_at ASC LIMIT :deleteCount");
+            $db->query("DELETE FROM status_updates WHERE account = :account AND username = :accountOwner ORDER BY created_at ASC LIMIT :deleteCount");
             $db->bind(':account', $accountName);
+            $db->bind(':accountOwner', $accountOwner);
             $db->bind(':deleteCount', $deleteCount, PDO::PARAM_INT);
             $db->execute();
             return true;
