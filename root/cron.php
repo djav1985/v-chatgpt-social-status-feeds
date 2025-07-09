@@ -17,9 +17,9 @@ require_once __DIR__ . '/autoload.php';
 
 use App\Core\ErrorMiddleware;
 use App\Controllers\StatusController;
-use App\Models\AccountHandler;
-use App\Models\UserHandler;
-use App\Models\StatusHandler;
+use App\Models\Account;
+use App\Models\User;
+use App\Models\Feed;
 use App\Core\Utility;
 
 // Apply configured runtime limits after loading settings
@@ -115,7 +115,7 @@ function runStatusUpdateJobs(): bool
 {
     global $debugMode;
     logDebug("Fetching all accounts for status update.");
-    $accounts = AccountHandler::getAllAccounts();
+    $accounts = Account::getAllAccounts();
     if (empty($accounts)) {
         logDebug("No accounts found or failed to get accounts.");
         ErrorMiddleware::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
@@ -162,9 +162,9 @@ function runStatusUpdateJobs(): bool
             if ($scheduledHour === $currentHour) {
                 logDebug("Scheduled time matches current time for account: $accountName.");
 
-                if (!StatusHandler::hasStatusBeenPosted($accountName, $accountOwner, $scheduledHour)) {
+                if (!Feed::hasStatusBeenPosted($accountName, $accountOwner, $scheduledHour)) {
                     logDebug("Status has not been posted yet for this hour.");
-                    $userInfo = UserHandler::getUserInfo($accountOwner);
+                    $userInfo = User::getUserInfo($accountOwner);
 
                     // Check if the user's subscription has expired
                     $now = new DateTime();
@@ -172,7 +172,7 @@ function runStatusUpdateJobs(): bool
                     if ($now > $expires) {
                         logDebug("User subscription expired. Setting max API calls to 0.");
                         $userInfo->max_api_calls = 0;
-                        UserHandler::updateMaxApiCalls($accountOwner, 0);
+                        User::updateMaxApiCalls($accountOwner, 0);
                     }
 
                     if ($userInfo->used_api_calls < $userInfo->max_api_calls) {
@@ -181,7 +181,7 @@ function runStatusUpdateJobs(): bool
                         if (isset($statusResult['success'])) {
                             logDebug("Status generated for account: $accountName.");
                             $userInfo->used_api_calls += 1;
-                            UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+                            User::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
                         } else {
                             logDebug("Failed to generate status for account: $accountName.");
                         }
@@ -207,7 +207,7 @@ function cleanupStatuses(): bool
 {
     global $debugMode;
     logDebug("Fetching all accounts for cleanup.");
-    $accounts = AccountHandler::getAllAccounts();
+    $accounts = Account::getAllAccounts();
     if (empty($accounts)) {
         logDebug("No accounts found or failed to get accounts.");
         ErrorMiddleware::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
@@ -217,12 +217,12 @@ function cleanupStatuses(): bool
     foreach ($accounts as $account) {
         $accountName = $account->account;
         logDebug("Processing account: $accountName for cleanup.");
-        $statusCount = StatusHandler::countStatuses($accountName);
+        $statusCount = Feed::countStatuses($accountName);
 
         if ($statusCount > MAX_STATUSES) {
             $deleteCount = $statusCount - MAX_STATUSES;
             logDebug("Deleting $deleteCount old statuses for account: $accountName.");
-            if (!StatusHandler::deleteOldStatuses($accountName, $deleteCount)) {
+            if (!Feed::deleteOldStatuses($accountName, $deleteCount)) {
                 logDebug("Failed to delete old statuses for account: $accountName.");
                 ErrorMiddleware::logMessage("CRON: Failed to delete old statuses for account: $accountName", 'error');
                 return false;
@@ -276,7 +276,7 @@ function resetApi(): bool
 {
     global $debugMode;
     logDebug("Resetting API usage for all users.");
-    if (!UserHandler::resetAllApiUsage()) {
+    if (!User::resetAllApiUsage()) {
         logDebug("Failed to reset API usage.");
         ErrorMiddleware::logMessage("CRON: Failed to reset API usage.", 'error');
         return false;
