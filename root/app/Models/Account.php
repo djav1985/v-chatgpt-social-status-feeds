@@ -16,7 +16,7 @@ namespace App\Models;
 
 use Exception;
 use App\Models\Database;
-use App\Core\ErrorHandler;
+use App\Core\ErrorMiddleware;
 
 /**
  * Project: SocialRSS
@@ -45,7 +45,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $db->query("SELECT * FROM accounts");
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving all accounts: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error retrieving all accounts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -64,7 +64,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $db->bind(':username', $username);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving all user accounts: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error retrieving all user accounts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -85,7 +85,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $db->bind(':accountName', $accountName);
             return (bool) $db->single();
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error checking if account exists: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error checking if account exists: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -106,7 +106,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $db->bind(':account', $account);
             return $db->single();
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving account info: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error retrieving account info: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -128,7 +128,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $acctInfo = $db->single();
             return htmlspecialchars($acctInfo->link ?? '');
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving account link: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error retrieving account link: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -165,7 +165,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::logMessage("Error updating account: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error updating account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -202,7 +202,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::logMessage("Error creating account: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error creating account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -233,7 +233,7 @@ class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::logMessage("Error deleting account: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error deleting account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }

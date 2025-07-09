@@ -38,7 +38,7 @@ Version 2.0.0 introduces improvements such as dedicated classes for all database
   with `httponly`, `secure`, and `SameSite=Lax` flags for better protection.
 - **IP Blacklisting:** Monitors and blacklists suspicious IP addresses to prevent brute-force attacks.
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
-- **Modular Classes:** Core logic is organized into classes such as Database, UserHandler, AccountHandler, StatusHandler, UtilityHandler, ErrorMiddleware, and ErrorHandler for maintainability and scalability.
+- **Modular Classes:** Core logic is organized into classes such as Database, UserHandler, AccountHandler, StatusHandler, UtilityHandler, and ErrorMiddleware for maintainability and scalability.
 
 In upcoming updates I plan on optimizing the cron system with a task queue to prevent timeouts if there are many statuses to create. Also look at any other ways to secure the app.
 
@@ -46,8 +46,8 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 
 |     |      Feature      | Summary |
 | :-- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>UtilityHandler</code>, <code>ErrorMiddleware</code>, <code>ErrorHandler</code>, and <code>ApiHandler</code> (see <code>root/classes/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by <code>root/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
-| 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using PDO in <code>DatabaseHandler.php</code>.</li><li>Robust error handling via <code>ErrorMiddleware.php</code> and <code>ErrorHandler.php</code>.</li><li>Clean inline documentation throughout core files.</li></ul> |
+| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>UtilityHandler</code>, <code>ErrorMiddleware</code>, and <code>ApiHandler</code> (see <code>root/classes/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by <code>root/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
+| 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using PDO in <code>DatabaseHandler.php</code>.</li><li>Robust error handling via <code>ErrorMiddleware.php</code>.</li><li>Clean inline documentation throughout core files.</li></ul> |
 | 📄  | **Documentation** | <ul><li>Includes install and usage steps.</li><li>Written in <code>PHP</code>, <code>SQL</code>, and <code>text</code> formats.</li><li>Simple onboarding for developers and admins.</li></ul> |
 | 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>ApiHandler.php</code>.</li><li>Real-time RSS feed generation using <code>UtilityHandler::outputRssFeed()</code>.</li><li>Secure login and session control via <code>auth-lib.php</code>.</li></ul> |
 | 🧩  |  **Modularity**   | <ul><li>All logic encapsulated in single-purpose classes.</li><li>Autoloading supports scalability and clean structure.</li><li>Code reuse across handlers and views.</li></ul> |
@@ -68,7 +68,6 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
     │   │   ├── AuthMiddleware.php
     │   │   ├── ErrorMiddleware.php
     │   │   ├── Controller.php
-    │   │   ├── ErrorHandler.php
     │   │   ├── ApiHandler.php
     │   │   ├── Router.php
     │   │   └── UtilityHandler.php
@@ -147,12 +146,8 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 						<td>- Database management is streamlined through a class that centralizes the connection and interaction with the database using PDO<br>- It facilitates the execution of SQL queries, handles parameter binding, and manages transaction control<br>- By ensuring a single instance of the database connection, it enhances efficiency and error handling<br>- This functionality is crucial for the overall architecture of the ChatGPT API project, enabling smooth data operations.</td>
 					</tr>
                                         <tr>
-                                                <td><b><a href='/root/classes/ErrorHandler.php'>ErrorHandler.php</a></b></td>
-                                                <td>- ErrorHandler registers PHP handlers for errors, exceptions, and shutdown events<br>- It converts PHP errors into exceptions and logs them for later analysis</td>
-                                        </tr>
-                                        <tr>
                                                 <td><b><a href='/root/classes/ErrorMiddleware.php'>ErrorMiddleware.php</a></b></td>
-                                                <td>- ErrorMiddleware loads <code>ErrorHandler</code> at the start of each web request and catches uncaught exceptions around route dispatch<br>- This ensures graceful error responses and centralized logging during normal application flow</td>
+                                                <td>- ErrorMiddleware registers error and exception handlers and wraps route execution to ensure graceful error responses and centralized logging</td>
                                         </tr>
                                         <tr>
                                                 <td><b><a href='/root/classes/ApiHandler.php'>ApiHandler.php</a></b></td>

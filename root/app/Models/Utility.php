@@ -16,7 +16,7 @@ namespace App\Models;
 
 use Exception;
 use App\Models\Database;
-use App\Core\ErrorHandler;
+use App\Core\ErrorMiddleware;
 
 /**
  * Project: SocialRSS
@@ -63,7 +63,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             }
             $db->execute();
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error updating failed attempts: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error updating failed attempts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -93,7 +93,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             }
             return false;
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error checking blacklist status: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error checking blacklist status: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -114,7 +114,7 @@ class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingName
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error clearing IP blacklist: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error clearing IP blacklist: " . $e->getMessage(), 'error');
             throw $e;
         }
     }

@@ -17,7 +17,7 @@ namespace App\Models;
 use Exception;
 use PDO;
 use App\Models\Database;
-use App\Core\ErrorHandler;
+use App\Core\ErrorMiddleware;
 
 /**
  * Project: SocialRSS
@@ -53,7 +53,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             $status = $db->single();
             return $status ? $status->status_image : null;
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving status image path: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error retrieving status image path: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -77,7 +77,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error deleting status: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error deleting status: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -98,7 +98,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             $db->bind(':account', $account);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving status info: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error retrieving status info: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -125,7 +125,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error saving status: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error saving status: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -146,7 +146,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             $db->bind(':accountOwner', $username);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving status updates: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error retrieving status updates: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -164,7 +164,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             $db->bind(':account', $accountName);
             return $db->single()->count;
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error counting statuses: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error counting statuses: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -186,7 +186,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error deleting old statuses: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error deleting old statuses: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -214,7 +214,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
 
             return $db->single()->count > 0;
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error checking if status has been posted: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error checking if status has been posted: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -235,7 +235,7 @@ class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNames
             $db->bind(':username', $accountOwner);
             return $db->single();
         } catch (Exception $e) {
-            ErrorHandler::logMessage("Error retrieving latest status update: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage("Error retrieving latest status update: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
