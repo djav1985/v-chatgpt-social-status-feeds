@@ -1,4 +1,5 @@
 RewriteEngine On
+RewriteBase /
 
 # Serve a default PNG image if the requested PNG does not exist
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -6,6 +7,11 @@ RewriteRule ^images/.*\.png$ /assets/images/default.png [L]
 
 # Internally rewrite user feed URLs
 RewriteRule ^feeds/([^/]+)/([^/]+)$ /index.php?user=$1&account=$2 [L,QSA]
+
+# Route all other requests through the front controller
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L,QSA]
 
 # Enable caching for certain file types
 <IfModule mod_expires.c>
