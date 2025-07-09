@@ -43,6 +43,9 @@ define('MAX_STATUSES', getenv('MAX_STATUSES'));
 // Maximum age of images in days before they are removed (should be over 360 days)
 define('IMG_AGE', getenv('IMG_AGE'));
 
+// Session timeout limit in seconds (default: 30 minutes)
+define('SESSION_TIMEOUT_LIMIT', getenv('SESSION_TIMEOUT_LIMIT') ?: 1800);
+
 // Default permissions for creating directories
 define('DIR_MODE', 0755);
 
