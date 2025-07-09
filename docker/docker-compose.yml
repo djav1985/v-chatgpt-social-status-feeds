@@ -35,6 +35,7 @@ services:
     image: mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: ''
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: '1'
       MYSQL_DATABASE: 'vsocialai'
     volumes:
       - db_data:/var/lib/mysql
