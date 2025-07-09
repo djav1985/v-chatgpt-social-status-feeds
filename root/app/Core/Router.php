@@ -32,6 +32,10 @@ class Router
         }
 
         switch ($route) {
+        case '/':
+            // Redirect the root URL to the home page for convenience
+            header('Location: /home');
+            exit();
         case '/login':
             \App\Controllers\AuthController::handleRequest();
             break;
@@ -44,10 +48,13 @@ class Router
         case '/info':
             \App\Controllers\InfoController::handleRequest();
             break;
-        case '/':
         case '/home':
-        default:
             \App\Controllers\HomeController::handleRequest();
+            break;
+        default:
+            header('HTTP/1.0 404 Not Found');
+            require __DIR__ . '/../Views/404.php';
+            exit();
         }
     }
 }
