@@ -43,13 +43,14 @@ class User
      * @param string $username
      * @return mixed
      */
-    public static function userExists(string $username): mixed
+    public static function userExists(string $username): ?array
     {
         try {
             $db = new Database();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
-            return $db->single();
+            $result = $db->single();
+            return $result ?: null; // Explicitly return null if no user is found
         } catch (Exception $e) {
             ErrorMiddleware::logMessage("Error checking if user exists: " . $e->getMessage(), 'error');
             throw $e;
