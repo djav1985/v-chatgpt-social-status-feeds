@@ -12,7 +12,7 @@
  * Description: AI Social Status Generator
  */
 
-require_once __DIR__ . '/app/config.php';
+require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/autoload.php';
 
 use App\Core\ErrorMiddleware;
