@@ -3,7 +3,10 @@
 *.code-workspace
 
 # Ensure these files are ignored no matter where they are located
-phpcs.xml
-composer.lock
-composer.json
-vendor/
+/phpcs.xml
+/composer.lock
+/composer.json
+
+# Ignore vendor only in the root directory
+/vendor
+!/root/vendor
