@@ -34,6 +34,7 @@ class UsersController extends Controller
             if (isset($_POST['edit_users'])) {
                 $username = trim($_POST['username']);
                 $password = trim($_POST['password']);
+                $email = trim($_POST['email']);
                 $totalAccounts = intval($_POST['total-accounts']);
                 $maxApiCalls = intval($_POST['max-api-calls']);
                 $usedApiCalls = intval($_POST['used-api-calls']);
@@ -45,6 +46,9 @@ class UsersController extends Controller
                 }
                 if (!empty($password) && !preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/', $password)) {
                     $_SESSION['messages'][] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
+                }
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $_SESSION['messages'][] = 'Please provide a valid email address.';
                 }
 
                 if (!empty($_SESSION['messages'])) {
@@ -60,7 +64,17 @@ class UsersController extends Controller
                         $password = $userExists->password;
                     }
                     $isUpdate = $userExists !== null;
-                    $result = User::updateUser($username, $password, $totalAccounts, $maxApiCalls, $usedApiCalls, $expires, $admin, $isUpdate);
+                    $result = User::updateUser(
+                        $username,
+                        $password,
+                        $email,
+                        $totalAccounts,
+                        $maxApiCalls,
+                        $usedApiCalls,
+                        $expires,
+                        $admin,
+                        $isUpdate
+                    );
                     if ($result) {
                         if (!$userExists) {
                             $userImagePath = __DIR__ . '/../../public/images/' . $username;
@@ -130,6 +144,7 @@ class UsersController extends Controller
         $output = '';
         foreach ($users as $user) {
             $dataAttributes  = "data-username=\"" . htmlspecialchars($user->username) . "\" ";
+            $dataAttributes .= "data-email=\"" . htmlspecialchars($user->email) . "\" ";
             $dataAttributes .= "data-admin=\"" . htmlspecialchars($user->admin) . "\" ";
             $dataAttributes .= "data-total-accounts=\"" . htmlspecialchars($user->total_accounts) . "\" ";
             $dataAttributes .= "data-max-api-calls=\"" . htmlspecialchars($user->max_api_calls) . "\" ";
@@ -141,6 +156,7 @@ class UsersController extends Controller
             $output .= "<div class=\"card-header account-card\">";
             $output .= "<div class=\"card-title h5\">" . htmlspecialchars($user->username) . "</div>";
             $output .= "<br>";
+            $output .= "<p><strong>Email:</strong> " . htmlspecialchars($user->email) . "</p>";
             $output .= "<p><strong>Max API Calls:</strong> " . htmlspecialchars($user->max_api_calls) . "</p>";
             $output .= "<p><strong>Used API Calls:</strong> " . htmlspecialchars($user->used_api_calls) . "</p>";
             $output .= "<p><strong>Expires:</strong> " . htmlspecialchars($user->expires) . "</p>";

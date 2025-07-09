@@ -62,6 +62,7 @@ class User
      *
      * @param string $username
      * @param string $password
+     * @param string $email
      * @param int $totalAccounts
      * @param int $maxApiCalls
      * @param int $usedApiCalls
@@ -70,19 +71,20 @@ class User
      * @param bool $isUpdate
      * @return bool
      */
-    public static function updateUser(string $username, string $password, int $totalAccounts, int $maxApiCalls, int $usedApiCalls, string $expires, int $admin, bool $isUpdate): bool
+    public static function updateUser(string $username, string $password, string $email, int $totalAccounts, int $maxApiCalls, int $usedApiCalls, string $expires, int $admin, bool $isUpdate): bool
     {
         ErrorMiddleware::logMessage("updateUser called with username: $username, isUpdate: $isUpdate", 'info');
         $db = new Database();
         $db->beginTransaction();
         try {
             if ($isUpdate) {
-                $db->query("UPDATE users SET password = :password, total_accounts = :totalAccounts, max_api_calls = :maxApiCalls, used_api_calls = :usedApiCalls, admin = :admin, expires = :expires WHERE username = :username");
+                $db->query("UPDATE users SET password = :password, email = :email, total_accounts = :totalAccounts, max_api_calls = :maxApiCalls, used_api_calls = :usedApiCalls, admin = :admin, expires = :expires WHERE username = :username");
             } else {
-                $db->query("INSERT INTO users (username, password, total_accounts, max_api_calls, used_api_calls, expires, admin) VALUES (:username, :password, :totalAccounts, :maxApiCalls, :usedApiCalls, :expires, :admin)");
+                $db->query("INSERT INTO users (username, password, email, total_accounts, max_api_calls, used_api_calls, expires, admin) VALUES (:username, :password, :email, :totalAccounts, :maxApiCalls, :usedApiCalls, :expires, :admin)");
             }
             $db->bind(':username', $username);
             $db->bind(':password', $password);
+            $db->bind(':email', $email);
             $db->bind(':totalAccounts', $totalAccounts);
             $db->bind(':maxApiCalls', $maxApiCalls);
             $db->bind(':usedApiCalls', $usedApiCalls);
