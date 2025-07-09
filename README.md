@@ -46,7 +46,7 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 
 |     |      Feature      | Summary |
 | :-- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>Utility</code>, <code>ErrorMiddleware</code>, and <code>ApiHandler</code> (see <code>root/classes/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by <code>root/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
+| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>Utility</code>, <code>ErrorMiddleware</code>, and <code>ApiHandler</code> (see <code>root/app/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by <code>root/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
 | 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using PDO in <code>DatabaseHandler.php</code>.</li><li>Robust error handling via <code>ErrorMiddleware.php</code>.</li><li>Clean inline documentation throughout core files.</li></ul> |
 | 📄  | **Documentation** | <ul><li>Includes install and usage steps.</li><li>Written in <code>PHP</code>, <code>SQL</code>, and <code>text</code> formats.</li><li>Simple onboarding for developers and admins.</li></ul> |
 | 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>ApiHandler.php</code>.</li><li>Real-time RSS feed generation using <code>Utility::outputRssFeed()</code>.</li><li>Secure login and session control via <code>auth-lib.php</code>.</li></ul> |
@@ -126,31 +126,31 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 				<blockquote>
 					<table>
 					<tr>
-						<td><b><a href='/root/classes/Utility.php'>Utility.php</a></b></td>
+						<td><b><a href='/root/app/Utility.php'>Utility.php</a></b></td>
 						<td>- Utility centralizes the management of IP blacklist operations within the ChatGPT API project<br>- It facilitates updating failed login attempts, checking the blacklist status of IP addresses, and clearing the blacklist as needed<br>- Additionally, it handles displaying and clearing session messages, contributing to a user-friendly interface while maintaining system security through effective IP monitoring.</td>
 					</tr>
 					<tr>
-						<td><b><a href='/root/classes/StatusHandler.php'>StatusHandler.php</a></b></td>
+						<td><b><a href='/root/app/StatusHandler.php'>StatusHandler.php</a></b></td>
 						<td>- StatusHandler facilitates the management and retrieval of status updates within the ChatGPT API project<br>- It enables users to save, delete, and fetch their status information, as well as check for existing statuses within specific time frames<br>- By serving as a central component for handling status interactions, it ensures a streamlined experience for users managing their account-related updates.</td>
 					</tr>
 					<tr>
-						<td><b><a href='/root/classes/UserHandler.php'>UserHandler.php</a></b></td>
+						<td><b><a href='/root/app/UserHandler.php'>UserHandler.php</a></b></td>
 						<td>- UserHandler manages user-related operations in the ChatGPT API project, facilitating actions such as retrieving, saving, updating, and deleting user data<br>- It provides essential functionalities for user management, including account verification, API call tracking, and profile updates, ensuring robust interaction with user data within the overall system architecture<br>- This class plays a vital role in maintaining user data integrity and operational efficiency.</td>
 					</tr>
 					<tr>
-						<td><b><a href='/root/classes/AccountHandler.php'>AccountHandler.php</a></b></td>
+						<td><b><a href='/root/app/AccountHandler.php'>AccountHandler.php</a></b></td>
 						<td>- AccountHandler streamlines the management of user accounts within the ChatGPT API project<br>- It facilitates essential operations such as retrieving account information, checking account existence, creating, updating, and deleting accounts<br>- By providing these functionalities, it enhances the overall architecture of the codebase, ensuring efficient handling of user data and maintaining the integrity of account-related processes throughout the application.</td>
 					</tr>
 					<tr>
-						<td><b><a href='/root/classes/DatabaseHandler.php'>DatabaseHandler.php</a></b></td>
+						<td><b><a href='/root/app/DatabaseHandler.php'>DatabaseHandler.php</a></b></td>
 						<td>- Database management is streamlined through a class that centralizes the connection and interaction with the database using PDO<br>- It facilitates the execution of SQL queries, handles parameter binding, and manages transaction control<br>- By ensuring a single instance of the database connection, it enhances efficiency and error handling<br>- This functionality is crucial for the overall architecture of the ChatGPT API project, enabling smooth data operations.</td>
 					</tr>
                                         <tr>
-                                                <td><b><a href='/root/classes/ErrorMiddleware.php'>ErrorMiddleware.php</a></b></td>
+                                                <td><b><a href='/root/app/ErrorMiddleware.php'>ErrorMiddleware.php</a></b></td>
                                                 <td>- ErrorMiddleware registers error and exception handlers and wraps route execution to ensure graceful error responses and centralized logging</td>
                                         </tr>
                                         <tr>
-                                                <td><b><a href='/root/classes/ApiHandler.php'>ApiHandler.php</a></b></td>
+                                                <td><b><a href='/root/app/ApiHandler.php'>ApiHandler.php</a></b></td>
                                                 <td>- ApiHandler centralizes OpenAI API requests to generate structured social posts and images based on account details, returning formatted content for use throughout the project.</td>
                                         </tr>
                                         </table>
