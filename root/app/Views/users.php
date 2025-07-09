@@ -29,9 +29,14 @@ require 'layouts/header.php';
                 <label for="username">Username:</label>
                 <input class="form-input" type="text" name="username" id="username" required>
 
+
                 <!-- Password input field -->
                 <label for="password">Password:</label>
                 <input class="form-input" type="password" name="password" id="password">
+
+                <!-- Email input field -->
+                <label for="email">Email:</label>
+                <input class="form-input" type="email" name="email" id="email" required>
 
                 <!-- Total Accounts dropdown -->
                 <label for="total-accounts">Total Accounts:</label>
@@ -92,6 +97,7 @@ require 'layouts/header.php';
         updateButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const usernameField = document.querySelector('#username');
+                const emailField = document.querySelector('#email');
                 const totalAccountsSelect = document.querySelector('#total-accounts');
                 const maxApiCallsSelect = document.querySelector('#max-api-calls');
                 const usedApiCallsSelect = document.querySelector('#used-api-calls');
@@ -99,6 +105,7 @@ require 'layouts/header.php';
                 const adminSelect = document.querySelector('#admin');
                 // Populate form fields with data attributes from the clicked button
                 usernameField.value = this.dataset.username;
+                emailField.value = this.dataset.email;
                 totalAccountsSelect.value = this.dataset.totalAccounts;
                 maxApiCallsSelect.value = this.dataset.maxApiCalls;
                 usedApiCallsSelect.innerHTML =
