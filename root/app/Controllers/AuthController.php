@@ -17,8 +17,9 @@ namespace App\Controllers;
 use App\Models\UserHandler;
 use App\Core\Utility;
 use App\Core\ErrorMiddleware;
+use App\Core\Controller;
 
-class AuthController
+class AuthController extends Controller
 {
     public static function handleRequest(): void
     {
@@ -37,7 +38,7 @@ class AuthController
                 $error = 'Invalid CSRF token. Please try again.';
                 ErrorMiddleware::logMessage($error);
                 $_SESSION['messages'][] = $error;
-                include __DIR__ . '/../Views/login.php';
+                self::render('login');
                 return;
             }
 
@@ -69,6 +70,6 @@ class AuthController
             }
         }
 
-        include __DIR__ . '/../Views/login.php';
+        self::render('login');
     }
 }
