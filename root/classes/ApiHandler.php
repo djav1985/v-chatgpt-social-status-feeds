@@ -56,7 +56,7 @@ class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespac
     };
 
     // Generate status using structured output
-    $statusResponse = self::generate_social_status(
+    $statusResponse = self::generateSocialStatus(
         $systemMessage,
         $prompt,
         $link,
@@ -87,7 +87,7 @@ class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespac
         $finalStatus .= ' ' . $hashtagsText;
     }
 
-    $imageResponse = self::generate_social_image($imagePrompt, $accountName, $accountOwner);
+    $imageResponse = self::generateSocialImage($imagePrompt, $accountName, $accountOwner);
     if (isset($imageResponse['error'])) {
         $error = "Image generation failed for $accountName owned by $accountOwner: " . $imageResponse['error'];
         ErrorHandler::logMessage($error, 'error');
@@ -158,7 +158,7 @@ class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespac
  * @param string $accountOwner The owner of the account.
  * @return array Returns the API response containing structured data or an error array.
  */
-    private static function generate_social_status(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array
+    private static function generateSocialStatus(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array
 {
     // Build JSON Schema
     $jsonSchema = [
@@ -238,7 +238,7 @@ class ApiHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespac
  * @param string $accountOwner The owner of the account.
  * @return array Returns an array containing the image filename or an error message.
  */
-    private static function generate_social_image(string $imagePrompt, string $accountName, string $accountOwner): array
+    private static function generateSocialImage(string $imagePrompt, string $accountName, string $accountOwner): array
 {
     $data = [
              "model"   => "dall-e-3",
