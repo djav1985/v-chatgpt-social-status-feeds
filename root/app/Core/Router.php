@@ -22,13 +22,13 @@ class Router
     {
         $route = strtok($uri, '?');
 
-        if ($route !== '/login') {
-            AuthMiddleware::check();
-        }
-
         if (preg_match('#^/feeds(?:/[^/]+/[^/]+)?$#', $route)) {
             \App\Controllers\FeedController::handleRequest();
             return;
+        }
+
+        if ($route !== '/login') {
+            AuthMiddleware::check();
         }
 
         switch ($route) {
