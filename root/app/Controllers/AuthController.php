@@ -14,7 +14,7 @@
 
 namespace App\Controllers;
 
-use App\Models\UserHandler;
+use App\Models\User;
 use App\Core\Utility;
 use App\Core\ErrorMiddleware;
 use App\Core\Controller;
@@ -39,14 +39,14 @@ class AuthController extends Controller
                 $error = 'Invalid CSRF token. Please try again.';
                 ErrorMiddleware::logMessage($error);
                 $_SESSION['messages'][] = $error;
-                self::render('login');
+                (new self())->render('login', []);
                 return;
             }
 
             $username = trim($_POST['username'] ?? '');
             $password = trim($_POST['password'] ?? '');
 
-            $userInfo = UserHandler::getUserInfo($username);
+            $userInfo = User::getUserInfo($username);
 
             // Verify user credentials against hashed password
             if ($userInfo && password_verify($password, $userInfo->password)) {
@@ -74,6 +74,6 @@ class AuthController extends Controller
             }
         }
 
-        self::render('login');
+        (new self())->render('login', []);
     }
 }

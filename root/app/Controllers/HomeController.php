@@ -17,8 +17,8 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\AuthMiddleware;
 use App\Controllers\StatusController;
-use App\Models\UserHandler;
-use App\Models\StatusHandler;
+use App\Models\User;
+use App\Models\Feed;
 
 class HomeController extends Controller
 {
@@ -38,14 +38,14 @@ class HomeController extends Controller
                 $accountOwner = trim($_POST['username']);
                 $statusId = (int) $_POST['id'];
                 try {
-                    $statusImagePath = StatusHandler::getStatusImagePath($statusId, $accountName, $accountOwner);
+                    $statusImagePath = Feed::getStatusImagePath($statusId, $accountName, $accountOwner);
                     if ($statusImagePath) {
                         $imagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName . '/' . $statusImagePath;
                         if (file_exists($imagePath)) {
                             unlink($imagePath);
                         }
                     }
-                    StatusHandler::deleteStatus($statusId, $accountName, $accountOwner);
+                    Feed::deleteStatus($statusId, $accountName, $accountOwner);
                     $_SESSION['messages'][] = 'Successfully deleted status.';
                 } catch (\Exception $e) {
                     $_SESSION['messages'][] = 'Failed to delete status: ' . $e->getMessage();
@@ -56,7 +56,7 @@ class HomeController extends Controller
                 $accountName = trim($_POST['account']);
                 $accountOwner = trim($_POST['username']);
                 try {
-                    $userInfo = UserHandler::getUserInfo($accountOwner);
+                    $userInfo = User::getUserInfo($accountOwner);
                     if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
                         $_SESSION['messages'][] = 'Sorry, your available API calls have run out.';
                     } else {
@@ -65,7 +65,7 @@ class HomeController extends Controller
                             $_SESSION['messages'][] = 'Failed to generate status: ' . $statusResult['error'];
                         } else {
                             $userInfo->used_api_calls += 1;
-                            UserHandler::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+                            User::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
                             $_SESSION['messages'][] = 'Successfully generated status.';
                         }
                     }
@@ -78,12 +78,12 @@ class HomeController extends Controller
         }
 
         $accountOwner = $_SESSION['username'];
-        $accounts = \App\Models\AccountHandler::getAllUserAccts($accountOwner);
+        $accounts = \App\Models\Account::getAllUserAccts($accountOwner);
         $accountsData = [];
         foreach ($accounts as $account) {
             $name = $account->account;
-            $acctInfo = \App\Models\AccountHandler::getAcctInfo($accountOwner, $name);
-            $statuses = StatusHandler::getStatusInfo($accountOwner, $name);
+            $acctInfo = \App\Models\Account::getAcctInfo($accountOwner, $name);
+            $statuses = Feed::getStatusInfo($accountOwner, $name);
             $statusList = [];
             foreach ($statuses as $status) {
                 $statusList[] = [
@@ -108,7 +108,7 @@ class HomeController extends Controller
             ];
         }
 
-        self::render('home', [
+        (new self())->render('home', [
             'accountOwner' => $accountOwner,
             'accountsData' => $accountsData,
         ]);

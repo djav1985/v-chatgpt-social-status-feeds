@@ -19,7 +19,7 @@ use PDO;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
 
-class StatusHandler
+class Feed
 {
     /**
      * Get the status image path for a specific status.

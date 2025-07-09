@@ -16,7 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\AuthMiddleware;
-use App\Models\UserHandler;
+use App\Models\User;
 
 class InfoController extends Controller
 {
@@ -47,7 +47,7 @@ class InfoController extends Controller
                 }
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
                 try {
-                    UserHandler::updatePassword($username, $hashedPassword);
+                    User::updatePassword($username, $hashedPassword);
                     $_SESSION['messages'][] = 'Password Updated!';
                 } catch (\Exception $e) {
                     $_SESSION['messages'][] = 'Password update failed: ' . $e->getMessage();
@@ -66,7 +66,7 @@ class InfoController extends Controller
                     exit;
                 }
                 try {
-                    UserHandler::updateProfile($username, $who, $where, $what, $goal);
+                    User::updateProfile($username, $who, $where, $what, $goal);
                     $_SESSION['messages'][] = 'Profile Updated!';
                 } catch (\Exception $e) {
                     $_SESSION['messages'][] = 'Profile update failed: ' . $e->getMessage();
@@ -79,7 +79,7 @@ class InfoController extends Controller
         $profileData = self::generateProfileDataAttributes($_SESSION['username']);
         $systemMsg = self::buildSystemMessage($_SESSION['username']);
 
-        self::render('info', [
+        (new self())->render('info', [
             'profileData' => $profileData,
             'systemMsg' => $systemMsg,
         ]);
@@ -87,7 +87,7 @@ class InfoController extends Controller
 
     public static function generateProfileDataAttributes(string $username): string
     {
-        $userInfo = UserHandler::getUserInfo($username);
+        $userInfo = User::getUserInfo($username);
         if ($userInfo) {
             $data = "data-who=\"" . htmlspecialchars($userInfo->who) . "\" ";
             $data .= "data-where=\"" . htmlspecialchars($userInfo->where) . "\" ";
@@ -100,7 +100,7 @@ class InfoController extends Controller
 
     public static function buildSystemMessage(string $username): string
     {
-        $userInfo = UserHandler::getUserInfo($username);
+        $userInfo = User::getUserInfo($username);
         if ($userInfo) {
             $systemMessage = "<span style=\"color: blue; font-weight: bold;\">" . SYSTEM_MSG . "</span>";
             $systemMessage .= " <span style=\"color: blue; font-weight: bold;\">You work for</span> " . htmlspecialchars($userInfo->who) . " <span style=\"color: blue; font-weight: bold;\">located in</span> " . htmlspecialchars($userInfo->where) . ". " . htmlspecialchars($userInfo->what) . " <span style=\"color: blue; font-weight: bold;\">Your goal is</span> " . htmlspecialchars($userInfo->goal) . ".";

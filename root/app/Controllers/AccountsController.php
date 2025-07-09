@@ -16,8 +16,8 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\AuthMiddleware;
-use App\Models\AccountHandler;
-use App\Models\UserHandler;
+use App\Models\Account;
+use App\Models\User;
 
 class AccountsController extends Controller
 {
@@ -67,10 +67,10 @@ class AccountsController extends Controller
                 }
 
                 try {
-                    if (AccountHandler::accountExists($accountOwner, $accountName)) {
-                        AccountHandler::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                    if (Account::accountExists($accountOwner, $accountName)) {
+                        Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
                     } else {
-                        AccountHandler::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                        Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
                         $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
                         if (!file_exists($acctImagePath)) {
                             mkdir($acctImagePath, 0755, true);
@@ -90,7 +90,7 @@ class AccountsController extends Controller
                 $accountName = trim($_POST['account']);
                 $accountOwner = $_SESSION['username'];
                 try {
-                    AccountHandler::deleteAccount($accountOwner, $accountName);
+                    Account::deleteAccount($accountOwner, $accountName);
                     $_SESSION['messages'][] = 'Account Deleted.';
                 } catch (\Exception $e) {
                     $_SESSION['messages'][] = 'Failed to delete account: ' . $e->getMessage();
@@ -104,7 +104,7 @@ class AccountsController extends Controller
         $cronOptions = self::generateCronOptions();
         $accountList = self::generateAccountList();
 
-        self::render('accounts', [
+        (new self())->render('accounts', [
             'daysOptions' => $daysOptions,
             'cronOptions' => $cronOptions,
             'accountList' => $accountList,
@@ -137,11 +137,11 @@ class AccountsController extends Controller
     public static function generateAccountList(): string
     {
         $username = $_SESSION['username'];
-        $accounts = UserHandler::getAllUserAccts($username);
+        $accounts = User::getAllUserAccts($username);
         $output = '';
         foreach ($accounts as $account) {
             $accountName = $account->account;
-            $accountData = AccountHandler::getAcctInfo($username, $accountName);
+            $accountData = Account::getAcctInfo($username, $accountName);
 
             $daysArr = array_map('ucfirst', array_map('trim', explode(',', $accountData->days)));
             $daysStr = implode(', ', $daysArr);

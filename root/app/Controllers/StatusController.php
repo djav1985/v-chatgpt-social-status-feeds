@@ -15,9 +15,9 @@
 namespace App\Controllers;
 
 use Exception;
-use App\Models\AccountHandler;
-use App\Models\UserHandler;
-use App\Models\StatusHandler;
+use App\Models\Account;
+use App\Models\User;
+use App\Models\Feed;
 use App\Core\ErrorMiddleware;
 use App\Core\Utility;
 
@@ -50,8 +50,8 @@ class StatusController
     $accountOwner = filter_var($accountOwner, FILTER_SANITIZE_SPECIAL_CHARS);
 
     $systemMessage = SYSTEM_MSG;
-    $accountInfo = AccountHandler::getAcctInfo($accountOwner, $accountName);
-    $userInfo = UserHandler::getUserInfo($accountOwner);
+    $accountInfo = Account::getAcctInfo($accountOwner, $accountName);
+    $userInfo = User::getUserInfo($accountOwner);
 
     if (!$accountInfo || !$userInfo) {
         $error = "Error: Account or user not found for $accountOwner / $accountName";
@@ -120,7 +120,7 @@ class StatusController
     }
 
     $imageName = $imageResponse['image_name'];
-    StatusHandler::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
+    Feed::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
 
     return ['success' => true];
 }

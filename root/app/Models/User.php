@@ -18,7 +18,7 @@ use Exception;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
 
-class UserHandler
+class User
 {
     /**
      * Get all users from the database.

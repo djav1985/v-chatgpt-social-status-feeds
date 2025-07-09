@@ -18,7 +18,7 @@ use Exception;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
 
-class AccountHandler
+class Account
 {
     /**
      * Get all accounts from the database.

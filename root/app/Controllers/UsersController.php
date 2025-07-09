@@ -16,7 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\AuthMiddleware;
-use App\Models\UserHandler;
+use App\Models\User;
 
 class UsersController extends Controller
 {
@@ -53,14 +53,14 @@ class UsersController extends Controller
                 }
 
                 try {
-                    $userExists = UserHandler::userExists($username);
+                    $userExists = User::userExists($username);
                     if (!empty($password) && (!$userExists || !password_verify($password, $userExists->password))) {
                         $password = password_hash($password, PASSWORD_DEFAULT);
                     } elseif ($userExists) {
                         $password = $userExists->password;
                     }
                     $isUpdate = $userExists !== null;
-                    $result = UserHandler::updateUser($username, $password, $totalAccounts, $maxApiCalls, $usedApiCalls, $expires, $admin, $isUpdate);
+                    $result = User::updateUser($username, $password, $totalAccounts, $maxApiCalls, $usedApiCalls, $expires, $admin, $isUpdate);
                     if ($result) {
                         if (!$userExists) {
                             $userImagePath = __DIR__ . '/../../public/images/' . $username;
@@ -86,7 +86,7 @@ class UsersController extends Controller
                     $_SESSION['messages'][] = "Sorry, you can't delete your own account.";
                 } else {
                     try {
-                        UserHandler::deleteUser($username);
+                        User::deleteUser($username);
                         $_SESSION['messages'][] = 'User Deleted';
                     } catch (\Exception $e) {
                         $_SESSION['messages'][] = 'Failed to delete user: ' . $e->getMessage();
@@ -97,7 +97,7 @@ class UsersController extends Controller
             } elseif (isset($_POST['login_as']) && isset($_POST['username'])) {
                 $username = $_POST['username'];
                 try {
-                    $user = UserHandler::getUserInfo($username);
+                    $user = User::getUserInfo($username);
                     if ($user) {
                         if (!isset($_SESSION['isReally'])) {
                             $_SESSION['isReally'] = $_SESSION['username'];
@@ -119,14 +119,14 @@ class UsersController extends Controller
 
         $userList = self::generateUserList();
 
-        self::render('users', [
+        (new self())->render('users', [
             'userList' => $userList,
         ]);
     }
 
     public static function generateUserList(): string
     {
-        $users = UserHandler::getAllUsers();
+        $users = User::getAllUsers();
         $output = '';
         foreach ($users as $user) {
             $dataAttributes  = "data-username=\"" . htmlspecialchars($user->username) . "\" ";
