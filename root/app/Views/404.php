@@ -12,13 +12,25 @@
  * Description: Page not found view
  */
 
-require 'layouts/header.php';
 ?>
 
-<main class="container">
-    <div class="empty">
-        <p class="empty-title">Page not found</p>
-    </div>
-</main>
-
-<?php require 'layouts/footer.php'; ?>
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <!-- Meta tags for responsive design and SEO -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>AI Status Admin Login</title>
+    <!-- External CSS for styling -->
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="/assets/css/login.css">
+    <link rel="stylesheet" href="/assets/css/forms.css">
+</head>
+<body>
+<div class="content-box">
+    <h2>404 - Page Not Found</h2>
+    <p>The page you are looking for does not exist.</p>
+</div>
+</body>
+</html>
