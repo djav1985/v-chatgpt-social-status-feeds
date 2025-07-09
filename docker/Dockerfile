@@ -30,6 +30,7 @@ RUN echo "0 12 1 * * php /var/www/cron.php reset_usage" >> /etc/crontab && \
     echo "0 12 * * * php /var/www/cron.php clear_list" >> /etc/crontab && \
     echo "0 * * * * php /var/www/cron.php run_status" >> /etc/crontab && \
     echo "0 12 * * * php /var/www/cron.php cleanup" >> /etc/crontab && \
+    echo "0 12 * * * php /var/www/cron.php purge_images" >> /etc/crontab && \
     crontab /etc/crontab
 
 
