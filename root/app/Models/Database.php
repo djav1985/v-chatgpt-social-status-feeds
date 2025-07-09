@@ -19,19 +19,6 @@ use PDOException;
 use Exception;
 use App\Core\ErrorMiddleware;
 
-/**
- * Project: SocialRSS
- * Author:  Vontainment <services@vontainment.com>
- * License: https://opensource.org/licenses/MIT MIT License
- * Link:    https://vontainment.com
- * Version: 3.0.0
- *
- * File: Database.php
- * Description: AI Social Status Generator
- */
-
-
-
 class Database
 {
     private static ?PDO $dbh = null;
