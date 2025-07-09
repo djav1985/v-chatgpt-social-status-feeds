@@ -31,7 +31,7 @@ use App\Core\ErrorMiddleware;
 
 
 
-class AccountHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class AccountHandler
 {
     /**
      * Get all accounts from the database.

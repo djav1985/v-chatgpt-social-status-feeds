@@ -31,7 +31,7 @@ use App\Core\ErrorMiddleware;
 
 
 
-class UserHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class UserHandler
 {
     /**
      * Get all users from the database.

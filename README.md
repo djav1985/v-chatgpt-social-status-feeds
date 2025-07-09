@@ -38,7 +38,7 @@ Version 2.0.0 introduces improvements such as dedicated classes for all database
   with `httponly`, `secure`, and `SameSite=Lax` flags for better protection.
 - **IP Blacklisting:** Monitors and blacklists suspicious IP addresses to prevent brute-force attacks.
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
-- **Modular Classes:** Core logic is organized into classes such as Database, UserHandler, AccountHandler, StatusHandler, UtilityHandler, and ErrorMiddleware for maintainability and scalability.
+- **Modular Classes:** Core logic is organized into classes such as Database, UserHandler, AccountHandler, StatusHandler, Utility, and ErrorMiddleware for maintainability and scalability.
 
 In upcoming updates I plan on optimizing the cron system with a task queue to prevent timeouts if there are many statuses to create. Also look at any other ways to secure the app.
 
@@ -46,10 +46,10 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 
 |     |      Feature      | Summary |
 | :-- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>UtilityHandler</code>, <code>ErrorMiddleware</code>, and <code>ApiHandler</code> (see <code>root/classes/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by <code>root/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
+| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>Utility</code>, <code>ErrorMiddleware</code>, and <code>ApiHandler</code> (see <code>root/classes/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by <code>root/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
 | 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using PDO in <code>DatabaseHandler.php</code>.</li><li>Robust error handling via <code>ErrorMiddleware.php</code>.</li><li>Clean inline documentation throughout core files.</li></ul> |
 | 📄  | **Documentation** | <ul><li>Includes install and usage steps.</li><li>Written in <code>PHP</code>, <code>SQL</code>, and <code>text</code> formats.</li><li>Simple onboarding for developers and admins.</li></ul> |
-| 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>ApiHandler.php</code>.</li><li>Real-time RSS feed generation using <code>UtilityHandler::outputRssFeed()</code>.</li><li>Secure login and session control via <code>auth-lib.php</code>.</li></ul> |
+| 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>ApiHandler.php</code>.</li><li>Real-time RSS feed generation using <code>Utility::outputRssFeed()</code>.</li><li>Secure login and session control via <code>auth-lib.php</code>.</li></ul> |
 | 🧩  |  **Modularity**   | <ul><li>All logic encapsulated in single-purpose classes.</li><li>Autoloading supports scalability and clean structure.</li><li>Code reuse across handlers and views.</li></ul> |
 | 🔒  |   **Security**    | <ul><li>Full CSRF protection on form actions.</li><li>Strict input validation and sanitization.</li><li>Session hardening and IP blacklisting to block abuse.</li></ul> |
                                                                                                                                                         |
@@ -70,7 +70,7 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
     │   │   ├── Controller.php
     │   │   ├── ApiHandler.php
     │   │   ├── Router.php
-    │   │   └── UtilityHandler.php
+    │   │   └── Utility.php
     │   ├── Controllers
     │   │   ├── AuthController.php
     │   │   ├── HomeController.php
@@ -126,8 +126,8 @@ In upcoming updates I plan on optimizing the cron system with a task queue to pr
 				<blockquote>
 					<table>
 					<tr>
-						<td><b><a href='/root/classes/UtilityHandler.php'>UtilityHandler.php</a></b></td>
-						<td>- UtilityHandler centralizes the management of IP blacklist operations within the ChatGPT API project<br>- It facilitates updating failed login attempts, checking the blacklist status of IP addresses, and clearing the blacklist as needed<br>- Additionally, it handles displaying and clearing session messages, contributing to a user-friendly interface while maintaining system security through effective IP monitoring.</td>
+						<td><b><a href='/root/classes/Utility.php'>Utility.php</a></b></td>
+						<td>- Utility centralizes the management of IP blacklist operations within the ChatGPT API project<br>- It facilitates updating failed login attempts, checking the blacklist status of IP addresses, and clearing the blacklist as needed<br>- Additionally, it handles displaying and clearing session messages, contributing to a user-friendly interface while maintaining system security through effective IP monitoring.</td>
 					</tr>
 					<tr>
 						<td><b><a href='/root/classes/StatusHandler.php'>StatusHandler.php</a></b></td>
@@ -358,7 +358,7 @@ Statuses are generated on schedule and added to the respective account feed and 
 
 ### 2025-07-04
 
-- Moved RSS feed generation into `UtilityHandler` and removed `rss-lib.php`.
+- Moved RSS feed generation into `Utility` and removed `rss-lib.php`.
 - Added type hints across the codebase and improved error propagation.
 - Improved error logging for RSS feed generation.
 - Refactored API interactions into `ApiHandler` and renamed `Database` to `DatabaseHandler`.

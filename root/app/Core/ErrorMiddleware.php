@@ -106,4 +106,19 @@ class ErrorMiddleware
         $logMessage = "[$timestamp] [$type]: $message\n";
         error_log($logMessage, 3, $logFile);
     }
+
+    /**
+     * Display and clear session messages.
+     *
+     * @return void
+     */
+    public static function displayAndClearMessages(): void
+    {
+        if (isset($_SESSION['messages']) && count($_SESSION['messages']) > 0) {
+            foreach ($_SESSION['messages'] as $message) {
+                echo '<script>showToast(' . json_encode($message) . ');</script>';
+            }
+            unset($_SESSION['messages']);
+        }
+    }
 }

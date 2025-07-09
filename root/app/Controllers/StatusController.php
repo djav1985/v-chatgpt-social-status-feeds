@@ -19,7 +19,7 @@ use App\Models\AccountHandler;
 use App\Models\UserHandler;
 use App\Models\StatusHandler;
 use App\Core\ErrorMiddleware;
-use App\Models\UtilityHandler;
+use App\Core\Utility;
 
 
 /**
@@ -35,7 +35,7 @@ use App\Models\UtilityHandler;
 
 
 
-class StatusController // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class StatusController
 {
     /**
      * Generates a status update and associated image for a given account.

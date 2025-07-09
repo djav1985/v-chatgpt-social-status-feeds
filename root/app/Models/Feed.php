@@ -32,7 +32,7 @@ use App\Core\ErrorMiddleware;
 
 
 
-class StatusHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class StatusHandler
 {
     /**
      * Get the status image path for a specific status.

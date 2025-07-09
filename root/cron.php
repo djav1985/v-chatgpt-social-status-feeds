@@ -20,7 +20,7 @@ use App\Controllers\StatusController;
 use App\Models\AccountHandler;
 use App\Models\UserHandler;
 use App\Models\StatusHandler;
-use App\Models\UtilityHandler;
+use App\Core\Utility;
 
 // Apply configured runtime limits after loading settings
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
@@ -294,7 +294,7 @@ function clearList(): bool
 {
     global $debugMode;
     logDebug("Clearing IP blacklist.");
-    if (!UtilityHandler::clearIpBlacklist()) {
+    if (!Utility::clearIpBlacklist()) {
         logDebug("Failed to clear IP blacklist.");
         ErrorMiddleware::logMessage("CRON: Failed to clear IP blacklist.", 'error');
         return false;

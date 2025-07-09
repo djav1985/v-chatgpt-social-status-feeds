@@ -32,7 +32,7 @@ use App\Core\ErrorMiddleware;
 
 
 
-class Database // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class Database
 {
     private static ?PDO $dbh = null;
     private static ?int $lastUsedTime = null; // Tracks the last time the connection was used

@@ -48,6 +48,6 @@
         </div>
     </div>
 <?php
- echo App\Core\ErrorHandler::displayAndClearMessages(); ?>
+ echo App\Core\ErrorMiddleware::displayAndClearMessages(); ?>
 </body>
 </html>

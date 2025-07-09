@@ -8,30 +8,17 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: UtilityHandler.php
+ * File: Utility.php
  * Description: AI Social Status Generator
  */
 
-namespace App\Models;
+namespace App\Core;
 
 use Exception;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
 
-/**
- * Project: SocialRSS
- * Author:  Vontainment <services@vontainment.com>
- * License: https://opensource.org/licenses/MIT MIT License
- * Link:    https://vontainment.com
- * Version: 3.0.0
- *
- * File: UtilityHandler.php
- * Description: AI Social Status Generator
- */
-
-
-
-class UtilityHandler // @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+class Utility
 {
     /**
      * Update the failed login attempts for an IP address.
