@@ -33,8 +33,8 @@ class FeedController extends Controller
 
     public static function handleRequest(): void
     {
-        $user = $_GET['user'] ?? null;
-        $account = $_GET['account'] ?? null;
+        $user = isset($_GET['user']) ? htmlspecialchars($_GET['user'], ENT_QUOTES, 'UTF-8') : null;
+        $account = isset($_GET['account']) ? htmlspecialchars($_GET['account'], ENT_QUOTES, 'UTF-8') : null;
 
         if (!$user || !$account) {
             http_response_code(400);

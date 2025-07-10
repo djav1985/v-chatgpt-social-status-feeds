@@ -46,8 +46,8 @@ class StatusController
      */
     public static function generateStatus(string $accountName, string $accountOwner): ?array
     {
-    $accountName = filter_var($accountName, FILTER_SANITIZE_SPECIAL_CHARS);
-    $accountOwner = filter_var($accountOwner, FILTER_SANITIZE_SPECIAL_CHARS);
+    $accountName = htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8');
+    $accountOwner = htmlspecialchars($accountOwner, ENT_QUOTES, 'UTF-8');
 
     $systemMessage = SYSTEM_MSG;
     $accountInfo = Account::getAcctInfo($accountOwner, $accountName);
@@ -246,13 +246,33 @@ class StatusController
     // API call to /v1/chat/completions
     $response = self::openaiApiRequest("/chat/completions", $data);
 
-    if (isset($response['error']) || !isset($response['choices'][0]['message']['content'])) {
-        $error = "Error generating status for $accountName owned by $accountOwner: " . ($response['error']['message'] ?? 'Unknown error');
+    if (isset($response['error'])) {
+        // Error already logged by openaiApiRequest if it originated there
+        $errorMsg = is_array($response['error']) ? json_encode($response['error']) : $response['error'];
+        // If the error isn't already specific, make it more specific here
+        if (strpos($errorMsg, "Error generating status for") === false) {
+             $errorMsg = "Error generating status for $accountName owned by $accountOwner: " . $errorMsg;
+             ErrorMiddleware::logMessage($errorMsg, 'error');
+        }
+        return ["error" => $errorMsg];
+    }
+
+    if (!isset($response['choices'][0]['message']['content'])) {
+        $error = "Error generating status for $accountName owned by $accountOwner: API response did not contain expected content.";
         ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
     }
 
-    return json_decode($response['choices'][0]['message']['content'], true) ?? ["error" => "Invalid structured output"];
+    $decodedContent = json_decode($response['choices'][0]['message']['content'], true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $jsonError = json_last_error_msg();
+        $error = "Error generating status for $accountName owned by $accountOwner: Invalid structured output from API (JSON decode error: $jsonError). Original content: " . $response['choices'][0]['message']['content'];
+        ErrorMiddleware::logMessage($error, 'error');
+        return ["error" => $error];
+    }
+
+    return $decodedContent;
 }
 
 /**
