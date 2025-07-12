@@ -73,7 +73,11 @@ require 'layouts/header.php';
                 <?php echo $accountList; ?>
             </div>
         </div>
-    </div>
+</div>
+    <section class="calendar-overview">
+        <h3>Calendar Overview</h3>
+        <?php echo $calendarOverview; ?>
+    </section>
 </main>
 
 <script>

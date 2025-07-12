@@ -103,12 +103,106 @@ class AccountsController extends Controller
         $daysOptions = self::generateDaysOptions();
         $cronOptions = self::generateCronOptions();
         $accountList = self::generateAccountList();
+        $calendarOverview = self::generateCalendarOverview();
 
         (new self())->render('accounts', [
             'daysOptions' => $daysOptions,
             'cronOptions' => $cronOptions,
             'accountList' => $accountList,
+            'calendarOverview' => $calendarOverview,
         ]);
+    }
+
+    /**
+     * Generate a calendar overview of scheduled posts grouped by day and time slot.
+     */
+    public static function generateCalendarOverview(): string
+    {
+        $username = $_SESSION['username'];
+        $accounts = User::getAllUserAccts($username);
+
+        $daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        $overview = [];
+        foreach ($daysOfWeek as $day) {
+            $overview[$day] = [
+                'morning' => [],
+                'afternoon' => [],
+                'night' => [],
+            ];
+        }
+
+        foreach ($accounts as $acct) {
+            $acctInfo = Account::getAcctInfo($username, $acct->account);
+            if (!$acctInfo) {
+                continue;
+            }
+            $acctDays = array_map('trim', explode(',', (string) $acctInfo->days));
+            if (in_array('everyday', $acctDays, true)) {
+                $acctDays = $daysOfWeek;
+            }
+
+            $cronTimes = array_filter(
+                array_map('trim', explode(',', (string) $acctInfo->cron)),
+                fn($v) => $v !== '' && is_numeric($v)
+            );
+
+            foreach ($acctDays as $day) {
+                $day = strtolower($day);
+                if (!isset($overview[$day])) {
+                    continue;
+                }
+                foreach ($cronTimes as $time) {
+                    $hour = (int) $time;
+                    $slot = 'night';
+                    if ($hour >= 5 && $hour <= 12) {
+                        $slot = 'morning';
+                    } elseif ($hour >= 13 && $hour <= 17) {
+                        $slot = 'afternoon';
+                    }
+                    $overview[$day][$slot][] = self::formatHour($hour) . ': ' . $acct->account;
+                }
+            }
+        }
+
+        return self::overviewToHtml($overview, $daysOfWeek);
+    }
+
+    /**
+     * Convert hour in 24h format to human readable 12h with a.m./p.m.
+     */
+    private static function formatHour(int $hour): string
+    {
+        $period = $hour >= 12 ? 'p.m.' : 'a.m.';
+        $displayHour = $hour % 12;
+        $displayHour = $displayHour === 0 ? 12 : $displayHour;
+        return $displayHour . ':00 ' . $period;
+    }
+
+    /**
+     * Convert the overview array to an HTML grid.
+     */
+    private static function overviewToHtml(array $overview, array $daysOfWeek): string
+    {
+        $html = '<div class="calendar-grid">';
+        foreach ($daysOfWeek as $day) {
+            $html .= '<div class="calendar-day">';
+            $html .= '<h4>' . ucfirst($day) . '</h4>';
+            foreach (['morning', 'afternoon', 'night'] as $slot) {
+                $html .= '<div class="calendar-slot">';
+                $html .= '<strong>' . ucfirst($slot) . '</strong>';
+                $html .= '<ul>';
+                foreach ($overview[$day][$slot] as $entry) {
+                    $html .= '<li>' . htmlspecialchars($entry) . '</li>';
+                }
+                if (empty($overview[$day][$slot])) {
+                    $html .= '<li>&nbsp;</li>';
+                }
+                $html .= '</ul></div>';
+            }
+            $html .= '</div>';
+        }
+        $html .= '</div>';
+        return $html;
     }
 
     public static function generateDaysOptions(): string
