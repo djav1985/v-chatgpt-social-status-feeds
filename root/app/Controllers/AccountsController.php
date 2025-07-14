@@ -116,7 +116,7 @@ class AccountsController extends Controller
     /**
      * Generate a calendar overview of scheduled posts grouped by day and time slot.
      */
-    $overview = self::initializeOverview($daysOfWeek);
+    public static function generateCalendarOverview(): string
     {
         $username = $_SESSION['username'];
         $accounts = User::getAllUserAccts($username);
