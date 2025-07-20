@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS status_jobs (
     account VARCHAR(255) NOT NULL,
     run_at DATETIME NOT NULL,
     status ENUM('pending','processing','completed') DEFAULT 'pending',
-    payload TEXT
+    payload TEXT,
+    UNIQUE KEY unique_job (username, account, run_at)
 );
 
 -- Ensure the status_jobs table has all the required columns (alter only if necessary)
@@ -85,6 +86,16 @@ END IF;
 SET @index_exists = (SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='status_jobs' AND index_name='run_at_idx');
 IF @index_exists = 0 THEN
     CREATE INDEX run_at_idx ON status_jobs (run_at);
+END IF;
+
+SET @index_exists = (SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='status_jobs' AND index_name='account_idx');
+IF @index_exists = 0 THEN
+    CREATE INDEX account_idx ON status_jobs (account);
+END IF;
+
+SET @index_exists = (SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='status_jobs' AND index_name='unique_job');
+IF @index_exists = 0 THEN
+    ALTER TABLE status_jobs ADD CONSTRAINT unique_job UNIQUE (username, account, run_at);
 END IF;
 
 -- Create accounts table if it doesn’t exist

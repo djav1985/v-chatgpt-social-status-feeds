@@ -36,7 +36,7 @@ class JobQueue
     {
         try {
             $db = new Database();
-            $db->query("INSERT INTO status_jobs (username, account, run_at, status, payload) VALUES (:u, :a, :r, :s, :p)");
+            $db->query("INSERT IGNORE INTO status_jobs (username, account, run_at, status, payload) VALUES (:u, :a, :r, :s, :p)");
             $db->bind(':u', $username);
             $db->bind(':a', $account);
             $db->bind(':r', $runAt);
@@ -214,6 +214,7 @@ class JobQueue
             return true;
         }
 
+        $db = new Database();
         foreach ($accounts as $account) {
             $hours = array_filter(array_map('trim', explode(',', $account->cron)), 'strlen');
             if (empty($hours)) {
@@ -237,7 +238,6 @@ class JobQueue
                     continue;
                 }
                 $runAt = $runTime->format('Y-m-d H:i:s');
-                $db = new Database();
                 $db->query('SELECT id FROM status_jobs WHERE username = :u AND account = :a AND run_at = :r LIMIT 1');
                 $db->bind(':u', $account->username);
                 $db->bind(':a', $account->account);
