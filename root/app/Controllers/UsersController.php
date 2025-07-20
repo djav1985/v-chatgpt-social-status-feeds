@@ -166,7 +166,7 @@ class UsersController extends Controller
                 'dataAttributes' => $dataAttributes,
             ];
             extract($viewData);
-            include __DIR__ . '/../Views/user-list-item.php';
+            include __DIR__ . '/../Views/partials/user-list-item.php';
             $output .= ob_get_clean();
         }
         return $output;

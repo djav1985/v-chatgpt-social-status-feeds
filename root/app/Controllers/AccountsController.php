@@ -306,7 +306,7 @@ class AccountsController extends Controller
                 'dataAttributes' => $dataAttributes,
             ];
             extract($viewData);
-            include __DIR__ . '/../Views/account-list-item.php';
+            include __DIR__ . '/../Views/partials/account-list-item.php';
             $output .= ob_get_clean();
         }
         return $output;

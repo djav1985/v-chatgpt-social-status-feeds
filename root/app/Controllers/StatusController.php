@@ -19,7 +19,6 @@ use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
 use App\Core\ErrorMiddleware;
-use App\Core\Utility;
 
 class StatusController
 {

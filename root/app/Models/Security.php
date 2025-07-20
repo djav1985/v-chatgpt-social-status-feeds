@@ -8,23 +8,20 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: Utility.php
- * Description: AI Social Status Generator
+ * File: Security.php
+ * Description: IP blacklist management
  */
 
-namespace App\Core;
+namespace App\Models;
 
 use Exception;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
 
-class Utility
+class Security
 {
     /**
      * Update the failed login attempts for an IP address.
-     *
-     * @param string $ip
-     * @return void
      */
     public static function updateFailedAttempts(string $ip): void
     {
@@ -50,16 +47,13 @@ class Utility
             }
             $db->execute();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error updating failed attempts: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage('Error updating failed attempts: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
 
     /**
      * Check if an IP address is blacklisted.
-     *
-     * @param string $ip
-     * @return bool
      */
     public static function isBlacklisted(string $ip): bool
     {
@@ -80,16 +74,13 @@ class Utility
             }
             return false;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error checking blacklist status: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage('Error checking blacklist status: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
 
     /**
-     * Clear the IP blacklist.
-     * This function clears the IP blacklist, removing entries older than 3 days.
-     *
-     * @return bool True on success, false on failure
+     * Clear the IP blacklist of old entries.
      */
     public static function clearIpBlacklist(): bool
     {
@@ -101,7 +92,7 @@ class Utility
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error clearing IP blacklist: " . $e->getMessage(), 'error');
+            ErrorMiddleware::logMessage('Error clearing IP blacklist: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
