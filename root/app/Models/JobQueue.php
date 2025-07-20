@@ -19,6 +19,7 @@ use DateTime;
 use Exception;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
+use App\Models\Account;
 
 class JobQueue
 {
@@ -166,17 +167,33 @@ class JobQueue
     }
 
     /**
-     * Remove future jobs for an account.
+     * Remove all jobs from the queue.
+     */
+    public static function clearAll(): bool
+    {
+        try {
+            $db = new Database();
+            $db->query('DELETE FROM status_jobs');
+            $db->execute();
+            return true;
+        } catch (Exception $e) {
+            ErrorMiddleware::logMessage('Error clearing jobs: ' . $e->getMessage(), 'error');
+            throw $e;
+        }
+    }
+
+    /**
+     * Remove jobs for the remainder of today for an account.
      *
      * @param string $username
      * @param string $account
      * @return bool
      */
-    public static function removeFuture(string $username, string $account): bool
+    public static function removeRemainingToday(string $username, string $account): bool
     {
         try {
             $db = new Database();
-            $db->query("DELETE FROM status_jobs WHERE username = :u AND account = :a AND run_at > NOW()");
+            $db->query("DELETE FROM status_jobs WHERE username = :u AND account = :a AND run_at >= NOW() AND run_at < DATE_ADD(CURDATE(), INTERVAL 1 DAY)");
             $db->bind(':u', $username);
             $db->bind(':a', $account);
             $db->execute();
@@ -230,12 +247,15 @@ class JobQueue
     }
 
     /**
-     * Populate the queue with jobs for the next 24 hours.
+     * Populate the queue with jobs for the current day.
+     * Existing entries are cleared first so midnight jobs are not missed.
      */
     public static function fillQueryJobs(): bool
     {
-        $now = new DateTime();
-        $end = (clone $now)->modify('+24 hours');
+        self::clearAll();
+
+        $start = new DateTime('today');
+        $end = (clone $start)->modify('+1 day');
 
         $accounts = Account::getAllAccounts();
         if (empty($accounts)) {
@@ -244,38 +264,63 @@ class JobQueue
 
         $db = new Database();
         foreach ($accounts as $account) {
-            $hours = array_filter(array_map('trim', explode(',', $account->cron)), 'strlen');
-            if (empty($hours)) {
+            self::scheduleAccount($db, $account, $start, $end);
+        }
+
+        return true;
+    }
+
+    /**
+     * Populate remaining jobs today for a specific account.
+     */
+    public static function fillRemainingToday(string $username, string $account): bool
+    {
+        $start = new DateTime();
+        $end = (clone $start)->setTime(0, 0)->modify('+1 day');
+        $acct = Account::getAcctInfo($username, $account);
+        if (!$acct) {
+            return false;
+        }
+        $db = new Database();
+        self::scheduleAccount($db, $acct, $start, $end);
+        return true;
+    }
+
+    /**
+     * Helper to schedule an account's jobs within a time range.
+     */
+    private static function scheduleAccount(Database $db, $account, DateTime $start, DateTime $end): void
+    {
+        $hours = array_filter(array_map('trim', explode(',', $account->cron)), 'strlen');
+        if (empty($hours)) {
+            return;
+        }
+        $days = array_map('strtolower', array_map('trim', explode(',', $account->days)));
+
+        foreach ($hours as $hour) {
+            if (!is_numeric($hour)) {
                 continue;
             }
-            $days = array_map('strtolower', array_map('trim', explode(',', $account->days)));
-            foreach ($hours as $hour) {
-                if (!is_numeric($hour)) {
-                    continue;
-                }
-                $runTime = new DateTime();
-                $runTime->setTime((int) $hour, 0);
-                if ($runTime < $now) {
-                    $runTime->modify('+1 day');
-                }
-                if ($runTime > $end) {
-                    continue;
-                }
-                $dayName = strtolower($runTime->format('l'));
-                if (!in_array('everyday', $days) && !in_array($dayName, $days)) {
-                    continue;
-                }
-                $runAt = $runTime->format('Y-m-d H:i:s');
-                $db->query('SELECT id FROM status_jobs WHERE username = :u AND account = :a AND run_at = :r LIMIT 1');
-                $db->bind(':u', $account->username);
-                $db->bind(':a', $account->account);
-                $db->bind(':r', $runAt);
-                if (!$db->single()) {
-                    self::insert($account->username, $account->account, $runAt, 'pending', null, $db);
-                }
+            $runTime = (clone $start)->setTime((int) $hour, 0);
+            if ($runTime < $start) {
+                $runTime->modify('+1 day');
+            }
+            if ($runTime >= $end) {
+                continue;
+            }
+            $dayName = strtolower($runTime->format('l'));
+            if (!in_array('everyday', $days) && !in_array($dayName, $days)) {
+                continue;
+            }
+            $runAt = $runTime->format('Y-m-d H:i:s');
+            $db->query('SELECT id FROM status_jobs WHERE username = :u AND account = :a AND run_at = :r LIMIT 1');
+            $db->bind(':u', $account->username);
+            $db->bind(':a', $account->account);
+            $db->bind(':r', $runAt);
+            if (!$db->single()) {
+                self::insert($account->username, $account->account, $runAt, 'pending', null, $db);
             }
         }
-        return true;
     }
 }
 

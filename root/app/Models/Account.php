@@ -159,8 +159,8 @@ class Account
             $db->commit();
 
             if ($oldCron !== $cron || $oldDays !== $days) {
-                JobQueue::removeFuture($accountOwner, $accountName);
-                JobQueue::fillQueryJobs();
+                JobQueue::removeRemainingToday($accountOwner, $accountName);
+                JobQueue::fillRemainingToday($accountOwner, $accountName);
             }
 
             return true;
