@@ -14,7 +14,6 @@
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/autoload.php';
-require_once __DIR__ . '/jobs.php';
 
 use App\Core\ErrorMiddleware;
 use App\Controllers\StatusController;
@@ -98,7 +97,7 @@ switch ($jobType) {
         break;
     case 'fill_query':
         logDebug("Executing fill_query job.");
-        if (!fillQueryJobs()) {
+        if (!JobQueue::fillQueryJobs()) {
             logDebug("fill_query job failed.");
             die(1);
         }
