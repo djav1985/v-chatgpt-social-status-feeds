@@ -328,8 +328,8 @@ Install the project using the following steps:
     /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_query * * * * *
      ```
    - Replace `/PATH-TO-CRON.PHP/` with the actual path to your `cron.php` file.
-  - `fill_query` populates the `status_jobs` queue with the next 24 hours of
-    scheduled posts. Run it hourly so the queue stays fresh.
+  - `fill_query` clears and repopulates the `status_jobs` queue with all posts
+    scheduled for the current day. Run it hourly so midnight jobs are not missed.
   - `run_query` processes queued jobs and marks them as completed. It will run
     up to `CRON_QUEUE_LIMIT` jobs per invocation, so schedule this command every
     minute for timely posting.
