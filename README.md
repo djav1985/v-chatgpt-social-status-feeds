@@ -321,15 +321,15 @@ Install the project using the following steps:
 6. **Set Up Cron Jobs:**
    - Add the following cron jobs to automate tasks:
      ```sh
-     /usr/bin/php /PATH-TO-CRON.PHP/cron.php reset_usage 0 12 1 * *
-     /usr/bin/php /PATH-TO-CRON.PHP/cron.php clear_list 0 12 * * *
-    /usr/bin/php /PATH-TO-CRON.PHP/cron.php cleanup 0 12 * * *
-    /usr/bin/php /PATH-TO-CRON.PHP/cron.php fill_query 0 * * * *
-    /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_query * * * * *
+    0 12 1 * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php reset_usage
+    0 12 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php clear_list
+    0 12 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php cleanup
+    0 0 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php fill_query
+    * * * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_query
      ```
    - Replace `/PATH-TO-CRON.PHP/` with the actual path to your `cron.php` file.
   - `fill_query` clears and repopulates the `status_jobs` queue with all posts
-    scheduled for the current day. Run it hourly so midnight jobs are not missed.
+    scheduled for the current day. It runs once daily at midnight.
   - `run_query` processes queued jobs and marks them as completed. It will run
     up to `CRON_QUEUE_LIMIT` jobs per invocation, so schedule this command every
     minute for timely posting.

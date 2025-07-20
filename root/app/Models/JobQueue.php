@@ -313,13 +313,7 @@ class JobQueue
                 continue;
             }
             $runAt = $runTime->format('Y-m-d H:i:s');
-            $db->query('SELECT id FROM status_jobs WHERE username = :u AND account = :a AND run_at = :r LIMIT 1');
-            $db->bind(':u', $account->username);
-            $db->bind(':a', $account->account);
-            $db->bind(':r', $runAt);
-            if (!$db->single()) {
-                self::insert($account->username, $account->account, $runAt, 'pending', null, $db);
-            }
+            self::insert($account->username, $account->account, $runAt, 'pending', null, $db);
         }
     }
 }
