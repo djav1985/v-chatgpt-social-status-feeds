@@ -106,7 +106,7 @@ switch ($jobType) {
         break;
     case 'run_query':
         logDebug("Executing run_query job.");
-        if (!runQueuedJobs()) {
+        if (!runStatusUpdateJobs()) {
             logDebug("run_query job failed.");
             die(1);
         }
@@ -228,7 +228,7 @@ function clearList(): bool
 /**
  * Run queued jobs and generate statuses.
  */
-function runQueuedJobs(): bool
+function runStatusUpdateJobs(): bool
 {
     global $debugMode;
     $limit = defined('CRON_QUEUE_LIMIT') ? (int) CRON_QUEUE_LIMIT : 10;
@@ -240,18 +240,26 @@ function runQueuedJobs(): bool
     }
 
     foreach ($jobs as $job) {
-        logDebug('Running job ID ' . $job->id . ' for ' . $job->account);
-        $result = StatusController::generateStatus($job->account, $job->username);
-        if (isset($result['success'])) {
-            JobQueue::markCompleted($job->id);
-            logDebug('Job ' . $job->id . ' completed');
-        } else {
-            JobQueue::markFailed($job->id);
-            logDebug('Job ' . $job->id . ' failed');
-        }
+        processJob($job);
     }
 
     JobQueue::cleanupOld();
 
     return true;
+}
+
+/**
+ * Process an individual status job.
+ */
+function processJob(object $job): void
+{
+    logDebug('Running job ID ' . $job->id . ' for ' . $job->account);
+    $result = StatusController::generateStatus($job->account, $job->username);
+    if (isset($result['success'])) {
+        JobQueue::markCompleted($job->id);
+        logDebug('Job ' . $job->id . ' completed');
+    } else {
+        JobQueue::markFailed($job->id);
+        logDebug('Job ' . $job->id . ' failed');
+    }
 }
