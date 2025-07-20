@@ -134,7 +134,8 @@ class StatusController
  */
     private static function openaiApiRequest(string $endpoint, ?array $data = null): array
 {
-    $url = API_ENDPOINT . $endpoint;
+    // Ensure there is exactly one slash between the endpoint base and path
+    $url = rtrim(API_ENDPOINT, '/') . '/' . ltrim($endpoint, '/');
     $headers = [
                 "Authorization: Bearer " . API_KEY,
                 "Content-Type: application/json",
