@@ -40,9 +40,14 @@ class HomeController extends Controller
                 try {
                     $statusImagePath = Feed::getStatusImagePath($statusId, $accountName, $accountOwner);
                     if ($statusImagePath) {
-                        $imagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName . '/' . $statusImagePath;
-                        if (file_exists($imagePath)) {
-                            unlink($imagePath);
+                        $baseDir = realpath(__DIR__ . '/../../public/images');
+                        $safeOwner = preg_replace('/[^a-zA-Z0-9_-]/', '', $accountOwner);
+                        $safeAccount = preg_replace('/[^a-zA-Z0-9_-]/', '', $accountName);
+                        $safeImage = basename($statusImagePath);
+                        $imagePath = $baseDir . '/' . $safeOwner . '/' . $safeAccount . '/' . $safeImage;
+                        $realImagePath = realpath($imagePath);
+                        if ($realImagePath && str_starts_with($realImagePath, $baseDir) && file_exists($realImagePath)) {
+                            unlink($realImagePath);
                         }
                     }
                     Feed::deleteStatus($statusId, $accountName, $accountOwner);
