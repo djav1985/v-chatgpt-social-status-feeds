@@ -1,6 +1,7 @@
 {
   "name": "appsbyv/v-chatgpt-smtp",
   "description": "SMTP library for sending emails in v-chatgpt-social-status-feeds.",
+  "license": "MIT",
   "type": "project",
   "require": {
     "php": "^8.0",
