@@ -70,14 +70,27 @@ class Mailer
     public static function sendTemplate(string $to, string $subject, string $template, array $data = []): bool
     {
         $templatePath = __DIR__ . '/../Templates/' . $template . '.php';
+        $headerPath   = __DIR__ . '/../Templates/email_header.php';
+        $footerPath   = __DIR__ . '/../Templates/email_footer.php';
+
         if (!file_exists($templatePath)) {
             ErrorMiddleware::logMessage('Template not found: ' . $template, 'error');
             return false;
         }
 
+        // Fallback to basic header/footer if files are missing
+        $header = file_exists($headerPath) ? $headerPath : null;
+        $footer = file_exists($footerPath) ? $footerPath : null;
+
         extract($data, EXTR_SKIP);
         ob_start();
+        if ($header) {
+            include $header;
+        }
         include $templatePath;
+        if ($footer) {
+            include $footer;
+        }
         $body = ob_get_clean();
 
         return self::send($to, $subject, $body, true);
