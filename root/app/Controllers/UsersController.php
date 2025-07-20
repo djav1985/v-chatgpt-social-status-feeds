@@ -58,6 +58,11 @@ class UsersController extends Controller
 
                 try {
                     $userExists = User::userExists($username);
+                    if (!$userExists && empty($password)) {
+                        $_SESSION['messages'][] = 'Password is required for new users.';
+                        header('Location: /users');
+                        exit;
+                    }
                     if (!empty($password) && (!$userExists || !password_verify($password, $userExists->password))) {
                         $password = password_hash($password, PASSWORD_DEFAULT);
                     } elseif ($userExists) {
