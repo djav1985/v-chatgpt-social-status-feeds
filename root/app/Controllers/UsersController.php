@@ -84,7 +84,11 @@ class UsersController extends Controller
                         if (!$userExists) {
                             $userImagePath = __DIR__ . '/../../public/images/' . $username;
                             if (!file_exists($userImagePath)) {
-                                mkdir($userImagePath, 0755, true);
+                                mkdir(
+                                    $userImagePath,
+                                    defined('DIR_MODE') ? DIR_MODE : 0755,
+                                    true
+                                );
                                 $indexFilePath = $userImagePath . '/index.php';
                                 file_put_contents($indexFilePath, '<?php
  die(); ?>');

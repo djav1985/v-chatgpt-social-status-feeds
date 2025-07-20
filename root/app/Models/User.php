@@ -42,9 +42,9 @@ class User
      * Check if a user exists in the database.
      *
      * @param string $username
-     * @return mixed
+     * @return object|null
      */
-    public static function userExists(string $username): ?array
+    public static function userExists(string $username): ?object
     {
         try {
             $db = new Database();
