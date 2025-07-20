@@ -32,10 +32,14 @@ class JobQueue
      * @param string|null $payload
      * @return bool
      */
-    public static function insert(string $username, string $account, string $runAt, string $status = 'pending', ?string $payload = null): bool
+    public static function insert(string $username, string $account, string $runAt, string $status = 'pending', ?string $payload = null, ?Database $db = null): bool
     {
+        $close = false;
         try {
-            $db = new Database();
+            if ($db === null) {
+                $db = new Database();
+                $close = true;
+            }
             $db->query("INSERT IGNORE INTO status_jobs (username, account, run_at, status, payload) VALUES (:u, :a, :r, :s, :p)");
             $db->bind(':u', $username);
             $db->bind(':a', $account);
@@ -47,6 +51,10 @@ class JobQueue
         } catch (Exception $e) {
             ErrorMiddleware::logMessage('Error inserting job: ' . $e->getMessage(), 'error');
             throw $e;
+        } finally {
+            if ($close) {
+                unset($db);
+            }
         }
     }
 
@@ -243,7 +251,7 @@ class JobQueue
                 $db->bind(':a', $account->account);
                 $db->bind(':r', $runAt);
                 if (!$db->single()) {
-                    self::insert($account->username, $account->account, $runAt, 'pending');
+                    self::insert($account->username, $account->account, $runAt, 'pending', null, $db);
                 }
             }
         }

@@ -45,14 +45,13 @@ function logDebug(string $message): void
 
 $validJobTypes = [
                   'reset_usage',
-                  'run_status',
                   'clear_list',
                   'cleanup',
                   'purge_images',
                   'fill_query',
                   'run_query',
                  ];
-$jobType = $argv[1] ?? 'run_status'; // Default job type is 'run_status'
+$jobType = $argv[1] ?? 'run_query'; // Default job type is 'run_query'
 
 // Check for debug mode
 $debugMode = isset($argv[2]) && $argv[2] === 'debug';
@@ -72,14 +71,6 @@ switch ($jobType) {
             die(1);
         }
         logDebug("reset_usage job completed successfully.");
-        break;
-    case 'run_status':
-        logDebug("Executing run_status job.");
-        if (!runStatusUpdateJobs()) {
-            logDebug("run_status job failed.");
-            die(1);
-        }
-        logDebug("run_status job completed successfully.");
         break;
     case 'clear_list':
         logDebug("Executing clear_list job.");
