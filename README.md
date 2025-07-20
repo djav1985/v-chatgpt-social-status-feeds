@@ -42,7 +42,6 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
 - **Modular Classes:** Core logic is organized into classes such as Database, UserHandler, AccountHandler, StatusHandler, Utility, and ErrorMiddleware for maintainability and scalability.
 
-In upcoming updates I plan on optimizing the cron system with a task queue to prevent timeouts if there are many statuses to create. Also look at any other ways to secure the app.
 
 ## Features
 

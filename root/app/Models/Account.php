@@ -160,9 +160,7 @@ class Account
 
             if ($oldCron !== $cron || $oldDays !== $days) {
                 JobQueue::removeFuture($accountOwner, $accountName);
-                if (function_exists('\\fillQueryJobs')) {
-                    \fillQueryJobs();
-                }
+                JobQueue::fillQueryJobs();
             }
 
             return true;
