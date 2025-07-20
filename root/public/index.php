@@ -23,6 +23,9 @@ session_set_cookie_params([
     'samesite' => 'Lax',
 ]);
 session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 require_once '../config.php';
 require_once '../autoload.php';

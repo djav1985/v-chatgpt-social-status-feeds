@@ -40,15 +40,32 @@ class AccountsController extends Controller
                 $platform = trim($_POST['platform']);
                 $hashtags = isset($_POST['hashtags']) ? (int) $_POST['hashtags'] : 0;
                 $link = trim($_POST['link']);
-                $cron = '';
+                $cron = 'null';
+                $invalidCron = false;
                 if (isset($_POST['cron']) && is_array($_POST['cron'])) {
-                    $cron = (count($_POST['cron']) === 1 && $_POST['cron'][0] === 'null') ? 'null' : implode(',', $_POST['cron']);
+                    $hours = [];
+                    foreach ($_POST['cron'] as $hour) {
+                        if ($hour === 'null') {
+                            continue;
+                        }
+                        if (ctype_digit($hour) && (int)$hour >= 0 && (int)$hour <= 23) {
+                            $hours[] = str_pad((string)(int)$hour, 2, '0', STR_PAD_LEFT);
+                        } else {
+                            $invalidCron = true;
+                        }
+                    }
+                    if (!empty($hours)) {
+                        $cron = implode(',', $hours);
+                    }
                 }
                 $days = '';
                 if (isset($_POST['days']) && is_array($_POST['days'])) {
                     $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') ? 'everyday' : implode(',', $_POST['days']);
                 }
 
+                if ($invalidCron) {
+                    $_SESSION['messages'][] = 'Invalid cron hour(s) supplied. Hours must be between 0 and 23.';
+                }
                 if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
                     $_SESSION['messages'][] = 'Error processing input.';
                 }

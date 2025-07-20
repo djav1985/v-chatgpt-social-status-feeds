@@ -301,7 +301,11 @@ class JobQueue
             if (!is_numeric($hour)) {
                 continue;
             }
-            $runTime = (clone $start)->setTime((int) $hour, 0);
+            $hour = (int) $hour;
+            if ($hour < 0 || $hour > 23) {
+                continue;
+            }
+            $runTime = (clone $start)->setTime($hour, 0);
             if ($runTime < $start) {
                 $runTime->modify('+1 day');
             }

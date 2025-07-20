@@ -67,10 +67,6 @@ define('SMTP_PASSWORD', 'password');
 define('SMTP_FROM_EMAIL', 'no-reply@example.com');
 define('SMTP_FROM_NAME', 'ChatGPT API');
 
-// Generate CSRF token if not already set
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
 
 // Validate required configuration constants
 $required_constants = ['DB_HOST', 'DB_USER', 'DB_NAME', 'API_KEY'];
