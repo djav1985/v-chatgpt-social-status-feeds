@@ -16,6 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\AuthMiddleware;
+use App\Core\Mailer;
 use App\Models\User;
 
 class UsersController extends Controller
@@ -34,6 +35,7 @@ class UsersController extends Controller
             if (isset($_POST['edit_users'])) {
                 $username = trim($_POST['username']);
                 $password = trim($_POST['password']);
+                $plainPassword = $password;
                 $email = trim($_POST['email']);
                 $totalAccounts = intval($_POST['total-accounts']);
                 $maxApiCalls = intval($_POST['max-api-calls']);
@@ -93,6 +95,8 @@ class UsersController extends Controller
                                 file_put_contents($indexFilePath, '<?php
  die(); ?>');
                             }
+                            $body = "Your account has been created.\nUsername: $username\nPassword: $plainPassword\nLogin: " . DOMAIN . "/login";
+                            Mailer::send($email, 'Login Details', $body);
                         }
                         $_SESSION['messages'][] = 'User has been created or modified.';
                     } else {

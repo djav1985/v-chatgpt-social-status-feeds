@@ -16,6 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\AuthMiddleware;
+use App\Core\Mailer;
 use App\Controllers\StatusController;
 use App\Models\User;
 use App\Models\Feed;
@@ -64,6 +65,11 @@ class HomeController extends Controller
                     $userInfo = User::getUserInfo($accountOwner);
                     if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
                         $_SESSION['messages'][] = 'Sorry, your available API calls have run out.';
+                        if (!$userInfo->limit_email_sent) {
+                            $body = "Hi {$userInfo->username},\nYour API call limit has been reached.";
+                            Mailer::send($userInfo->email, 'API Limit Reached', $body);
+                            User::setLimitEmailSent($accountOwner, true);
+                        }
                     } else {
                         $statusResult = StatusController::generateStatus($accountName, $accountOwner);
                         if (isset($statusResult['error'])) {
