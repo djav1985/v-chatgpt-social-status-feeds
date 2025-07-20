@@ -297,23 +297,17 @@ class AccountsController extends Controller
             $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $accountData->days))) . "\" ";
             $dataAttributes .= "data-platform=\"" . htmlspecialchars($accountData->platform) . "\"";
 
-            $output .= "<div class=\"column col-6 col-xl-6 col-md-12 col-sm-12\">";
-            $output .= "<div class=\"card account-list-card\">";
-            $output .= "<div class=\"card-header account-card\">";
-            $output .= "<div class=\"card-title h5\">#" . htmlspecialchars($accountName) . "</div><br>";
-            $output .= "<p><strong>Prompt:</strong> " . htmlspecialchars($accountData->prompt) . "</p>";
-            $output .= "<p><strong>Days:</strong> " . htmlspecialchars($daysStr) . "</p>";
-            $output .= "<p><strong>Times:</strong> " . htmlspecialchars($timesStr) . "</p>";
-            $output .= "<p><strong>Link:</strong> <a href=\"" . htmlspecialchars($accountData->link) . "\" target=\"_blank\">" . htmlspecialchars($accountData->link) . "</a></p>";
-            $output .= "</div>";
-            $output .= "<div class=\"card-body button-group\">";
-            $output .= "<button class=\"btn btn-primary\" id=\"update-button\" {$dataAttributes}>Update</button>";
-            $output .= "<form class=\"delete-account-form\" action=\"/accounts\" method=\"POST\">";
-            $output .= "<input type=\"hidden\" name=\"account\" value=\"" . htmlspecialchars($accountName) . "\">";
-            $output .= "<input type=\"hidden\" name=\"csrf_token\" value=\"" . $_SESSION['csrf_token'] . "\">";
-            $output .= "<button class=\"btn btn-error\" name=\"delete_account\">Delete</button>";
-            $output .= "</form>";
-            $output .= "</div></div></div>";
+            ob_start();
+            $viewData = [
+                'accountName' => $accountName,
+                'accountData' => $accountData,
+                'daysStr' => $daysStr,
+                'timesStr' => $timesStr,
+                'dataAttributes' => $dataAttributes,
+            ];
+            extract($viewData);
+            include __DIR__ . '/../Views/account-list-item.php';
+            $output .= ob_get_clean();
         }
         return $output;
     }
