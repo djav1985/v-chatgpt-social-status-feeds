@@ -136,13 +136,14 @@ function cleanupStatuses(): bool
 
     foreach ($accounts as $account) {
         $accountName = $account->account;
+        $accountOwner = $account->username;
         logDebug("Processing account: $accountName for cleanup.");
-        $statusCount = Feed::countStatuses($accountName);
+        $statusCount = Feed::countStatuses($accountName, $accountOwner);
 
         if ($statusCount > MAX_STATUSES) {
             $deleteCount = $statusCount - MAX_STATUSES;
             logDebug("Deleting $deleteCount old statuses for account: $accountName.");
-            if (!Feed::deleteOldStatuses($accountName, $deleteCount)) {
+            if (!Feed::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
                 logDebug("Failed to delete old statuses for account: $accountName.");
                 ErrorMiddleware::logMessage("CRON: Failed to delete old statuses for account: $accountName", 'error');
                 return false;

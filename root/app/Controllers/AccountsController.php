@@ -74,7 +74,11 @@ class AccountsController extends Controller
                         Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
                         $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
                         if (!file_exists($acctImagePath)) {
-                            mkdir($acctImagePath, 0755, true);
+                            mkdir(
+                                $acctImagePath,
+                                defined('DIR_MODE') ? DIR_MODE : 0755,
+                                true
+                            );
                             $indexFilePath = $acctImagePath . '/index.php';
                             file_put_contents(
                                 $indexFilePath, '<?php die(); ?>'

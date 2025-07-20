@@ -141,14 +141,16 @@ class Feed
      * Count the number of statuses for a specific account.
      *
      * @param string $accountName
+     * @param string $accountOwner
      * @return int
      */
-    public static function countStatuses(string $accountName): int
+    public static function countStatuses(string $accountName, string $accountOwner): int
     {
         try {
             $db = new Database();
-            $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account");
+            $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account AND username = :username");
             $db->bind(':account', $accountName);
+            $db->bind(':username', $accountOwner);
             return $db->single()->count;
         } catch (Exception $e) {
             ErrorMiddleware::logMessage("Error counting statuses: " . $e->getMessage(), 'error');
@@ -160,15 +162,17 @@ class Feed
      * Delete old statuses for a specific account.
      *
      * @param string $accountName
+     * @param string $accountOwner
      * @param int $deleteCount
      * @return bool
      */
-    public static function deleteOldStatuses(string $accountName, int $deleteCount): bool
+    public static function deleteOldStatuses(string $accountName, string $accountOwner, int $deleteCount): bool
     {
         try {
             $db = new Database();
-            $db->query("DELETE FROM status_updates WHERE account = :account ORDER BY created_at ASC LIMIT :deleteCount");
+            $db->query("DELETE FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at ASC LIMIT :deleteCount");
             $db->bind(':account', $accountName);
+            $db->bind(':username', $accountOwner);
             $db->bind(':deleteCount', $deleteCount, PDO::PARAM_INT);
             $db->execute();
             return true;
