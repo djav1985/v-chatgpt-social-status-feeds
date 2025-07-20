@@ -302,7 +302,14 @@ class StatusController
         return ["error" => $error];
     }
 
-    if (file_put_contents($image_path, file_get_contents($image_url)) === false) {
+    $imageContent = @file_get_contents($image_url);
+    if ($imageContent === false || $imageContent === '') {
+        $error = "Failed to download image for $accountName owned by $accountOwner.";
+        ErrorMiddleware::logMessage($error, 'error');
+        return ["error" => $error];
+    }
+
+    if (file_put_contents($image_path, $imageContent) === false) {
         $error = "Failed to save image for $accountName owned by $accountOwner.";
         ErrorMiddleware::logMessage($error, 'error');
         return ["error" => $error];
