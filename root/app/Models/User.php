@@ -123,6 +123,10 @@ class User
             $db->bind(':username', $username);
             $db->execute();
 
+            $db->query("DELETE FROM status_jobs WHERE username = :username");
+            $db->bind(':username', $username);
+            $db->execute();
+
             $db->commit();
             return true;
         } catch (Exception $e) {
