@@ -138,6 +138,13 @@ class Account
         $db = new Database();
         $db->beginTransaction();
         try {
+            $db->query("SELECT cron, days FROM accounts WHERE username = :accountOwner AND account = :accountName FOR UPDATE");
+            $db->bind(':accountOwner', $accountOwner);
+            $db->bind(':accountName', $accountName);
+            $current = $db->single();
+            $oldCron = $current->cron ?? '';
+            $oldDays = $current->days ?? '';
+
             $db->query("UPDATE accounts SET prompt = :prompt, platform = :platform, hashtags = :hashtags, link = :link, cron = :cron, days = :days WHERE username = :accountOwner AND account = :accountName");
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
@@ -149,6 +156,19 @@ class Account
             $db->bind(':days', $days);
             $db->execute();
             $db->commit();
+
+            if ($oldCron !== $cron || $oldDays !== $days) {
+                $db = new Database();
+                $db->query("DELETE FROM status_jobs WHERE username = :accountOwner AND account = :accountName AND run_at > NOW()");
+                $db->bind(':accountOwner', $accountOwner);
+                $db->bind(':accountName', $accountName);
+                $db->execute();
+
+                if (function_exists('\\fillQueryJobs')) {
+                    \fillQueryJobs();
+                }
+            }
+
             return true;
         } catch (Exception $e) {
             $db->rollBack();
@@ -207,6 +227,11 @@ class Account
         $db->beginTransaction();
         try {
             $db->query("DELETE FROM status_updates WHERE username = :accountOwner AND account = :accountName");
+            $db->bind(':accountOwner', $accountOwner);
+            $db->bind(':accountName', $accountName);
+            $db->execute();
+
+            $db->query("DELETE FROM status_jobs WHERE username = :accountOwner AND account = :accountName");
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
             $db->execute();
