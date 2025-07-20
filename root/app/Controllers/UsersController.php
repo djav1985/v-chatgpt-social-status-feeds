@@ -95,8 +95,15 @@ class UsersController extends Controller
                                 file_put_contents($indexFilePath, '<?php
  die(); ?>');
                             }
-                            $body = "Your account has been created.\nUsername: $username\nPassword: $plainPassword\nLogin: " . DOMAIN . "/login";
-                            Mailer::send($email, 'Login Details', $body);
+                            Mailer::sendTemplate(
+                                $email,
+                                'Login Details',
+                                'new_user',
+                                [
+                                    'username' => $username,
+                                    'password' => $plainPassword,
+                                ]
+                            );
                         }
                         $_SESSION['messages'][] = 'User has been created or modified.';
                     } else {

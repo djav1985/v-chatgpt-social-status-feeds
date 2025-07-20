@@ -213,8 +213,12 @@ function resetApi(): bool
     }
     $users = User::getAllUsers();
     foreach ($users as $user) {
-        $body = "Hi {$user->username},\nYour API usage has been reset.";
-        Mailer::send($user->email, 'API Usage Reset', $body);
+        Mailer::sendTemplate(
+            $user->email,
+            'API Usage Reset',
+            'api_usage_reset',
+            ['username' => $user->username]
+        );
     }
     logDebug("API usage reset successfully.");
     return true;

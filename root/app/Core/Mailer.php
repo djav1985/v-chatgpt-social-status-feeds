@@ -20,8 +20,13 @@ class Mailer
 {
     /**
      * Send an email via configured SMTP server.
+     *
+     * @param string $to      Recipient address
+     * @param string $subject Email subject
+     * @param string $body    Email body
+     * @param bool   $html    Whether the body is already HTML
      */
-    public static function send(string $to, string $subject, string $body): bool
+    public static function send(string $to, string $subject, string $body, bool $html = false): bool
     {
         $mail = new PHPMailer(true);
         try {
@@ -38,8 +43,13 @@ class Mailer
 
             $mail->isHTML(true);
             $mail->Subject = $subject;
-            $mail->Body    = nl2br($body);
-            $mail->AltBody = $body;
+            if ($html) {
+                $mail->Body    = $body;
+                $mail->AltBody = strip_tags($body);
+            } else {
+                $mail->Body    = nl2br($body);
+                $mail->AltBody = $body;
+            }
 
             $mail->send();
             return true;
@@ -47,5 +57,29 @@ class Mailer
             ErrorMiddleware::logMessage('Mailer Error: ' . $e->getMessage(), 'error');
             return false;
         }
+    }
+
+    /**
+     * Send an email using a template file located in app/Templates.
+     *
+     * @param string $to       Recipient address
+     * @param string $subject  Email subject
+     * @param string $template Template filename without extension
+     * @param array  $data     Variables to extract into the template
+     */
+    public static function sendTemplate(string $to, string $subject, string $template, array $data = []): bool
+    {
+        $templatePath = __DIR__ . '/../Templates/' . $template . '.php';
+        if (!file_exists($templatePath)) {
+            ErrorMiddleware::logMessage('Template not found: ' . $template, 'error');
+            return false;
+        }
+
+        extract($data, EXTR_SKIP);
+        ob_start();
+        include $templatePath;
+        $body = ob_get_clean();
+
+        return self::send($to, $subject, $body, true);
     }
 }
