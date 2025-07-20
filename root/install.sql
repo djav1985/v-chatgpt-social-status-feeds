@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS status_jobs (
     username VARCHAR(255) NOT NULL,
     account VARCHAR(255) NOT NULL,
     run_at DATETIME NOT NULL,
-    status ENUM('pending','completed') DEFAULT 'pending',
+    status ENUM('pending','processing','completed') DEFAULT 'pending',
     payload TEXT
 );
 
@@ -73,7 +73,7 @@ ALTER TABLE status_jobs
 ADD COLUMN IF NOT EXISTS username VARCHAR(255) NOT NULL,
 ADD COLUMN IF NOT EXISTS account VARCHAR(255) NOT NULL,
 ADD COLUMN IF NOT EXISTS run_at DATETIME NOT NULL,
-ADD COLUMN IF NOT EXISTS status ENUM('pending','completed') DEFAULT 'pending',
+ADD COLUMN IF NOT EXISTS status ENUM('pending','processing','completed') DEFAULT 'pending',
 ADD COLUMN IF NOT EXISTS payload TEXT;
 
 -- Ensure indexes on status_jobs table

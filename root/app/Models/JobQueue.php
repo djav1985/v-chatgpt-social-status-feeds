@@ -70,6 +70,74 @@ class JobQueue
     }
 
     /**
+     * Atomically claim pending jobs for processing.
+     *
+     * @param int $limit
+     * @return array
+     */
+    public static function claimPending(int $limit): array
+    {
+        $db = new Database();
+        $db->beginTransaction();
+        try {
+            $db->query("SELECT * FROM status_jobs WHERE status = 'pending' AND run_at <= NOW() ORDER BY run_at ASC LIMIT :l FOR UPDATE");
+            $db->bind(':l', $limit, PDO::PARAM_INT);
+            $jobs = $db->resultSet();
+            foreach ($jobs as $job) {
+                $db->query("UPDATE status_jobs SET status = 'processing' WHERE id = :id");
+                $db->bind(':id', $job->id);
+                $db->execute();
+            }
+            $db->commit();
+            return $jobs;
+        } catch (Exception $e) {
+            $db->rollBack();
+            ErrorMiddleware::logMessage('Error claiming jobs: ' . $e->getMessage(), 'error');
+            throw $e;
+        }
+    }
+
+    /**
+     * Mark a job as completed.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public static function markCompleted(int $id): bool
+    {
+        try {
+            $db = new Database();
+            $db->query("UPDATE status_jobs SET status = 'completed' WHERE id = :id");
+            $db->bind(':id', $id);
+            $db->execute();
+            return true;
+        } catch (Exception $e) {
+            ErrorMiddleware::logMessage('Error marking job completed: ' . $e->getMessage(), 'error');
+            throw $e;
+        }
+    }
+
+    /**
+     * Remove completed jobs older than the given number of days.
+     *
+     * @param int $days
+     * @return bool
+     */
+    public static function cleanupOld(int $days = 7): bool
+    {
+        try {
+            $db = new Database();
+            $db->query("DELETE FROM status_jobs WHERE status = 'completed' AND run_at < DATE_SUB(NOW(), INTERVAL :d DAY)");
+            $db->bind(':d', $days, PDO::PARAM_INT);
+            $db->execute();
+            return true;
+        } catch (Exception $e) {
+            ErrorMiddleware::logMessage('Error cleaning up jobs: ' . $e->getMessage(), 'error');
+            throw $e;
+        }
+    }
+
+    /**
      * Remove future jobs for an account.
      *
      * @param string $username

@@ -324,17 +324,18 @@ Install the project using the following steps:
      ```sh
      /usr/bin/php /PATH-TO-CRON.PHP/cron.php reset_usage 0 12 1 * *
      /usr/bin/php /PATH-TO-CRON.PHP/cron.php clear_list 0 12 * * *
-     /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_status 0 * * * *
-     /usr/bin/php /PATH-TO-CRON.PHP/cron.php cleanup 0 12 * * *
-     /usr/bin/php /PATH-TO-CRON.PHP/cron.php fill_query 0 * * * *
-     /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_query * * * * *
+    /usr/bin/php /PATH-TO-CRON.PHP/cron.php cleanup 0 12 * * *
+    /usr/bin/php /PATH-TO-CRON.PHP/cron.php fill_query 0 * * * *
+    /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_query * * * * *
      ```
    - Replace `/PATH-TO-CRON.PHP/` with the actual path to your `cron.php` file.
-   - `fill_query` populates the `status_jobs` queue with the next 24 hours of
-     scheduled posts. Run it hourly so the queue stays fresh.
-   - `run_query` processes queued jobs and marks them as completed. It will run
-     up to `CRON_QUEUE_LIMIT` jobs per invocation, so schedule this command every
-     minute for timely posting.
+  - `fill_query` populates the `status_jobs` queue with the next 24 hours of
+    scheduled posts. Run it hourly so the queue stays fresh.
+  - `run_query` processes queued jobs and marks them as completed. It will run
+    up to `CRON_QUEUE_LIMIT` jobs per invocation, so schedule this command every
+    minute for timely posting.
+  - The previous `run_status` task is no longer needed; `run_query` handles
+    posting from the queue.
 
 ### Queue Table
 
