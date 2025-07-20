@@ -17,6 +17,7 @@ namespace App\Models;
 use Exception;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
+use App\Models\JobQueue;
 
 class Account
 {
@@ -158,12 +159,7 @@ class Account
             $db->commit();
 
             if ($oldCron !== $cron || $oldDays !== $days) {
-                $db = new Database();
-                $db->query("DELETE FROM status_jobs WHERE username = :accountOwner AND account = :accountName AND run_at > NOW()");
-                $db->bind(':accountOwner', $accountOwner);
-                $db->bind(':accountName', $accountName);
-                $db->execute();
-
+                JobQueue::removeFuture($accountOwner, $accountName);
                 if (function_exists('\\fillQueryJobs')) {
                     \fillQueryJobs();
                 }
@@ -231,10 +227,7 @@ class Account
             $db->bind(':accountName', $accountName);
             $db->execute();
 
-            $db->query("DELETE FROM status_jobs WHERE username = :accountOwner AND account = :accountName");
-            $db->bind(':accountOwner', $accountOwner);
-            $db->bind(':accountName', $accountName);
-            $db->execute();
+            JobQueue::removeAccount($accountOwner, $accountName);
 
             $db->query("DELETE FROM accounts WHERE username = :accountOwner AND account = :accountName");
             $db->bind(':accountOwner', $accountOwner);

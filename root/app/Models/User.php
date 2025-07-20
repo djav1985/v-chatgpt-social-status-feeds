@@ -17,6 +17,7 @@ namespace App\Models;
 use Exception;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
+use App\Models\JobQueue;
 
 class User
 {
@@ -123,9 +124,7 @@ class User
             $db->bind(':username', $username);
             $db->execute();
 
-            $db->query("DELETE FROM status_jobs WHERE username = :username");
-            $db->bind(':username', $username);
-            $db->execute();
+            JobQueue::removeUser($username);
 
             $db->commit();
             return true;
