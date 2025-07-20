@@ -309,7 +309,7 @@ Install the project using the following steps:
 3. **Update Configuration:**
 
    - Open `root/config.php` and update the necessary variables, including MySQL database credentials.
-   - Optionally adjust `CRON_MAX_EXECUTION_TIME` and `CRON_MEMORY_LIMIT` to control how long the cron script runs and how much memory it can use.
+   - Optionally adjust `CRON_MAX_EXECUTION_TIME`, `CRON_MEMORY_LIMIT`, and `CRON_QUEUE_LIMIT` to control how long the cron script runs, how much memory it can use, and how many queued jobs run each invocation.
 
 4. **Install Database:**
 
@@ -326,7 +326,9 @@ Install the project using the following steps:
      /usr/bin/php /PATH-TO-CRON.PHP/cron.php clear_list 0 12 * * *
      /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_status 0 * * * *
      /usr/bin/php /PATH-TO-CRON.PHP/cron.php cleanup 0 12 * * *
-     ```
+     /usr/bin/php /PATH-TO-CRON.PHP/cron.php fill_query 0 * * * *
+     /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_query * * * * *
+    ```
    - Replace `/PATH-TO-CRON.PHP/` with the actual path to your `cron.php` file.
 
 ### 🤖 Usage

@@ -58,6 +58,35 @@ IF @index_exists = 0 THEN
     CREATE INDEX created_at ON status_updates (created_at);
 END IF;
 
+-- Create the status_jobs table if it doesn't exist
+CREATE TABLE IF NOT EXISTS status_jobs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    account VARCHAR(255) NOT NULL,
+    run_at DATETIME NOT NULL,
+    status ENUM('pending','completed') DEFAULT 'pending',
+    payload TEXT
+);
+
+-- Ensure the status_jobs table has all the required columns (alter only if necessary)
+ALTER TABLE status_jobs
+ADD COLUMN IF NOT EXISTS username VARCHAR(255) NOT NULL,
+ADD COLUMN IF NOT EXISTS account VARCHAR(255) NOT NULL,
+ADD COLUMN IF NOT EXISTS run_at DATETIME NOT NULL,
+ADD COLUMN IF NOT EXISTS status ENUM('pending','completed') DEFAULT 'pending',
+ADD COLUMN IF NOT EXISTS payload TEXT;
+
+-- Ensure indexes on status_jobs table
+SET @index_exists = (SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='status_jobs' AND index_name='username_idx');
+IF @index_exists = 0 THEN
+    CREATE INDEX username_idx ON status_jobs (username);
+END IF;
+
+SET @index_exists = (SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='status_jobs' AND index_name='run_at_idx');
+IF @index_exists = 0 THEN
+    CREATE INDEX run_at_idx ON status_jobs (run_at);
+END IF;
+
 -- Create accounts table if it doesn’t exist
 CREATE TABLE IF NOT EXISTS accounts (
     account VARCHAR(255) NOT NULL,

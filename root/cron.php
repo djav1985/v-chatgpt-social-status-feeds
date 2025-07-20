@@ -20,6 +20,7 @@ use App\Controllers\StatusController;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
+use App\Models\Database;
 use App\Core\Utility;
 
 // Apply configured runtime limits after loading settings
@@ -46,6 +47,8 @@ $validJobTypes = [
                   'clear_list',
                   'cleanup',
                   'purge_images',
+                  'fill_query',
+                  'run_query',
                  ];
 $jobType = $argv[1] ?? 'run_status'; // Default job type is 'run_status'
 
@@ -99,6 +102,22 @@ switch ($jobType) {
             die(1);
         }
         logDebug("purge_images job completed successfully.");
+        break;
+    case 'fill_query':
+        logDebug("Executing fill_query job.");
+        if (!fillQueryJobs()) {
+            logDebug("fill_query job failed.");
+            die(1);
+        }
+        logDebug("fill_query job completed successfully.");
+        break;
+    case 'run_query':
+        logDebug("Executing run_query job.");
+        if (!runQueuedJobs()) {
+            logDebug("run_query job failed.");
+            die(1);
+        }
+        logDebug("run_query job completed successfully.");
         break;
     default:
         logDebug("Invalid job type specified: $jobType");
@@ -300,5 +319,98 @@ function clearList(): bool
         return false;
     }
     logDebug("IP blacklist cleared successfully.");
+    return true;
+}
+
+/**
+ * Populate the next 24-hour job schedule into status_jobs.
+ */
+function fillQueryJobs(): bool
+{
+    global $debugMode;
+    $now = new DateTime();
+    $end = (clone $now)->modify('+24 hours');
+    logDebug('Generating job queue up to ' . $end->format('Y-m-d H:i:s'));
+
+    $accounts = Account::getAllAccounts();
+    if (empty($accounts)) {
+        logDebug('No accounts found to queue.');
+        return true;
+    }
+
+    foreach ($accounts as $account) {
+        $hours = array_filter(array_map('trim', explode(',', $account->cron)), 'strlen');
+        if (empty($hours)) {
+            continue;
+        }
+
+        $days = array_map('strtolower', array_map('trim', explode(',', $account->days)));
+        foreach ($hours as $hour) {
+            if (!is_numeric($hour)) {
+                continue;
+            }
+            $runTime = new DateTime();
+            $runTime->setTime((int) $hour, 0);
+            if ($runTime < $now) {
+                $runTime->modify('+1 day');
+            }
+            if ($runTime > $end) {
+                continue;
+            }
+            $dayName = strtolower($runTime->format('l'));
+            if (!in_array('everyday', $days) && !in_array($dayName, $days)) {
+                continue;
+            }
+
+            $runAt = $runTime->format('Y-m-d H:i:s');
+            $db = new Database();
+            $db->query('SELECT id FROM status_jobs WHERE username = :u AND account = :a AND run_at = :r LIMIT 1');
+            $db->bind(':u', $account->username);
+            $db->bind(':a', $account->account);
+            $db->bind(':r', $runAt);
+            if (!$db->single()) {
+                $db->query("INSERT INTO status_jobs (username, account, run_at, status) VALUES (:u, :a, :r, 'pending')");
+                $db->bind(':u', $account->username);
+                $db->bind(':a', $account->account);
+                $db->bind(':r', $runAt);
+                $db->execute();
+                logDebug('Queued job for ' . $account->account . ' at ' . $runAt);
+            }
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Run queued jobs and generate statuses.
+ */
+function runQueuedJobs(): bool
+{
+    global $debugMode;
+    $limit = defined('CRON_QUEUE_LIMIT') ? (int) CRON_QUEUE_LIMIT : 10;
+    $db = new Database();
+    $db->query("SELECT * FROM status_jobs WHERE status = 'pending' AND run_at <= NOW() ORDER BY run_at ASC LIMIT :l");
+    $db->bind(':l', $limit, PDO::PARAM_INT);
+    $jobs = $db->resultSet();
+
+    if (empty($jobs)) {
+        logDebug('No queued jobs to run.');
+        return true;
+    }
+
+    foreach ($jobs as $job) {
+        logDebug('Running job ID ' . $job->id . ' for ' . $job->account);
+        $result = StatusController::generateStatus($job->account, $job->username);
+        if (isset($result['success'])) {
+            $db->query("UPDATE status_jobs SET status = 'completed' WHERE id = :id");
+            $db->bind(':id', $job->id);
+            $db->execute();
+            logDebug('Job ' . $job->id . ' completed');
+        } else {
+            logDebug('Job ' . $job->id . ' failed');
+        }
+    }
+
     return true;
 }
