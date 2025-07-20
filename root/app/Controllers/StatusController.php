@@ -21,20 +21,6 @@ use App\Models\Feed;
 use App\Core\ErrorMiddleware;
 use App\Core\Utility;
 
-
-/**
- * Project: SocialRSS
- * Author:  Vontainment <services@vontainment.com>
- * License: https://opensource.org/licenses/MIT MIT License
- * Link:    https://vontainment.com
- * Version: 3.0.0
- *
- * File: StatusController.php
- * Description: AI Social Status Generator
- */
-
-
-
 class StatusController
 {
     /**
