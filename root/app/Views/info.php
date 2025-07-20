@@ -16,7 +16,7 @@
 ?>
 
 <?php
- require 'layouts/header.php'; ?>
+ require 'partials/header.php'; ?>
 
 <main class="container">
     <div class="columns">
@@ -106,4 +106,4 @@
 </script>
 
 <?php
- require 'layouts/footer.php'; ?>
+ require 'partials/footer.php'; ?>

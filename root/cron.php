@@ -28,14 +28,14 @@ use App\Models\User;
 use App\Models\Feed;
 use App\Models\Database;
 use App\Models\JobQueue;
-use App\Core\Utility;
+use App\Models\Security;
 
 // Apply configured runtime limits after loading settings
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
 ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M');
 
-// Register error handlers
-ErrorMiddleware::register();
+// Run the job logic within the error middleware handler
+ErrorMiddleware::handle(function () use (&$jobType) {
 
 // Add a helper function for logging
 function logDebug(string $message): void
@@ -122,6 +122,7 @@ switch ($jobType) {
         ErrorMiddleware::logMessage("Invalid job type specified: $jobType", 'error');
         die(1);
 }
+});
 
 
 /**
@@ -221,7 +222,7 @@ function clearList(): bool
 {
     global $debugMode;
     logDebug("Clearing IP blacklist.");
-    if (!Utility::clearIpBlacklist()) {
+    if (!Security::clearIpBlacklist()) {
         logDebug("Failed to clear IP blacklist.");
         ErrorMiddleware::logMessage("CRON: Failed to clear IP blacklist.", 'error');
         return false;

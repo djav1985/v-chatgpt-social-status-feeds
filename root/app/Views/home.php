@@ -14,7 +14,7 @@
 
 
 
-require 'layouts/header.php';
+require 'partials/header.php';
 ?>
 
 <main class="container">
@@ -255,4 +255,4 @@ require 'layouts/header.php';
 </script>
 
 <?php
- require 'layouts/footer.php'; ?>
+ require 'partials/footer.php'; ?>
