@@ -20,12 +20,14 @@ if (php_sapi_name() !== 'cli') {
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorMiddleware;
 use App\Controllers\StatusController;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
+use App\Core\Mailer;
 use App\Models\Database;
 use App\Models\JobQueue;
 use App\Models\Security;
@@ -208,6 +210,11 @@ function resetApi(): bool
         logDebug("Failed to reset API usage.");
         ErrorMiddleware::logMessage("CRON: Failed to reset API usage.", 'error');
         return false;
+    }
+    $users = User::getAllUsers();
+    foreach ($users as $user) {
+        $body = "Hi {$user->username},\nYour API usage has been reset.";
+        Mailer::send($user->email, 'API Usage Reset', $body);
     }
     logDebug("API usage reset successfully.");
     return true;

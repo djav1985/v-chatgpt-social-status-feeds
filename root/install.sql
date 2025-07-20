@@ -409,14 +409,15 @@ CREATE TABLE IF NOT EXISTS users (
     total_accounts INT DEFAULT 10,
     max_api_calls BIGINT DEFAULT 9999999999,
     used_api_calls BIGINT DEFAULT 0,
+    limit_email_sent BOOLEAN DEFAULT FALSE,
     expires DATE DEFAULT '9999-12-31',
     admin TINYINT DEFAULT 0,
     PRIMARY KEY (username)
 );
 
 -- Insert default admin user **only if the users table did not previously exist**
-INSERT INTO users (username, password, email, who, `where`, what, goal, total_accounts, max_api_calls, used_api_calls, admin)
-SELECT 'admin', '$2y$10$4idUpn/Kgpxx.GHfyLgKWeHVyZq3ugpx1mUMC6Aze9.yj.KWKTaKG', 'admin@example.com', 'Who I am', 'Where I am', 'What I do', 'My goal', 10, 9999999999, 0, 1
+INSERT INTO users (username, password, email, who, `where`, what, goal, total_accounts, max_api_calls, used_api_calls, limit_email_sent, admin)
+SELECT 'admin', '$2y$10$4idUpn/Kgpxx.GHfyLgKWeHVyZq3ugpx1mUMC6Aze9.yj.KWKTaKG', 'admin@example.com', 'Who I am', 'Where I am', 'What I do', 'My goal', 10, 9999999999, 0, 0, 1
 WHERE @users_table_exists = 0;
 
 -- Ensure the users table has all the required columns (alter only if necessary)
@@ -469,6 +470,17 @@ SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'users'
+          AND COLUMN_NAME = 'limit_email_sent') = 0,
+    'ALTER TABLE users ADD COLUMN limit_email_sent BOOLEAN DEFAULT FALSE AFTER used_api_calls',
+    'SELECT 0');
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
+
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'users'
           AND COLUMN_NAME = 'goal') = 0,
     'ALTER TABLE users ADD COLUMN goal TEXT AFTER what',
     'SELECT 0');
@@ -481,7 +493,7 @@ SET @stmt := IF(
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'users'
           AND COLUMN_NAME = 'expires') = 0,
-    'ALTER TABLE users ADD COLUMN expires DATE DEFAULT ''9999-12-31'' AFTER used_api_calls',
+    'ALTER TABLE users ADD COLUMN expires DATE DEFAULT ''9999-12-31'' AFTER limit_email_sent',
     'SELECT 0');
 PREPARE alter_sql FROM @stmt;
 EXECUTE alter_sql;

@@ -29,6 +29,7 @@ if (empty($_SESSION['csrf_token'])) {
 
 require_once '../config.php';
 require_once '../autoload.php';
+require_once '../vendor/autoload.php';
 
 ErrorMiddleware::handle(function (): void {
     $router = new Router();

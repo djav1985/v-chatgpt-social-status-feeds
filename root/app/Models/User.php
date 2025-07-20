@@ -240,6 +240,24 @@ class User
     }
 
     /**
+     * Set the limit email notification flag for a user.
+     */
+    public static function setLimitEmailSent(string $username, bool $sent): bool
+    {
+        try {
+            $db = new Database();
+            $db->query("UPDATE users SET limit_email_sent = :sent WHERE username = :username");
+            $db->bind(':sent', $sent ? 1 : 0);
+            $db->bind(':username', $username);
+            $db->execute();
+            return true;
+        } catch (Exception $e) {
+            ErrorMiddleware::logMessage("Error updating limit email flag: " . $e->getMessage(), 'error');
+            throw $e;
+        }
+    }
+
+    /**
      * Reset the used API calls for all users.
      *
      * @return bool
@@ -248,7 +266,7 @@ class User
     {
         try {
             $db = new Database();
-            $db->query("UPDATE users SET used_api_calls = 0");
+            $db->query("UPDATE users SET used_api_calls = 0, limit_email_sent = 0");
             $db->execute();
             return true;
         } catch (Exception $e) {
