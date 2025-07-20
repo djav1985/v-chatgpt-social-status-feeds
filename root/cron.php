@@ -332,8 +332,7 @@ function runQueuedJobs(): bool
 {
     global $debugMode;
     $limit = defined('CRON_QUEUE_LIMIT') ? (int) CRON_QUEUE_LIMIT : 10;
-    $jobs = JobQueue::getPending($limit);
-    $db = new Database();
+    $jobs = JobQueue::claimPending($limit);
 
     if (empty($jobs)) {
         logDebug('No queued jobs to run.');
@@ -344,14 +343,14 @@ function runQueuedJobs(): bool
         logDebug('Running job ID ' . $job->id . ' for ' . $job->account);
         $result = StatusController::generateStatus($job->account, $job->username);
         if (isset($result['success'])) {
-            $db->query("UPDATE status_jobs SET status = 'completed' WHERE id = :id");
-            $db->bind(':id', $job->id);
-            $db->execute();
+            JobQueue::markCompleted($job->id);
             logDebug('Job ' . $job->id . ' completed');
         } else {
             logDebug('Job ' . $job->id . ' failed');
         }
     }
+
+    JobQueue::cleanupOld();
 
     return true;
 }
