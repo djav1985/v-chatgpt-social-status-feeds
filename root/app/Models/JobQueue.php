@@ -126,6 +126,26 @@ class JobQueue
     }
 
     /**
+     * Mark a job as failed.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public static function markFailed(int $id): bool
+    {
+        try {
+            $db = new Database();
+            $db->query("UPDATE status_jobs SET status = 'failed' WHERE id = :id");
+            $db->bind(':id', $id);
+            $db->execute();
+            return true;
+        } catch (Exception $e) {
+            ErrorMiddleware::logMessage('Error marking job failed: ' . $e->getMessage(), 'error');
+            throw $e;
+        }
+    }
+
+    /**
      * Remove completed jobs older than the given number of days.
      *
      * @param int $days
@@ -135,7 +155,7 @@ class JobQueue
     {
         try {
             $db = new Database();
-            $db->query("DELETE FROM status_jobs WHERE status = 'completed' AND run_at < DATE_SUB(NOW(), INTERVAL :d DAY)");
+            $db->query("DELETE FROM status_jobs WHERE status IN ('completed','failed') AND run_at < DATE_SUB(NOW(), INTERVAL :d DAY)");
             $db->bind(':d', $days, PDO::PARAM_INT);
             $db->execute();
             return true;

@@ -118,97 +118,6 @@ switch ($jobType) {
         die(1);
 }
 
-/**
- * Run status update jobs for all accounts.
- * This function checks the current time and day, and runs status updates for accounts scheduled at the current time.
- * It ensures that the status is not posted more than once per scheduled hour and that the user has not exceeded their API call limit.
- */
-function runStatusUpdateJobs(): bool
-{
-    global $debugMode;
-    logDebug("Fetching all accounts for status update.");
-    $accounts = Account::getAllAccounts();
-    if (empty($accounts)) {
-        logDebug("No accounts found or failed to get accounts.");
-        ErrorMiddleware::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
-        return true; // Return true as this is not necessarily an error condition
-    }
-
-    $currentHour = date('H');
-    $currentDay = strtolower(date('l'));
-    logDebug("Current hour: $currentHour, Current day: $currentDay.");
-
-    foreach ($accounts as $account) {
-        $accountOwner = $account->username;
-        $accountName = $account->account;
-        logDebug("Processing account: $accountName owned by $accountOwner.");
-
-        $days = array_map('strtolower', array_map('trim', explode(',', $account->days)));
-        // Check if this account should be processed today
-        $shouldProcess = in_array('everyday', $days) || in_array($currentDay, $days);
-        if (!$shouldProcess) {
-            logDebug("Skipping account: $accountName, not scheduled for today.");
-            continue;
-        }
-
-        // Check if cron field is null, empty, or the string 'null'
-        if (is_null($account->cron) || trim($account->cron) === '' || strtolower(trim($account->cron)) === 'null') {
-            logDebug("Skipping account: $accountName, cron field is null, empty, or 'null'.");
-            continue;
-        }
-
-        $cron = array_filter(
-            array_map('trim', explode(',', $account->cron)),
-            function (string $hour): bool {
-                return is_numeric($hour) && $hour !== '';
-            }
-        );
-        if (empty($cron)) {
-            logDebug("Skipping account: $accountName, cron field contains no valid hours.");
-            continue;
-        }
-        foreach ($cron as $scheduledHour) {
-            $scheduledHour = sprintf('%02d', (int)$scheduledHour);
-            logDebug("Scheduled hour: $scheduledHour.");
-
-            if ($scheduledHour === $currentHour) {
-                logDebug("Scheduled time matches current time for account: $accountName.");
-
-                if (!Feed::hasStatusBeenPosted($accountName, $accountOwner, $scheduledHour)) {
-                    logDebug("Status has not been posted yet for this hour.");
-                    $userInfo = User::getUserInfo($accountOwner);
-
-                    // Check if the user's subscription has expired
-                    $now = new DateTime();
-                    $expires = new DateTime($userInfo->expires);
-                    if ($now > $expires) {
-                        logDebug("User subscription expired. Setting max API calls to 0.");
-                        $userInfo->max_api_calls = 0;
-                        User::updateMaxApiCalls($accountOwner, 0);
-                    }
-
-                    if ($userInfo->used_api_calls < $userInfo->max_api_calls) {
-                        logDebug("User has remaining API calls.");
-                        $statusResult = StatusController::generateStatus($accountName, $accountOwner);
-                        if (isset($statusResult['success'])) {
-                            logDebug("Status generated for account: $accountName.");
-                            $userInfo->used_api_calls += 1;
-                            User::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-                        } else {
-                            logDebug("Failed to generate status for account: $accountName.");
-                        }
-                    } else {
-                        logDebug("User has exceeded their API call limit.");
-                    }
-                } else {
-                    logDebug("Status has already been posted for this hour.");
-                }
-            }
-        }
-    }
-
-    return true;
-}
 
 /**
  * Clean up old statuses for all accounts.
@@ -337,6 +246,7 @@ function runQueuedJobs(): bool
             JobQueue::markCompleted($job->id);
             logDebug('Job ' . $job->id . ' completed');
         } else {
+            JobQueue::markFailed($job->id);
             logDebug('Job ' . $job->id . ' failed');
         }
     }

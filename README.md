@@ -345,6 +345,11 @@ stores the account, user, run time, and payload for a status update. The
 Set `CRON_QUEUE_LIMIT` in `root/config.php` to control how many jobs run each
 minute—choose a value that matches your server resources and API rate limits.
 
+If a job cannot be processed, `run_query` marks it as `failed`. Failed jobs
+stay in the queue so they can be retried or inspected later. When the cron
+script finishes processing jobs it removes completed and failed entries older
+than seven days.
+
 ### 🤖 Usage
 
 Login as `admin` with the password `admin`. Follow these steps:
