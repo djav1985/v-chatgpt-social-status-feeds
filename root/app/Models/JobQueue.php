@@ -92,11 +92,14 @@ class JobQueue
             $db->query("SELECT * FROM status_jobs WHERE status = 'pending' AND run_at <= NOW() ORDER BY run_at ASC LIMIT :l FOR UPDATE");
             $db->bind(':l', $limit, PDO::PARAM_INT);
             $jobs = $db->resultSet();
+
+            // Prepare the update statement once and reuse it for each job
+            $db->query("UPDATE status_jobs SET status = 'processing' WHERE id = :id");
             foreach ($jobs as $job) {
-                $db->query("UPDATE status_jobs SET status = 'processing' WHERE id = :id");
                 $db->bind(':id', $job->id);
                 $db->execute();
             }
+
             $db->commit();
             return $jobs;
         } catch (Exception $e) {
