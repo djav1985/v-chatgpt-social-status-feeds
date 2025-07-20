@@ -66,8 +66,12 @@ class HomeController extends Controller
                     if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
                         $_SESSION['messages'][] = 'Sorry, your available API calls have run out.';
                         if (!$userInfo->limit_email_sent) {
-                            $body = "Hi {$userInfo->username},\nYour API call limit has been reached.";
-                            Mailer::send($userInfo->email, 'API Limit Reached', $body);
+                            Mailer::sendTemplate(
+                                $userInfo->email,
+                                'API Limit Reached',
+                                'api_limit_reached',
+                                ['username' => $userInfo->username]
+                            );
                             User::setLimitEmailSent($accountOwner, true);
                         }
                     } else {
