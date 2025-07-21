@@ -6,6 +6,7 @@
   "require": {
     "php": "^8.0",
     "phpmailer/phpmailer": "^6.8"
-    , "doctrine/dbal": "^3.6"
+    , "doctrine/dbal": "^3.6",
+    "nikic/fast-route": "^1.3"
   }
 }

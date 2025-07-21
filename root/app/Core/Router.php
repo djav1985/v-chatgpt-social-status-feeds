@@ -14,47 +14,55 @@
 
 namespace App\Core;
 
-use App\Core\AuthMiddleware;
+use FastRoute\RouteCollector;
+use FastRoute\Dispatcher;
+use function FastRoute\simpleDispatcher;
 
 class Router
 {
-    public function dispatch(string $uri): void
+    private Dispatcher $dispatcher;
+
+    public function __construct()
     {
-        $route = strtok($uri, '?');
-
-        if (preg_match('#^/feeds(?:/[^/]+/[^/]+)?$#', $route)) {
-            \App\Controllers\FeedController::handleRequest();
-            return;
-        }
-
-        if ($route !== '/login') {
-            AuthMiddleware::check();
-        }
-
-        switch ($route) {
-        case '/':
+        $this->dispatcher = simpleDispatcher(function (RouteCollector $r): void {
             // Redirect the root URL to the home page for convenience
-            header('Location: /home');
-            exit();
-        case '/login':
-            \App\Controllers\AuthController::handleRequest();
-            break;
-        case '/accounts':
-            \App\Controllers\AccountsController::handleRequest();
-            break;
-        case '/users':
-            \App\Controllers\UsersController::handleRequest();
-            break;
-        case '/info':
-            \App\Controllers\InfoController::handleRequest();
-            break;
-        case '/home':
-            \App\Controllers\HomeController::handleRequest();
-            break;
-        default:
-            header('HTTP/1.0 404 Not Found');
-            require __DIR__ . '/../Views/404.php';
-            exit();
+            $r->addRoute('GET', '/', function (): void {
+                header('Location: /home');
+                exit();
+            });
+
+            $r->addRoute('GET', '/login', [\App\Controllers\AuthController::class, 'handleRequest']);
+            $r->addRoute('GET', '/accounts', [\App\Controllers\AccountsController::class, 'handleRequest']);
+            $r->addRoute('GET', '/users', [\App\Controllers\UsersController::class, 'handleRequest']);
+            $r->addRoute('GET', '/info', [\App\Controllers\InfoController::class, 'handleRequest']);
+            $r->addRoute('GET', '/home', [\App\Controllers\HomeController::class, 'handleRequest']);
+
+            // Feed routes
+            $r->addRoute('GET', '/feeds', [\App\Controllers\FeedController::class, 'handleRequest']);
+            $r->addRoute('GET', '/feeds/{user}/{account}', [\App\Controllers\FeedController::class, 'index']);
+        });
+    }
+
+    public function dispatch(string $method, string $uri): void
+    {
+        $routeInfo = $this->dispatcher->dispatch($method, $uri);
+
+        switch ($routeInfo[0]) {
+            case Dispatcher::NOT_FOUND:
+                header('HTTP/1.0 404 Not Found');
+                require __DIR__ . '/../Views/404.php';
+                break;
+            case Dispatcher::METHOD_NOT_ALLOWED:
+                header('HTTP/1.0 405 Method Not Allowed');
+                break;
+            case Dispatcher::FOUND:
+                [$class, $action] = $routeInfo[1];
+                $vars = $routeInfo[2];
+                if ($uri !== '/login') {
+                    AuthMiddleware::check();
+                }
+                call_user_func_array([new $class(), $action], $vars);
+                break;
         }
     }
 }
