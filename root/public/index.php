@@ -33,5 +33,6 @@ if (empty($_SESSION['csrf_token'])) {
 
 ErrorMiddleware::handle(function (): void {
     $router = new Router();
-    $router->dispatch($_SERVER['REQUEST_URI']);
+    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $router->dispatch($_SERVER['REQUEST_METHOD'], $uri);
 });
