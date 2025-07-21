@@ -38,52 +38,29 @@ ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M
 // Run the job logic within the error middleware handler
 ErrorMiddleware::handle(function () use (&$jobType) {
 
-// Debug logging handled through ErrorMiddleware when debug mode is enabled
-
 $validJobTypes = [
-                  'reset_usage',
-                  'purge_ips',
-                  'purge_statuses',
-                  'purge_images',
-                  'fill_query',
-                  'run_query',
-                 ];
+    'daily',
+    'hourly',
+    'run_query',
+];
 $jobType = $argv[1] ?? 'run_query'; // Default job type is 'run_query'
-
-// Check for debug mode
-$debugMode = isset($argv[2]) && $argv[2] === 'debug';
-if ($debugMode) {
-    ErrorMiddleware::logMessage("Starting cron job with job type: $jobType", 'info');
-}
 
 if (!in_array($jobType, $validJobTypes)) {
     die("Invalid job type specified.");
 }
 
-// Update switch cases to include logging
+// Run tasks for the selected job type
 switch ($jobType) {
-    case 'reset_usage':
-        if (!resetApi()) {
+    case 'daily':
+        if (date('j') === '1' && !resetApi()) {
+            die(1);
+        }
+        if (!purgeIps() || !JobQueue::fillQueryJobs()) {
             die(1);
         }
         break;
-    case 'purge_ips':
-        if (!purgeIps()) {
-            die(1);
-        }
-        break;
-    case 'purge_statuses':
-        if (!purgeStatuses()) {
-            die(1);
-        }
-        break;
-    case 'purge_images':
-        if (!purgeImages()) {
-            die(1);
-        }
-        break;
-    case 'fill_query':
-        if (!JobQueue::fillQueryJobs()) {
+    case 'hourly':
+        if (!purgeStatuses() || !purgeImages()) {
             die(1);
         }
         break;

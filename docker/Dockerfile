@@ -26,11 +26,8 @@ RUN sed -i 's|/var/www/html|/var/www/public|g' /etc/apache2/sites-available/000-
 RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
 # Set up cron jobs
-RUN echo "0 0 1 * * php /var/www/cron.php reset_usage" >> /etc/crontab && \
-    echo "0 0 * * * php /var/www/cron.php purge_ips" >> /etc/crontab && \
-    echo "0 0 * * * php /var/www/cron.php fill_query" >> /etc/crontab && \
-    echo "0 * * * * php /var/www/cron.php purge_statuses" >> /etc/crontab && \
-    echo "0 * * * * php /var/www/cron.php purge_images" >> /etc/crontab && \
+RUN echo "0 0 * * * php /var/www/cron.php daily" >> /etc/crontab && \
+    echo "0 * * * * php /var/www/cron.php hourly" >> /etc/crontab && \
     echo "*/5 * * * * php /var/www/cron.php run_query" >> /etc/crontab && \
     crontab /etc/crontab
 
