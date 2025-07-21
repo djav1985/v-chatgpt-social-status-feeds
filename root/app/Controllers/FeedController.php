@@ -31,20 +31,6 @@ class FeedController extends Controller
         }
     }
 
-    public static function handleRequest(): void
-    {
-        $user = isset($_GET['user']) ? htmlspecialchars($_GET['user'], ENT_QUOTES, 'UTF-8') : null;
-        $account = isset($_GET['account']) ? htmlspecialchars($_GET['account'], ENT_QUOTES, 'UTF-8') : null;
-
-        if (!$user || !$account) {
-            http_response_code(400);
-            echo 'Bad Request: Missing user or account parameter.';
-            return;
-        }
-
-        $controller = new self();
-        $controller->index($user, $account);
-    }
 
     private static function outputRssFeed(string $accountName, string $accountOwner): void
     {
