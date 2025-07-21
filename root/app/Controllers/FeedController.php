@@ -31,6 +31,18 @@ class FeedController extends Controller
         }
     }
 
+    public static function handleRequest(?string $user = null, ?string $account = null): void
+    {
+        if (!$user || !$account) {
+            http_response_code(400);
+            echo 'Bad Request: Missing user or account parameter.';
+            return;
+        }
+
+        $controller = new self();
+        $controller->index($user, $account);
+    }
+
 
     private static function outputRssFeed(string $accountName, string $accountOwner): void
     {

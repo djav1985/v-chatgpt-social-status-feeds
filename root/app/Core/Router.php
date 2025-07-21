@@ -38,7 +38,7 @@ class Router
             $r->addRoute('GET', '/home', [\App\Controllers\HomeController::class, 'handleRequest']);
 
             // Feed routes
-            $r->addRoute('GET', '/feeds/{user}/{account}', [\App\Controllers\FeedController::class, 'index']);
+            $r->addRoute('GET', '/feeds/{user}/{account}', [\App\Controllers\FeedController::class, 'handleRequest']);
         });
     }
 
