@@ -15,7 +15,7 @@
 namespace App\Models;
 
 use Exception;
-use PDO;
+use Doctrine\DBAL\ParameterType;
 use App\Models\Database;
 use App\Core\ErrorMiddleware;
 
@@ -173,7 +173,7 @@ class Feed
             $db->query("DELETE FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at ASC LIMIT :deleteCount");
             $db->bind(':account', $accountName);
             $db->bind(':username', $accountOwner);
-            $db->bind(':deleteCount', $deleteCount, PDO::PARAM_INT);
+            $db->bind(':deleteCount', $deleteCount, ParameterType::INTEGER);
             $db->execute();
             return true;
         } catch (Exception $e) {
