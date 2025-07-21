@@ -28,7 +28,6 @@ use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
 use App\Core\Mailer;
-use App\Models\Database;
 use App\Models\JobQueue;
 use App\Models\Security;
 
@@ -140,7 +139,7 @@ switch ($jobType) {
         if ($debugMode) {
             ErrorMiddleware::logMessage("Executing run_query job.", 'info');
         }
-        if (!runStatusUpdateJobs()) {
+        if (!updateJobs()) {
             if ($debugMode) {
                 ErrorMiddleware::logMessage("run_query job failed.", 'info');
             }
@@ -307,7 +306,7 @@ function purgeIps(): bool
 /**
  * Run queued jobs and generate statuses.
  */
-function runStatusUpdateJobs(): bool
+function updateJobs(): bool
 {
     global $debugMode;
     $limit = defined('CRON_QUEUE_LIMIT') ? (int) CRON_QUEUE_LIMIT : 10;

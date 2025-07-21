@@ -14,7 +14,6 @@
 
 namespace App\Controllers;
 
-use Exception;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
