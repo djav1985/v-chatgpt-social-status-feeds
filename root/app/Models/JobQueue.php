@@ -14,7 +14,7 @@
 
 namespace App\Models;
 
-use PDO;
+use Doctrine\DBAL\ParameterType;
 use DateTime;
 use Exception;
 use App\Models\Database;
@@ -70,7 +70,7 @@ class JobQueue
         try {
             $db = new Database();
             $db->query("SELECT * FROM status_jobs WHERE status = 'pending' AND run_at <= NOW() ORDER BY run_at ASC LIMIT :l");
-            $db->bind(':l', $limit, PDO::PARAM_INT);
+            $db->bind(':l', $limit, ParameterType::INTEGER);
             return $db->resultSet();
         } catch (Exception $e) {
             ErrorMiddleware::logMessage('Error retrieving jobs: ' . $e->getMessage(), 'error');
@@ -90,7 +90,7 @@ class JobQueue
         $db->beginTransaction();
         try {
             $db->query("SELECT * FROM status_jobs WHERE status = 'pending' AND run_at <= NOW() ORDER BY run_at ASC LIMIT :l FOR UPDATE");
-            $db->bind(':l', $limit, PDO::PARAM_INT);
+            $db->bind(':l', $limit, ParameterType::INTEGER);
             $jobs = $db->resultSet();
 
             // Prepare the update statement once and reuse it for each job
@@ -160,7 +160,7 @@ class JobQueue
         try {
             $db = new Database();
             $db->query("DELETE FROM status_jobs WHERE status IN ('completed','failed') AND run_at < DATE_SUB(NOW(), INTERVAL :d DAY)");
-            $db->bind(':d', $days, PDO::PARAM_INT);
+            $db->bind(':d', $days, ParameterType::INTEGER);
             $db->execute();
             return true;
         } catch (Exception $e) {
