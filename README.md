@@ -123,8 +123,8 @@ Install the project using the following steps:
    - Add the following cron jobs to automate tasks:
      ```sh
     0 12 1 * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php reset_usage
-    0 12 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php clear_list
-    0 12 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php cleanup
+    0 12 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php purge_ips
+    0 12 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php purge_statuses
     0 12 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php purge_images
     0 0 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php fill_query
     * * * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php run_query
@@ -132,6 +132,8 @@ Install the project using the following steps:
    - Replace `/PATH-TO-CRON.PHP/` with the actual path to your `cron.php` file.
   - `fill_query` clears and repopulates the `status_jobs` queue with all posts
     scheduled for the current day. It runs once daily at midnight.
+  - `purge_ips` clears expired entries from the IP blacklist each day at noon.
+  - `purge_statuses` removes old statuses when an account exceeds `MAX_STATUSES`.
   - `purge_images` deletes old PNG images from `public/images`. It runs daily at noon.
   - `run_query` processes queued jobs and marks them as completed. It will run
     up to `CRON_QUEUE_LIMIT` jobs per invocation, so schedule this command every
