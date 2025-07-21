@@ -52,8 +52,8 @@ function logDebug(string $message): void
 
 $validJobTypes = [
                   'reset_usage',
-                  'clear_list',
-                  'cleanup',
+                  'purge_ips',
+                  'purge_statuses',
                   'purge_images',
                   'fill_query',
                   'run_query',
@@ -79,21 +79,21 @@ switch ($jobType) {
         }
         logDebug("reset_usage job completed successfully.");
         break;
-    case 'clear_list':
-        logDebug("Executing clear_list job.");
-        if (!clearList()) {
-            logDebug("clear_list job failed.");
+    case 'purge_ips':
+        logDebug("Executing purge_ips job.");
+        if (!purgeIps()) {
+            logDebug("purge_ips job failed.");
             die(1);
         }
-        logDebug("clear_list job completed successfully.");
+        logDebug("purge_ips job completed successfully.");
         break;
-    case 'cleanup':
-        logDebug("Executing cleanup job.");
-        if (!cleanupStatuses()) {
-            logDebug("cleanup job failed.");
+    case 'purge_statuses':
+        logDebug("Executing purge_statuses job.");
+        if (!purgeStatuses()) {
+            logDebug("purge_statuses job failed.");
             die(1);
         }
-        logDebug("cleanup job completed successfully.");
+        logDebug("purge_statuses job completed successfully.");
         break;
     case 'purge_images':
         logDebug("Executing purge_images job.");
@@ -132,10 +132,10 @@ switch ($jobType) {
  * This function checks the number of statuses for each account and deletes the oldest ones if they exceed the maximum allowed.
  * This helps to manage storage and keep the database performant.
  */
-function cleanupStatuses(): bool
+function purgeStatuses(): bool
 {
     global $debugMode;
-    logDebug("Fetching all accounts for cleanup.");
+    logDebug("Fetching all accounts for status purge.");
     $accounts = Account::getAllAccounts();
     if (empty($accounts)) {
         logDebug("No accounts found or failed to get accounts.");
@@ -146,7 +146,7 @@ function cleanupStatuses(): bool
     foreach ($accounts as $account) {
         $accountName = $account->account;
         $accountOwner = $account->username;
-        logDebug("Processing account: $accountName for cleanup.");
+        logDebug("Processing account: $accountName for status purge.");
         $statusCount = Feed::countStatuses($accountName, $accountOwner);
 
         if ($statusCount > MAX_STATUSES) {
@@ -225,11 +225,11 @@ function resetApi(): bool
 }
 
 /**
- * Clear the IP blacklist.
- * This function clears the IP blacklist, removing all entries.
- * This is typically run periodically to ensure that the blacklist does not grow indefinitely.
+ * Purge old entries from the IP blacklist.
+ * This function calls Security::clearIpBlacklist() to remove expired IP addresses.
+ * Schedule periodically so the blacklist does not grow indefinitely.
  */
-function clearList(): bool
+function purgeIps(): bool
 {
     global $debugMode;
     logDebug("Clearing IP blacklist.");

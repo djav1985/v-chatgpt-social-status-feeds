@@ -27,8 +27,8 @@ RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
 # Set up cron jobs
 RUN echo "0 12 1 * * php /var/www/cron.php reset_usage" >> /etc/crontab && \
-    echo "0 12 * * * php /var/www/cron.php clear_list" >> /etc/crontab && \
-    echo "0 12 * * * php /var/www/cron.php cleanup" >> /etc/crontab && \
+    echo "0 12 * * * php /var/www/cron.php purge_ips" >> /etc/crontab && \
+    echo "0 12 * * * php /var/www/cron.php purge_statuses" >> /etc/crontab && \
     echo "0 12 * * * php /var/www/cron.php purge_images" >> /etc/crontab && \
     echo "0 0 * * * php /var/www/cron.php fill_query" >> /etc/crontab && \
     echo "* * * * * php /var/www/cron.php run_query" >> /etc/crontab && \
