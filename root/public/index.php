@@ -12,6 +12,10 @@
  * Description: AI Social Status Generator
  */
 
+require_once '../config.php';
+require_once '../autoload.php';
+require_once '../vendor/autoload.php';
+
 use App\Core\Router;
 use App\Core\ErrorMiddleware;
 
@@ -26,10 +30,6 @@ session_start();
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
-require_once '../config.php';
-require_once '../autoload.php';
-require_once '../vendor/autoload.php';
 
 ErrorMiddleware::handle(function (): void {
     $router = new Router();
