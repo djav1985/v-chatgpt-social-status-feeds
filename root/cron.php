@@ -39,16 +39,7 @@ ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M
 // Run the job logic within the error middleware handler
 ErrorMiddleware::handle(function () use (&$jobType) {
 
-// Add a helper function for logging
-function logDebug(string $message): void
-{
-    global $debugMode;
-    if ($debugMode) {
-        $logFile = __DIR__ . '/cron.log';
-        $timestamp = date('Y-m-d H:i:s');
-        file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
-    }
-}
+// Debug logging handled through ErrorMiddleware when debug mode is enabled
 
 $validJobTypes = [
                   'reset_usage',
@@ -62,65 +53,107 @@ $jobType = $argv[1] ?? 'run_query'; // Default job type is 'run_query'
 
 // Check for debug mode
 $debugMode = isset($argv[2]) && $argv[2] === 'debug';
-logDebug("Starting cron job with job type: $jobType");
+if ($debugMode) {
+    ErrorMiddleware::logMessage("Starting cron job with job type: $jobType", 'info');
+}
 
 if (!in_array($jobType, $validJobTypes)) {
-    logDebug("Invalid job type specified: $jobType");
+    if ($debugMode) {
+        ErrorMiddleware::logMessage("Invalid job type specified: $jobType", 'info');
+    }
     die("Invalid job type specified.");
 }
 
 // Update switch cases to include logging
 switch ($jobType) {
     case 'reset_usage':
-        logDebug("Executing reset_usage job.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Executing reset_usage job.", 'info');
+        }
         if (!resetApi()) {
-            logDebug("reset_usage job failed.");
+            if ($debugMode) {
+                ErrorMiddleware::logMessage("reset_usage job failed.", 'info');
+            }
             die(1);
         }
-        logDebug("reset_usage job completed successfully.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("reset_usage job completed successfully.", 'info');
+        }
         break;
     case 'purge_ips':
-        logDebug("Executing purge_ips job.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Executing purge_ips job.", 'info');
+        }
         if (!purgeIps()) {
-            logDebug("purge_ips job failed.");
+            if ($debugMode) {
+                ErrorMiddleware::logMessage("purge_ips job failed.", 'info');
+            }
             die(1);
         }
-        logDebug("purge_ips job completed successfully.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("purge_ips job completed successfully.", 'info');
+        }
         break;
     case 'purge_statuses':
-        logDebug("Executing purge_statuses job.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Executing purge_statuses job.", 'info');
+        }
         if (!purgeStatuses()) {
-            logDebug("purge_statuses job failed.");
+            if ($debugMode) {
+                ErrorMiddleware::logMessage("purge_statuses job failed.", 'info');
+            }
             die(1);
         }
-        logDebug("purge_statuses job completed successfully.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("purge_statuses job completed successfully.", 'info');
+        }
         break;
     case 'purge_images':
-        logDebug("Executing purge_images job.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Executing purge_images job.", 'info');
+        }
         if (!purgeImages()) {
-            logDebug("purge_images job failed.");
+            if ($debugMode) {
+                ErrorMiddleware::logMessage("purge_images job failed.", 'info');
+            }
             die(1);
         }
-        logDebug("purge_images job completed successfully.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("purge_images job completed successfully.", 'info');
+        }
         break;
     case 'fill_query':
-        logDebug("Executing fill_query job.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Executing fill_query job.", 'info');
+        }
         if (!JobQueue::fillQueryJobs()) {
-            logDebug("fill_query job failed.");
+            if ($debugMode) {
+                ErrorMiddleware::logMessage("fill_query job failed.", 'info');
+            }
             die(1);
         }
-        logDebug("fill_query job completed successfully.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("fill_query job completed successfully.", 'info');
+        }
         break;
     case 'run_query':
-        logDebug("Executing run_query job.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Executing run_query job.", 'info');
+        }
         if (!runStatusUpdateJobs()) {
-            logDebug("run_query job failed.");
+            if ($debugMode) {
+                ErrorMiddleware::logMessage("run_query job failed.", 'info');
+            }
             die(1);
         }
-        logDebug("run_query job completed successfully.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("run_query job completed successfully.", 'info');
+        }
         break;
     default:
-        logDebug("Invalid job type specified: $jobType");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Invalid job type specified: $jobType", 'info');
+        }
         ErrorMiddleware::logMessage("Invalid job type specified: $jobType", 'error');
         die(1);
 }
@@ -135,10 +168,14 @@ switch ($jobType) {
 function purgeStatuses(): bool
 {
     global $debugMode;
-    logDebug("Fetching all accounts for status purge.");
+    if ($debugMode) {
+        ErrorMiddleware::logMessage("Fetching all accounts for status purge.", 'info');
+    }
     $accounts = Account::getAllAccounts();
     if (empty($accounts)) {
-        logDebug("No accounts found or failed to get accounts.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("No accounts found or failed to get accounts.", 'info');
+        }
         ErrorMiddleware::logMessage("CRON: No accounts found or failed to get accounts.", 'warning');
         return true; // Return true as this is not necessarily an error condition
     }
@@ -146,14 +183,20 @@ function purgeStatuses(): bool
     foreach ($accounts as $account) {
         $accountName = $account->account;
         $accountOwner = $account->username;
-        logDebug("Processing account: $accountName for status purge.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Processing account: $accountName for status purge.", 'info');
+        }
         $statusCount = Feed::countStatuses($accountName, $accountOwner);
 
         if ($statusCount > MAX_STATUSES) {
             $deleteCount = $statusCount - MAX_STATUSES;
-            logDebug("Deleting $deleteCount old statuses for account: $accountName.");
+            if ($debugMode) {
+                ErrorMiddleware::logMessage("Deleting $deleteCount old statuses for account: $accountName.", 'info');
+            }
             if (!Feed::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
-                logDebug("Failed to delete old statuses for account: $accountName.");
+                if ($debugMode) {
+                    ErrorMiddleware::logMessage("Failed to delete old statuses for account: $accountName.", 'info');
+                }
                 ErrorMiddleware::logMessage("CRON: Failed to delete old statuses for account: $accountName", 'error');
                 return false;
             }
@@ -170,7 +213,9 @@ function purgeStatuses(): bool
 function purgeImages(): bool
 {
     global $debugMode;
-    logDebug("Purging old images.");
+    if ($debugMode) {
+        ErrorMiddleware::logMessage("Purging old images.", 'info');
+    }
     $imageDir = __DIR__ . '/public/images/';
     $files = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
@@ -185,9 +230,13 @@ function purgeImages(): bool
             $fileAge = ($now - $fileinfo->getMTime()) / 86400;
 
             if ($fileAge > IMG_AGE) {
-                logDebug("Deleting image: $filePath.");
+                if ($debugMode) {
+                    ErrorMiddleware::logMessage("Deleting image: $filePath.", 'info');
+                }
                 if (!unlink($filePath)) {
-                    logDebug("Failed to delete image: $filePath.");
+                    if ($debugMode) {
+                        ErrorMiddleware::logMessage("Failed to delete image: $filePath.", 'info');
+                    }
                     ErrorMiddleware::logMessage("CRON: Failed to delete image: $filePath", 'error');
                     return false;
                 }
@@ -205,9 +254,13 @@ function purgeImages(): bool
 function resetApi(): bool
 {
     global $debugMode;
-    logDebug("Resetting API usage for all users.");
+    if ($debugMode) {
+        ErrorMiddleware::logMessage("Resetting API usage for all users.", 'info');
+    }
     if (!User::resetAllApiUsage()) {
-        logDebug("Failed to reset API usage.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Failed to reset API usage.", 'info');
+        }
         ErrorMiddleware::logMessage("CRON: Failed to reset API usage.", 'error');
         return false;
     }
@@ -220,7 +273,9 @@ function resetApi(): bool
             ['username' => $user->username]
         );
     }
-    logDebug("API usage reset successfully.");
+    if ($debugMode) {
+        ErrorMiddleware::logMessage("API usage reset successfully.", 'info');
+    }
     return true;
 }
 
@@ -232,13 +287,19 @@ function resetApi(): bool
 function purgeIps(): bool
 {
     global $debugMode;
-    logDebug("Clearing IP blacklist.");
+    if ($debugMode) {
+        ErrorMiddleware::logMessage("Clearing IP blacklist.", 'info');
+    }
     if (!Security::clearIpBlacklist()) {
-        logDebug("Failed to clear IP blacklist.");
+        if ($debugMode) {
+            ErrorMiddleware::logMessage("Failed to clear IP blacklist.", 'info');
+        }
         ErrorMiddleware::logMessage("CRON: Failed to clear IP blacklist.", 'error');
         return false;
     }
-    logDebug("IP blacklist cleared successfully.");
+    if ($debugMode) {
+        ErrorMiddleware::logMessage("IP blacklist cleared successfully.", 'info');
+    }
     return true;
 }
 
@@ -253,7 +314,9 @@ function runStatusUpdateJobs(): bool
     $jobs = JobQueue::claimPending($limit);
 
     if (empty($jobs)) {
-        logDebug('No queued jobs to run.');
+        if ($debugMode) {
+            ErrorMiddleware::logMessage('No queued jobs to run.', 'info');
+        }
         return true;
     }
 
@@ -271,13 +334,20 @@ function runStatusUpdateJobs(): bool
  */
 function processJob(object $job): void
 {
-    logDebug('Running job ID ' . $job->id . ' for ' . $job->account);
+    global $debugMode;
+    if ($debugMode) {
+        ErrorMiddleware::logMessage('Running job ID ' . $job->id . ' for ' . $job->account, 'info');
+    }
     $result = StatusController::generateStatus($job->account, $job->username);
     if (isset($result['success'])) {
         JobQueue::markCompleted($job->id);
-        logDebug('Job ' . $job->id . ' completed');
+        if ($debugMode) {
+            ErrorMiddleware::logMessage('Job ' . $job->id . ' completed', 'info');
+        }
     } else {
         JobQueue::markFailed($job->id);
-        logDebug('Job ' . $job->id . ' failed');
+        if ($debugMode) {
+            ErrorMiddleware::logMessage('Job ' . $job->id . ' failed', 'info');
+        }
     }
 }
