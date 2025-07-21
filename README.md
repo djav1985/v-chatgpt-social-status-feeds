@@ -29,7 +29,7 @@ VII. [ License](#-license)
 
 v-chatgpt-social-status-feeds is a modular PHP application for managing, scheduling, and distributing social media status updates. It features user authentication, account management, status scheduling, and real-time RSS feeds, all with a focus on security and extensibility. Scheduled posts are placed in a MySQL-backed queue and processed asynchronously by the cron script. Built for social media managers and developers, it streamlines multi-account status posting and automation.
 
-All PHP source files live inside the `root` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by `root/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
+All PHP source files live inside the `root` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by Composer's autoloader and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
 
 Version 3.0.0 introduces improvements such as dedicated classes for all database operations, a more intuitive user interface, and enhanced user settings for prompt customization. The API schema is now more structured, and the platform is more robust and user-friendly.
 
@@ -47,7 +47,7 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 
 |     |      Feature      | Summary |
 | :-- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>Utility</code>, <code>ErrorMiddleware</code>, and <code>ApiHandler</code> (see <code>root/app/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by <code>root/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
+| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseHandler</code>, <code>UserHandler</code>, <code>AccountHandler</code>, <code>StatusHandler</code>, <code>Utility</code>, <code>ErrorMiddleware</code>, and <code>ApiHandler</code> (see <code>root/app/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by Composer.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
 | 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using PDO in <code>DatabaseHandler.php</code>.</li><li>Robust error handling via <code>ErrorMiddleware.php</code>.</li><li>Clean inline documentation throughout core files.</li></ul> |
 | 📄  | **Documentation** | <ul><li>Includes install and usage steps.</li><li>Written in <code>PHP</code>, <code>SQL</code>, and <code>text</code> formats.</li><li>Simple onboarding for developers and admins.</li></ul> |
 | 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>ApiHandler.php</code>.</li><li>Real-time RSS feed generation using <code>Utility::outputRssFeed()</code>.</li><li>Secure login and session control via the MVC controllers.</li><li>Email notifications powered by PHPMailer with customizable templates.</li></ul> |
@@ -63,7 +63,6 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
     ├── README.md
     ├── docker/
     └── root
-        ├── autoload.php
         ├── composer.json
         ├── composer.lock
         ├── config.php
