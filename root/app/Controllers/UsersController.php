@@ -29,34 +29,44 @@ class UsersController extends Controller
             exit('Forbidden');
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-                $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
-                header('Location: /users');
-                exit;
-            }
-
-            if (isset($_POST['edit_users'])) {
-                self::editUsers();
-                return;
-            }
-
-            if (isset($_POST['delete_user']) && isset($_POST['username'])) {
-                self::deleteUser();
-                return;
-            }
-
-            if (isset($_POST['login_as']) && isset($_POST['username'])) {
-                self::loginAs();
-                return;
-            }
-        }
 
         $userList = self::generateUserList();
 
         $this->render('users', [
             'userList' => $userList,
         ]);
+    }
+
+    public function handleSubmission(): void
+    {
+        if (empty($_SESSION['is_admin'])) {
+            http_response_code(403);
+            exit('Forbidden');
+        }
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
+            $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+            header('Location: /users');
+            exit;
+        }
+
+        if (isset($_POST['edit_users'])) {
+            self::editUsers();
+            return;
+        }
+
+        if (isset($_POST['delete_user']) && isset($_POST['username'])) {
+            self::deleteUser();
+            return;
+        }
+
+        if (isset($_POST['login_as']) && isset($_POST['username'])) {
+            self::loginAs();
+            return;
+        }
+
+        header('Location: /users');
+        exit;
     }
 
     private static function editUsers(): void
@@ -199,7 +209,7 @@ class UsersController extends Controller
         header('Location: /users');
         exit;
     }
-    public static function generateUserList(): string
+    private static function generateUserList(): string
     {
         $users = User::getAllUsers();
         $output = '';

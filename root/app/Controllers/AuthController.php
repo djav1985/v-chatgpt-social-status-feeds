@@ -24,48 +24,56 @@ class AuthController extends Controller
 {
     public function handleRequest(): void
     {
-        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && !($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout']))) {
+        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             header('Location: /');
             exit();
         }
 
-        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+        $this->render('login', []);
+    }
+
+    public function handleSubmission(): void
+    {
+        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && isset($_POST['logout'])) {
             self::logoutUser();
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-                $error = 'Invalid CSRF token. Please try again.';
+        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && !isset($_POST['logout'])) {
+            header('Location: /');
+            exit();
+        }
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
+            $error = 'Invalid CSRF token. Please try again.';
+            ErrorMiddleware::logMessage($error);
+            $_SESSION['messages'][] = $error;
+        } else {
+            $username = trim($_POST['username'] ?? '');
+            $password = trim($_POST['password'] ?? '');
+            $userInfo = self::validateCredentials($username, $password);
+
+            if ($userInfo) {
+                $_SESSION['logged_in'] = true;
+                $_SESSION['username'] = $userInfo->username;
+                $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                $_SESSION['is_admin'] = $userInfo->admin;
+                $_SESSION['timeout'] = time();
+                session_regenerate_id(true);
+                header('Location: /');
+                exit();
+            }
+
+            $ip = $_SERVER['REMOTE_ADDR'];
+            if (Security::isBlacklisted($ip)) {
+                $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
                 ErrorMiddleware::logMessage($error);
                 $_SESSION['messages'][] = $error;
             } else {
-                $username = trim($_POST['username'] ?? '');
-                $password = trim($_POST['password'] ?? '');
-                $userInfo = self::validateCredentials($username, $password);
-
-                if ($userInfo) {
-                    $_SESSION['logged_in'] = true;
-                    $_SESSION['username'] = $userInfo->username;
-                    $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-                    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-                    $_SESSION['is_admin'] = $userInfo->admin;
-                    $_SESSION['timeout'] = time();
-                    session_regenerate_id(true);
-                    header('Location: /');
-                    exit();
-                }
-
-                $ip = $_SERVER['REMOTE_ADDR'];
-                if (Security::isBlacklisted($ip)) {
-                    $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
-                    ErrorMiddleware::logMessage($error);
-                    $_SESSION['messages'][] = $error;
-                } else {
-                    Security::updateFailedAttempts($ip);
-                    $error = 'Invalid username or password.';
-                    ErrorMiddleware::logMessage($error);
-                    $_SESSION['messages'][] = $error;
-                }
+                Security::updateFailedAttempts($ip);
+                $error = 'Invalid username or password.';
+                ErrorMiddleware::logMessage($error);
+                $_SESSION['messages'][] = $error;
             }
         }
 
