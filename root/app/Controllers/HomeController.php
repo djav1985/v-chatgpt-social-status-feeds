@@ -23,6 +23,11 @@ use App\Core\Csrf;
 
 class HomeController extends Controller
 {
+    /**
+     * Display the dashboard showing accounts and recent statuses.
+     *
+     * @return void
+     */
     public function handleRequest(): void
     {
 
@@ -65,6 +70,11 @@ class HomeController extends Controller
         ]);
     }
 
+    /**
+     * Process requests to generate or delete statuses.
+     *
+     * @return void
+     */
     public function handleSubmission(): void
     {
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
@@ -88,6 +98,11 @@ class HomeController extends Controller
     }
 
 
+    /**
+     * Delete a status entry and its associated image.
+     *
+     * @return void
+     */
     private static function deleteStatus(): void
     {
         $accountName = trim($_POST['account']);
@@ -120,6 +135,11 @@ class HomeController extends Controller
         exit;
     }
 
+    /**
+     * Generate a new status for an account using the StatusService.
+     *
+     * @return void
+     */
     private static function generateStatus(): void
     {
         $accountName = trim($_POST['account']);
@@ -158,6 +178,16 @@ class HomeController extends Controller
         header('Location: /home');
         exit;
     }
+    /**
+     * Build the HTML action buttons for a status entry.
+     *
+     * @param string $statusText   Text of the status
+     * @param string $imagePath    Path to the status image
+     * @param string $accountOwner Account owner username
+     * @param string $accountName  Name of the account
+     * @param int    $statusId     Database ID of the status
+     * @return string HTML content for the buttons
+     */
     private static function shareButton(string $statusText, string $imagePath, string $accountOwner, string $accountName, int $statusId): string
     {
         $filename = basename($imagePath);

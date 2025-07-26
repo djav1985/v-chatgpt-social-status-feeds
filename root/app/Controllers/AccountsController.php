@@ -22,6 +22,11 @@ use App\Core\Csrf;
 
 class AccountsController extends Controller
 {
+    /**
+     * Show the accounts management page with schedule overview.
+     *
+     * @return void
+     */
     public function handleRequest(): void
     {
         $daysOptions = self::generateDaysOptions();
@@ -37,6 +42,11 @@ class AccountsController extends Controller
         ]);
     }
 
+    /**
+     * Handle create/update and delete account form submissions.
+     *
+     * @return void
+     */
     public function handleSubmission(): void
     {
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
@@ -59,6 +69,11 @@ class AccountsController extends Controller
         exit;
     }
 
+    /**
+     * Create a new account or update an existing one for the current user.
+     *
+     * @return void
+     */
     private static function createOrUpdateAccount(): void
     {
         $accountOwner = $_SESSION['username'];
@@ -139,6 +154,11 @@ class AccountsController extends Controller
         exit;
     }
 
+    /**
+     * Delete an account owned by the current user.
+     *
+     * @return void
+     */
     private static function deleteAccount(): void
     {
         $accountName = trim($_POST['account']);
@@ -155,7 +175,9 @@ class AccountsController extends Controller
     }
 
     /**
-     * Generate a calendar overview of scheduled posts grouped by day and time slot.
+     * Build a calendar overview of scheduled posts grouped by day and time slot.
+     *
+     * @return string HTML representation of the calendar
      */
     private static function generateCalendarOverview(): string
     {
@@ -209,7 +231,10 @@ class AccountsController extends Controller
     }
 
     /**
-     * Convert hour in 24h format to human readable 12h with a.m./p.m.
+     * Convert an hour in 24-hour format to a human readable string.
+     *
+     * @param int $hour Hour of day in 24-hour format
+     * @return string Formatted hour with a.m./p.m.
      */
     private static function formatHour(int $hour): string
     {
@@ -221,6 +246,10 @@ class AccountsController extends Controller
 
     /**
      * Convert the overview array to an HTML grid.
+     *
+     * @param array $overview    Organized array of posts
+     * @param array $daysOfWeek  Days of the week in order
+     * @return string HTML table grid
      */
     private static function overviewToHtml(array $overview, array $daysOfWeek): string
     {
@@ -246,6 +275,11 @@ class AccountsController extends Controller
         return $html;
     }
 
+    /**
+     * Create select options for the days of the week.
+     *
+     * @return string HTML option tags
+     */
     private static function generateDaysOptions(): string
     {
         $days = ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -256,6 +290,11 @@ class AccountsController extends Controller
         return $options;
     }
 
+    /**
+     * Generate hourly cron selection options for 6am through 10pm.
+     *
+     * @return string HTML option tags
+     */
     private static function generateCronOptions(): string
     {
         $options = '<option value="null" selected>Off</option>';
@@ -269,6 +308,11 @@ class AccountsController extends Controller
         return $options;
     }
 
+    /**
+     * Render the account list items for the accounts page.
+     *
+     * @return string HTML fragment of account rows
+     */
     private static function generateAccountList(): string
     {
         $username = $_SESSION['username'];

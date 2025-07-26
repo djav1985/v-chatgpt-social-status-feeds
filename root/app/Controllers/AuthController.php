@@ -22,6 +22,11 @@ use App\Core\Csrf;
 
 class AuthController extends Controller
 {
+    /**
+     * Show the login form when the user is not already authenticated.
+     *
+     * @return void
+     */
     public function handleRequest(): void
     {
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
@@ -32,6 +37,11 @@ class AuthController extends Controller
         $this->render('login', []);
     }
 
+    /**
+     * Handle login form submission and logout actions.
+     *
+     * @return void
+     */
     public function handleSubmission(): void
     {
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && isset($_POST['logout'])) {
@@ -80,6 +90,11 @@ class AuthController extends Controller
         $this->render('login', []);
     }
 
+    /**
+     * Destroy the user session and redirect to the login page.
+     *
+     * @return void
+     */
     private static function logoutUser(): void
     {
         unset($_SESSION['is_admin']);
@@ -88,6 +103,13 @@ class AuthController extends Controller
         exit();
     }
 
+    /**
+     * Validate the supplied login credentials.
+     *
+     * @param string $username Submitted username
+     * @param string $password Submitted password
+     * @return object|null Returns user info on success or null on failure
+     */
     private static function validateCredentials(string $username, string $password): ?object
     {
         $userInfo = User::getUserInfo($username);
