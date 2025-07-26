@@ -71,10 +71,6 @@ class UsersController extends Controller
 
     private static function editUsers(): void
     {
-        if (empty($_SESSION['is_admin'])) {
-            http_response_code(403);
-            exit('Forbidden');
-        }
         $username = trim($_POST['username']);
         $password = trim($_POST['password']);
         $plainPassword = $password;
@@ -159,10 +155,6 @@ class UsersController extends Controller
 
     private static function deleteUser(): void
     {
-        if (empty($_SESSION['is_admin'])) {
-            http_response_code(403);
-            exit('Forbidden');
-        }
         $username = $_POST['username'];
         if ($username === $_SESSION['username']) {
             $_SESSION['messages'][] = "Sorry, you can't delete your own account.";
@@ -180,10 +172,6 @@ class UsersController extends Controller
 
     private static function loginAs(): void
     {
-        if (empty($_SESSION['is_admin'])) {
-            http_response_code(403);
-            exit('Forbidden');
-        }
         $username = $_POST['username'];
         try {
             $user = User::getUserInfo($username);
