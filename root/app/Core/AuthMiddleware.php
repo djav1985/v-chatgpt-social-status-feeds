@@ -19,6 +19,12 @@ use App\Core\ErrorMiddleware;
 
 class AuthMiddleware
 {
+    /**
+     * Verifies the user's authentication and session integrity.
+     *
+     * This method checks IP blacklist status, login state and session
+     * expiration to prevent unauthorized access.
+     */
     public static function check(): void
     {
         $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);

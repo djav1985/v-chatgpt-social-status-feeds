@@ -16,6 +16,12 @@ namespace App\Core;
 
 class Csrf
 {
+    /**
+     * Validates a CSRF token against the session token.
+     *
+     * @param string $token The token provided by the client.
+     * @return bool True when the token matches the session token.
+     */
     public static function validate(string $token): bool
     {
         return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
