@@ -74,7 +74,7 @@ class User
      */
     public static function updateUser(string $username, string $password, string $email, int $totalAccounts, int $maxApiCalls, int $usedApiCalls, string $expires, int $admin, bool $isUpdate): bool
     {
-        ErrorMiddleware::logMessage("updateUser called with username: $username, isUpdate: $isUpdate", 'info');
+        // ErrorMiddleware::logMessage("updateUser called with username: $username, isUpdate: $isUpdate", 'info');
         $db = new Database();
         $db->beginTransaction();
         try {
