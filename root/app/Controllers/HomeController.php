@@ -16,7 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Mailer;
-use App\Services\StatusController;
+use App\Services\StatusService;
 use App\Models\User;
 use App\Models\Feed;
 use App\Core\Csrf;
@@ -143,7 +143,7 @@ class HomeController extends Controller
                     User::setLimitEmailSent($accountOwner, true);
                 }
             } else {
-                $statusResult = StatusController::generateStatus($accountName, $accountOwner);
+                $statusResult = StatusService::generateStatus($accountName, $accountOwner);
                 if (isset($statusResult['error'])) {
                     $_SESSION['messages'][] = 'Failed to generate status: ' . $statusResult['error'];
                 } else {
