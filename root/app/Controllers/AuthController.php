@@ -22,7 +22,7 @@ use App\Core\Csrf;
 
 class AuthController extends Controller
 {
-    public static function handleRequest(): void
+    public function handleRequest(): void
     {
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && !($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout']))) {
             header('Location: /');
@@ -69,7 +69,7 @@ class AuthController extends Controller
             }
         }
 
-        (new self())->render('login', []);
+        $this->render('login', []);
     }
 
     private static function logoutUser(): void

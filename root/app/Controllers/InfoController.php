@@ -20,7 +20,7 @@ use App\Core\Csrf;
 
 class InfoController extends Controller
 {
-    public static function handleRequest(): void
+    public function handleRequest(): void
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -45,7 +45,7 @@ class InfoController extends Controller
         $profileData = self::generateProfileDataAttributes($_SESSION['username']);
         $systemMsg = self::buildSystemMessage($_SESSION['username']);
 
-        (new self())->render('info', [
+        $this->render('info', [
             'profileData' => $profileData,
             'systemMsg' => $systemMsg,
         ]);
