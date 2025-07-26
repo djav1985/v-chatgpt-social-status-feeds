@@ -22,6 +22,9 @@ class Router
 {
     private Dispatcher $dispatcher;
 
+    /**
+     * Builds the route dispatcher and registers application routes.
+     */
     public function __construct()
     {
         $this->dispatcher = simpleDispatcher(function (RouteCollector $r): void {
@@ -52,6 +55,12 @@ class Router
         });
     }
 
+    /**
+     * Dispatches the request to the appropriate controller action.
+     *
+     * @param string $method HTTP method of the incoming request.
+     * @param string $uri The requested URI path.
+     */
     public function dispatch(string $method, string $uri): void
     {
         $routeInfo = $this->dispatcher->dispatch($method, $uri);
