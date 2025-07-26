@@ -24,25 +24,6 @@ class AccountsController extends Controller
 {
     public function handleRequest(): void
     {
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-                $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
-                header('Location: /accounts');
-                exit;
-            }
-
-            if (isset($_POST['edit_account'])) {
-                self::createOrUpdateAccount();
-                return;
-            }
-
-            if (isset($_POST['delete_account'])) {
-                self::deleteAccount();
-                return;
-            }
-        }
-
         $daysOptions = self::generateDaysOptions();
         $cronOptions = self::generateCronOptions();
         $accountList = self::generateAccountList();
@@ -54,6 +35,28 @@ class AccountsController extends Controller
             'accountList' => $accountList,
             'calendarOverview' => $calendarOverview,
         ]);
+    }
+
+    public function handleSubmission(): void
+    {
+        if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
+            $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+            header('Location: /accounts');
+            exit;
+        }
+
+        if (isset($_POST['edit_account'])) {
+            self::createOrUpdateAccount();
+            return;
+        }
+
+        if (isset($_POST['delete_account'])) {
+            self::deleteAccount();
+            return;
+        }
+
+        header('Location: /accounts');
+        exit;
     }
 
     private static function createOrUpdateAccount(): void
@@ -154,7 +157,7 @@ class AccountsController extends Controller
     /**
      * Generate a calendar overview of scheduled posts grouped by day and time slot.
      */
-    public static function generateCalendarOverview(): string
+    private static function generateCalendarOverview(): string
     {
         $username = $_SESSION['username'];
         $accounts = User::getAllUserAccts($username);
@@ -243,7 +246,7 @@ class AccountsController extends Controller
         return $html;
     }
 
-    public static function generateDaysOptions(): string
+    private static function generateDaysOptions(): string
     {
         $days = ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         $options = '';
@@ -253,7 +256,7 @@ class AccountsController extends Controller
         return $options;
     }
 
-    public static function generateCronOptions(): string
+    private static function generateCronOptions(): string
     {
         $options = '<option value="null" selected>Off</option>';
         for ($hour = 6; $hour <= 22; $hour++) {
@@ -266,7 +269,7 @@ class AccountsController extends Controller
         return $options;
     }
 
-    public static function generateAccountList(): string
+    private static function generateAccountList(): string
     {
         $username = $_SESSION['username'];
         $accounts = User::getAllUserAccts($username);

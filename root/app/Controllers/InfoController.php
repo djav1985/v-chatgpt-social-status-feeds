@@ -22,26 +22,6 @@ class InfoController extends Controller
 {
     public function handleRequest(): void
     {
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $token = $_POST['csrf_token'] ?? '';
-            if (!Csrf::validate($token)) {
-                $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
-                header('Location: /info');
-                exit;
-            }
-
-            if (isset($_POST['change_password'])) {
-                self::processPasswordChange();
-                return;
-            }
-
-            if (isset($_POST['update_profile'])) {
-                self::processProfileUpdate();
-                return;
-            }
-        }
-
         $profileData = self::generateProfileDataAttributes($_SESSION['username']);
         $systemMsg = self::buildSystemMessage($_SESSION['username']);
 
@@ -49,6 +29,29 @@ class InfoController extends Controller
             'profileData' => $profileData,
             'systemMsg' => $systemMsg,
         ]);
+    }
+
+    public function handleSubmission(): void
+    {
+        $token = $_POST['csrf_token'] ?? '';
+        if (!Csrf::validate($token)) {
+            $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+            header('Location: /info');
+            exit;
+        }
+
+        if (isset($_POST['change_password'])) {
+            self::processPasswordChange();
+            return;
+        }
+
+        if (isset($_POST['update_profile'])) {
+            self::processProfileUpdate();
+            return;
+        }
+
+        header('Location: /info');
+        exit;
     }
 
     private static function processPasswordChange(): void
@@ -105,7 +108,7 @@ class InfoController extends Controller
         exit;
     }
 
-    public static function generateProfileDataAttributes(string $username): string
+    private static function generateProfileDataAttributes(string $username): string
     {
         $userInfo = User::getUserInfo($username);
         if ($userInfo) {
@@ -118,7 +121,7 @@ class InfoController extends Controller
         return '';
     }
 
-    public static function buildSystemMessage(string $username): string
+    private static function buildSystemMessage(string $username): string
     {
         $userInfo = User::getUserInfo($username);
         if ($userInfo) {

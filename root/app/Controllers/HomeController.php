@@ -26,23 +26,7 @@ class HomeController extends Controller
     public function handleRequest(): void
     {
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-                $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
-                header('Location: /home');
-                exit;
-            }
 
-            if (isset($_POST['delete_status'])) {
-                self::deleteStatus();
-                return;
-            }
-
-            if (isset($_POST['generate_status'])) {
-                self::generateStatus();
-                return;
-            }
-        }
 
         $accountOwner = $_SESSION['username'];
         $accounts = \App\Models\Account::getAllUserAccts($accountOwner);
@@ -79,6 +63,28 @@ class HomeController extends Controller
             'accountOwner' => $accountOwner,
             'accountsData' => $accountsData,
         ]);
+    }
+
+    public function handleSubmission(): void
+    {
+        if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
+            $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+            header('Location: /home');
+            exit;
+        }
+
+        if (isset($_POST['delete_status'])) {
+            self::deleteStatus();
+            return;
+        }
+
+        if (isset($_POST['generate_status'])) {
+            self::generateStatus();
+            return;
+        }
+
+        header('Location: /home');
+        exit;
     }
 
 
@@ -152,7 +158,7 @@ class HomeController extends Controller
         header('Location: /home');
         exit;
     }
-    public static function shareButton(string $statusText, string $imagePath, string $accountOwner, string $accountName, int $statusId): string
+    private static function shareButton(string $statusText, string $imagePath, string $accountOwner, string $accountName, int $statusId): string
     {
         $filename = basename($imagePath);
         $imageUrl = DOMAIN . "/images/" . htmlspecialchars($accountOwner, ENT_QUOTES) . "/" . htmlspecialchars($accountName, ENT_QUOTES) . "/" . htmlspecialchars($filename, ENT_QUOTES);
