@@ -27,7 +27,7 @@ class InfoController extends Controller
             if (!self::isCsrfValid($token)) {
                 $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
                 header('Location: /info');
-                return;
+                exit;
             }
 
             if (isset($_POST['change_password'])) {
@@ -71,7 +71,7 @@ class InfoController extends Controller
 
         if (!empty($_SESSION['messages'])) {
             header('Location: /info');
-            return;
+            exit;
         }
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -82,6 +82,7 @@ class InfoController extends Controller
             $_SESSION['messages'][] = 'Password update failed: ' . $e->getMessage();
         }
         header('Location: /info');
+        exit;
     }
 
     private static function processProfileUpdate(): void
@@ -95,7 +96,7 @@ class InfoController extends Controller
         if (empty($who) || empty($where) || empty($what) || empty($goal)) {
             $_SESSION['messages'][] = 'All fields are required.';
             header('Location: /info');
-            return;
+            exit;
         }
 
         try {
@@ -105,6 +106,7 @@ class InfoController extends Controller
             $_SESSION['messages'][] = 'Profile update failed: ' . $e->getMessage();
         }
         header('Location: /info');
+        exit;
     }
 
     public static function generateProfileDataAttributes(string $username): string
