@@ -32,7 +32,8 @@ class InfoController extends Controller
             }
 
             if (isset($_POST['change_password'])) {
-                $username = $_POST['username'];
+                // Ignore any posted username and use the logged in user
+                $username = $_SESSION['username'];
                 $password = $_POST['password'];
                 $password2 = $_POST['password2'];
                 if ($password !== $password2) {
