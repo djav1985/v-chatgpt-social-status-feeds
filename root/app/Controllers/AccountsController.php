@@ -27,100 +27,20 @@ class AccountsController extends Controller
         AuthMiddleware::check();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            if (!self::isValidCsrf()) {
                 $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
                 header('Location: /accounts');
-                exit;
+                return;
             }
 
             if (isset($_POST['edit_account'])) {
-                $accountOwner = $_SESSION['username'];
-                $accountName = preg_replace('/[^a-z0-9-]/', '', strtolower(str_replace(' ', '-', trim($_POST['account']))));
-                $prompt = trim($_POST['prompt']);
-                $platform = trim($_POST['platform']);
-                $hashtags = isset($_POST['hashtags']) ? (int) $_POST['hashtags'] : 0;
-                $link = trim($_POST['link']);
-                $cron = 'null';
-                $invalidCron = false;
-                if (isset($_POST['cron']) && is_array($_POST['cron'])) {
-                    $hours = [];
-                    foreach ($_POST['cron'] as $hour) {
-                        if ($hour === 'null') {
-                            continue;
-                        }
-                        if (ctype_digit($hour) && (int)$hour >= 0 && (int)$hour <= 23) {
-                            $hours[] = str_pad((string)(int)$hour, 2, '0', STR_PAD_LEFT);
-                        } else {
-                            $invalidCron = true;
-                        }
-                    }
-                    if (!empty($hours)) {
-                        $cron = implode(',', $hours);
-                    }
-                }
-                $days = '';
-                if (isset($_POST['days']) && is_array($_POST['days'])) {
-                    $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') ? 'everyday' : implode(',', $_POST['days']);
-                }
+                self::createOrUpdateAccount();
+                return;
+            }
 
-                if ($invalidCron) {
-                    $_SESSION['messages'][] = 'Invalid cron hour(s) supplied. Hours must be between 0 and 23.';
-                }
-                if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
-                    $_SESSION['messages'][] = 'Error processing input.';
-                }
-                if (empty($prompt)) {
-                    $_SESSION['messages'][] = 'Missing required field(s).';
-                }
-                if (!preg_match('/^[a-z0-9-]{8,18}$/', $accountName)) {
-                    $_SESSION['messages'][] = 'Account name must be 8-18 characters long, alphanumeric and hyphens only.';
-                }
-                if (!filter_var($link, FILTER_VALIDATE_URL)) {
-                    $_SESSION['messages'][] = 'Link must be a valid URL starting with https://.';
-                }
-
-                if (!empty($_SESSION['messages'])) {
-                    header('Location: /accounts');
-                    exit;
-                }
-
-                try {
-                    if (Account::accountExists($accountOwner, $accountName)) {
-                        Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
-                    } else {
-                        Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
-                        $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
-                        if (!file_exists($acctImagePath)) {
-                            mkdir(
-                                $acctImagePath,
-                                defined('DIR_MODE') ? DIR_MODE : 0755,
-                                true
-                            );
-                            $indexFilePath = $acctImagePath . '/index.php';
-                            file_put_contents(
-                                $indexFilePath, '<?php die(); ?>'
-                            );
-                        }
-                    }
-                    JobQueue::fillQueryJobs();
-                    $_SESSION['messages'][] = 'Account has been created or modified.';
-                } catch (\Exception $e) {
-                    $_SESSION['messages'][] = 'Failed to create or modify account: ' . $e->getMessage();
-                }
-                header('Location: /accounts');
-                exit;
-            } elseif (isset($_POST['delete_account'])) {
-                $accountName = trim($_POST['account']);
-                $accountOwner = $_SESSION['username'];
-                try {
-                    Account::deleteAccount($accountOwner, $accountName);
-                    JobQueue::fillQueryJobs();
-                    $_SESSION['messages'][] = 'Account Deleted.';
-                } catch (\Exception $e) {
-                    $_SESSION['messages'][] = 'Failed to delete account: ' . $e->getMessage();
-                }
-                header('Location: /accounts');
-                exit;
+            if (isset($_POST['delete_account'])) {
+                self::deleteAccount();
+                return;
             }
         }
 
@@ -135,6 +55,104 @@ class AccountsController extends Controller
             'accountList' => $accountList,
             'calendarOverview' => $calendarOverview,
         ]);
+    }
+
+    private static function isValidCsrf(): bool
+    {
+        return isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token'];
+    }
+
+    private static function createOrUpdateAccount(): void
+    {
+        $accountOwner = $_SESSION['username'];
+        $accountName = preg_replace('/[^a-z0-9-]/', '', strtolower(str_replace(' ', '-', trim($_POST['account']))));
+        $prompt = trim($_POST['prompt']);
+        $platform = trim($_POST['platform']);
+        $hashtags = isset($_POST['hashtags']) ? (int) $_POST['hashtags'] : 0;
+        $link = trim($_POST['link']);
+        $cron = 'null';
+        $invalidCron = false;
+        if (isset($_POST['cron']) && is_array($_POST['cron'])) {
+            $hours = [];
+            foreach ($_POST['cron'] as $hour) {
+                if ($hour === 'null') {
+                    continue;
+                }
+                if (ctype_digit($hour) && (int)$hour >= 0 && (int)$hour <= 23) {
+                    $hours[] = str_pad((string)(int)$hour, 2, '0', STR_PAD_LEFT);
+                } else {
+                    $invalidCron = true;
+                }
+            }
+            if (!empty($hours)) {
+                $cron = implode(',', $hours);
+            }
+        }
+        $days = '';
+        if (isset($_POST['days']) && is_array($_POST['days'])) {
+            $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') ? 'everyday' : implode(',', $_POST['days']);
+        }
+
+        if ($invalidCron) {
+            $_SESSION['messages'][] = 'Invalid cron hour(s) supplied. Hours must be between 0 and 23.';
+        }
+        if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
+            $_SESSION['messages'][] = 'Error processing input.';
+        }
+        if (empty($prompt)) {
+            $_SESSION['messages'][] = 'Missing required field(s).';
+        }
+        if (!preg_match('/^[a-z0-9-]{8,18}$/', $accountName)) {
+            $_SESSION['messages'][] = 'Account name must be 8-18 characters long, alphanumeric and hyphens only.';
+        }
+        if (!filter_var($link, FILTER_VALIDATE_URL)) {
+            $_SESSION['messages'][] = 'Link must be a valid URL starting with https://.';
+        }
+
+        if (!empty($_SESSION['messages'])) {
+            header('Location: /accounts');
+            return;
+        }
+
+        try {
+            if (Account::accountExists($accountOwner, $accountName)) {
+                Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+            } else {
+                Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
+                if (!file_exists($acctImagePath)) {
+                    mkdir(
+                        $acctImagePath,
+                        defined('DIR_MODE') ? DIR_MODE : 0755,
+                        true
+                    );
+                    $indexFilePath = $acctImagePath . '/index.php';
+                    file_put_contents(
+                        $indexFilePath,
+                        '<?php die(); ?>'
+                    );
+                }
+            }
+            JobQueue::fillQueryJobs();
+            $_SESSION['messages'][] = 'Account has been created or modified.';
+        } catch (\Exception $e) {
+            $_SESSION['messages'][] = 'Failed to create or modify account: ' . $e->getMessage();
+        }
+        header('Location: /accounts');
+    }
+
+    private static function deleteAccount(): void
+    {
+        $accountName = trim($_POST['account']);
+        $accountOwner = $_SESSION['username'];
+        try {
+            Account::deleteAccount($accountOwner, $accountName);
+            JobQueue::fillQueryJobs();
+            $_SESSION['messages'][] = 'Account Deleted.';
+        } catch (\Exception $e) {
+            $_SESSION['messages'][] = 'Failed to delete account: ' . $e->getMessage();
+        }
+        header('Location: /accounts');
     }
 
     /**
