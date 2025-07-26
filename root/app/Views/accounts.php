@@ -82,10 +82,10 @@ require 'partials/header.php';
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const accountNameField = document.querySelector('#account');
         const updateButtons = document.querySelectorAll('#update-button');
         updateButtons.forEach(button => {
             button.addEventListener('click', function() {
-                const accountNameField = document.querySelector('#account');
                 const promptField = document.querySelector('#add-prompt');
                 const linkField = document.querySelector('#link');
                 const hashtagsSelect = document.querySelector('#hashtags');
@@ -139,6 +139,20 @@ require 'partials/header.php';
                 accountNameField.readOnly = true;
             });
         });
+
+        const accountForm = document.querySelector('form[action="/accounts"]');
+        accountForm.addEventListener('submit', function() {
+            accountNameField.readOnly = false;
+        });
+
+        const accountList = document.querySelector('.account-right');
+        if (accountList) {
+            accountList.addEventListener('click', function(event) {
+                if (event.target.id !== 'update-button') {
+                    accountNameField.readOnly = false;
+                }
+            });
+        }
 
         const daysField = document.querySelector('#days');
         daysField.addEventListener('change', function() {
