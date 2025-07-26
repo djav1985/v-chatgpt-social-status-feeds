@@ -35,70 +35,13 @@ class HomeController extends Controller
             }
 
             if (isset($_POST['delete_status'])) {
-                $accountName = trim($_POST['account']);
-                $accountOwner = $_SESSION['username'];
-                if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
-                    $_SESSION['messages'][] = 'Username mismatch.';
-                    header('Location: /home');
-                    exit;
-                }
-                $statusId = (int) $_POST['id'];
-                try {
-                    $statusImagePath = Feed::getStatusImagePath($statusId, $accountName, $accountOwner);
-                    if ($statusImagePath) {
-                        $baseDir = realpath(__DIR__ . '/../../public/images');
-                        $safeOwner = preg_replace('/[^a-zA-Z0-9_-]/', '', $accountOwner);
-                        $safeAccount = preg_replace('/[^a-zA-Z0-9_-]/', '', $accountName);
-                        $safeImage = basename($statusImagePath);
-                        $imagePath = $baseDir . '/' . $safeOwner . '/' . $safeAccount . '/' . $safeImage;
-                        $realImagePath = realpath($imagePath);
-                        if ($realImagePath && str_starts_with($realImagePath, $baseDir) && file_exists($realImagePath)) {
-                            unlink($realImagePath);
-                        }
-                    }
-                    Feed::deleteStatus($statusId, $accountName, $accountOwner);
-                    $_SESSION['messages'][] = 'Successfully deleted status.';
-                } catch (\Exception $e) {
-                    $_SESSION['messages'][] = 'Failed to delete status: ' . $e->getMessage();
-                }
-                header('Location: /home');
-                exit;
-            } elseif (isset($_POST['generate_status'])) {
-                $accountName = trim($_POST['account']);
-                $accountOwner = $_SESSION['username'];
-                if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
-                    $_SESSION['messages'][] = 'Username mismatch.';
-                    header('Location: /home');
-                    exit;
-                }
-                try {
-                    $userInfo = User::getUserInfo($accountOwner);
-                    if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
-                        $_SESSION['messages'][] = 'Sorry, your available API calls have run out.';
-                        if (!$userInfo->limit_email_sent) {
-                            Mailer::sendTemplate(
-                                $userInfo->email,
-                                'API Limit Reached',
-                                'api_limit_reached',
-                                ['username' => $userInfo->username]
-                            );
-                            User::setLimitEmailSent($accountOwner, true);
-                        }
-                    } else {
-                        $statusResult = StatusController::generateStatus($accountName, $accountOwner);
-                        if (isset($statusResult['error'])) {
-                            $_SESSION['messages'][] = 'Failed to generate status: ' . $statusResult['error'];
-                        } else {
-                            $userInfo->used_api_calls += 1;
-                            User::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-                            $_SESSION['messages'][] = 'Successfully generated status.';
-                        }
-                    }
-                } catch (\Exception $e) {
-                    $_SESSION['messages'][] = 'Failed to generate status: ' . $e->getMessage();
-                }
-                header('Location: /home');
-                exit;
+                self::deleteStatus();
+                return;
+            }
+
+            if (isset($_POST['generate_status'])) {
+                self::generateStatus();
+                return;
             }
         }
 
@@ -139,6 +82,77 @@ class HomeController extends Controller
         ]);
     }
 
+
+    private static function deleteStatus(): void
+    {
+        $accountName = trim($_POST['account']);
+        $accountOwner = $_SESSION['username'];
+        if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
+            $_SESSION['messages'][] = 'Username mismatch.';
+            header('Location: /home');
+            exit;
+        }
+        $statusId = (int) $_POST['id'];
+        try {
+            $statusImagePath = Feed::getStatusImagePath($statusId, $accountName, $accountOwner);
+            if ($statusImagePath) {
+                $baseDir = realpath(__DIR__ . '/../../public/images');
+                $safeOwner = preg_replace('/[^a-zA-Z0-9_-]/', '', $accountOwner);
+                $safeAccount = preg_replace('/[^a-zA-Z0-9_-]/', '', $accountName);
+                $safeImage = basename($statusImagePath);
+                $imagePath = $baseDir . '/' . $safeOwner . '/' . $safeAccount . '/' . $safeImage;
+                $realImagePath = realpath($imagePath);
+                if ($realImagePath && str_starts_with($realImagePath, $baseDir) && file_exists($realImagePath)) {
+                    unlink($realImagePath);
+                }
+            }
+            Feed::deleteStatus($statusId, $accountName, $accountOwner);
+            $_SESSION['messages'][] = 'Successfully deleted status.';
+        } catch (\Exception $e) {
+            $_SESSION['messages'][] = 'Failed to delete status: ' . $e->getMessage();
+        }
+        header('Location: /home');
+        exit;
+    }
+
+    private static function generateStatus(): void
+    {
+        $accountName = trim($_POST['account']);
+        $accountOwner = $_SESSION['username'];
+        if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
+            $_SESSION['messages'][] = 'Username mismatch.';
+            header('Location: /home');
+            exit;
+        }
+        try {
+            $userInfo = User::getUserInfo($accountOwner);
+            if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
+                $_SESSION['messages'][] = 'Sorry, your available API calls have run out.';
+                if (!$userInfo->limit_email_sent) {
+                    Mailer::sendTemplate(
+                        $userInfo->email,
+                        'API Limit Reached',
+                        'api_limit_reached',
+                        ['username' => $userInfo->username]
+                    );
+                    User::setLimitEmailSent($accountOwner, true);
+                }
+            } else {
+                $statusResult = StatusController::generateStatus($accountName, $accountOwner);
+                if (isset($statusResult['error'])) {
+                    $_SESSION['messages'][] = 'Failed to generate status: ' . $statusResult['error'];
+                } else {
+                    $userInfo->used_api_calls += 1;
+                    User::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+                    $_SESSION['messages'][] = 'Successfully generated status.';
+                }
+            }
+        } catch (\Exception $e) {
+            $_SESSION['messages'][] = 'Failed to generate status: ' . $e->getMessage();
+        }
+        header('Location: /home');
+        exit;
+    }
     public static function shareButton(string $statusText, string $imagePath, string $accountOwner, string $accountName, int $statusId): string
     {
         $filename = basename($imagePath);
