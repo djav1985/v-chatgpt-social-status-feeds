@@ -10,3 +10,4 @@
 # Ignore vendor only in the root directory
 /vendor
 !/root/vendor
+/root/php_app.log
