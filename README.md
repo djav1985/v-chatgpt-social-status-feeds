@@ -205,6 +205,6 @@ The `db` service allows an empty MariaDB root password by setting `MARIADB_ALLOW
 
 ## 🎗 License
 
-This project is protected under the [MIT License](https://github.com/djav1985/v-chatgpt-editor/blob/main/LICENSE) License.
+This project is protected under the [MIT License](./LICENSE) License.
 
 ---
