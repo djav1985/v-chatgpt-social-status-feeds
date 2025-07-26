@@ -12,7 +12,7 @@
  * Description: AI Social Status Generator
  */
 
-namespace App\Controllers;
+namespace App\Services;
 
 use App\Models\Account;
 use App\Models\User;

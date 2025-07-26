@@ -23,7 +23,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorMiddleware;
-use App\Controllers\StatusController;
+use App\Services\StatusController;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
