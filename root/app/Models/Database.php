@@ -34,11 +34,21 @@ class Database
     private ?Result $result = null;
     private ?int $affectedRows = null;
 
+    /**
+     * Create a new Database instance and connect.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->connect();
     }
 
+    /**
+     * Establish a database connection if needed.
+     *
+     * @return void
+     */
     private function connect(): void
     {
         if (self::$dbh !== null && self::$lastUsedTime !== null && (time() - self::$lastUsedTime) > self::$idleTimeout) {
@@ -66,18 +76,34 @@ class Database
         self::$lastUsedTime = time();
     }
 
+    /**
+     * Close the current database connection.
+     *
+     * @return void
+     */
     private function closeConnection(): void
     {
         self::$dbh = null;
         self::$lastUsedTime = null;
     }
 
+    /**
+     * Reconnect to the database.
+     *
+     * @return void
+     */
     private function reconnect(): void
     {
         $this->closeConnection();
         $this->connect();
     }
 
+    /**
+     * Prepare an SQL query.
+     *
+     * @param string $sql SQL statement to execute
+     * @return void
+     */
     public function query(string $sql): void
     {
         $this->connect();
@@ -88,6 +114,14 @@ class Database
         $this->affectedRows = null;
     }
 
+    /**
+     * Bind a value to a query parameter.
+     *
+     * @param string   $param Parameter name with or without colon
+     * @param mixed    $value Value to bind
+     * @param int|null $type  Parameter type constant
+     * @return void
+     */
     public function bind(string $param, $value, ?int $type = null): void
     {
         if ($type === null) {
@@ -111,6 +145,11 @@ class Database
         $this->types[$name] = $type;
     }
 
+    /**
+     * Execute the prepared statement.
+     *
+     * @return bool True on success
+     */
     public function execute(): bool
     {
         try {
@@ -132,23 +171,43 @@ class Database
         }
     }
 
+    /**
+     * Execute the query and return all rows.
+     *
+     * @return array
+     */
     public function resultSet(): array
     {
         $this->execute();
         return $this->result ? $this->result->fetchAllAssociative() : [];
     }
 
+    /**
+     * Execute the query and return a single row.
+     *
+     * @return mixed
+     */
     public function single(): mixed
     {
         $this->execute();
         return $this->result ? $this->result->fetchAssociative() : null;
     }
 
+    /**
+     * Get the number of affected rows.
+     *
+     * @return int
+     */
     public function rowCount(): int
     {
         return $this->affectedRows ?? ($this->result ? $this->result->rowCount() : 0);
     }
 
+    /**
+     * Start a database transaction.
+     *
+     * @return bool
+     */
     public function beginTransaction(): bool
     {
         try {
@@ -167,6 +226,11 @@ class Database
         }
     }
 
+    /**
+     * Commit the current transaction.
+     *
+     * @return bool
+     */
     public function commit(): bool
     {
         self::$lastUsedTime = time();
@@ -174,6 +238,11 @@ class Database
         return true;
     }
 
+    /**
+     * Roll back the current transaction.
+     *
+     * @return bool
+     */
     public function rollBack(): bool
     {
         self::$lastUsedTime = time();
@@ -181,6 +250,12 @@ class Database
         return true;
     }
 
+    /**
+     * Check if the exception indicates a lost connection.
+     *
+     * @param DBALException $e
+     * @return bool
+     */
     private function isConnectionError(DBALException $e): bool
     {
         $code = $e->getPrevious() ? $e->getPrevious()->getCode() : $e->getCode();
