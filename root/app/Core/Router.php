@@ -31,11 +31,12 @@ class Router
                 exit();
             });
 
-            $r->addRoute('GET', '/login', [\App\Controllers\AuthController::class, 'handleRequest']);
-            $r->addRoute('GET', '/accounts', [\App\Controllers\AccountsController::class, 'handleRequest']);
-            $r->addRoute('GET', '/users', [\App\Controllers\UsersController::class, 'handleRequest']);
-            $r->addRoute('GET', '/info', [\App\Controllers\InfoController::class, 'handleRequest']);
-            $r->addRoute('GET', '/home', [\App\Controllers\HomeController::class, 'handleRequest']);
+            // Register routes that should accept both GET and POST requests
+            $r->addRoute(['GET', 'POST'], '/login', [\App\Controllers\AuthController::class, 'handleRequest']);
+            $r->addRoute(['GET', 'POST'], '/accounts', [\App\Controllers\AccountsController::class, 'handleRequest']);
+            $r->addRoute(['GET', 'POST'], '/users', [\App\Controllers\UsersController::class, 'handleRequest']);
+            $r->addRoute(['GET', 'POST'], '/info', [\App\Controllers\InfoController::class, 'handleRequest']);
+            $r->addRoute(['GET', 'POST'], '/home', [\App\Controllers\HomeController::class, 'handleRequest']);
 
             // Feed routes
             $r->addRoute('GET', '/feeds/{user}/{account}', [\App\Controllers\FeedController::class, 'handleRequest']);
