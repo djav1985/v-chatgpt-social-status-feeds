@@ -133,10 +133,15 @@ class FeedController extends Controller
             // Include image enclosure if available
             if (!empty($status->status_image)) {
                 $imageUrl = DOMAIN . "/images/" . htmlspecialchars($accountOwner) . "/" . htmlspecialchars($status->account) . "/" . htmlspecialchars($status->status_image);
+
                 // Images are stored under root/public/images/<owner>/<account>/
-                $imageFilePath = __DIR__ . '/../../public/images/' . htmlspecialchars($accountOwner) . '/' . htmlspecialchars($status->account) . '/' . htmlspecialchars($status->status_image);
+                $pathOwner   = basename($accountOwner);
+                $pathAccount = basename($status->account);
+                $pathImage   = basename($status->status_image);
+
+                $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
                 $imageFileSize = file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
-                $enclosureTag = '<enclosure url="' . $imageUrl . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
+                $enclosureTag  = '<enclosure url="' . $imageUrl . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
             }
 
             $description = htmlspecialchars($status->status);
