@@ -21,6 +21,11 @@ use App\Core\Csrf;
 
 class UsersController extends Controller
 {
+    /**
+     * Display the user management page for administrators.
+     *
+     * @return void
+     */
     public function handleRequest(): void
     {
 
@@ -37,6 +42,11 @@ class UsersController extends Controller
         ]);
     }
 
+    /**
+     * Process create, delete and impersonation actions for users.
+     *
+     * @return void
+     */
     public function handleSubmission(): void
     {
         if (empty($_SESSION['is_admin'])) {
@@ -69,6 +79,11 @@ class UsersController extends Controller
         exit;
     }
 
+    /**
+     * Create or update a user based on form input.
+     *
+     * @return void
+     */
     private static function editUsers(): void
     {
         $username = trim($_POST['username']);
@@ -153,6 +168,11 @@ class UsersController extends Controller
         exit;
     }
 
+    /**
+     * Delete a user account if not deleting oneself.
+     *
+     * @return void
+     */
     private static function deleteUser(): void
     {
         $username = $_POST['username'];
@@ -170,6 +190,11 @@ class UsersController extends Controller
         exit;
     }
 
+    /**
+     * Log in as another user for administrative impersonation.
+     *
+     * @return void
+     */
     private static function loginAs(): void
     {
         $username = $_POST['username'];
@@ -197,6 +222,11 @@ class UsersController extends Controller
         header('Location: /users');
         exit;
     }
+    /**
+     * Generate the HTML list of all users for the admin panel.
+     *
+     * @return string Rendered list items
+     */
     private static function generateUserList(): string
     {
         $users = User::getAllUsers();

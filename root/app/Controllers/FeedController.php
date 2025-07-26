@@ -21,6 +21,13 @@ use App\Core\ErrorMiddleware;
 
 class FeedController extends Controller
 {
+    /**
+     * Entry point for RSS feed display for the given account.
+     *
+     * @param string $user    Account owner username
+     * @param string $account Account name or "all"
+     * @return void
+     */
     public function index(string $user, string $account): void
     {
         try {
@@ -31,6 +38,13 @@ class FeedController extends Controller
         }
     }
 
+    /**
+     * Validate parameters and output the requested feed.
+     *
+     * @param string|null $user    Owner username
+     * @param string|null $account Account name or "all"
+     * @return void
+     */
     public function handleRequest(?string $user = null, ?string $account = null): void
     {
         if (!$user || !$account) {
@@ -43,6 +57,13 @@ class FeedController extends Controller
     }
 
 
+    /**
+     * Output an RSS feed for a specific account or all accounts.
+     *
+     * @param string $accountName  Account name or "all"
+     * @param string $accountOwner Username owning the account(s)
+     * @return void
+     */
     private static function outputRssFeed(string $accountName, string $accountOwner): void
     {
         // Sanitize input to prevent XSS attacks

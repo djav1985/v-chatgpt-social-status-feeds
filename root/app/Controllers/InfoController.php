@@ -20,6 +20,11 @@ use App\Core\Csrf;
 
 class InfoController extends Controller
 {
+    /**
+     * Display user profile information and system message.
+     *
+     * @return void
+     */
     public function handleRequest(): void
     {
         $profileData = self::generateProfileDataAttributes($_SESSION['username']);
@@ -31,6 +36,11 @@ class InfoController extends Controller
         ]);
     }
 
+    /**
+     * Handle profile update and password change requests.
+     *
+     * @return void
+     */
     public function handleSubmission(): void
     {
         $token = $_POST['csrf_token'] ?? '';
@@ -54,6 +64,11 @@ class InfoController extends Controller
         exit;
     }
 
+    /**
+     * Validate and update the current user's password.
+     *
+     * @return void
+     */
     private static function processPasswordChange(): void
     {
         $username = $_SESSION['username'];
@@ -84,6 +99,11 @@ class InfoController extends Controller
         exit;
     }
 
+    /**
+     * Update the user's profile information from form submission.
+     *
+     * @return void
+     */
     private static function processProfileUpdate(): void
     {
         $username = $_SESSION['username'];
@@ -108,6 +128,12 @@ class InfoController extends Controller
         exit;
     }
 
+    /**
+     * Build data attributes for the profile form from stored info.
+     *
+     * @param string $username Username to load data for
+     * @return string Attribute string
+     */
     private static function generateProfileDataAttributes(string $username): string
     {
         $userInfo = User::getUserInfo($username);
@@ -121,6 +147,12 @@ class InfoController extends Controller
         return '';
     }
 
+    /**
+     * Compose the system message shown on the profile page.
+     *
+     * @param string $username Username to build the message for
+     * @return string Formatted HTML message
+     */
     private static function buildSystemMessage(string $username): string
     {
         $userInfo = User::getUserInfo($username);
