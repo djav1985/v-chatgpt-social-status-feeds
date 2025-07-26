@@ -57,8 +57,8 @@
             <form class="form-group" method="post">
                 <!-- Username input field (readonly) -->
                 <label for="username">Username:</label>
-                <input class="form-input" type="text" name="username" id="username" value="<?php
- echo htmlspecialchars($_SESSION['username']); ?>" readonly required>
+                <input class="form-input" type="text" id="username" value="<?php
+ echo htmlspecialchars($_SESSION['username']); ?>" readonly>
                 <!-- New password input field -->
                 <label for="password">New Password:</label>
                 <input class="form-input" type="password" name="password" id="password" required>
