@@ -1,19 +1,19 @@
 <?php return array(
     'root' => array(
-        'name' => 'appsbyv/v-chatgpt-smtp',
+        'name' => 'appsbyv/v-chatgpt-social-status-feeds',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'ba56a2d271150d65a2f6fa5509226b36dbd4231d',
+        'reference' => 'd3f9b6a307044f91e4d6c08c061f1e6d4ba47fec',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        'appsbyv/v-chatgpt-smtp' => array(
+        'appsbyv/v-chatgpt-social-status-feeds' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'ba56a2d271150d65a2f6fa5509226b36dbd4231d',
+            'reference' => 'd3f9b6a307044f91e4d6c08c061f1e6d4ba47fec',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
