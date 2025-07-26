@@ -23,7 +23,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorMiddleware;
-use App\Services\StatusController;
+use App\Services\StatusService;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
@@ -195,7 +195,7 @@ function updateJobs(): bool
  */
 function processJob(object $job): void
 {
-    $result = StatusController::generateStatus($job->account, $job->username);
+    $result = StatusService::generateStatus($job->account, $job->username);
     if (isset($result['success'])) {
         JobQueue::markCompleted($job->id);
         

@@ -8,7 +8,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: StatusController.php
+ * File: StatusService.php
  * Description: AI Social Status Generator
  */
 
@@ -19,7 +19,7 @@ use App\Models\User;
 use App\Models\Feed;
 use App\Core\ErrorMiddleware;
 
-class StatusController
+class StatusService
 {
     /**
      * Generates a status update and associated image for a given account.
