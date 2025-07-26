@@ -21,7 +21,7 @@ use App\Core\Csrf;
 
 class UsersController extends Controller
 {
-    public static function handleRequest(): void
+    public function handleRequest(): void
     {
 
         if (empty($_SESSION['is_admin'])) {
@@ -54,7 +54,7 @@ class UsersController extends Controller
 
         $userList = self::generateUserList();
 
-        (new self())->render('users', [
+        $this->render('users', [
             'userList' => $userList,
         ]);
     }

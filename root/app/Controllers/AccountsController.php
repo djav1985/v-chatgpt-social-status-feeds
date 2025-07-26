@@ -22,7 +22,7 @@ use App\Core\Csrf;
 
 class AccountsController extends Controller
 {
-    public static function handleRequest(): void
+    public function handleRequest(): void
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -48,7 +48,7 @@ class AccountsController extends Controller
         $accountList = self::generateAccountList();
         $calendarOverview = self::generateCalendarOverview();
 
-        (new self())->render('accounts', [
+        $this->render('accounts', [
             'daysOptions' => $daysOptions,
             'cronOptions' => $cronOptions,
             'accountList' => $accountList,

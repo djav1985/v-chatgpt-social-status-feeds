@@ -31,7 +31,7 @@ class FeedController extends Controller
         }
     }
 
-    public static function handleRequest(?string $user = null, ?string $account = null): void
+    public function handleRequest(?string $user = null, ?string $account = null): void
     {
         if (!$user || !$account) {
             http_response_code(400);
@@ -39,8 +39,7 @@ class FeedController extends Controller
             return;
         }
 
-        $controller = new self();
-        $controller->index($user, $account);
+        $this->index($user, $account);
     }
 
 

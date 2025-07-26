@@ -23,7 +23,7 @@ use App\Core\Csrf;
 
 class HomeController extends Controller
 {
-    public static function handleRequest(): void
+    public function handleRequest(): void
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -75,7 +75,7 @@ class HomeController extends Controller
             ];
         }
 
-        (new self())->render('home', [
+        $this->render('home', [
             'accountOwner' => $accountOwner,
             'accountsData' => $accountsData,
         ]);
