@@ -301,26 +301,40 @@ class JobQueue
         $days = array_map('strtolower', array_map('trim', explode(',', $account->days)));
 
         foreach ($hours as $hour) {
+            // Early validation guards
             if (!is_numeric($hour)) {
                 continue;
             }
+
             $hour = (int) $hour;
             if ($hour < 0 || $hour > 23) {
                 continue;
             }
+
             $runTime = (clone $start)->setTime($hour, 0);
             if ($runTime < $start) {
                 $runTime->modify('+1 day');
             }
+
             if ($runTime >= $end) {
                 continue;
             }
+
             $dayName = strtolower($runTime->format('l'));
             if (!in_array('everyday', $days) && !in_array($dayName, $days)) {
                 continue;
             }
+
+            // Scheduling logic
             $runAt = $runTime->format('Y-m-d H:i:s');
-            self::insert($account->username, $account->account, $runAt, 'pending', null, $db);
+            self::insert(
+                $account->username,
+                $account->account,
+                $runAt,
+                'pending',
+                null,
+                $db
+            );
         }
     }
 }
