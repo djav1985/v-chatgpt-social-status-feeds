@@ -63,16 +63,18 @@ class Security
             $db->bind(':ip', $ip);
             $result = $db->single();
 
-            if ($result) {
-                if (time() - $result->timestamp > (3 * 24 * 60 * 60)) {
-                    $db->query("UPDATE ip_blacklist SET blacklisted = FALSE WHERE ip_address = :ip");
-                    $db->bind(':ip', $ip);
-                    $db->execute();
-                    return false;
-                }
-                return true;
+            if (! $result) {
+                return false;
             }
-            return false;
+
+            if (time() - $result->timestamp > (3 * 24 * 60 * 60)) {
+                $db->query("UPDATE ip_blacklist SET blacklisted = FALSE WHERE ip_address = :ip");
+                $db->bind(':ip', $ip);
+                $db->execute();
+                return false;
+            }
+
+            return true;
         } catch (Exception $e) {
             ErrorMiddleware::logMessage('Error checking blacklist status: ' . $e->getMessage(), 'error');
             throw $e;
