@@ -39,8 +39,9 @@ define('MAX_WIDTH', 720);
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', 8);
 
-// Maximum days to keep images. Should be over 360.
-define('IMG_AGE', 180);
+// Maximum days to keep images. Default is 360 and it should be kept at
+// least this value in production.
+define('IMG_AGE', 360);
 
 // Session timeout limit in seconds (default: 30 minutes)
 define('SESSION_TIMEOUT_LIMIT', 1800);

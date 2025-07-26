@@ -40,7 +40,8 @@ define('MAX_WIDTH', getenv('MAX_WIDTH'));
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', getenv('MAX_STATUSES'));
 
-// Maximum age of images in days before they are removed (should be over 360 days)
+// Maximum age of images in days before they are removed. Default is
+// 360 days and production setups should keep it at least this value.
 define('IMG_AGE', getenv('IMG_AGE'));
 
 // Session timeout limit in seconds (default: 30 minutes)
