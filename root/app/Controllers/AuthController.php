@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Models\Security;
 use App\Core\ErrorMiddleware;
 use App\Core\Controller;
+use App\Core\Csrf;
 
 class AuthController extends Controller
 {
@@ -33,7 +34,7 @@ class AuthController extends Controller
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!self::validCsrfToken($_POST['csrf_token'] ?? '')) {
+            if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
                 $error = 'Invalid CSRF token. Please try again.';
                 ErrorMiddleware::logMessage($error);
                 $_SESSION['messages'][] = $error;
@@ -77,11 +78,6 @@ class AuthController extends Controller
         session_destroy();
         header('Location: /login');
         exit();
-    }
-
-    private static function validCsrfToken(string $token): bool
-    {
-        return isset($_SESSION['csrf_token']) && $token === $_SESSION['csrf_token'];
     }
 
     private static function validateCredentials(string $username, string $password): ?object

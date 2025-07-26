@@ -18,6 +18,7 @@ use App\Core\Controller;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\JobQueue;
+use App\Core\Csrf;
 
 class AccountsController extends Controller
 {
@@ -25,7 +26,7 @@ class AccountsController extends Controller
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!self::isValidCsrf()) {
+            if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
                 $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
                 header('Location: /accounts');
                 exit;
@@ -53,11 +54,6 @@ class AccountsController extends Controller
             'accountList' => $accountList,
             'calendarOverview' => $calendarOverview,
         ]);
-    }
-
-    private static function isValidCsrf(): bool
-    {
-        return isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token'];
     }
 
     private static function createOrUpdateAccount(): void
