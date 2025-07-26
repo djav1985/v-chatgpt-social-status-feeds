@@ -165,11 +165,7 @@ function resetApi(): bool
  */
 function purgeIps(): bool
 {
-    if (!Security::clearIpBlacklist()) {
-        
-        return false;
-    }
-    return true;
+    return Security::clearIpBlacklist();
 }
 
 
