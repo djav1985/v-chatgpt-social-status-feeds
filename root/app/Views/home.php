@@ -115,17 +115,14 @@ require 'partials/header.php';
         const allButtons = document.querySelectorAll('.collapse-button');
 
         // Close all other sections
-        allStatusContents.forEach(content => {
-            if (content !== statusContent) content.style.display = 'none';
-        });
+        allStatusContents.forEach(content =>
+            content !== statusContent && (content.style.display = 'none'));
 
-        allAccountActionContainers.forEach(container => {
-            if (container !== accountActionContainer) container.style.display = 'none';
-        });
+        allAccountActionContainers.forEach(container =>
+            container !== accountActionContainer && (container.style.display = 'none'));
 
-        allButtons.forEach(btn => {
-            if (btn !== button) btn.querySelector('i').className = 'icon icon-arrow-right';
-        });
+        allButtons.forEach(btn =>
+            btn !== button && (btn.querySelector('i').className = 'icon icon-arrow-right'));
 
         // Toggle the clicked section
         const isOpen = statusContent.style.display === 'flex';
@@ -238,13 +235,11 @@ require 'partials/header.php';
                     };
 
                     // Share content if supported
-                    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-                        await navigator.share(shareData);
-                        console.log('Content shared successfully');
-                    } else {
-                        console.log('Sharing not supported.');
-                        showToast('Sharing not supported on this device.');
-                    }
+                    navigator.share && navigator.canShare && navigator.canShare(shareData)
+                        ? (await navigator.share(shareData),
+                            console.log('Content shared successfully'))
+                        : (console.log('Sharing not supported.'),
+                            showToast('Sharing not supported on this device.'));
                 } catch (error) {
                     console.error('Error sharing:', error);
                     showToast('Error occurred while sharing.');
