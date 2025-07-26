@@ -28,7 +28,7 @@ class AccountsController extends Controller
             if (!self::isValidCsrf()) {
                 $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
                 header('Location: /accounts');
-                return;
+                exit;
             }
 
             if (isset($_POST['edit_account'])) {
@@ -109,7 +109,7 @@ class AccountsController extends Controller
 
         if (!empty($_SESSION['messages'])) {
             header('Location: /accounts');
-            return;
+            exit;
         }
 
         try {
@@ -137,6 +137,7 @@ class AccountsController extends Controller
             $_SESSION['messages'][] = 'Failed to create or modify account: ' . $e->getMessage();
         }
         header('Location: /accounts');
+        exit;
     }
 
     private static function deleteAccount(): void
@@ -151,6 +152,7 @@ class AccountsController extends Controller
             $_SESSION['messages'][] = 'Failed to delete account: ' . $e->getMessage();
         }
         header('Location: /accounts');
+        exit;
     }
 
     /**
