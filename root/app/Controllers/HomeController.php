@@ -16,7 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Mailer;
-use App\Controllers\StatusController;
+use App\Services\StatusController;
 use App\Models\User;
 use App\Models\Feed;
 use App\Core\Csrf;
