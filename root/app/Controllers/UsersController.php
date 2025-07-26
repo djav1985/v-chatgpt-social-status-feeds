@@ -25,6 +25,11 @@ class UsersController extends Controller
     {
         AuthMiddleware::check();
 
+        if (empty($_SESSION['is_admin'])) {
+            http_response_code(403);
+            exit('Forbidden');
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
@@ -33,6 +38,10 @@ class UsersController extends Controller
             }
 
             if (isset($_POST['edit_users'])) {
+                if (empty($_SESSION['is_admin'])) {
+                    http_response_code(403);
+                    exit('Forbidden');
+                }
                 $username = trim($_POST['username']);
                 $password = trim($_POST['password']);
                 $plainPassword = $password;
@@ -115,6 +124,10 @@ class UsersController extends Controller
                 header('Location: /users');
                 exit;
             } elseif (isset($_POST['delete_user']) && isset($_POST['username'])) {
+                if (empty($_SESSION['is_admin'])) {
+                    http_response_code(403);
+                    exit('Forbidden');
+                }
                 $username = $_POST['username'];
                 if ($username === $_SESSION['username']) {
                     $_SESSION['messages'][] = "Sorry, you can't delete your own account.";
@@ -129,6 +142,10 @@ class UsersController extends Controller
                 header('Location: /users');
                 exit;
             } elseif (isset($_POST['login_as']) && isset($_POST['username'])) {
+                if (empty($_SESSION['is_admin'])) {
+                    http_response_code(403);
+                    exit('Forbidden');
+                }
                 $username = $_POST['username'];
                 try {
                     $user = User::getUserInfo($username);
@@ -138,6 +155,11 @@ class UsersController extends Controller
                         }
                         $_SESSION['username'] = $user->username;
                         $_SESSION['logged_in'] = true;
+                        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+                        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                        $_SESSION['is_admin'] = $user->admin;
+                        $_SESSION['timeout'] = time();
+                        session_regenerate_id(true);
                         header('Location: /home');
                         exit;
                     } else {
