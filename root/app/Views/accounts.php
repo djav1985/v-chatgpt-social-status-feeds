@@ -108,32 +108,18 @@ require 'partials/header.php';
                 });
 
                 // Select the appropriate cron options
-                const selectedCronValues = this.dataset.cron ? this.dataset.cron.split(',') : [];
-                if (selectedCronValues.length === 0 || selectedCronValues.includes("off")) {
-                    const offOption = cronField.querySelector('option[value="off"]');
-                    offOption.selected = true;
-                } else {
-                    selectedCronValues.forEach(value => {
-                        const option = cronField.querySelector(`option[value="${value}"]`);
-                        if (option) {
-                            option.selected = true;
-                        }
-                    });
-                }
+                const selectedCronValues = this.dataset.cron?.split(',') || [];
+                selectedCronValues.length === 0 || selectedCronValues.includes('off')
+                    ? cronField.querySelector('option[value="off"]').selected = true
+                    : selectedCronValues.forEach(value =>
+                        cronField.querySelector(`option[value="${value}"]`)?.selected = true);
 
                 // Select the appropriate days options
-                const selectedDaysValues = this.dataset.days ? this.dataset.days.split(',') : [];
-                if (selectedDaysValues.length === 0 || selectedDaysValues.includes("everyday")) {
-                    const everydayOption = daysField.querySelector('option[value="everyday"]');
-                    everydayOption.selected = true;
-                } else {
-                    selectedDaysValues.forEach(value => {
-                        const option = daysField.querySelector(`option[value="${value}"]`);
-                        if (option) {
-                            option.selected = true;
-                        }
-                    });
-                }
+                const selectedDaysValues = this.dataset.days?.split(',') || [];
+                selectedDaysValues.length === 0 || selectedDaysValues.includes('everyday')
+                    ? daysField.querySelector('option[value="everyday"]').selected = true
+                    : selectedDaysValues.forEach(value =>
+                        daysField.querySelector(`option[value="${value}"]`)?.selected = true);
 
                 platformSelect.value = this.dataset.platform;
                 accountNameField.readOnly = true;
@@ -145,30 +131,20 @@ require 'partials/header.php';
             accountNameField.readOnly = false;
         });
 
-        const accountList = document.querySelector('.account-right');
-        if (accountList) {
-            accountList.addEventListener('click', function(event) {
-                if (event.target.id !== 'update-button') {
-                    accountNameField.readOnly = false;
-                }
-            });
-        }
+        document.querySelector('.account-right')?.addEventListener('click', event => {
+            event.target.id !== 'update-button' && (accountNameField.readOnly = false);
+        });
 
         const daysField = document.querySelector('#days');
-        daysField.addEventListener('change', function() {
-            const selectedOptions = Array.from(daysField.selectedOptions).map(option => option.value);
+        daysField.addEventListener('change', () => {
+            const selectedOptions = Array.from(daysField.selectedOptions).map(opt => opt.value);
 
             // Ensure only 'everyday' or specific days are selected, not both
-            if (selectedOptions.includes('everyday')) {
-                Array.from(daysField.options).forEach(option => {
-                    if (option.value !== 'everyday') {
-                        option.selected = false;
-                    }
-                });
-            } else if (selectedOptions.length > 0) {
-                const everydayOption = daysField.querySelector('option[value="everyday"]');
-                everydayOption.selected = false;
-            }
+            selectedOptions.includes('everyday')
+                ? Array.from(daysField.options).forEach(opt =>
+                    opt.value !== 'everyday' && (opt.selected = false))
+                : selectedOptions.length > 0 &&
+                    (daysField.querySelector('option[value="everyday"]').selected = false);
         });
     });
 </script>
