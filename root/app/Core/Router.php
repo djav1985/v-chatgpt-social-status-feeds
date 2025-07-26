@@ -76,7 +76,8 @@ class Router
             case Dispatcher::FOUND:
                 [$class, $action] = $routeInfo[1];
                 $vars = $routeInfo[2];
-                if ($uri !== '/login') {
+                $isFeed = function_exists('str_starts_with') ? str_starts_with($uri, '/feeds/') : (preg_match('/^\/feeds\//', $uri) === 1);
+                if ($uri !== '/login' && !$isFeed) {
                     AuthMiddleware::check();
                 }
                 call_user_func_array([new $class(), $action], $vars);
