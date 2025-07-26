@@ -16,6 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\User;
+use App\Core\Csrf;
 
 class InfoController extends Controller
 {
@@ -24,7 +25,7 @@ class InfoController extends Controller
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $_POST['csrf_token'] ?? '';
-            if (!self::isCsrfValid($token)) {
+            if (!Csrf::validate($token)) {
                 $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
                 header('Location: /info');
                 exit;
@@ -48,11 +49,6 @@ class InfoController extends Controller
             'profileData' => $profileData,
             'systemMsg' => $systemMsg,
         ]);
-    }
-
-    private static function isCsrfValid(string $token): bool
-    {
-        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
     }
 
     private static function processPasswordChange(): void

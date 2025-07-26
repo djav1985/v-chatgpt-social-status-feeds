@@ -17,6 +17,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Mailer;
 use App\Models\User;
+use App\Core\Csrf;
 
 class UsersController extends Controller
 {
@@ -29,7 +30,7 @@ class UsersController extends Controller
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
                 $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
                 header('Location: /users');
                 exit;

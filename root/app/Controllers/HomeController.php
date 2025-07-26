@@ -19,6 +19,7 @@ use App\Core\Mailer;
 use App\Controllers\StatusController;
 use App\Models\User;
 use App\Models\Feed;
+use App\Core\Csrf;
 
 class HomeController extends Controller
 {
@@ -26,7 +27,7 @@ class HomeController extends Controller
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
                 $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
                 header('Location: /home');
                 exit;
