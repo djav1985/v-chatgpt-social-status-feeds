@@ -15,7 +15,6 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\AuthMiddleware;
 use App\Core\Mailer;
 use App\Controllers\StatusController;
 use App\Models\User;
@@ -25,7 +24,6 @@ class HomeController extends Controller
 {
     public static function handleRequest(): void
     {
-        AuthMiddleware::check();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {

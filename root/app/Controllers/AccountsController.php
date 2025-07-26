@@ -15,7 +15,6 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\AuthMiddleware;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\JobQueue;
@@ -24,7 +23,6 @@ class AccountsController extends Controller
 {
     public static function handleRequest(): void
     {
-        AuthMiddleware::check();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!self::isValidCsrf()) {

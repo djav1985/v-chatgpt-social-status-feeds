@@ -15,7 +15,6 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\AuthMiddleware;
 use App\Core\Mailer;
 use App\Models\User;
 
@@ -23,7 +22,6 @@ class UsersController extends Controller
 {
     public static function handleRequest(): void
     {
-        AuthMiddleware::check();
 
         if (empty($_SESSION['is_admin'])) {
             http_response_code(403);

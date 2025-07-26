@@ -15,14 +15,12 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\AuthMiddleware;
 use App\Models\User;
 
 class InfoController extends Controller
 {
     public static function handleRequest(): void
     {
-        AuthMiddleware::check();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $_POST['csrf_token'] ?? '';
