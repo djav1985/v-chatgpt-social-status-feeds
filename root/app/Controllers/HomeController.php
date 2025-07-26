@@ -36,7 +36,12 @@ class HomeController extends Controller
 
             if (isset($_POST['delete_status'])) {
                 $accountName = trim($_POST['account']);
-                $accountOwner = trim($_POST['username']);
+                $accountOwner = $_SESSION['username'];
+                if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
+                    $_SESSION['messages'][] = 'Username mismatch.';
+                    header('Location: /home');
+                    exit;
+                }
                 $statusId = (int) $_POST['id'];
                 try {
                     $statusImagePath = Feed::getStatusImagePath($statusId, $accountName, $accountOwner);
@@ -60,7 +65,12 @@ class HomeController extends Controller
                 exit;
             } elseif (isset($_POST['generate_status'])) {
                 $accountName = trim($_POST['account']);
-                $accountOwner = trim($_POST['username']);
+                $accountOwner = $_SESSION['username'];
+                if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
+                    $_SESSION['messages'][] = 'Username mismatch.';
+                    header('Location: /home');
+                    exit;
+                }
                 try {
                     $userInfo = User::getUserInfo($accountOwner);
                     if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
