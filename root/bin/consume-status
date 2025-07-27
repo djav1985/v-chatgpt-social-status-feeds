@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+require __DIR__ . '/../config.php';
+require __DIR__ . '/../vendor/autoload.php';
+
+use App\Models\JobQueue;
+use App\Services\StatusService;
+
+$context  = JobQueue::context();
+$queue    = $context->createQueue('status');
+$consumer = $context->createConsumer($queue);
+
+while ($message = $consumer->receiveNoWait()) {
+    $data = $message->getProperties();
+    if (!empty($data['account']) && !empty($data['username'])) {
+        StatusService::generateStatus($data['account'], $data['username']);
+    }
+    $consumer->acknowledge($message);
+}

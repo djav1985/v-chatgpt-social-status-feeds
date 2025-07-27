@@ -123,7 +123,6 @@ class User
             $db->bind(':username', $username);
             $db->execute();
 
-            JobQueue::removeUser($username);
 
             $db->commit();
             return true;
