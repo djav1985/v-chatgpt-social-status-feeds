@@ -12,7 +12,7 @@
  * Description: AI Social Status Generator
  */
 
-namespace App\Models;
+namespace App\Core;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Connection;

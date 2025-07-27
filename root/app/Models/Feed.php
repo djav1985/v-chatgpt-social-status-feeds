@@ -16,7 +16,7 @@ namespace App\Models;
 
 use Exception;
 use Doctrine\DBAL\ParameterType;
-use App\Models\Database;
+use App\Core\Database;
 use App\Core\ErrorMiddleware;
 
 class Feed
