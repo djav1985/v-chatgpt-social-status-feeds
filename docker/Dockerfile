@@ -28,7 +28,6 @@ RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 # Set up cron jobs
 RUN echo "0 0 * * * php /var/www/cron.php daily" >> /etc/crontab && \
     echo "0 * * * * php /var/www/cron.php hourly" >> /etc/crontab && \
-    echo "*/5 * * * * php /var/www/cron.php run_query" >> /etc/crontab && \
     crontab /etc/crontab
 
 
