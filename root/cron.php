@@ -23,12 +23,13 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorMiddleware;
+use App\Services\StatusService;
 use App\Models\Account;
+use App\Models\User;
 use App\Models\Feed;
+use App\Core\Mailer;
 use App\Models\JobQueue;
 use App\Models\Security;
-use App\Models\User;
-use App\Core\Mailer;
 
 // Apply configured runtime limits after loading settings
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
@@ -36,15 +37,42 @@ ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M
 
 // Run the job logic within the error middleware handler
 ErrorMiddleware::handle(function () {
-    purgeStatuses();
-    purgeImages();
-    purgeIps();
-    if (date('j') === '1') {
-        resetApi();
-    }
+    global $argv;
 
-    JobQueue::fillQueryJobs();
-    require __DIR__ . '/bin/consume-status';
+$validJobTypes = [
+    'daily',
+    'hourly',
+    'run_query',
+];
+$jobType = $argv[1] ?? 'run_query'; // Default job type is 'run_query'
+
+if (!in_array($jobType, $validJobTypes)) {
+    die("Invalid job type specified.");
+}
+
+// Run tasks for the selected job type
+switch ($jobType) {
+    case 'daily':
+        if (date('j') === '1' && !resetApi()) {
+            die(1);
+        }
+        if (!purgeIps() || !JobQueue::fillQueryJobs()) {
+            die(1);
+        }
+        break;
+    case 'hourly':
+        if (!purgeStatuses() || !purgeImages()) {
+            die(1);
+        }
+        break;
+    case 'run_query':
+        if (!updateJobs()) {
+            die(1);
+        }
+        break;
+    default:
+        die(1);
+}
 });
 
 
@@ -144,3 +172,34 @@ function purgeIps(): bool
 /**
  * Run queued jobs and generate statuses.
  */
+function updateJobs(): bool
+{
+    $limit = defined('CRON_QUEUE_LIMIT') ? (int) CRON_QUEUE_LIMIT : 10;
+    $jobs = JobQueue::claimPending($limit);
+
+    if (empty($jobs)) {
+        return true;
+    }
+
+    foreach ($jobs as $job) {
+        processJob($job);
+    }
+
+    JobQueue::cleanupOld();
+
+    return true;
+}
+
+/**
+ * Process an individual status job.
+ */
+function processJob(object $job): void
+{
+    $result = StatusService::generateStatus($job->account, $job->username);
+    if (isset($result['success'])) {
+        JobQueue::markCompleted($job->id);
+        
+    } else {
+        JobQueue::markFailed($job->id);
+    }
+}

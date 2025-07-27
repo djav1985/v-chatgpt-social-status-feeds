@@ -145,6 +145,7 @@ class AccountsController extends Controller
                     );
                 }
             }
+            JobQueue::fillQueryJobs();
             $_SESSION['messages'][] = 'Account has been created or modified.';
         } catch (\Exception $e) {
             $_SESSION['messages'][] = 'Failed to create or modify account: ' . $e->getMessage();
@@ -164,6 +165,7 @@ class AccountsController extends Controller
         $accountOwner = $_SESSION['username'];
         try {
             Account::deleteAccount($accountOwner, $accountName);
+            JobQueue::fillQueryJobs();
             $_SESSION['messages'][] = 'Account Deleted.';
         } catch (\Exception $e) {
             $_SESSION['messages'][] = 'Failed to delete account: ' . $e->getMessage();

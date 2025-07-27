@@ -54,7 +54,6 @@ define('DIR_MODE', 0755);
 define('CRON_MAX_EXECUTION_TIME', getenv('CRON_MAX_EXECUTION_TIME') ?: 0);
 define('CRON_MEMORY_LIMIT', getenv('CRON_MEMORY_LIMIT') ?: '512M');
 define('CRON_QUEUE_LIMIT', getenv('CRON_QUEUE_LIMIT') ?: 10);
-define('QUEUE_TABLE', getenv('QUEUE_TABLE') ?: 'status_queue');
 
 // MySQL Database Connection Constants
 define('DB_HOST', getenv('DB_HOST'));
