@@ -14,7 +14,7 @@ services:
       DOMAIN: 'https://spectre3.hugev.xyz'
       SYSTEM_MSG: 'You are a social media marketer. You will respond with professional, fun, emoji loaded social status update and nothing else.'
       MAX_WIDTH: 720
-      MAX_STATUSES: 30
+      MAX_STATUSES: 50
       IMG_AGE: 360
       SESSION_TIMEOUT_LIMIT: 1800
       CRON_MAX_EXECUTION_TIME: 0

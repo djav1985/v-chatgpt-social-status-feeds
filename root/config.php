@@ -37,7 +37,7 @@ define('SYSTEM_MSG', 'You are a social media marketer. You will respond with pro
 define('MAX_WIDTH', 720);
 
 // Maximum number of statuses allowed in each feed
-define('MAX_STATUSES', 30);
+define('MAX_STATUSES', 50);
 
 // Maximum days to keep images. Default is 360 and it should be kept at
 // least this value in production.
