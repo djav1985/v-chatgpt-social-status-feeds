@@ -3,7 +3,7 @@
         'name' => 'appsbyv/v-chatgpt-social-status-feeds',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '309181639370df0091e4a9b6a3c21cb8ab72505e',
+        'reference' => '55ceba6f6654e7a06a70e06fca4c136e4062479a',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'appsbyv/v-chatgpt-social-status-feeds' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '309181639370df0091e4a9b6a3c21cb8ab72505e',
+            'reference' => '55ceba6f6654e7a06a70e06fca4c136e4062479a',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
