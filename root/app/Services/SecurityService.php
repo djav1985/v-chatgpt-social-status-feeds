@@ -15,7 +15,7 @@
 namespace App\Services;
 
 use Exception;
-use App\Models\Database;
+use App\Core\Database;
 use App\Core\ErrorMiddleware;
 
 class SecurityService
