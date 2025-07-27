@@ -158,10 +158,6 @@ class Account
             $db->execute();
             $db->commit();
 
-            if ($oldCron !== $cron || $oldDays !== $days) {
-                JobQueue::removeRemainingToday($accountOwner, $accountName);
-                JobQueue::fillRemainingToday($accountOwner, $accountName);
-            }
 
             return true;
         } catch (Exception $e) {
@@ -225,7 +221,6 @@ class Account
             $db->bind(':accountName', $accountName);
             $db->execute();
 
-            JobQueue::removeAccount($accountOwner, $accountName);
 
             $db->query("DELETE FROM accounts WHERE username = :accountOwner AND account = :accountName");
             $db->bind(':accountOwner', $accountOwner);
