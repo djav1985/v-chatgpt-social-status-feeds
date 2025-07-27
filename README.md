@@ -92,7 +92,8 @@ Before getting started with the installation, ensure your runtime environment me
 
 - **Web Server:** Apache
 - **Programming Language:** PHP 8.0+
-- **Database:** MySQL
+- **Database:** MySQL 8.0+ or compatible MariaDB
+  - Required for the `FOR UPDATE SKIP LOCKED` feature used by the queue to allow concurrent workers.
 
 ### ⚙️ Installation
 
