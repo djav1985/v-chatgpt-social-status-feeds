@@ -23,12 +23,11 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorMiddleware;
-use App\Services\StatusService;
+use App\Services\QueueService;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
 use App\Core\Mailer;
-use App\Models\JobQueue;
 use App\Models\Security;
 
 // Apply configured runtime limits after loading settings
@@ -42,9 +41,8 @@ ErrorMiddleware::handle(function () {
 $validJobTypes = [
     'daily',
     'hourly',
-    'run_query',
 ];
-$jobType = $argv[1] ?? 'run_query'; // Default job type is 'run_query'
+$jobType = $argv[1] ?? 'hourly'; // Default job type is 'hourly'
 
 if (!in_array($jobType, $validJobTypes)) {
     die("Invalid job type specified.");
@@ -58,8 +56,7 @@ switch ($jobType) {
             $resetOk = resetApi();
         }
         $purgeIpsOk = purgeIps();
-        $fillJobsOk = JobQueue::fillQueryJobs();
-        if ((date('j') === '1' && !$resetOk) || !$purgeIpsOk || !$fillJobsOk) {
+        if ((date('j') === '1' && !$resetOk) || !$purgeIpsOk) {
             die(1);
         }
         break;
@@ -70,13 +67,23 @@ switch ($jobType) {
         if (!$statusOk || !$imagesOk) {
             die(1);
         }
-        break;
-    }
-    case 'run_query': {
-        $jobsOk = updateJobs();
-        if (!$jobsOk) {
-            die(1);
+
+        $queue = new QueueService();
+        $accounts = Account::getAllAccounts();
+        $currentHour = (int) date('G');
+        $dayName = strtolower(date('l'));
+        foreach ($accounts as $account) {
+            $hours = array_filter(array_map('trim', explode(',', $account->cron)), 'strlen');
+            if (!in_array((string) $currentHour, $hours, true) && !in_array($currentHour, $hours, true)) {
+                continue;
+            }
+            $days = array_map('strtolower', array_map('trim', explode(',', $account->days)));
+            if (!in_array('everyday', $days) && !in_array($dayName, $days)) {
+                continue;
+            }
+            $queue->enqueueStatus($account->username, $account->account);
         }
+        $queue->runQueue();
         break;
     }
     default:
@@ -181,34 +188,3 @@ function purgeIps(): bool
 /**
  * Run queued jobs and generate statuses.
  */
-function updateJobs(): bool
-{
-    $limit = defined('CRON_QUEUE_LIMIT') ? (int) CRON_QUEUE_LIMIT : 10;
-    $jobs = JobQueue::claimPending($limit);
-
-    if (empty($jobs)) {
-        return true;
-    }
-
-    foreach ($jobs as $job) {
-        processJob($job);
-    }
-
-    JobQueue::cleanupOld();
-
-    return true;
-}
-
-/**
- * Process an individual status job.
- */
-function processJob(object $job): void
-{
-    $result = StatusService::generateStatus($job->account, $job->username);
-    if (isset($result['success'])) {
-        JobQueue::markCompleted($job->id);
-        
-    } else {
-        JobQueue::markFailed($job->id);
-    }
-}

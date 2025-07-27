@@ -173,120 +173,23 @@ CREATE INDEX created_at ON status_updates (created_at);
 
 -- Create the status_jobs table if it doesn't exist
 CREATE TABLE IF NOT EXISTS status_jobs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    account VARCHAR(255) NOT NULL,
-    run_at DATETIME NOT NULL,
-    status ENUM('pending','processing','completed','failed') DEFAULT 'pending',
-    payload TEXT,
-    UNIQUE KEY unique_job (username, account, run_at)
+    id CHAR(36) NOT NULL PRIMARY KEY,
+    published_at BIGINT NOT NULL,
+    body TEXT,
+    headers TEXT,
+    properties TEXT,
+    redelivered BOOLEAN DEFAULT NULL,
+    queue VARCHAR(255) NOT NULL,
+    priority SMALLINT DEFAULT NULL,
+    delayed_until BIGINT DEFAULT NULL,
+    time_to_live BIGINT DEFAULT NULL,
+    delivery_id CHAR(36) DEFAULT NULL,
+    redeliver_after BIGINT DEFAULT NULL,
+    INDEX idx_priority (priority, published_at, queue, delivery_id, delayed_until, id),
+    INDEX idx_redeliver (redeliver_after, delivery_id),
+    INDEX idx_ttl (time_to_live, delivery_id),
+    INDEX idx_delivery (delivery_id)
 );
-
--- Ensure the status_jobs table has all the required columns (alter only if necessary)
--- Add missing columns to status_jobs table
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND COLUMN_NAME = 'username') = 0,
-    'ALTER TABLE status_jobs ADD COLUMN username VARCHAR(255) NOT NULL',
-    'SELECT 0');
-PREPARE alter_sql FROM @stmt;
-EXECUTE alter_sql;
-DEALLOCATE PREPARE alter_sql;
-
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND COLUMN_NAME = 'account') = 0,
-    'ALTER TABLE status_jobs ADD COLUMN account VARCHAR(255) NOT NULL',
-    'SELECT 0');
-PREPARE alter_sql FROM @stmt;
-EXECUTE alter_sql;
-DEALLOCATE PREPARE alter_sql;
-
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND COLUMN_NAME = 'run_at') = 0,
-    'ALTER TABLE status_jobs ADD COLUMN run_at DATETIME NOT NULL',
-    'SELECT 0');
-PREPARE alter_sql FROM @stmt;
-EXECUTE alter_sql;
-DEALLOCATE PREPARE alter_sql;
-
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND COLUMN_NAME = 'status') = 0,
-    'ALTER TABLE status_jobs ADD COLUMN status ENUM(''pending'',''processing'',''completed'',''failed'') DEFAULT ''pending''',
-    'SELECT 0');
-PREPARE alter_sql FROM @stmt;
-EXECUTE alter_sql;
-DEALLOCATE PREPARE alter_sql;
-
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND COLUMN_NAME = 'payload') = 0,
-    'ALTER TABLE status_jobs ADD COLUMN payload TEXT',
-    'SELECT 0');
-PREPARE alter_sql FROM @stmt;
-EXECUTE alter_sql;
-DEALLOCATE PREPARE alter_sql;
-
--- Ensure indexes on status_jobs table
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.STATISTICS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND INDEX_NAME = 'username_idx') > 0,
-    'DROP INDEX username_idx ON status_jobs',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX username_idx ON status_jobs (username);
-
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.STATISTICS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND INDEX_NAME = 'run_at_idx') > 0,
-    'DROP INDEX run_at_idx ON status_jobs',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX run_at_idx ON status_jobs (run_at);
-
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.STATISTICS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND INDEX_NAME = 'account_idx') > 0,
-    'DROP INDEX account_idx ON status_jobs',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX account_idx ON status_jobs (account);
-
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.STATISTICS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND INDEX_NAME = 'unique_job') > 0,
-    'ALTER TABLE status_jobs DROP INDEX unique_job',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-ALTER TABLE status_jobs ADD CONSTRAINT unique_job UNIQUE (username, account, run_at);
 
 -- Create accounts table if it doesn’t exist
 CREATE TABLE IF NOT EXISTS accounts (
