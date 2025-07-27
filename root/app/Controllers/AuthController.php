@@ -45,7 +45,13 @@ class AuthController extends Controller
     public function handleSubmission(): void
     {
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && isset($_POST['logout'])) {
-            self::logoutUser();
+            if (Csrf::validate($_POST['csrf_token'] ?? '')) {
+                self::logoutUser();
+            } else {
+                $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+                header('Location: /login');
+                exit();
+            }
         }
 
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && !isset($_POST['logout'])) {
