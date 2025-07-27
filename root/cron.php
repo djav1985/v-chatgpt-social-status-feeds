@@ -52,24 +52,33 @@ if (!in_array($jobType, $validJobTypes)) {
 
 // Run tasks for the selected job type
 switch ($jobType) {
-    case 'daily':
-        if (date('j') === '1' && !resetApi()) {
-            die(1);
+    case 'daily': {
+        $resetOk = true;
+        if (date('j') === '1') {
+            $resetOk = resetApi();
         }
-        if (!purgeIps() || !JobQueue::fillQueryJobs()) {
-            die(1);
-        }
-        break;
-    case 'hourly':
-        if (!purgeStatuses() || !purgeImages()) {
-            die(1);
-        }
-        break;
-    case 'run_query':
-        if (!updateJobs()) {
+        $purgeIpsOk = purgeIps();
+        $fillJobsOk = JobQueue::fillQueryJobs();
+        if ((date('j') === '1' && !$resetOk) || !$purgeIpsOk || !$fillJobsOk) {
             die(1);
         }
         break;
+    }
+    case 'hourly': {
+        $statusOk = purgeStatuses();
+        $imagesOk = purgeImages();
+        if (!$statusOk || !$imagesOk) {
+            die(1);
+        }
+        break;
+    }
+    case 'run_query': {
+        $jobsOk = updateJobs();
+        if (!$jobsOk) {
+            die(1);
+        }
+        break;
+    }
     default:
         die(1);
 }
