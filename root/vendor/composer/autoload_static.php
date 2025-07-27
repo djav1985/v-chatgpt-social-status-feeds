@@ -20,14 +20,12 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         'P' => 
         array (
             'Psr\\Log\\' => 8,
-            'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
         'I' => 
         array (
             'Interop\\Queue\\' => 14,
-            'Interop\\Amqp\\' => 13,
         ),
         'F' => 
         array (
@@ -35,12 +33,11 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         ),
         'E' => 
         array (
-            'Enqueue\\Null\\' => 13,
-            'Enqueue\\Dsn\\' => 12,
-            'Enqueue\\' => 8,
+            'Enqueue\\Dbal\\' => 13,
         ),
         'D' => 
         array (
+            'Doctrine\\Persistence\\' => 21,
             'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\DBAL\\' => 14,
             'Doctrine\\Common\\' => 16,
@@ -68,10 +65,6 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/container/src',
-        ),
         'Psr\\Cache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
@@ -84,25 +77,17 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             0 => __DIR__ . '/..' . '/queue-interop/queue-interop/src',
         ),
-        'Interop\\Amqp\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/queue-interop/amqp-interop/src',
-        ),
         'FastRoute\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
         ),
-        'Enqueue\\Null\\' => 
+        'Enqueue\\Dbal\\' => 
         array (
-            0 => __DIR__ . '/..' . '/enqueue/null',
+            0 => __DIR__ . '/..' . '/enqueue/dbal',
         ),
-        'Enqueue\\Dsn\\' => 
+        'Doctrine\\Persistence\\' => 
         array (
-            0 => __DIR__ . '/..' . '/enqueue/dsn',
-        ),
-        'Enqueue\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/enqueue/enqueue',
+            0 => __DIR__ . '/..' . '/doctrine/persistence/src/Persistence',
         ),
         'Doctrine\\Deprecations\\' => 
         array (
