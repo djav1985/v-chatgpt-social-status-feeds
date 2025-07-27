@@ -15,7 +15,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
-use App\Models\Security;
+use App\Services\SecurityService;
 use App\Core\ErrorMiddleware;
 use App\Core\Controller;
 use App\Core\Csrf;
@@ -81,12 +81,12 @@ class AuthController extends Controller
             }
 
             $ip = $_SERVER['REMOTE_ADDR'];
-            if (Security::isBlacklisted($ip)) {
+            if (SecurityService::isBlacklisted($ip)) {
                 $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
                 ErrorMiddleware::logMessage($error);
                 $_SESSION['messages'][] = $error;
             } else {
-                Security::updateFailedAttempts($ip);
+                SecurityService::updateFailedAttempts($ip);
                 $error = 'Invalid username or password.';
                 ErrorMiddleware::logMessage($error);
                 $_SESSION['messages'][] = $error;
