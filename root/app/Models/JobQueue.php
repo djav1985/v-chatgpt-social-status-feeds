@@ -80,6 +80,8 @@ class JobQueue
 
     /**
      * Atomically claim pending jobs for processing.
+     * Uses `SKIP LOCKED` to allow concurrent workers to safely select rows.
+     * Requires MySQL 8.0 or newer.
      *
      * @param int $limit
      * @return array
@@ -89,7 +91,9 @@ class JobQueue
         $db = new Database();
         $db->beginTransaction();
         try {
-            $db->query("SELECT * FROM status_jobs WHERE status = 'pending' AND run_at <= NOW() ORDER BY run_at ASC LIMIT :l FOR UPDATE");
+            // SKIP LOCKED avoids blocking when multiple workers select rows.
+            // Requires MySQL 8.0 or newer.
+            $db->query("SELECT * FROM status_jobs WHERE status = 'pending' AND run_at <= NOW() ORDER BY run_at ASC LIMIT :l FOR UPDATE SKIP LOCKED");
             $db->bind(':l', $limit, ParameterType::INTEGER);
             $jobs = $db->resultSet();
 
