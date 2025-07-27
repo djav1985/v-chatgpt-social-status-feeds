@@ -20,12 +20,14 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         'P' => 
         array (
             'Psr\\Log\\' => 8,
+            'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
         'I' => 
         array (
             'Interop\\Queue\\' => 14,
+            'Interop\\Amqp\\' => 13,
         ),
         'F' => 
         array (
@@ -33,7 +35,10 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         ),
         'E' => 
         array (
+            'Enqueue\\Null\\' => 13,
+            'Enqueue\\Dsn\\' => 12,
             'Enqueue\\Dbal\\' => 13,
+            'Enqueue\\' => 8,
         ),
         'D' => 
         array (
@@ -65,6 +70,10 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
+        'Psr\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
         'Psr\\Cache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
@@ -77,13 +86,29 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             0 => __DIR__ . '/..' . '/queue-interop/queue-interop/src',
         ),
+        'Interop\\Amqp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/queue-interop/amqp-interop/src',
+        ),
         'FastRoute\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
         ),
+        'Enqueue\\Null\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/enqueue/null',
+        ),
+        'Enqueue\\Dsn\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/enqueue/dsn',
+        ),
         'Enqueue\\Dbal\\' => 
         array (
             0 => __DIR__ . '/..' . '/enqueue/dbal',
+        ),
+        'Enqueue\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/enqueue/enqueue',
         ),
         'Doctrine\\Persistence\\' => 
         array (
