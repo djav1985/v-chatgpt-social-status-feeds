@@ -1,0 +1,24 @@
+name: Copy Copilot Instructions to AGENTS.md
+
+on:
+  push:
+    paths:
+      - .github/copilot-instructions.md
+  workflow_dispatch:
+
+jobs:
+  copy-instructions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Copy copilot-instructions.md to AGENTS.md
+        run: |
+          cp .github/copilot-instructions.md AGENTS.md
+      - name: Commit and push AGENTS.md
+        run: |
+          git config --global user.name "Vontainment[bot]"
+          git config --global user.email "services@vontainment.com"
+          git add AGENTS.md
+          git commit -m "chore: update AGENTS.md from copilot-instructions.md" || echo "No changes to commit"
+          git push
