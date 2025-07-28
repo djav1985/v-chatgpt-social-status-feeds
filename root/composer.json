@@ -9,7 +9,9 @@
     "doctrine/dbal": "^3.6",
     "nikic/fast-route": "^1.3",
     "enqueue/enqueue": "^0.10.26",
-    "enqueue/dbal": "^0.10.26"
+    "enqueue/dbal": "^0.10.26",
+    "openai-php/client": "*",
+    "respect/validation": "*"
   },
   "autoload": {
     "psr-4": {
