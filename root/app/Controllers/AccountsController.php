@@ -18,6 +18,7 @@ use App\Core\Controller;
 use App\Models\Account;
 use App\Models\User;
 use App\Core\Csrf;
+use Respect\Validation\Validator;
 
 class AccountsController extends Controller
 {
@@ -113,10 +114,10 @@ class AccountsController extends Controller
         if (empty($prompt)) {
             $_SESSION['messages'][] = 'Missing required field(s).';
         }
-        if (!preg_match('/^[a-z0-9-]{8,18}$/', $accountName)) {
+        if (!Validator::alnum('-')->noWhitespace()->lowercase()->length(8, 18)->validate($accountName)) {
             $_SESSION['messages'][] = 'Account name must be 8-18 characters long, alphanumeric and hyphens only.';
         }
-        if (!filter_var($link, FILTER_VALIDATE_URL)) {
+        if (!Validator::url()->startsWith('https://')->validate($link)) {
             $_SESSION['messages'][] = 'Link must be a valid URL starting with https://.';
         }
 
