@@ -18,6 +18,7 @@ use App\Core\Controller;
 use App\Core\Mailer;
 use App\Models\User;
 use App\Core\Csrf;
+use Respect\Validation\Validator;
 
 class UsersController extends Controller
 {
@@ -96,13 +97,13 @@ class UsersController extends Controller
         $expires = trim($_POST['expires']);
         $admin = intval($_POST['admin']);
 
-        if (!preg_match('/^[a-z0-9]{5,16}$/', $username)) {
+        if (!Validator::alnum()->noWhitespace()->lowercase()->length(5, 16)->validate($username)) {
             $_SESSION['messages'][] = 'Username must be 5-16 characters long, lowercase letters and numbers only.';
         }
-        if (!empty($password) && !preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/', $password)) {
+        if (!empty($password) && !Validator::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
             $_SESSION['messages'][] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
         }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (!Validator::email()->validate($email)) {
             $_SESSION['messages'][] = 'Please provide a valid email address.';
         }
 

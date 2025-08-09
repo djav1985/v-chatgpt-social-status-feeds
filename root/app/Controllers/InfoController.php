@@ -17,6 +17,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\User;
 use App\Core\Csrf;
+use Respect\Validation\Validator;
 
 class InfoController extends Controller
 {
@@ -79,7 +80,7 @@ class InfoController extends Controller
             $_SESSION['messages'][] = 'Passwords do not match. Please try again.';
         }
 
-        if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/', $password)) {
+        if (!Validator::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
             $_SESSION['messages'][] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
         }
 

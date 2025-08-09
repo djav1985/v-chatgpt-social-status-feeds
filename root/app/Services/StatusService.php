@@ -18,9 +18,32 @@ use App\Models\Account;
 use App\Models\User;
 use App\Models\Feed;
 use App\Core\ErrorMiddleware;
+use OpenAI;
+use GuzzleHttp\Client as GuzzleClient;
 
 class StatusService
 {
+    /** @var \OpenAI\Client|null */
+    private static $client = null;
+
+    /**
+     * Get shared OpenAI client instance.
+     */
+    private static function getClient(): \OpenAI\Client
+    {
+        if (self::$client === null) {
+            self::$client = OpenAI::factory()
+                ->withApiKey(API_KEY)
+                ->withBaseUri(rtrim(API_ENDPOINT, '/'))
+                ->withHttpClient(new GuzzleClient([
+                    'timeout' => 30,
+                    'connect_timeout' => 10,
+                ]))
+                ->make();
+        }
+
+        return self::$client;
+    }
     /**
      * Generates a status update and associated image for a given account.
      *
@@ -116,46 +139,29 @@ class StatusService
  * @param array|null $data Optional data to send in the request body.
  * @return array Returns the API response as an associative array.
  */
-    private static function openaiApiRequest(string $endpoint, ?array $data = null): array
-{
-    // Ensure there is exactly one slash between the endpoint base and path
-    $url = rtrim(API_ENDPOINT, '/') . '/' . ltrim($endpoint, '/');
-    $headers = [
-                "Authorization: Bearer " . API_KEY,
-                "Content-Type: application/json",
-               ];
+    private static function openaiApiRequest(string $endpoint, array $data = []): array
+    {
+        $client = self::getClient();
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    if ($data !== null) {
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    }
-    // Prevent hanging requests
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        try {
+            switch ($endpoint) {
+                case 'chat':
+                    $response = $client->chat()->create($data);
+                    break;
+                case 'images':
+                    $response = $client->images()->create($data);
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unsupported endpoint');
+            }
 
-    $response = curl_exec($ch);
-    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error = curl_error($ch);
-
-    if ($response === false || $statusCode < 200 || $statusCode >= 300) {
-        if ($response === false) {
-            $error = "Failed to make API request to $endpoint: $error";
-        } else {
-            $error = "API request to $endpoint returned HTTP status $statusCode";
+            return $response->toArray();
+        } catch (\Throwable $e) {
+            $error = "Failed to make API request to $endpoint: " . $e->getMessage();
+            ErrorMiddleware::logMessage($error, 'error');
+            return ["error" => $error];
         }
-        ErrorMiddleware::logMessage($error, 'error');
-        curl_close($ch);
-        return ["error" => $error];
     }
-
-    curl_close($ch);
-
-    return json_decode($response, true);
-}
 
 /**
  * Generates a structured social media post with an image prompt.
@@ -230,8 +236,8 @@ class StatusService
              "temperature"     => TEMPERATURE,
             ];
 
-    // API call to /v1/chat/completions
-    $response = self::openaiApiRequest("/chat/completions", $data);
+    // API call using OpenAI client
+    $response = self::openaiApiRequest('chat', $data);
 
     if (isset($response['error'])) {
         // Error already logged by openaiApiRequest if it originated there
@@ -280,7 +286,7 @@ class StatusService
              "size"    => "1792x1024",
             ];
 
-    $response = self::openaiApiRequest("/images/generations", $data);
+    $response = self::openaiApiRequest('images', $data);
 
     if (isset($response['error']) || !isset($response['data'][0]['url'])) {
         $error = "Error generating image for $accountName owned by $accountOwner: " . ($response['error'] ?? 'Unknown error');
