@@ -17,7 +17,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Account;
 use App\Models\Feed;
-use App\Core\ErrorMiddleware;
+use App\Core\ErrorHandler;
 
 class FeedController extends Controller
 {
@@ -33,7 +33,7 @@ class FeedController extends Controller
         try {
             self::outputRssFeed($account, $user);
         } catch (\Exception $e) {
-            ErrorMiddleware::logMessage('RSS feed generation failed: ' . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log('RSS feed generation failed: ' . $e->getMessage(), 'error');
             echo 'Error: ' . $e->getMessage();
         }
     }

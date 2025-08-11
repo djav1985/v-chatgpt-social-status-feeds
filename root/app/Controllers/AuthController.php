@@ -16,7 +16,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Services\SecurityService;
-use App\Core\ErrorMiddleware;
+use App\Core\ErrorHandler;
 use App\Core\Controller;
 use App\Core\Csrf;
 
@@ -61,7 +61,7 @@ class AuthController extends Controller
 
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
             $error = 'Invalid CSRF token. Please try again.';
-            ErrorMiddleware::logMessage($error);
+            ErrorHandler::getInstance()->log($error);
             $_SESSION['messages'][] = $error;
         } else {
             $username = trim($_POST['username'] ?? '');
@@ -83,12 +83,12 @@ class AuthController extends Controller
             $ip = $_SERVER['REMOTE_ADDR'];
             if (SecurityService::isBlacklisted($ip)) {
                 $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
-                ErrorMiddleware::logMessage($error);
+                ErrorHandler::getInstance()->log($error);
                 $_SESSION['messages'][] = $error;
             } else {
                 SecurityService::updateFailedAttempts($ip);
                 $error = 'Invalid username or password.';
-                ErrorMiddleware::logMessage($error);
+                ErrorHandler::getInstance()->log($error);
                 $_SESSION['messages'][] = $error;
             }
         }

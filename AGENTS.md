@@ -30,7 +30,7 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 - Set up two schedules for `cron.php` (daily/hourly) to purge, reset, and process status jobs.
 
 **Debugging:**
-- Use `ErrorMiddleware::logMessage()` for error/debug logs. Check `logs/` if enabled.
+- Use `ErrorHandler::getInstance()->log()` for error/debug logs. Check `logs/` if enabled.
 
 **Testing:**
 - No automated tests; use manual testing and DB inspection.

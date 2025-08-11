@@ -16,7 +16,7 @@ namespace App\Models;
 
 use Exception;
 use App\Core\Database;
-use App\Core\ErrorMiddleware;
+use App\Core\ErrorHandler;
 
 class User
 {
@@ -32,7 +32,7 @@ class User
             $db->query("SELECT * FROM users");
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving all users: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving all users: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -52,7 +52,7 @@ class User
             $result = $db->single();
             return $result ?: null; // Explicitly return null if no user is found
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error checking if user exists: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error checking if user exists: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -94,7 +94,7 @@ class User
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorMiddleware::logMessage("Error updating user: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error updating user: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -126,7 +126,7 @@ class User
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorMiddleware::logMessage("Error deleting user: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error deleting user: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -148,7 +148,7 @@ class User
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error updating password: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error updating password: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -167,7 +167,7 @@ class User
             $db->bind(':username', $username);
             return $db->single();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving user info: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving user info: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -186,7 +186,7 @@ class User
             $db->bind(':username', $username);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving all user accounts: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving all user accounts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -208,7 +208,7 @@ class User
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error updating used API calls: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error updating used API calls: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -230,7 +230,7 @@ class User
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error updating max API calls: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error updating max API calls: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -248,7 +248,7 @@ class User
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error updating limit email flag: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error updating limit email flag: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -266,7 +266,7 @@ class User
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error resetting all API usage: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error resetting all API usage: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -294,7 +294,7 @@ class User
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error updating profile: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error updating profile: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
