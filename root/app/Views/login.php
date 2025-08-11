@@ -47,6 +47,6 @@
         </div>
     </div>
 <?php
-    App\Core\ErrorManager::displayAndClearMessages(); ?>
+    App\Helpers\MessageHelper::displayAndClearMessages(); ?>
 </body>
 </html>

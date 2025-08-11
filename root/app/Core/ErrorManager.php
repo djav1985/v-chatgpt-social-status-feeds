@@ -110,18 +110,4 @@ class ErrorManager
         }
     }
 
-    /**
-     * Display and clear session-based messages.
-     */
-    public static function displayAndClearMessages(): void
-    {
-        $session = SessionManager::getInstance();
-        $messages = $session->get('messages', []);
-        if (!empty($messages)) {
-            foreach ($messages as $message) {
-                echo '<script>showToast(' . json_encode($message) . ');</script>';
-            }
-            $session->set('messages', []);
-        }
-    }
 }

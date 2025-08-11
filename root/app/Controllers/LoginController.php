@@ -20,6 +20,7 @@ use App\Core\ErrorManager;
 use App\Core\Controller;
 use App\Core\Csrf;
 use App\Core\SessionManager;
+use App\Helpers\MessageHelper;
 
 class LoginController extends Controller
 {
@@ -51,9 +52,7 @@ class LoginController extends Controller
             if (Csrf::validate($_POST['csrf_token'] ?? '')) {
                 self::logoutUser();
             } else {
-                $messages = $session->get('messages', []);
-                $messages[] = 'Invalid CSRF token. Please try again.';
-                $session->set('messages', $messages);
+                MessageHelper::addMessage('Invalid CSRF token. Please try again.');
                 header('Location: /login');
                 exit();
             }
@@ -67,9 +66,7 @@ class LoginController extends Controller
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
             $error = 'Invalid CSRF token. Please try again.';
             ErrorManager::getInstance()->log($error);
-            $messages = $session->get('messages', []);
-            $messages[] = $error;
-            $session->set('messages', $messages);
+            MessageHelper::addMessage($error);
         } else {
             $username = trim($_POST['username'] ?? '');
             $password = trim($_POST['password'] ?? '');
@@ -91,16 +88,12 @@ class LoginController extends Controller
             if (SecurityService::isBlacklisted($ip)) {
                 $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
                 ErrorManager::getInstance()->log($error);
-                $messages = $session->get('messages', []);
-                $messages[] = $error;
-                $session->set('messages', $messages);
+                MessageHelper::addMessage($error);
             } else {
                 SecurityService::updateFailedAttempts($ip);
                 $error = 'Invalid username or password.';
                 ErrorManager::getInstance()->log($error);
-                $messages = $session->get('messages', []);
-                $messages[] = $error;
-                $session->set('messages', $messages);
+                MessageHelper::addMessage($error);
             }
         }
 

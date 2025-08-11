@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Models\Status;
 use App\Core\Csrf;
 use App\Core\SessionManager;
+use App\Helpers\MessageHelper;
 
 class HomeController extends Controller
 {
@@ -80,9 +81,7 @@ class HomeController extends Controller
     {
         $session = SessionManager::getInstance();
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Invalid CSRF token. Please try again.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Invalid CSRF token. Please try again.');
             header('Location: /home');
             exit;
         }
@@ -113,9 +112,7 @@ class HomeController extends Controller
         $accountName = trim($_POST['account']);
         $accountOwner = $session->get('username');
         if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Username mismatch.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Username mismatch.');
             header('Location: /home');
             exit;
         }
@@ -134,13 +131,9 @@ class HomeController extends Controller
                 }
             }
             Status::deleteStatus($statusId, $accountName, $accountOwner);
-            $messages = $session->get('messages', []);
-            $messages[] = 'Successfully deleted status.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Successfully deleted status.');
         } catch (\Exception $e) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Failed to delete status: ' . $e->getMessage();
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Failed to delete status: ' . $e->getMessage());
         }
         header('Location: /home');
         exit;
@@ -157,18 +150,14 @@ class HomeController extends Controller
         $accountName = trim($_POST['account']);
         $accountOwner = $session->get('username');
         if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Username mismatch.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Username mismatch.');
             header('Location: /home');
             exit;
         }
         try {
             $userInfo = User::getUserInfo($accountOwner);
             if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
-                $messages = $session->get('messages', []);
-                $messages[] = 'Sorry, your available API calls have run out.';
-                $session->set('messages', $messages);
+                MessageHelper::addMessage('Sorry, your available API calls have run out.');
                 if (!$userInfo->limit_email_sent) {
                     Mailer::sendTemplate(
                         $userInfo->email,
@@ -181,21 +170,15 @@ class HomeController extends Controller
             } else {
                 $statusResult = StatusService::generateStatus($accountName, $accountOwner);
                 if (isset($statusResult['error'])) {
-                    $messages = $session->get('messages', []);
-                    $messages[] = 'Failed to generate status: ' . $statusResult['error'];
-                    $session->set('messages', $messages);
+                    MessageHelper::addMessage('Failed to generate status: ' . $statusResult['error']);
                 } else {
                     $userInfo->used_api_calls += 1;
                     User::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-                    $messages = $session->get('messages', []);
-                    $messages[] = 'Successfully generated status.';
-                    $session->set('messages', $messages);
+                    MessageHelper::addMessage('Successfully generated status.');
                 }
             }
         } catch (\Exception $e) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Failed to generate status: ' . $e->getMessage();
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Failed to generate status: ' . $e->getMessage());
         }
         header('Location: /home');
         exit;

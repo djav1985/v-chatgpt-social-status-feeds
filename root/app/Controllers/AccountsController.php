@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 use Respect\Validation\Validator;
+use App\Helpers\MessageHelper;
 
 class AccountsController extends Controller
 {
@@ -52,9 +53,7 @@ class AccountsController extends Controller
     {
         $session = SessionManager::getInstance();
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Invalid CSRF token. Please try again.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Invalid CSRF token. Please try again.');
             header('Location: /accounts');
             exit;
         }
@@ -111,29 +110,19 @@ class AccountsController extends Controller
         }
 
         if ($invalidCron) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Invalid cron hour(s) supplied. Hours must be between 0 and 23.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Invalid cron hour(s) supplied. Hours must be between 0 and 23.');
         }
         if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Error processing input.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Error processing input.');
         }
         if (empty($prompt)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Missing required field(s).';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Missing required field(s).');
         }
         if (!Validator::alnum('-')->noWhitespace()->lowercase()->length(8, 18)->validate($accountName)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Account name must be 8-18 characters long, alphanumeric and hyphens only.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Account name must be 8-18 characters long, alphanumeric and hyphens only.');
         }
         if (!Validator::url()->startsWith('https://')->validate($link)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Link must be a valid URL starting with https://.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Link must be a valid URL starting with https://.');
         }
 
         if (!empty($session->get('messages'))) {
@@ -160,13 +149,9 @@ class AccountsController extends Controller
                     );
                 }
             }
-            $messages = $session->get('messages', []);
-            $messages[] = 'Account has been created or modified.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Account has been created or modified.');
         } catch (\Exception $e) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Failed to create or modify account: ' . $e->getMessage();
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Failed to create or modify account: ' . $e->getMessage());
         }
         header('Location: /accounts');
         exit;
@@ -184,13 +169,9 @@ class AccountsController extends Controller
         $accountOwner = $session->get('username');
         try {
             Account::deleteAccount($accountOwner, $accountName);
-            $messages = $session->get('messages', []);
-            $messages[] = 'Account Deleted.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Account Deleted.');
         } catch (\Exception $e) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Failed to delete account: ' . $e->getMessage();
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Failed to delete account: ' . $e->getMessage());
         }
         header('Location: /accounts');
         exit;

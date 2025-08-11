@@ -19,6 +19,7 @@ use App\Models\User;
 use App\Core\Csrf;
 use Respect\Validation\Validator;
 use App\Core\SessionManager;
+use App\Helpers\MessageHelper;
 
 class InfoController extends Controller
 {
@@ -49,9 +50,7 @@ class InfoController extends Controller
         $token = $_POST['csrf_token'] ?? '';
         $session = SessionManager::getInstance();
         if (!Csrf::validate($token)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Invalid CSRF token. Please try again.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Invalid CSRF token. Please try again.');
             header('Location: /info');
             exit;
         }
@@ -83,15 +82,11 @@ class InfoController extends Controller
         $password2 = $_POST['password2'];
 
         if ($password !== $password2) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Passwords do not match. Please try again.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Passwords do not match. Please try again.');
         }
 
         if (!Validator::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Password must be 8-16 characters long, including at least one letter, one number, and one symbol.');
         }
 
         if (!empty($session->get('messages'))) {
@@ -102,13 +97,9 @@ class InfoController extends Controller
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         try {
             User::updatePassword($username, $hashedPassword);
-            $messages = $session->get('messages', []);
-            $messages[] = 'Password Updated!';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Password Updated!');
         } catch (\Exception $e) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Password update failed: ' . $e->getMessage();
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Password update failed: ' . $e->getMessage());
         }
         header('Location: /info');
         exit;
@@ -129,22 +120,16 @@ class InfoController extends Controller
         $goal = trim($_POST['goal']);
 
         if (empty($who) || empty($where) || empty($what) || empty($goal)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'All fields are required.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('All fields are required.');
             header('Location: /info');
             exit;
         }
 
         try {
             User::updateProfile($username, $who, $where, $what, $goal);
-            $messages = $session->get('messages', []);
-            $messages[] = 'Profile Updated!';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Profile Updated!');
         } catch (\Exception $e) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Profile update failed: ' . $e->getMessage();
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Profile update failed: ' . $e->getMessage());
         }
         header('Location: /info');
         exit;
