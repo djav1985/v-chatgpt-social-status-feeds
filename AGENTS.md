@@ -3,7 +3,7 @@
 
 ## Big Picture & Architecture
 This is a modular PHP app for managing, scheduling, and distributing social media status updates. All source code lives under `root/` and follows a strict MVC pattern:
-- **Controllers** (`root/app/Controllers/`): Handle HTTP requests, session logic, and route mapping. Example: `AuthController.php` for login/session, `FeedController.php` for RSS feeds.
+- **Controllers** (`root/app/Controllers/`): Handle HTTP requests, session logic, and route mapping. Example: `LoginController.php` for login/session, `FeedController.php` for RSS feeds.
 - **Models** (`root/app/Models/`): Encapsulate all database logic. Use the custom `Database` class (Doctrine DBAL wrapper) for queries and transactions. Example: `User.php`, `Account.php`.
 - **Views** (`root/app/Views/`): Render HTML templates. Use partials and layouts for reuse.
 - **Core** (`root/app/Core/`): Shared utilities (routing, error logging, CSRF, mail, etc.).
@@ -51,7 +51,7 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 
 ## Key Files & Examples
 - `root/config.php`: All config and environment settings
-- `root/app/Controllers/AuthController.php`: Auth/session logic
+- `root/app/Controllers/LoginController.php`: Auth/session logic
 - `root/app/Models/User.php`: User DB logic
 - `root/app/Core/Utility.php`: RSS, IP blacklist, helpers
 - `root/app/Services/StatusService.php`: Status scheduling/queue

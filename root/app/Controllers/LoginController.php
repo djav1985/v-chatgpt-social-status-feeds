@@ -8,7 +8,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: AuthController.php
+ * File: LoginController.php
  * Description: AI Social Status Generator
  */
 
@@ -21,7 +21,7 @@ use App\Core\Controller;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 
-class AuthController extends Controller
+class LoginController extends Controller
 {
     /**
      * Show the login form when the user is not already authenticated.

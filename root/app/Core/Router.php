@@ -35,8 +35,8 @@ class Router
             });
 
             // Register routes for GET and POST requests separately
-            $r->addRoute('GET', '/login', [\App\Controllers\AuthController::class, 'handleRequest']);
-            $r->addRoute('POST', '/login', [\App\Controllers\AuthController::class, 'handleSubmission']);
+            $r->addRoute('GET', '/login', [\App\Controllers\LoginController::class, 'handleRequest']);
+            $r->addRoute('POST', '/login', [\App\Controllers\LoginController::class, 'handleSubmission']);
 
             $r->addRoute('GET', '/accounts', [\App\Controllers\AccountsController::class, 'handleRequest']);
             $r->addRoute('POST', '/accounts', [\App\Controllers\AccountsController::class, 'handleSubmission']);
