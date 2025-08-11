@@ -94,6 +94,18 @@ use App\Core\DatabaseManager;
 $db = DatabaseManager::getInstance();
 ```
 
+### Routing
+
+The router is exposed as a singleton. Use the shared instance to dispatch requests:
+
+```php
+use App\Core\Router;
+
+Router::getInstance()->dispatch($method, $uri);
+```
+
+This ensures the underlying FastRoute dispatcher is constructed only once.
+
 ### Session Management
 
 Manage sessions through the `SessionManager` singleton:

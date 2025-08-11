@@ -21,11 +21,12 @@ use function FastRoute\simpleDispatcher;
 class Router
 {
     private Dispatcher $dispatcher;
+    private static ?Router $instance = null;
 
     /**
      * Builds the route dispatcher and registers application routes.
      */
-    public function __construct()
+    private function __construct()
     {
         $this->dispatcher = simpleDispatcher(function (RouteCollector $r): void {
             // Redirect the root URL to the home page for convenience
@@ -53,6 +54,18 @@ class Router
             // Feed routes
             $r->addRoute('GET', '/feeds/{user}/{account}', [\App\Controllers\FeedController::class, 'handleRequest']);
         });
+    }
+
+    /**
+     * Returns the shared Router instance.
+     */
+    public static function getInstance(): Router
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     /**
