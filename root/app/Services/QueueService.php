@@ -90,6 +90,15 @@ class QueueService
         $db->execute();
     }
 
+    public function removeAllJobs(string $username, string $account): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query("DELETE FROM status_jobs WHERE JSON_EXTRACT(body, '\$.username') = :user AND JSON_EXTRACT(body, '\$.account') = :acct");
+        $db->bind(':user', $username);
+        $db->bind(':acct', $account);
+        $db->execute();
+    }
+
     public function runQueue(): void
     {
         $db = DatabaseManager::getInstance();
