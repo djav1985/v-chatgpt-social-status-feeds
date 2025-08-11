@@ -148,9 +148,18 @@ class CronService
                 ];
                 $message = $context->createMessage(JSON::encode($payload));
                 $message->setContentType('application/json');
-                $producer->send($queue, $message);
+        $producer->send($queue, $message);
             }
         }
+    }
+
+    /**
+     * Run hourly maintenance tasks.
+     */
+    public function runHourly(): void
+    {
+        $this->purgeStatuses();
+        $this->purgeImages();
     }
 
     /**

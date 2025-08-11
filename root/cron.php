@@ -24,6 +24,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorManager;
 use App\Services\CronService;
+use App\Services\QueueService;
 
 // Apply configured runtime limits after loading settings
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
@@ -31,6 +32,24 @@ ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M
 
 // Run the job logic within the error middleware handler
 ErrorManager::handle(function () {
+    global $argv;
+
     $service = new CronService();
-    $service->runDaily();
+
+    $validJobTypes = ['daily', 'hourly'];
+    $jobType = $argv[1] ?? 'hourly';
+    if (!in_array($jobType, $validJobTypes, true)) {
+        throw new \InvalidArgumentException('Invalid job type specified.');
+    }
+
+    switch ($jobType) {
+        case 'daily':
+            $service->runDaily();
+            break;
+        case 'hourly':
+            $service->runHourly();
+            $queue = new QueueService();
+            $queue->processLoop(true);
+            break;
+    }
 });

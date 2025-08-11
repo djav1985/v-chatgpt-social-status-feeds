@@ -163,12 +163,13 @@ Install the project using the following steps:
 6. **Set Up Cron Jobs:**
   - Configure two cron schedules:
     ```sh
-    0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php
-    0 * * * * /usr/bin/php /PATH-TO-APP/bin/status-worker.php --once
+    0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php daily
+    0 * * * * /usr/bin/php /PATH-TO-APP/cron.php hourly
     ```
   - Replace `/PATH-TO-APP/` with the actual path to your installation.
   - **Daily:** purges old data and populates the job queue for the day.
-  - **Hourly:** invokes the queue worker once to process jobs for the current hour. For a persistent worker, run `bin/status-worker.php` without `--once` under Supervisor or systemd.
+  - **Hourly:** processes queued jobs for the current hour.
+  - To run a persistent worker instead of the hourly cron, execute `bin/status-worker.php` without `--once` under Supervisor or systemd.
 
 ### Queue Table
 
