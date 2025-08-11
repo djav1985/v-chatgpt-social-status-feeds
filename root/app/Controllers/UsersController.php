@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 use Respect\Validation\Validator;
+use App\Helpers\MessageHelper;
 
 class UsersController extends Controller
 {
@@ -59,9 +60,7 @@ class UsersController extends Controller
         }
 
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Invalid CSRF token. Please try again.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Invalid CSRF token. Please try again.');
             header('Location: /users');
             exit;
         }
@@ -104,19 +103,13 @@ class UsersController extends Controller
         $admin = intval($_POST['admin']);
 
         if (!Validator::alnum()->noWhitespace()->lowercase()->length(5, 16)->validate($username)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Username must be 5-16 characters long, lowercase letters and numbers only.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Username must be 5-16 characters long, lowercase letters and numbers only.');
         }
         if (!empty($password) && !Validator::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Password must be 8-16 characters long, including at least one letter, one number, and one symbol.');
         }
         if (!Validator::email()->validate($email)) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Please provide a valid email address.';
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Please provide a valid email address.');
         }
 
         if (!empty($session->get('messages'))) {
@@ -127,9 +120,7 @@ class UsersController extends Controller
         try {
             $userExists = User::userExists($username);
             if (!$userExists && empty($password)) {
-                $messages = $session->get('messages', []);
-                $messages[] = 'Password is required for new users.';
-                $session->set('messages', $messages);
+                MessageHelper::addMessage('Password is required for new users.');
                 header('Location: /users');
                 exit;
             }
@@ -172,18 +163,12 @@ class UsersController extends Controller
                         ]
                     );
                 }
-                $messages = $session->get('messages', []);
-                $messages[] = 'User has been created or modified.';
-                $session->set('messages', $messages);
+                MessageHelper::addMessage('User has been created or modified.');
             } else {
-                $messages = $session->get('messages', []);
-                $messages[] = 'Failed to create or modify user.';
-                $session->set('messages', $messages);
+                MessageHelper::addMessage('Failed to create or modify user.');
             }
         } catch (\Exception $e) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Failed to create or modify user: ' . $e->getMessage();
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Failed to create or modify user: ' . $e->getMessage());
         }
         header('Location: /users');
         exit;
@@ -199,19 +184,13 @@ class UsersController extends Controller
         $session = SessionManager::getInstance();
         $username = $_POST['username'];
         if ($username === $session->get('username')) {
-            $messages = $session->get('messages', []);
-            $messages[] = "Sorry, you can't delete your own account.";
-            $session->set('messages', $messages);
+            MessageHelper::addMessage("Sorry, you can't delete your own account.");
         } else {
             try {
                 User::deleteUser($username);
-                $messages = $session->get('messages', []);
-                $messages[] = 'User Deleted';
-                $session->set('messages', $messages);
+                MessageHelper::addMessage('User Deleted');
             } catch (\Exception $e) {
-                $messages = $session->get('messages', []);
-                $messages[] = 'Failed to delete user: ' . $e->getMessage();
-                $session->set('messages', $messages);
+                MessageHelper::addMessage('Failed to delete user: ' . $e->getMessage());
             }
         }
         header('Location: /users');
@@ -243,14 +222,10 @@ class UsersController extends Controller
                 header('Location: /home');
                 exit;
             } else {
-                $messages = $session->get('messages', []);
-                $messages[] = 'Failed to login as user.';
-                $session->set('messages', $messages);
+                MessageHelper::addMessage('Failed to login as user.');
             }
         } catch (\Exception $e) {
-            $messages = $session->get('messages', []);
-            $messages[] = 'Failed to login as user: ' . $e->getMessage();
-            $session->set('messages', $messages);
+            MessageHelper::addMessage('Failed to login as user: ' . $e->getMessage());
         }
         header('Location: /users');
         exit;
