@@ -20,7 +20,7 @@ use App\Models\Account;
 use App\Models\User;
 use App\Models\Status;
 use App\Core\Mailer;
-use App\Services\SecurityService;
+use App\Models\Blacklist;
 
 class CronService
 {
@@ -102,6 +102,6 @@ class CronService
      */
     public function purgeIps(): bool
     {
-        return SecurityService::clearIpBlacklist();
+        return Blacklist::clearIpBlacklist();
     }
 }

@@ -15,7 +15,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
-use App\Services\SecurityService;
+use App\Models\Blacklist;
 use App\Core\ErrorManager;
 use App\Core\Controller;
 use App\Core\Csrf;
@@ -88,14 +88,14 @@ class LoginController extends Controller
             }
 
             $ip = $_SERVER['REMOTE_ADDR'];
-            if (SecurityService::isBlacklisted($ip)) {
+            if (Blacklist::isBlacklisted($ip)) {
                 $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
                 ErrorManager::getInstance()->log($error);
                 $messages = $session->get('messages', []);
                 $messages[] = $error;
                 $session->set('messages', $messages);
             } else {
-                SecurityService::updateFailedAttempts($ip);
+                Blacklist::updateFailedAttempts($ip);
                 $error = 'Invalid username or password.';
                 ErrorManager::getInstance()->log($error);
                 $messages = $session->get('messages', []);
