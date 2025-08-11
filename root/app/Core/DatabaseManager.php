@@ -8,7 +8,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: Database.php
+ * File: DatabaseManager.php
  * Description: AI Social Status Generator
  */
 
@@ -20,11 +20,10 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Exception;
-use App\Core\ErrorHandler;
-
-class Database
+use App\Core\ErrorManager;
+class DatabaseManager
 {
-    private static ?Database $instance = null;
+    private static ?DatabaseManager $instance = null;
     private static ?Connection $dbh = null;
     private static ?int $lastUsedTime = null;
     private static int $idleTimeout = 10;
@@ -36,7 +35,7 @@ class Database
     private ?int $affectedRows = null;
 
     /**
-     * Create a new Database instance and connect.
+     * Create a new DatabaseManager instance and connect.
      *
      * @return void
      */
@@ -46,11 +45,11 @@ class Database
     }
 
     /**
-     * Get the singleton Database instance.
+     * Get the singleton DatabaseManager instance.
      *
-     * @return Database
+     * @return DatabaseManager
      */
-    public static function getInstance(): Database
+    public static function getInstance(): DatabaseManager
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -82,7 +81,7 @@ class Database
             try {
                 self::$dbh = DriverManager::getConnection($params);
             } catch (DBALException $e) {
-                ErrorHandler::getInstance()->log('Database connection failed: ' . $e->getMessage(), 'error');
+                ErrorManager::getInstance()->log('Database connection failed: ' . $e->getMessage(), 'error');
                 throw new Exception('Database connection failed');
             }
         }
@@ -177,7 +176,7 @@ class Database
             return true;
         } catch (DBALException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorHandler::getInstance()->log('MySQL connection lost during execution. Attempting to reconnect...', 'warning');
+                ErrorManager::getInstance()->log('MySQL connection lost during execution. Attempting to reconnect...', 'warning');
                 $this->reconnect();
                 return $this->execute();
             }
@@ -231,7 +230,7 @@ class Database
             return true;
         } catch (DBALException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorHandler::getInstance()->log('MySQL connection lost during transaction. Attempting to reconnect...', 'warning');
+                ErrorManager::getInstance()->log('MySQL connection lost during transaction. Attempting to reconnect...', 'warning');
                 $this->reconnect();
                 self::$dbh->beginTransaction();
                 return true;

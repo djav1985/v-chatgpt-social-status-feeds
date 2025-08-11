@@ -18,7 +18,7 @@ use App\Core\Controller;
 use App\Core\Mailer;
 use App\Services\StatusService;
 use App\Models\User;
-use App\Models\Feed;
+use App\Models\Status;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 
@@ -40,7 +40,7 @@ class HomeController extends Controller
         foreach ($accounts as $account) {
             $name = $account->account;
             $acctInfo = \App\Models\Account::getAcctInfo($accountOwner, $name);
-            $statuses = Feed::getStatusInfo($accountOwner, $name);
+            $statuses = Status::getStatusInfo($accountOwner, $name);
             $statusList = [];
             foreach ($statuses as $status) {
                 $statusList[] = [
@@ -121,7 +121,7 @@ class HomeController extends Controller
         }
         $statusId = (int) $_POST['id'];
         try {
-            $statusImagePath = Feed::getStatusImagePath($statusId, $accountName, $accountOwner);
+            $statusImagePath = Status::getStatusImagePath($statusId, $accountName, $accountOwner);
             if ($statusImagePath) {
                 $baseDir = realpath(__DIR__ . '/../../public/images');
                 $safeOwner = preg_replace('/[^a-zA-Z0-9_-]/', '', $accountOwner);
@@ -133,7 +133,7 @@ class HomeController extends Controller
                     unlink($realImagePath);
                 }
             }
-            Feed::deleteStatus($statusId, $accountName, $accountOwner);
+            Status::deleteStatus($statusId, $accountName, $accountOwner);
             $messages = $session->get('messages', []);
             $messages[] = 'Successfully deleted status.';
             $session->set('messages', $messages);

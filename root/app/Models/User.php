@@ -15,8 +15,8 @@
 namespace App\Models;
 
 use Exception;
-use App\Core\Database;
-use App\Core\ErrorHandler;
+use App\Core\DatabaseManager;
+use App\Core\ErrorManager;
 
 class User
 {
@@ -28,11 +28,11 @@ class User
     public static function getAllUsers(): array
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM users");
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error retrieving all users: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error retrieving all users: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -46,13 +46,13 @@ class User
     public static function userExists(string $username): ?object
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
             $result = $db->single();
             return $result ?: null; // Explicitly return null if no user is found
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error checking if user exists: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error checking if user exists: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -73,7 +73,7 @@ class User
      */
     public static function updateUser(string $username, string $password, string $email, int $totalAccounts, int $maxApiCalls, int $usedApiCalls, string $expires, int $admin, bool $isUpdate): bool
     {
-        $db = Database::getInstance();
+        $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
             if ($isUpdate) {
@@ -94,7 +94,7 @@ class User
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::getInstance()->log("Error updating user: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error updating user: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -107,7 +107,7 @@ class User
      */
     public static function deleteUser(string $username): bool
     {
-        $db = Database::getInstance();
+        $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
             $db->query("DELETE FROM users WHERE username = :username");
@@ -126,7 +126,7 @@ class User
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::getInstance()->log("Error deleting user: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error deleting user: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -141,14 +141,14 @@ class User
     public static function updatePassword(string $username, string $hashedPassword): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("UPDATE users SET password = :password WHERE username = :username");
             $db->bind(':username', $username);
             $db->bind(':password', $hashedPassword);
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error updating password: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error updating password: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -162,12 +162,12 @@ class User
     public static function getUserInfo(string $username): mixed
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
             return $db->single();
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error retrieving user info: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error retrieving user info: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -181,12 +181,12 @@ class User
     public static function getAllUserAccts(string $username): array
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error retrieving all user accounts: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error retrieving all user accounts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -201,14 +201,14 @@ class User
     public static function updateUsedApiCalls(string $username, int $usedApiCalls): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username");
             $db->bind(':used_api_calls', $usedApiCalls);
             $db->bind(':username', $username);
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error updating used API calls: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error updating used API calls: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -223,14 +223,14 @@ class User
     public static function updateMaxApiCalls(string $username, int $maxApiCalls): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("UPDATE users SET max_api_calls = :max_api_calls WHERE username = :username");
             $db->bind(':max_api_calls', $maxApiCalls);
             $db->bind(':username', $username);
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error updating max API calls: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error updating max API calls: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -241,14 +241,14 @@ class User
     public static function setLimitEmailSent(string $username, bool $sent): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("UPDATE users SET limit_email_sent = :sent WHERE username = :username");
             $db->bind(':sent', $sent ? 1 : 0);
             $db->bind(':username', $username);
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error updating limit email flag: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error updating limit email flag: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -261,12 +261,12 @@ class User
     public static function resetAllApiUsage(): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("UPDATE users SET used_api_calls = 0, limit_email_sent = 0");
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error resetting all API usage: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error resetting all API usage: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -284,7 +284,7 @@ class User
     public static function updateProfile(string $username, string $who, string $where, string $what, string $goal): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("UPDATE users SET who = :who, `where` = :where, what = :what, goal = :goal WHERE username = :username");
             $db->bind(':username', $username);
             $db->bind(':who', $who);
@@ -294,7 +294,7 @@ class User
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error updating profile: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error updating profile: " . $e->getMessage(), 'error');
             throw $e;
         }
     }

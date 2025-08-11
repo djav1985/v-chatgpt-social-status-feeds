@@ -6,7 +6,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: ErrorHandler.php
+ * File: ErrorManager.php
  * Description: Singleton error handler providing global logging and error handling.
  */
 
@@ -15,7 +15,7 @@ namespace App\Core;
 use ErrorException;
 use Throwable;
 
-class ErrorHandler
+class ErrorManager
 {
     /**
      * Singleton instance of the error handler.

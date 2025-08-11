@@ -16,8 +16,8 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Account;
-use App\Models\Feed;
-use App\Core\ErrorHandler;
+use App\Models\Status;
+use App\Core\ErrorManager;
 
 class FeedController extends Controller
 {
@@ -33,7 +33,7 @@ class FeedController extends Controller
         try {
             self::outputRssFeed($account, $user);
         } catch (\Exception $e) {
-            ErrorHandler::getInstance()->log('RSS feed generation failed: ' . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log('RSS feed generation failed: ' . $e->getMessage(), 'error');
             echo 'Error: ' . $e->getMessage();
         }
     }
@@ -84,7 +84,7 @@ class FeedController extends Controller
                 $accountLink = Account::getAccountLink($accountOwner, $currentAccountName);
 
                 // Retrieve status updates for the account
-                $statusInfo = Feed::getStatusUpdates($accountOwner, $currentAccountName);
+                $statusInfo = Status::getStatusUpdates($accountOwner, $currentAccountName);
 
                 foreach ($statusInfo as $status) {
                     $status->accountLink = $accountLink;
@@ -104,7 +104,7 @@ class FeedController extends Controller
             $accountLink = Account::getAccountLink($accountOwner, $accountName);
 
             // Retrieve status updates for the account
-            $statuses = Feed::getStatusUpdates($accountOwner, $accountName);
+            $statuses = Status::getStatusUpdates($accountOwner, $accountName);
 
             foreach ($statuses as $status) {
                 $status->accountLink = $accountLink;

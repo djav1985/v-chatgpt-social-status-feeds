@@ -16,8 +16,8 @@ namespace App\Services;
 
 use App\Models\Account;
 use App\Models\User;
-use App\Models\Feed;
-use App\Core\ErrorHandler;
+use App\Models\Status;
+use App\Core\ErrorManager;
 use OpenAI;
 use GuzzleHttp\Client as GuzzleClient;
 
@@ -62,7 +62,7 @@ class StatusService
 
     if (!$accountInfo || !$userInfo) {
         $error = "Error: Account or user not found for $accountOwner / $accountName";
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 
@@ -102,7 +102,7 @@ class StatusService
     if (isset($statusResponse['error'])) {
         $errorDetail = is_array($statusResponse['error']) ? json_encode($statusResponse['error']) : $statusResponse['error'];
         $error = "Status generation failed for $accountName owned by $accountOwner: $errorDetail";
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 
@@ -122,12 +122,12 @@ class StatusService
     $imageResponse = self::generate_social_image($imagePrompt, $accountName, $accountOwner);
     if (isset($imageResponse['error'])) {
         $error = "Image generation failed for $accountName owned by $accountOwner: " . $imageResponse['error'];
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 
     $imageName = $imageResponse['image_name'];
-    Feed::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
+    Status::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
 
     return ['success' => true];
 }
@@ -158,7 +158,7 @@ class StatusService
             return $response->toArray();
         } catch (\Throwable $e) {
             $error = "Failed to make API request to $endpoint: " . $e->getMessage();
-            ErrorHandler::getInstance()->log($error, 'error');
+            ErrorManager::getInstance()->log($error, 'error');
             return ["error" => $error];
         }
     }
@@ -245,14 +245,14 @@ class StatusService
         // If the error isn't already specific, make it more specific here
         if (strpos($errorMsg, "Error generating status for") === false) {
              $errorMsg = "Error generating status for $accountName owned by $accountOwner: " . $errorMsg;
-             ErrorHandler::getInstance()->log($errorMsg, 'error');
+             ErrorManager::getInstance()->log($errorMsg, 'error');
         }
         return ["error" => $errorMsg];
     }
 
     if (!isset($response['choices'][0]['message']['content'])) {
         $error = "Error generating status for $accountName owned by $accountOwner: API response did not contain expected content.";
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 
@@ -261,7 +261,7 @@ class StatusService
     if (json_last_error() !== JSON_ERROR_NONE) {
         $jsonError = json_last_error_msg();
         $error = "Error generating status for $accountName owned by $accountOwner: Invalid structured output from API (JSON decode error: $jsonError). Original content: " . $response['choices'][0]['message']['content'];
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 
@@ -290,7 +290,7 @@ class StatusService
 
     if (isset($response['error']) || !isset($response['data'][0]['url'])) {
         $error = "Error generating image for $accountName owned by $accountOwner: " . ($response['error'] ?? 'Unknown error');
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 
@@ -302,20 +302,20 @@ class StatusService
     $dirMode = defined('DIR_MODE') ? DIR_MODE : 0755;
     if (!is_dir(dirname($image_path)) && !mkdir(dirname($image_path), $dirMode, true)) {
         $error = "Failed to create directory for $accountName owned by $accountOwner.";
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 
     $imageContent = @file_get_contents($image_url);
     if ($imageContent === false || $imageContent === '') {
         $error = "Failed to download image for $accountName owned by $accountOwner.";
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 
     if (file_put_contents($image_path, $imageContent) === false) {
         $error = "Failed to save image for $accountName owned by $accountOwner.";
-        ErrorHandler::getInstance()->log($error, 'error');
+        ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }
 

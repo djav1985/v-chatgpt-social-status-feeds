@@ -15,8 +15,8 @@
 namespace App\Models;
 
 use Exception;
-use App\Core\Database;
-use App\Core\ErrorHandler;
+use App\Core\DatabaseManager;
+use App\Core\ErrorManager;
 
 class Account
 {
@@ -28,11 +28,11 @@ class Account
     public static function getAllAccounts(): array
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM accounts");
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error retrieving all accounts: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error retrieving all accounts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -46,12 +46,12 @@ class Account
     public static function getAllUserAccts(string $username): array
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT account FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error retrieving all user accounts: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error retrieving all user accounts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -66,13 +66,13 @@ class Account
     public static function accountExists(string $accountOwner, string $accountName): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT 1 FROM accounts WHERE username = :accountOwner AND account = :accountName LIMIT 1");
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
             return (bool) $db->single();
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error checking if account exists: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error checking if account exists: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -87,13 +87,13 @@ class Account
     public static function getAcctInfo(string $username, string $account): mixed
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $username);
             $db->bind(':account', $account);
             return $db->single();
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error retrieving account info: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error retrieving account info: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -108,14 +108,14 @@ class Account
     public static function getAccountLink(string $username, string $account): string
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT link FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $username);
             $db->bind(':account', $account);
             $acctInfo = $db->single();
             return htmlspecialchars($acctInfo->link ?? '');
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log("Error retrieving account link: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error retrieving account link: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -135,7 +135,7 @@ class Account
      */
     public static function updateAccount(string $accountOwner, string $accountName, string $prompt, string $platform, int $hashtags, string $link, string $cron, string $days): bool
     {
-        $db = Database::getInstance();
+        $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
             $db->query("SELECT cron, days FROM accounts WHERE username = :accountOwner AND account = :accountName FOR UPDATE");
@@ -160,7 +160,7 @@ class Account
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::getInstance()->log("Error updating account: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error updating account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -180,7 +180,7 @@ class Account
      */
     public static function createAccount(string $accountOwner, string $accountName, string $prompt, string $platform, int $hashtags, string $link, string $cron, string $days): bool
     {
-        $db = Database::getInstance();
+        $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
             $db->query("INSERT INTO accounts (username, account, prompt, platform, hashtags, link, cron, days) VALUES (:accountOwner, :accountName, :prompt, :platform, :hashtags, :link, :cron, :days)");
@@ -197,7 +197,7 @@ class Account
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::getInstance()->log("Error creating account: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error creating account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -211,7 +211,7 @@ class Account
      */
     public static function deleteAccount(string $accountOwner, string $accountName): bool
     {
-        $db = Database::getInstance();
+        $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
             $db->query("DELETE FROM status_updates WHERE username = :accountOwner AND account = :accountName");
@@ -228,7 +228,7 @@ class Account
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorHandler::getInstance()->log("Error deleting account: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log("Error deleting account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
