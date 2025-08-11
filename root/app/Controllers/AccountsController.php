@@ -21,6 +21,7 @@ use App\Core\Csrf;
 use App\Core\SessionManager;
 use Respect\Validation\Validator;
 use App\Helpers\MessageHelper;
+use App\Services\QueueService;
 
 class AccountsController extends Controller
 {
@@ -131,8 +132,14 @@ class AccountsController extends Controller
         }
 
         try {
+            $queue = new QueueService();
             if (Account::accountExists($accountOwner, $accountName)) {
+                $oldInfo = Account::getAcctInfo($accountOwner, $accountName);
                 Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                if ($oldInfo && ($oldInfo->cron !== $cron || $oldInfo->days !== $days)) {
+                    $queue->removeFutureJobs($accountOwner, $accountName);
+                    $queue->enqueueRemainingJobs($accountOwner, $accountName, $cron, $days);
+                }
             } else {
                 Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
                 $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
@@ -148,6 +155,7 @@ class AccountsController extends Controller
                         '<?php die(); ?>'
                     );
                 }
+                $queue->enqueueRemainingJobs($accountOwner, $accountName, $cron, $days);
             }
             MessageHelper::addMessage('Account has been created or modified.');
         } catch (\Exception $e) {
