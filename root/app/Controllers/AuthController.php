@@ -114,7 +114,26 @@ class AuthController extends Controller
      */
     private static function logoutUser(): void
     {
-        SessionManager::getInstance()->destroy();
+        $session = SessionManager::getInstance();
+        $isReally = $session->get('isReally');
+
+        if ($isReally) {
+            $adminInfo = User::getUserInfo($isReally);
+            if ($adminInfo) {
+                $session->set('username', $adminInfo->username);
+                $session->set('is_admin', $adminInfo->admin);
+                $session->set('logged_in', true);
+                $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
+                $session->set('csrf_token', bin2hex(random_bytes(32)));
+                $session->set('timeout', time());
+                unset($_SESSION['isReally']);
+                $session->regenerate();
+                header('Location: /home');
+                exit();
+            }
+        }
+
+        $session->destroy();
         header('Location: /login');
         exit();
     }
