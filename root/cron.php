@@ -25,7 +25,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 use App\Core\ErrorManager;
 use App\Services\QueueService;
 use App\Services\CronService;
-use App\Models\Account;
 
 // Apply configured runtime limits after loading settings
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
@@ -59,21 +58,8 @@ switch ($jobType) {
         }
 
         $queue = new QueueService();
-        $accounts = Account::getAllAccounts();
-        $currentHour = (int) date('G');
-        $dayName = strtolower(date('l'));
-        foreach ($accounts as $account) {
-            $hours = array_filter(array_map('trim', explode(',', $account->cron)), 'strlen');
-            if (!in_array((string) $currentHour, $hours, true) && !in_array($currentHour, $hours, true)) {
-                continue;
-            }
-            $days = array_map('strtolower', array_map('trim', explode(',', $account->days)));
-            if (!in_array('everyday', $days) && !in_array($dayName, $days)) {
-                continue;
-            }
-            $queue->enqueueStatus($account->username, $account->account);
-        }
-        $queue->runQueue();
+        $queue->clearQueue();
+        $queue->enqueueDailyJobs();
         break;
     }
     case 'hourly': {
@@ -82,6 +68,8 @@ switch ($jobType) {
         if (!$statusOk || !$imagesOk) {
             die(1);
         }
+        $queue = new QueueService();
+        $queue->runQueue();
         break;
     }
     default:

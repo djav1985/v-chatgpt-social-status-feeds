@@ -185,11 +185,37 @@ CREATE TABLE IF NOT EXISTS status_jobs (
     time_to_live BIGINT DEFAULT NULL,
     delivery_id CHAR(36) DEFAULT NULL,
     redeliver_after BIGINT DEFAULT NULL,
+    status ENUM('pending','retry','failed','done') NOT NULL DEFAULT 'pending',
+    attempts INT DEFAULT 0,
     INDEX idx_priority (priority, published_at, queue, delivery_id, delayed_until, id),
     INDEX idx_redeliver (redeliver_after, delivery_id),
     INDEX idx_ttl (time_to_live, delivery_id),
     INDEX idx_delivery (delivery_id)
 );
+
+-- Ensure status_jobs has status column
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'status_jobs'
+          AND COLUMN_NAME = 'status') = 0,
+    'ALTER TABLE status_jobs ADD COLUMN status ENUM(''pending'',''retry'',''failed'',''done'') NOT NULL DEFAULT ''pending''' ,
+    'SELECT 0');
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
+
+-- Ensure status_jobs has attempts column
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'status_jobs'
+          AND COLUMN_NAME = 'attempts') = 0,
+    'ALTER TABLE status_jobs ADD COLUMN attempts INT DEFAULT 0',
+    'SELECT 0');
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
 
 -- Create accounts table if it doesn’t exist
 CREATE TABLE IF NOT EXISTS accounts (
