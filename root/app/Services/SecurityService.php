@@ -15,8 +15,8 @@
 namespace App\Services;
 
 use Exception;
-use App\Core\Database;
-use App\Core\ErrorHandler;
+use App\Core\DatabaseManager;
+use App\Core\ErrorManager;
 
 class SecurityService
 {
@@ -26,7 +26,7 @@ class SecurityService
     public static function updateFailedAttempts(string $ip): void
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip");
             $db->bind(':ip', $ip);
             $result = $db->single();
@@ -47,7 +47,7 @@ class SecurityService
             }
             $db->execute();
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log('Error updating failed attempts: ' . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log('Error updating failed attempts: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -58,7 +58,7 @@ class SecurityService
     public static function isBlacklisted(string $ip): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip AND blacklisted = TRUE");
             $db->bind(':ip', $ip);
             $result = $db->single();
@@ -76,7 +76,7 @@ class SecurityService
 
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log('Error checking blacklist status: ' . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log('Error checking blacklist status: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -87,14 +87,14 @@ class SecurityService
     public static function clearIpBlacklist(): bool
     {
         try {
-            $db = Database::getInstance();
+            $db = DatabaseManager::getInstance();
             $threeDaysAgo = time() - (3 * 24 * 60 * 60);
             $db->query("DELETE FROM ip_blacklist WHERE timestamp < :threeDaysAgo");
             $db->bind(':threeDaysAgo', $threeDaysAgo);
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log('Error clearing IP blacklist: ' . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log('Error clearing IP blacklist: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }

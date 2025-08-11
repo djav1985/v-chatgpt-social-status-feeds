@@ -22,7 +22,7 @@ if (php_sapi_name() !== 'cli') {
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Core\ErrorHandler;
+use App\Core\ErrorManager;
 use App\Services\QueueService;
 use App\Services\CronService;
 use App\Models\Account;
@@ -32,7 +32,7 @@ ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRO
 ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M');
 
 // Run the job logic within the error middleware handler
-ErrorHandler::handle(function () {
+ErrorManager::handle(function () {
     global $argv;
     $service = new CronService();
 
@@ -57,14 +57,6 @@ switch ($jobType) {
         if ((date('j') === '1' && !$resetOk) || !$purgeIpsOk) {
             die(1);
         }
-        break;
-    }
-    case 'hourly': {
-        $statusOk = $service->purgeStatuses();
-        $imagesOk = $service->purgeImages();
-        if (!$statusOk || !$imagesOk) {
-            die(1);
-        }
 
         $queue = new QueueService();
         $accounts = Account::getAllAccounts();
@@ -82,6 +74,14 @@ switch ($jobType) {
             $queue->enqueueStatus($account->username, $account->account);
         }
         $queue->runQueue();
+        break;
+    }
+    case 'hourly': {
+        $statusOk = $service->purgeStatuses();
+        $imagesOk = $service->purgeImages();
+        if (!$statusOk || !$imagesOk) {
+            die(1);
+        }
         break;
     }
     default:

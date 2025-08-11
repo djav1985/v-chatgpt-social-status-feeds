@@ -18,7 +18,7 @@ use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use App\Models\Account;
 use App\Models\User;
-use App\Models\Feed;
+use App\Models\Status;
 use App\Core\Mailer;
 use App\Services\SecurityService;
 
@@ -37,11 +37,11 @@ class CronService
         foreach ($accounts as $account) {
             $accountName = $account->account;
             $accountOwner = $account->username;
-            $statusCount = Feed::countStatuses($accountName, $accountOwner);
+            $statusCount = Status::countStatuses($accountName, $accountOwner);
 
             if ($statusCount > MAX_STATUSES) {
                 $deleteCount = $statusCount - MAX_STATUSES;
-                if (!Feed::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
+                if (!Status::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
                     return false;
                 }
             }

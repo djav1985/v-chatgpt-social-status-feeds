@@ -15,7 +15,7 @@ namespace App\Core;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use App\Core\ErrorHandler;
+use App\Core\ErrorManager;
 
 class Mailer
 {
@@ -55,7 +55,7 @@ class Mailer
             $mail->send();
             return true;
         } catch (Exception $e) {
-            ErrorHandler::getInstance()->log('Mailer Error: ' . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log('Mailer Error: ' . $e->getMessage(), 'error');
             return false;
         }
     }
@@ -75,7 +75,7 @@ class Mailer
         $footerPath   = __DIR__ . '/../Templates/email_footer.php';
 
         if (!file_exists($templatePath)) {
-            ErrorHandler::getInstance()->log('Template not found: ' . $template, 'error');
+            ErrorManager::getInstance()->log('Template not found: ' . $template, 'error');
             return false;
         }
 

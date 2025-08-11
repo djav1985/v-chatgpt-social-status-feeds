@@ -4,7 +4,7 @@
 ## Big Picture & Architecture
 This is a modular PHP app for managing, scheduling, and distributing social media status updates. All source code lives under `root/` and follows a strict MVC pattern:
 - **Controllers** (`root/app/Controllers/`): Handle HTTP requests, session logic, and route mapping. Example: `LoginController.php` for login/session, `FeedController.php` for RSS feeds.
-- **Models** (`root/app/Models/`): Encapsulate all database logic. Use the custom `Database` class (Doctrine DBAL wrapper) for queries and transactions. Example: `User.php`, `Account.php`.
+- **Models** (`root/app/Models/`): Encapsulate all database logic. Use the custom `DatabaseManager` class (Doctrine DBAL wrapper) for queries and transactions. Example: `User.php`, `Account.php`.
 - **Views** (`root/app/Views/`): Render HTML templates. Use partials and layouts for reuse.
 - **Core** (`root/app/Core/`): Shared utilities (routing, error logging, CSRF, mail, etc.).
 - **Services** (`root/app/Services/`): Business logic (status scheduling, queue, security).
@@ -17,7 +17,7 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 - Managed by `Router.php` in Core. Controllers define routes and map to views.
 
 **Database:**
-- MariaDB backend. Schema in `install.sql`. All access via the `Database` class (uses Doctrine DBAL).
+- MariaDB backend. Schema in `install.sql`. All access via the `DatabaseManager` class (uses Doctrine DBAL).
 - Status jobs are queued using Enqueue DBAL transport; processed by `cron.php`.
 
 ## Developer Workflows
@@ -30,7 +30,7 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 - Set up two schedules for `cron.php` (daily/hourly) to purge, reset, and process status jobs.
 
 **Debugging:**
-- Use `ErrorHandler::getInstance()->log()` for error/debug logs. Check `logs/` if enabled.
+- Use `ErrorManager::getInstance()->log()` for error/debug logs. Check `logs/` if enabled.
 
 **Testing:**
 - No automated tests; use manual testing and DB inspection.
@@ -41,7 +41,7 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 - Session management: Sessions start in `config.php`; always call `session_regenerate_id(true)` after login.
 - Cookie security: Set `httponly`, `secure`, and `SameSite=Lax` in config.
 - IP blacklisting: Use `Utility.php` for suspicious IPs.
-- All DB access must use the `Database` class for consistency and error handling.
+- All DB access must use the `DatabaseManager` class for consistency and error handling.
 
 ## Integration Points & External Dependencies
 - **OpenAI API:** Managed by `ApiHandler.php` for post/image generation.

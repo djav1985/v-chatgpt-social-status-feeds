@@ -15,6 +15,7 @@
 namespace App\Core;
 
 use App\Services\SecurityService;
+use App\Core\ErrorManager;
 
 class SessionManager
 {
@@ -147,7 +148,7 @@ class SessionManager
         $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
         if ($ip && SecurityService::isBlacklisted($ip)) {
             http_response_code(403);
-            ErrorHandler::getInstance()->log("Blacklisted IP attempted access: $ip", 'error');
+            ErrorManager::getInstance()->log("Blacklisted IP attempted access: $ip", 'error');
             exit();
         }
 
