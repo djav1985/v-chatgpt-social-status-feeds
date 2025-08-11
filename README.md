@@ -167,8 +167,8 @@ Install the project using the following steps:
     0 * * * * /usr/bin/php /PATH-TO-APP/cron.php hourly
     ```
   - Replace `/PATH-TO-APP/` with the actual path to your installation.
-  - **Daily:** purges old data and populates the job queue for the day.
-  - **Hourly:** processes queued jobs for the current hour.
+   - **Daily:** populates the job queue; on the 1st, it also purges old statuses and images.
+   - **Hourly:** processes queued jobs for the current hour.
   - To run a persistent worker instead of the hourly cron, execute `bin/status-worker.php` without `--once` under Supervisor or systemd.
 
 ### Queue Table

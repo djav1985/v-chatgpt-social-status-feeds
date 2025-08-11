@@ -158,8 +158,7 @@ class CronService
      */
     public function runHourly(): void
     {
-        $this->purgeStatuses();
-        $this->purgeImages();
+        // No hourly maintenance tasks currently.
     }
 
     /**
@@ -169,10 +168,10 @@ class CronService
     {
         if (date('j') === '1') {
             $this->resetApi();
+            $this->purgeStatuses();
+            $this->purgeImages();
         }
         $this->purgeIps();
-        $this->purgeStatuses();
-        $this->purgeImages();
         $this->scheduleDailyQueue();
     }
 }
