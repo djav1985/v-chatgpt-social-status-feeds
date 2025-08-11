@@ -18,10 +18,11 @@
 I. [ Overview](#-overview)
 II. [ Features](#-features)
 III. [ Project Structure](#-project-structure)
-IV. [ Getting Started](#-getting-started)
-V. [ Docker](#docker)
-VI. [ Changelog](#-changelog)
-VII. [ License](#-license)
+IV. [ Usage](#usage)
+V. [ Getting Started](#-getting-started)
+VI. [ Docker](#docker)
+VII. [ Changelog](#-changelog)
+VIII. [ License](#-license)
 
 ---
 
@@ -81,6 +82,16 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
             └── install.php
 ```
 The code under `root/app` follows an MVC pattern with `Controllers`, `Models`, and `Views`. Shared framework classes live in the `Core` directory.
+
+## Usage
+
+To access the database connection within the application, retrieve the singleton instance of the `Database` class:
+
+```php
+use App\Core\Database;
+
+$db = Database::getInstance();
+```
 
 ---
 

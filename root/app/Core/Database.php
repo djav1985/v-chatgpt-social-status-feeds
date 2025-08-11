@@ -24,6 +24,7 @@ use App\Core\ErrorMiddleware;
 
 class Database
 {
+    private static ?Database $instance = null;
     private static ?Connection $dbh = null;
     private static ?int $lastUsedTime = null;
     private static int $idleTimeout = 10;
@@ -39,9 +40,22 @@ class Database
      *
      * @return void
      */
-    public function __construct()
+    private function __construct()
     {
         $this->connect();
+    }
+
+    /**
+     * Get the singleton Database instance.
+     *
+     * @return Database
+     */
+    public static function getInstance(): Database
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     /**
