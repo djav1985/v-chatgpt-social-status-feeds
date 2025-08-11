@@ -37,7 +37,7 @@
     </div>
     <div class="column col-6 text-right">
         <form action="/login" method="POST" class="form-inline">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
             <button id="logout" class="btn btn-error" type="submit" name="logout">Logout</button>
         </form>
     </div>
@@ -51,7 +51,7 @@
                         } ?>">
         <a href="/accounts">Accts</a>
     </li>
-    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) : ?>
+    <?php if (App\Core\SessionManager::getInstance()->get('is_admin')) : ?>
         <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/users') { echo 'active';
                             } ?>">
             <a href="/users">Users</a>
@@ -61,8 +61,8 @@
                         } ?>">
         <a href="/info">My Info</a>
     </li>
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/feeds/' . htmlspecialchars($_SESSION['username']) . '/all') { echo 'active';
+    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/feeds/' . htmlspecialchars(App\Core\SessionManager::getInstance()->get('username')) . '/all') { echo 'active';
                         } ?>">
-        <a href="/feeds/<?php echo htmlspecialchars($_SESSION['username']); ?>/all">Omni</a>
+        <a href="/feeds/<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('username')); ?>/all">Omni</a>
     </li>
 </ul>

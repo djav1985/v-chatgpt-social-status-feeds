@@ -114,11 +114,13 @@ class ErrorMiddleware
      */
     public static function displayAndClearMessages(): void
     {
-        if (isset($_SESSION['messages']) && count($_SESSION['messages']) > 0) {
-            foreach ($_SESSION['messages'] as $message) {
+        $session = SessionManager::getInstance();
+        $messages = $session->get('messages', []);
+        if (!empty($messages)) {
+            foreach ($messages as $message) {
                 echo '<script>showToast(' . json_encode($message) . ');</script>';
             }
-            unset($_SESSION['messages']);
+            $session->set('messages', []);
         }
     }
 }

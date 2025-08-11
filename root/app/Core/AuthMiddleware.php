@@ -34,21 +34,23 @@ class AuthMiddleware
             exit();
         }
 
-        if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+        $session = SessionManager::getInstance();
+        if (!$session->get('logged_in')) {
             header('Location: /login');
             exit();
         }
 
         $timeoutLimit = defined('SESSION_TIMEOUT_LIMIT') ? SESSION_TIMEOUT_LIMIT : 1800;
-        $timeoutExceeded = isset($_SESSION['timeout']) && (time() - $_SESSION['timeout'] > $timeoutLimit);
-        $userAgentChanged = isset($_SESSION['user_agent']) && $_SESSION['user_agent'] !== ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $timeout = $session->get('timeout');
+        $timeoutExceeded = is_int($timeout) && (time() - $timeout > $timeoutLimit);
+        $userAgent = $session->get('user_agent');
+        $userAgentChanged = is_string($userAgent) && $userAgent !== ($_SERVER['HTTP_USER_AGENT'] ?? '');
         if ($timeoutExceeded || $userAgentChanged) {
-            session_unset();
-            session_destroy();
+            $session->destroy();
             header('Location: /login');
             exit();
         }
 
-        $_SESSION['timeout'] = time();
+        $session->set('timeout', time());
     }
 }
