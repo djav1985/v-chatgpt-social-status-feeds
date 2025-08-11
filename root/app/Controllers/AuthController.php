@@ -40,26 +40,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Enforce that the current request comes from an authenticated user.
-     * Redirects to the login page or exits on failure.
-     */
-    public static function requireAuth(): void
-    {
-        $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
-        if ($ip && SecurityService::isBlacklisted($ip)) {
-            http_response_code(403);
-            ErrorHandler::getInstance()->log("Blacklisted IP attempted access: $ip", 'error');
-            exit();
-        }
-
-        $session = SessionManager::getInstance();
-        if (!$session->isValid()) {
-            header('Location: /login');
-            exit();
-        }
-    }
-
-    /**
      * Handle login form submission and logout actions.
      *
      * @return void

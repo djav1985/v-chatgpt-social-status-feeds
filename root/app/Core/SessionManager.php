@@ -14,6 +14,8 @@
 
 namespace App\Core;
 
+use App\Services\SecurityService;
+
 class SessionManager
 {
     /**
@@ -132,5 +134,26 @@ class SessionManager
         $this->set('timeout', time());
 
         return $this->get('logged_in') === true;
+    }
+
+    /**
+     * Enforce that the current request comes from an authenticated user.
+     * Redirects to the login page or exits on failure.
+     *
+     * @return void
+     */
+    public function requireAuth(): void
+    {
+        $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
+        if ($ip && SecurityService::isBlacklisted($ip)) {
+            http_response_code(403);
+            ErrorHandler::getInstance()->log("Blacklisted IP attempted access: $ip", 'error');
+            exit();
+        }
+
+        if (!$this->isValid()) {
+            header('Location: /login');
+            exit();
+        }
     }
 }
