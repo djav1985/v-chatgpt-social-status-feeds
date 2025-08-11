@@ -17,7 +17,7 @@ namespace App\Models;
 use Exception;
 use Doctrine\DBAL\ParameterType;
 use App\Core\Database;
-use App\Core\ErrorMiddleware;
+use App\Core\ErrorHandler;
 
 class Feed
 {
@@ -40,7 +40,7 @@ class Feed
             $status = $db->single();
             return $status ? $status->status_image : null;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving status image path: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving status image path: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -64,7 +64,7 @@ class Feed
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error deleting status: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error deleting status: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -85,7 +85,7 @@ class Feed
             $db->bind(':account', $account);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving status info: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving status info: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -112,7 +112,7 @@ class Feed
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error saving status: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error saving status: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -133,7 +133,7 @@ class Feed
             $db->bind(':accountOwner', $username);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving status updates: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving status updates: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -153,7 +153,7 @@ class Feed
             $db->bind(':username', $accountOwner);
             return $db->single()->count;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error counting statuses: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error counting statuses: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -177,7 +177,7 @@ class Feed
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error deleting old statuses: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error deleting old statuses: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -205,7 +205,7 @@ class Feed
 
             return $db->single()->count > 0;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error checking if status has been posted: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error checking if status has been posted: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -226,7 +226,7 @@ class Feed
             $db->bind(':username', $accountOwner);
             return $db->single();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving latest status update: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving latest status update: " . $e->getMessage(), 'error');
             throw $e;
         }
     }

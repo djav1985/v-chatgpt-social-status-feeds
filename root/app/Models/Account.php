@@ -16,7 +16,7 @@ namespace App\Models;
 
 use Exception;
 use App\Core\Database;
-use App\Core\ErrorMiddleware;
+use App\Core\ErrorHandler;
 
 class Account
 {
@@ -32,7 +32,7 @@ class Account
             $db->query("SELECT * FROM accounts");
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving all accounts: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving all accounts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -51,7 +51,7 @@ class Account
             $db->bind(':username', $username);
             return $db->resultSet();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving all user accounts: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving all user accounts: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -72,7 +72,7 @@ class Account
             $db->bind(':accountName', $accountName);
             return (bool) $db->single();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error checking if account exists: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error checking if account exists: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -93,7 +93,7 @@ class Account
             $db->bind(':account', $account);
             return $db->single();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving account info: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving account info: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -115,7 +115,7 @@ class Account
             $acctInfo = $db->single();
             return htmlspecialchars($acctInfo->link ?? '');
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage("Error retrieving account link: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error retrieving account link: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -160,7 +160,7 @@ class Account
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorMiddleware::logMessage("Error updating account: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error updating account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -197,7 +197,7 @@ class Account
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorMiddleware::logMessage("Error creating account: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error creating account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -228,7 +228,7 @@ class Account
             return true;
         } catch (Exception $e) {
             $db->rollBack();
-            ErrorMiddleware::logMessage("Error deleting account: " . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log("Error deleting account: " . $e->getMessage(), 'error');
             throw $e;
         }
     }
