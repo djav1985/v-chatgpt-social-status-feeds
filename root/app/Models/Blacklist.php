@@ -8,17 +8,17 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: SecurityService.php
+ * File: Blacklist.php
  * Description: IP blacklist management
  */
 
-namespace App\Services;
+namespace App\Models;
 
 use Exception;
 use App\Core\DatabaseManager;
 use App\Core\ErrorManager;
 
-class SecurityService
+class Blacklist
 {
     /**
      * Update the failed login attempts for an IP address.

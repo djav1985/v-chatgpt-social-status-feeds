@@ -14,7 +14,7 @@
 
 namespace App\Core;
 
-use App\Services\SecurityService;
+use App\Models\Blacklist;
 use App\Core\ErrorManager;
 
 class SessionManager
@@ -146,7 +146,7 @@ class SessionManager
     public function requireAuth(): void
     {
         $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
-        if ($ip && SecurityService::isBlacklisted($ip)) {
+        if ($ip && Blacklist::isBlacklisted($ip)) {
             http_response_code(403);
             ErrorManager::getInstance()->log("Blacklisted IP attempted access: $ip", 'error');
             exit();
