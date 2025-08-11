@@ -20,7 +20,7 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Exception;
-use App\Core\ErrorMiddleware;
+use App\Core\ErrorHandler;
 
 class Database
 {
@@ -82,7 +82,7 @@ class Database
             try {
                 self::$dbh = DriverManager::getConnection($params);
             } catch (DBALException $e) {
-                ErrorMiddleware::logMessage('Database connection failed: ' . $e->getMessage(), 'error');
+                ErrorHandler::getInstance()->log('Database connection failed: ' . $e->getMessage(), 'error');
                 throw new Exception('Database connection failed');
             }
         }
@@ -177,7 +177,7 @@ class Database
             return true;
         } catch (DBALException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorMiddleware::logMessage('MySQL connection lost during execution. Attempting to reconnect...', 'warning');
+                ErrorHandler::getInstance()->log('MySQL connection lost during execution. Attempting to reconnect...', 'warning');
                 $this->reconnect();
                 return $this->execute();
             }
@@ -231,7 +231,7 @@ class Database
             return true;
         } catch (DBALException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorMiddleware::logMessage('MySQL connection lost during transaction. Attempting to reconnect...', 'warning');
+                ErrorHandler::getInstance()->log('MySQL connection lost during transaction. Attempting to reconnect...', 'warning');
                 $this->reconnect();
                 self::$dbh->beginTransaction();
                 return true;

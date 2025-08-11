@@ -94,6 +94,22 @@ use App\Core\Database;
 $db = Database::getInstance();
 ```
 
+### Session Management
+
+Manage sessions through the `SessionManager` singleton:
+
+```php
+use App\Core\SessionManager;
+
+$session = SessionManager::getInstance();
+$session->start();           // Start or resume a session
+$session->set('name', 'value');
+$value = $session->get('name');
+$session->regenerate();      // Regenerate ID after login
+```
+
+Call `$session->destroy();` to end the session during logout.
+
 ---
 
 ## 🚀 Getting Started

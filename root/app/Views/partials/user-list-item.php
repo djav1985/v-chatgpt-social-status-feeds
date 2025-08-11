@@ -12,13 +12,13 @@
             <button class="btn btn-primary" id="update-btn" <?php echo $dataAttributes; ?>>Update</button>
             <form class="delete-user-form" action="/users" method="POST">
                 <input type="hidden" name="username" value="<?php echo htmlspecialchars($user->username); ?>">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
                 <button class="btn btn-error" name="delete_user">Delete</button>
             </form>
-            <?php if ($user->username !== $_SESSION['username']) : ?>
+            <?php if ($user->username !== App\Core\SessionManager::getInstance()->get('username')) : ?>
                 <form class="login-as-form" action="/users" method="POST">
                     <input type="hidden" name="username" value="<?php echo htmlspecialchars($user->username); ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
                     <button class="btn btn-primary" name="login_as">Login</button>
                 </form>
             <?php endif; ?>

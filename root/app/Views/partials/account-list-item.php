@@ -11,7 +11,7 @@
             <button class="btn btn-primary" id="update-button" <?php echo $dataAttributes; ?>>Update</button>
             <form class="delete-account-form" action="/accounts" method="POST">
                 <input type="hidden" name="account" value="<?php echo htmlspecialchars($accountName); ?>">
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo App\Core\SessionManager::getInstance()->get('csrf_token'); ?>">
                 <button class="btn btn-error" name="delete_account">Delete</button>
             </form>
         </div>

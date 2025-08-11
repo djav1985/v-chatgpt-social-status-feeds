@@ -18,6 +18,7 @@ use App\Core\Controller;
 use App\Models\Account;
 use App\Models\User;
 use App\Core\Csrf;
+use App\Core\SessionManager;
 use Respect\Validation\Validator;
 
 class AccountsController extends Controller
@@ -49,8 +50,11 @@ class AccountsController extends Controller
      */
     public function handleSubmission(): void
     {
+        $session = SessionManager::getInstance();
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-            $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Invalid CSRF token. Please try again.';
+            $session->set('messages', $messages);
             header('Location: /accounts');
             exit;
         }
@@ -76,7 +80,8 @@ class AccountsController extends Controller
      */
     private static function createOrUpdateAccount(): void
     {
-        $accountOwner = $_SESSION['username'];
+        $session = SessionManager::getInstance();
+        $accountOwner = $session->get('username');
         $accountName = preg_replace('/[^a-z0-9-]/', '', strtolower(str_replace(' ', '-', trim($_POST['account']))));
         $prompt = trim($_POST['prompt']);
         $platform = trim($_POST['platform']);
@@ -106,22 +111,32 @@ class AccountsController extends Controller
         }
 
         if ($invalidCron) {
-            $_SESSION['messages'][] = 'Invalid cron hour(s) supplied. Hours must be between 0 and 23.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Invalid cron hour(s) supplied. Hours must be between 0 and 23.';
+            $session->set('messages', $messages);
         }
         if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
-            $_SESSION['messages'][] = 'Error processing input.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Error processing input.';
+            $session->set('messages', $messages);
         }
         if (empty($prompt)) {
-            $_SESSION['messages'][] = 'Missing required field(s).';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Missing required field(s).';
+            $session->set('messages', $messages);
         }
         if (!Validator::alnum('-')->noWhitespace()->lowercase()->length(8, 18)->validate($accountName)) {
-            $_SESSION['messages'][] = 'Account name must be 8-18 characters long, alphanumeric and hyphens only.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Account name must be 8-18 characters long, alphanumeric and hyphens only.';
+            $session->set('messages', $messages);
         }
         if (!Validator::url()->startsWith('https://')->validate($link)) {
-            $_SESSION['messages'][] = 'Link must be a valid URL starting with https://.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Link must be a valid URL starting with https://.';
+            $session->set('messages', $messages);
         }
 
-        if (!empty($_SESSION['messages'])) {
+        if (!empty($session->get('messages'))) {
             header('Location: /accounts');
             exit;
         }
@@ -145,9 +160,13 @@ class AccountsController extends Controller
                     );
                 }
             }
-            $_SESSION['messages'][] = 'Account has been created or modified.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Account has been created or modified.';
+            $session->set('messages', $messages);
         } catch (\Exception $e) {
-            $_SESSION['messages'][] = 'Failed to create or modify account: ' . $e->getMessage();
+            $messages = $session->get('messages', []);
+            $messages[] = 'Failed to create or modify account: ' . $e->getMessage();
+            $session->set('messages', $messages);
         }
         header('Location: /accounts');
         exit;
@@ -160,13 +179,18 @@ class AccountsController extends Controller
      */
     private static function deleteAccount(): void
     {
+        $session = SessionManager::getInstance();
         $accountName = trim($_POST['account']);
-        $accountOwner = $_SESSION['username'];
+        $accountOwner = $session->get('username');
         try {
             Account::deleteAccount($accountOwner, $accountName);
-            $_SESSION['messages'][] = 'Account Deleted.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Account Deleted.';
+            $session->set('messages', $messages);
         } catch (\Exception $e) {
-            $_SESSION['messages'][] = 'Failed to delete account: ' . $e->getMessage();
+            $messages = $session->get('messages', []);
+            $messages[] = 'Failed to delete account: ' . $e->getMessage();
+            $session->set('messages', $messages);
         }
         header('Location: /accounts');
         exit;
@@ -179,7 +203,9 @@ class AccountsController extends Controller
      */
     private static function generateCalendarOverview(): string
     {
-        $username = $_SESSION['username'];
+        $session = SessionManager::getInstance();
+        $session = SessionManager::getInstance();
+        $username = $session->get('username');
         $accounts = User::getAllUserAccts($username);
 
         $daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -313,7 +339,7 @@ class AccountsController extends Controller
      */
     private static function generateAccountList(): string
     {
-        $username = $_SESSION['username'];
+        $username = $session->get('username');
         $accounts = User::getAllUserAccts($username);
         $output = '';
         foreach ($accounts as $account) {

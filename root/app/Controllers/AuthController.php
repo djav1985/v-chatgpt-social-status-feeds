@@ -19,6 +19,7 @@ use App\Services\SecurityService;
 use App\Core\ErrorHandler;
 use App\Core\Controller;
 use App\Core\Csrf;
+use App\Core\SessionManager;
 
 class AuthController extends Controller
 {
@@ -29,12 +30,33 @@ class AuthController extends Controller
      */
     public function handleRequest(): void
     {
-        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+        $session = SessionManager::getInstance();
+        if ($session->get('logged_in') === true) {
             header('Location: /');
             exit();
         }
 
         $this->render('login', []);
+    }
+
+    /**
+     * Enforce that the current request comes from an authenticated user.
+     * Redirects to the login page or exits on failure.
+     */
+    public static function requireAuth(): void
+    {
+        $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
+        if ($ip && SecurityService::isBlacklisted($ip)) {
+            http_response_code(403);
+            ErrorHandler::getInstance()->log("Blacklisted IP attempted access: $ip", 'error');
+            exit();
+        }
+
+        $session = SessionManager::getInstance();
+        if (!$session->isValid()) {
+            header('Location: /login');
+            exit();
+        }
     }
 
     /**
@@ -44,17 +66,20 @@ class AuthController extends Controller
      */
     public function handleSubmission(): void
     {
-        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && isset($_POST['logout'])) {
+        $session = SessionManager::getInstance();
+        if ($session->get('logged_in') === true && isset($_POST['logout'])) {
             if (Csrf::validate($_POST['csrf_token'] ?? '')) {
                 self::logoutUser();
             } else {
-                $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+                $messages = $session->get('messages', []);
+                $messages[] = 'Invalid CSRF token. Please try again.';
+                $session->set('messages', $messages);
                 header('Location: /login');
                 exit();
             }
         }
 
-        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && !isset($_POST['logout'])) {
+        if ($session->get('logged_in') === true && !isset($_POST['logout'])) {
             header('Location: /');
             exit();
         }
@@ -62,20 +87,22 @@ class AuthController extends Controller
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
             $error = 'Invalid CSRF token. Please try again.';
             ErrorHandler::getInstance()->log($error);
-            $_SESSION['messages'][] = $error;
+            $messages = $session->get('messages', []);
+            $messages[] = $error;
+            $session->set('messages', $messages);
         } else {
             $username = trim($_POST['username'] ?? '');
             $password = trim($_POST['password'] ?? '');
             $userInfo = self::validateCredentials($username, $password);
 
             if ($userInfo) {
-                $_SESSION['logged_in'] = true;
-                $_SESSION['username'] = $userInfo->username;
-                $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-                $_SESSION['is_admin'] = $userInfo->admin;
-                $_SESSION['timeout'] = time();
-                session_regenerate_id(true);
+                $session->set('logged_in', true);
+                $session->set('username', $userInfo->username);
+                $session->set('user_agent', $_SERVER['HTTP_USER_AGENT']);
+                $session->set('csrf_token', bin2hex(random_bytes(32)));
+                $session->set('is_admin', $userInfo->admin);
+                $session->set('timeout', time());
+                $session->regenerate();
                 header('Location: /');
                 exit();
             }
@@ -84,12 +111,16 @@ class AuthController extends Controller
             if (SecurityService::isBlacklisted($ip)) {
                 $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
                 ErrorHandler::getInstance()->log($error);
-                $_SESSION['messages'][] = $error;
+                $messages = $session->get('messages', []);
+                $messages[] = $error;
+                $session->set('messages', $messages);
             } else {
                 SecurityService::updateFailedAttempts($ip);
                 $error = 'Invalid username or password.';
                 ErrorHandler::getInstance()->log($error);
-                $_SESSION['messages'][] = $error;
+                $messages = $session->get('messages', []);
+                $messages[] = $error;
+                $session->set('messages', $messages);
             }
         }
 
@@ -103,8 +134,7 @@ class AuthController extends Controller
      */
     private static function logoutUser(): void
     {
-        unset($_SESSION['is_admin']);
-        session_destroy();
+        SessionManager::getInstance()->destroy();
         header('Location: /login');
         exit();
     }

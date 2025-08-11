@@ -74,8 +74,7 @@ require 'partials/header.php';
                 </select>
 
                 <!-- CSRF token for security -->
-                <input type="hidden" name="csrf_token" value="<?php
- echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
                 <button class="btn btn-primary btn-lg" type="submit" name="edit_users">Add/Update User</button>
             </form>
         </div>

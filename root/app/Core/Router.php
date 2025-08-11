@@ -17,6 +17,7 @@ namespace App\Core;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 use function FastRoute\simpleDispatcher;
+use App\Controllers\AuthController;
 
 class Router
 {
@@ -78,7 +79,7 @@ class Router
                 $vars = $routeInfo[2];
                 $isFeed = function_exists('str_starts_with') ? str_starts_with($uri, '/feeds/') : (preg_match('/^\/feeds\//', $uri) === 1);
                 if ($uri !== '/login' && !$isFeed) {
-                    AuthMiddleware::check();
+                    AuthController::requireAuth();
                 }
                 call_user_func_array([new $class(), $action], $vars);
                 break;
