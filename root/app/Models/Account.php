@@ -28,7 +28,7 @@ class Account
     public static function getAllAccounts(): array
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT * FROM accounts");
             return $db->resultSet();
         } catch (Exception $e) {
@@ -46,7 +46,7 @@ class Account
     public static function getAllUserAccts(string $username): array
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT account FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
             return $db->resultSet();
@@ -66,7 +66,7 @@ class Account
     public static function accountExists(string $accountOwner, string $accountName): bool
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT 1 FROM accounts WHERE username = :accountOwner AND account = :accountName LIMIT 1");
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
@@ -87,7 +87,7 @@ class Account
     public static function getAcctInfo(string $username, string $account): mixed
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $username);
             $db->bind(':account', $account);
@@ -108,7 +108,7 @@ class Account
     public static function getAccountLink(string $username, string $account): string
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT link FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $username);
             $db->bind(':account', $account);
@@ -135,7 +135,7 @@ class Account
      */
     public static function updateAccount(string $accountOwner, string $accountName, string $prompt, string $platform, int $hashtags, string $link, string $cron, string $days): bool
     {
-        $db = new Database();
+        $db = Database::getInstance();
         $db->beginTransaction();
         try {
             $db->query("SELECT cron, days FROM accounts WHERE username = :accountOwner AND account = :accountName FOR UPDATE");
@@ -180,7 +180,7 @@ class Account
      */
     public static function createAccount(string $accountOwner, string $accountName, string $prompt, string $platform, int $hashtags, string $link, string $cron, string $days): bool
     {
-        $db = new Database();
+        $db = Database::getInstance();
         $db->beginTransaction();
         try {
             $db->query("INSERT INTO accounts (username, account, prompt, platform, hashtags, link, cron, days) VALUES (:accountOwner, :accountName, :prompt, :platform, :hashtags, :link, :cron, :days)");
@@ -211,7 +211,7 @@ class Account
      */
     public static function deleteAccount(string $accountOwner, string $accountName): bool
     {
-        $db = new Database();
+        $db = Database::getInstance();
         $db->beginTransaction();
         try {
             $db->query("DELETE FROM status_updates WHERE username = :accountOwner AND account = :accountName");

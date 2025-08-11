@@ -28,7 +28,7 @@ class User
     public static function getAllUsers(): array
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT * FROM users");
             return $db->resultSet();
         } catch (Exception $e) {
@@ -46,7 +46,7 @@ class User
     public static function userExists(string $username): ?object
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
             $result = $db->single();
@@ -73,7 +73,7 @@ class User
      */
     public static function updateUser(string $username, string $password, string $email, int $totalAccounts, int $maxApiCalls, int $usedApiCalls, string $expires, int $admin, bool $isUpdate): bool
     {
-        $db = new Database();
+        $db = Database::getInstance();
         $db->beginTransaction();
         try {
             if ($isUpdate) {
@@ -107,7 +107,7 @@ class User
      */
     public static function deleteUser(string $username): bool
     {
-        $db = new Database();
+        $db = Database::getInstance();
         $db->beginTransaction();
         try {
             $db->query("DELETE FROM users WHERE username = :username");
@@ -141,7 +141,7 @@ class User
     public static function updatePassword(string $username, string $hashedPassword): bool
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("UPDATE users SET password = :password WHERE username = :username");
             $db->bind(':username', $username);
             $db->bind(':password', $hashedPassword);
@@ -162,7 +162,7 @@ class User
     public static function getUserInfo(string $username): mixed
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
             return $db->single();
@@ -181,7 +181,7 @@ class User
     public static function getAllUserAccts(string $username): array
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("SELECT * FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
             return $db->resultSet();
@@ -201,7 +201,7 @@ class User
     public static function updateUsedApiCalls(string $username, int $usedApiCalls): bool
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("UPDATE users SET used_api_calls = :used_api_calls WHERE username = :username");
             $db->bind(':used_api_calls', $usedApiCalls);
             $db->bind(':username', $username);
@@ -223,7 +223,7 @@ class User
     public static function updateMaxApiCalls(string $username, int $maxApiCalls): bool
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("UPDATE users SET max_api_calls = :max_api_calls WHERE username = :username");
             $db->bind(':max_api_calls', $maxApiCalls);
             $db->bind(':username', $username);
@@ -241,7 +241,7 @@ class User
     public static function setLimitEmailSent(string $username, bool $sent): bool
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("UPDATE users SET limit_email_sent = :sent WHERE username = :username");
             $db->bind(':sent', $sent ? 1 : 0);
             $db->bind(':username', $username);
@@ -261,7 +261,7 @@ class User
     public static function resetAllApiUsage(): bool
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("UPDATE users SET used_api_calls = 0, limit_email_sent = 0");
             $db->execute();
             return true;
@@ -284,7 +284,7 @@ class User
     public static function updateProfile(string $username, string $who, string $where, string $what, string $goal): bool
     {
         try {
-            $db = new Database();
+            $db = Database::getInstance();
             $db->query("UPDATE users SET who = :who, `where` = :where, what = :what, goal = :goal WHERE username = :username");
             $db->bind(':username', $username);
             $db->bind(':who', $who);
