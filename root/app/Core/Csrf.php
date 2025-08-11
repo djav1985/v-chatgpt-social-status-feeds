@@ -24,6 +24,7 @@ class Csrf
      */
     public static function validate(string $token): bool
     {
-        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+        $sessionToken = SessionManager::getInstance()->get('csrf_token');
+        return is_string($sessionToken) && hash_equals($sessionToken, $token);
     }
 }

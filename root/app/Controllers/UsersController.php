@@ -18,6 +18,7 @@ use App\Core\Controller;
 use App\Core\Mailer;
 use App\Models\User;
 use App\Core\Csrf;
+use App\Core\SessionManager;
 use Respect\Validation\Validator;
 
 class UsersController extends Controller
@@ -30,7 +31,8 @@ class UsersController extends Controller
     public function handleRequest(): void
     {
 
-        if (empty($_SESSION['is_admin'])) {
+        $session = SessionManager::getInstance();
+        if (!$session->get('is_admin')) {
             http_response_code(403);
             exit('Forbidden');
         }
@@ -50,13 +52,16 @@ class UsersController extends Controller
      */
     public function handleSubmission(): void
     {
-        if (empty($_SESSION['is_admin'])) {
+        $session = SessionManager::getInstance();
+        if (!$session->get('is_admin')) {
             http_response_code(403);
             exit('Forbidden');
         }
 
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-            $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Invalid CSRF token. Please try again.';
+            $session->set('messages', $messages);
             header('Location: /users');
             exit;
         }
@@ -87,6 +92,7 @@ class UsersController extends Controller
      */
     private static function editUsers(): void
     {
+        $session = SessionManager::getInstance();
         $username = trim($_POST['username']);
         $password = trim($_POST['password']);
         $plainPassword = $password;
@@ -98,16 +104,22 @@ class UsersController extends Controller
         $admin = intval($_POST['admin']);
 
         if (!Validator::alnum()->noWhitespace()->lowercase()->length(5, 16)->validate($username)) {
-            $_SESSION['messages'][] = 'Username must be 5-16 characters long, lowercase letters and numbers only.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Username must be 5-16 characters long, lowercase letters and numbers only.';
+            $session->set('messages', $messages);
         }
         if (!empty($password) && !Validator::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
-            $_SESSION['messages'][] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
+            $session->set('messages', $messages);
         }
         if (!Validator::email()->validate($email)) {
-            $_SESSION['messages'][] = 'Please provide a valid email address.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Please provide a valid email address.';
+            $session->set('messages', $messages);
         }
 
-        if (!empty($_SESSION['messages'])) {
+        if (!empty($session->get('messages'))) {
             header('Location: /users');
             exit;
         }
@@ -115,7 +127,9 @@ class UsersController extends Controller
         try {
             $userExists = User::userExists($username);
             if (!$userExists && empty($password)) {
-                $_SESSION['messages'][] = 'Password is required for new users.';
+                $messages = $session->get('messages', []);
+                $messages[] = 'Password is required for new users.';
+                $session->set('messages', $messages);
                 header('Location: /users');
                 exit;
             }
@@ -158,12 +172,18 @@ class UsersController extends Controller
                         ]
                     );
                 }
-                $_SESSION['messages'][] = 'User has been created or modified.';
+                $messages = $session->get('messages', []);
+                $messages[] = 'User has been created or modified.';
+                $session->set('messages', $messages);
             } else {
-                $_SESSION['messages'][] = 'Failed to create or modify user.';
+                $messages = $session->get('messages', []);
+                $messages[] = 'Failed to create or modify user.';
+                $session->set('messages', $messages);
             }
         } catch (\Exception $e) {
-            $_SESSION['messages'][] = 'Failed to create or modify user: ' . $e->getMessage();
+            $messages = $session->get('messages', []);
+            $messages[] = 'Failed to create or modify user: ' . $e->getMessage();
+            $session->set('messages', $messages);
         }
         header('Location: /users');
         exit;
@@ -176,15 +196,22 @@ class UsersController extends Controller
      */
     private static function deleteUser(): void
     {
+        $session = SessionManager::getInstance();
         $username = $_POST['username'];
-        if ($username === $_SESSION['username']) {
-            $_SESSION['messages'][] = "Sorry, you can't delete your own account.";
+        if ($username === $session->get('username')) {
+            $messages = $session->get('messages', []);
+            $messages[] = "Sorry, you can't delete your own account.";
+            $session->set('messages', $messages);
         } else {
             try {
                 User::deleteUser($username);
-                $_SESSION['messages'][] = 'User Deleted';
+                $messages = $session->get('messages', []);
+                $messages[] = 'User Deleted';
+                $session->set('messages', $messages);
             } catch (\Exception $e) {
-                $_SESSION['messages'][] = 'Failed to delete user: ' . $e->getMessage();
+                $messages = $session->get('messages', []);
+                $messages[] = 'Failed to delete user: ' . $e->getMessage();
+                $session->set('messages', $messages);
             }
         }
         header('Location: /users');
@@ -198,27 +225,32 @@ class UsersController extends Controller
      */
     private static function loginAs(): void
     {
+        $session = SessionManager::getInstance();
         $username = $_POST['username'];
         try {
             $user = User::getUserInfo($username);
             if ($user) {
-                if (!isset($_SESSION['isReally'])) {
-                    $_SESSION['isReally'] = $_SESSION['username'];
+                if (!$session->get('isReally')) {
+                    $session->set('isReally', $session->get('username'));
                 }
-                $_SESSION['username'] = $user->username;
-                $_SESSION['logged_in'] = true;
-                $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-                $_SESSION['is_admin'] = $user->admin;
-                $_SESSION['timeout'] = time();
-                session_regenerate_id(true);
+                $session->set('username', $user->username);
+                $session->set('logged_in', true);
+                $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
+                $session->set('csrf_token', bin2hex(random_bytes(32)));
+                $session->set('is_admin', $user->admin);
+                $session->set('timeout', time());
+                $session->regenerate();
                 header('Location: /home');
                 exit;
             } else {
-                $_SESSION['messages'][] = 'Failed to login as user.';
+                $messages = $session->get('messages', []);
+                $messages[] = 'Failed to login as user.';
+                $session->set('messages', $messages);
             }
         } catch (\Exception $e) {
-            $_SESSION['messages'][] = 'Failed to login as user: ' . $e->getMessage();
+            $messages = $session->get('messages', []);
+            $messages[] = 'Failed to login as user: ' . $e->getMessage();
+            $session->set('messages', $messages);
         }
         header('Location: /users');
         exit;

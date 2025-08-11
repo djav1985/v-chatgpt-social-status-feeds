@@ -33,8 +33,7 @@
             <img class="img-responsive" id="logo" src="assets/images/logo.png" alt="Logo">
             <!-- Login form -->
             <form class="form-group" method="post">
-                <input type="hidden" name="csrf_token" value="<?php
- echo $_SESSION['csrf_token']; ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo App\Core\SessionManager::getInstance()->get('csrf_token'); ?>">
                 <label for="username">Username:</label>
                 <input class="form-input" id="username" type="text" name="username" autocomplete="username" required>
 

@@ -17,17 +17,12 @@ require_once '../vendor/autoload.php';
 
 use App\Core\Router;
 use App\Core\ErrorMiddleware;
+use App\Core\SessionManager;
 
-$secureFlag = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-session_set_cookie_params([
-    'path'     => '/',
-    'httponly' => true,
-    'secure'   => $secureFlag,
-    'samesite' => 'Lax',
-]);
-session_start();
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+$session = SessionManager::getInstance();
+$session->start();
+if (!$session->get('csrf_token')) {
+    $session->set('csrf_token', bin2hex(random_bytes(32)));
 }
 
 ErrorMiddleware::handle(function (): void {

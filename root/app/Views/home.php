@@ -83,8 +83,7 @@ require 'partials/header.php';
                     <input type="hidden" name="account" value="<?php
  echo htmlspecialchars($accountName, ENT_QUOTES) ?>">
                     <input type="hidden" name="username" value="<?php echo $accountOwnerEsc ?>">
-                    <input type="hidden" name="csrf_token" value="<?php
- echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES) ?>">
                     <button type="submit" class="generate-status-button btn btn-success" name="generate_status">Generate Status</button>
                 </form>
             </div>

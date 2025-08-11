@@ -20,6 +20,7 @@ use App\Services\StatusService;
 use App\Models\User;
 use App\Models\Feed;
 use App\Core\Csrf;
+use App\Core\SessionManager;
 
 class HomeController extends Controller
 {
@@ -33,7 +34,7 @@ class HomeController extends Controller
 
 
 
-        $accountOwner = $_SESSION['username'];
+        $accountOwner = SessionManager::getInstance()->get('username');
         $accounts = \App\Models\Account::getAllUserAccts($accountOwner);
         $accountsData = [];
         foreach ($accounts as $account) {
@@ -77,8 +78,11 @@ class HomeController extends Controller
      */
     public function handleSubmission(): void
     {
+        $session = SessionManager::getInstance();
         if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
-            $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Invalid CSRF token. Please try again.';
+            $session->set('messages', $messages);
             header('Location: /home');
             exit;
         }
@@ -105,10 +109,13 @@ class HomeController extends Controller
      */
     private static function deleteStatus(): void
     {
+        $session = SessionManager::getInstance();
         $accountName = trim($_POST['account']);
-        $accountOwner = $_SESSION['username'];
+        $accountOwner = $session->get('username');
         if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
-            $_SESSION['messages'][] = 'Username mismatch.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Username mismatch.';
+            $session->set('messages', $messages);
             header('Location: /home');
             exit;
         }
@@ -127,9 +134,13 @@ class HomeController extends Controller
                 }
             }
             Feed::deleteStatus($statusId, $accountName, $accountOwner);
-            $_SESSION['messages'][] = 'Successfully deleted status.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Successfully deleted status.';
+            $session->set('messages', $messages);
         } catch (\Exception $e) {
-            $_SESSION['messages'][] = 'Failed to delete status: ' . $e->getMessage();
+            $messages = $session->get('messages', []);
+            $messages[] = 'Failed to delete status: ' . $e->getMessage();
+            $session->set('messages', $messages);
         }
         header('Location: /home');
         exit;
@@ -142,17 +153,22 @@ class HomeController extends Controller
      */
     private static function generateStatus(): void
     {
+        $session = SessionManager::getInstance();
         $accountName = trim($_POST['account']);
-        $accountOwner = $_SESSION['username'];
+        $accountOwner = $session->get('username');
         if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
-            $_SESSION['messages'][] = 'Username mismatch.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Username mismatch.';
+            $session->set('messages', $messages);
             header('Location: /home');
             exit;
         }
         try {
             $userInfo = User::getUserInfo($accountOwner);
             if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
-                $_SESSION['messages'][] = 'Sorry, your available API calls have run out.';
+                $messages = $session->get('messages', []);
+                $messages[] = 'Sorry, your available API calls have run out.';
+                $session->set('messages', $messages);
                 if (!$userInfo->limit_email_sent) {
                     Mailer::sendTemplate(
                         $userInfo->email,
@@ -165,15 +181,21 @@ class HomeController extends Controller
             } else {
                 $statusResult = StatusService::generateStatus($accountName, $accountOwner);
                 if (isset($statusResult['error'])) {
-                    $_SESSION['messages'][] = 'Failed to generate status: ' . $statusResult['error'];
+                    $messages = $session->get('messages', []);
+                    $messages[] = 'Failed to generate status: ' . $statusResult['error'];
+                    $session->set('messages', $messages);
                 } else {
                     $userInfo->used_api_calls += 1;
                     User::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-                    $_SESSION['messages'][] = 'Successfully generated status.';
+                    $messages = $session->get('messages', []);
+                    $messages[] = 'Successfully generated status.';
+                    $session->set('messages', $messages);
                 }
             }
         } catch (\Exception $e) {
-            $_SESSION['messages'][] = 'Failed to generate status: ' . $e->getMessage();
+            $messages = $session->get('messages', []);
+            $messages[] = 'Failed to generate status: ' . $e->getMessage();
+            $session->set('messages', $messages);
         }
         header('Location: /home');
         exit;
@@ -205,7 +227,7 @@ class HomeController extends Controller
         $content .= "<input type='hidden' name='account' value='" . htmlspecialchars($accountName, ENT_QUOTES) . "'>";
         $content .= "<input type='hidden' name='username' value='" . htmlspecialchars($accountOwner, ENT_QUOTES) . "'>";
         $content .= "<input type='hidden' name='id' value='" . htmlspecialchars($statusId, ENT_QUOTES) . "'>";
-        $content .= "<input type='hidden' name='csrf_token' value='" . htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) . "'>";
+        $content .= "<input type='hidden' name='csrf_token' value='" . htmlspecialchars(SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES) . "'>";
         $content .= "<button class='btn btn-error square-button delete-button' type='submit' name='delete_status'>{$deleteSvg}</button>";
         $content .= "</form>";
         $content .= "</div>";

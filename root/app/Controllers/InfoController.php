@@ -18,6 +18,7 @@ use App\Core\Controller;
 use App\Models\User;
 use App\Core\Csrf;
 use Respect\Validation\Validator;
+use App\Core\SessionManager;
 
 class InfoController extends Controller
 {
@@ -28,8 +29,9 @@ class InfoController extends Controller
      */
     public function handleRequest(): void
     {
-        $profileData = self::generateProfileDataAttributes($_SESSION['username']);
-        $systemMsg = self::buildSystemMessage($_SESSION['username']);
+        $session = SessionManager::getInstance();
+        $profileData = self::generateProfileDataAttributes($session->get('username'));
+        $systemMsg = self::buildSystemMessage($session->get('username'));
 
         $this->render('info', [
             'profileData' => $profileData,
@@ -45,8 +47,11 @@ class InfoController extends Controller
     public function handleSubmission(): void
     {
         $token = $_POST['csrf_token'] ?? '';
+        $session = SessionManager::getInstance();
         if (!Csrf::validate($token)) {
-            $_SESSION['messages'][] = 'Invalid CSRF token. Please try again.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Invalid CSRF token. Please try again.';
+            $session->set('messages', $messages);
             header('Location: /info');
             exit;
         }
@@ -72,19 +77,24 @@ class InfoController extends Controller
      */
     private static function processPasswordChange(): void
     {
-        $username = $_SESSION['username'];
+        $session = SessionManager::getInstance();
+        $username = $session->get('username');
         $password = $_POST['password'];
         $password2 = $_POST['password2'];
 
         if ($password !== $password2) {
-            $_SESSION['messages'][] = 'Passwords do not match. Please try again.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Passwords do not match. Please try again.';
+            $session->set('messages', $messages);
         }
 
         if (!Validator::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
-            $_SESSION['messages'][] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
+            $session->set('messages', $messages);
         }
 
-        if (!empty($_SESSION['messages'])) {
+        if (!empty($session->get('messages'))) {
             header('Location: /info');
             exit;
         }
@@ -92,9 +102,13 @@ class InfoController extends Controller
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         try {
             User::updatePassword($username, $hashedPassword);
-            $_SESSION['messages'][] = 'Password Updated!';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Password Updated!';
+            $session->set('messages', $messages);
         } catch (\Exception $e) {
-            $_SESSION['messages'][] = 'Password update failed: ' . $e->getMessage();
+            $messages = $session->get('messages', []);
+            $messages[] = 'Password update failed: ' . $e->getMessage();
+            $session->set('messages', $messages);
         }
         header('Location: /info');
         exit;
@@ -107,23 +121,30 @@ class InfoController extends Controller
      */
     private static function processProfileUpdate(): void
     {
-        $username = $_SESSION['username'];
+        $session = SessionManager::getInstance();
+        $username = $session->get('username');
         $who = trim($_POST['who']);
         $where = trim($_POST['where']);
         $what = trim($_POST['what']);
         $goal = trim($_POST['goal']);
 
         if (empty($who) || empty($where) || empty($what) || empty($goal)) {
-            $_SESSION['messages'][] = 'All fields are required.';
+            $messages = $session->get('messages', []);
+            $messages[] = 'All fields are required.';
+            $session->set('messages', $messages);
             header('Location: /info');
             exit;
         }
 
         try {
             User::updateProfile($username, $who, $where, $what, $goal);
-            $_SESSION['messages'][] = 'Profile Updated!';
+            $messages = $session->get('messages', []);
+            $messages[] = 'Profile Updated!';
+            $session->set('messages', $messages);
         } catch (\Exception $e) {
-            $_SESSION['messages'][] = 'Profile update failed: ' . $e->getMessage();
+            $messages = $session->get('messages', []);
+            $messages[] = 'Profile update failed: ' . $e->getMessage();
+            $session->set('messages', $messages);
         }
         header('Location: /info');
         exit;
