@@ -338,7 +338,6 @@ class AccountsController extends Controller
      */
     private static function generateAccountList(): string
     {
-        $session = SessionManager::getInstance();
         $username = $session->get('username');
         $accounts = User::getAllUserAccts($username);
         $output = '';

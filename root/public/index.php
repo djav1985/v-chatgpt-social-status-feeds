@@ -16,7 +16,7 @@ require_once '../config.php';
 require_once '../vendor/autoload.php';
 
 use App\Core\Router;
-use App\Core\ErrorMiddleware;
+use App\Core\ErrorHandler;
 use App\Core\SessionManager;
 
 $session = SessionManager::getInstance();
@@ -25,7 +25,7 @@ if (!$session->get('csrf_token')) {
     $session->set('csrf_token', bin2hex(random_bytes(32)));
 }
 
-ErrorMiddleware::handle(function (): void {
+ErrorHandler::handle(function (): void {
     $router = new Router();
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $router->dispatch($_SERVER['REQUEST_METHOD'], $uri);

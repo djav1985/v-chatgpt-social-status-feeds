@@ -35,8 +35,8 @@ class Router
             });
 
             // Register routes for GET and POST requests separately
-            $r->addRoute('GET', '/login', [\App\Controllers\AuthController::class, 'handleRequest']);
-            $r->addRoute('POST', '/login', [\App\Controllers\AuthController::class, 'handleSubmission']);
+            $r->addRoute('GET', '/login', [\App\Controllers\LoginController::class, 'handleRequest']);
+            $r->addRoute('POST', '/login', [\App\Controllers\LoginController::class, 'handleSubmission']);
 
             $r->addRoute('GET', '/accounts', [\App\Controllers\AccountsController::class, 'handleRequest']);
             $r->addRoute('POST', '/accounts', [\App\Controllers\AccountsController::class, 'handleSubmission']);
@@ -76,9 +76,11 @@ class Router
             case Dispatcher::FOUND:
                 [$class, $action] = $routeInfo[1];
                 $vars = $routeInfo[2];
-                $isFeed = function_exists('str_starts_with') ? str_starts_with($uri, '/feeds/') : (preg_match('/^\/feeds\//', $uri) === 1);
+                $isFeed = function_exists('str_starts_with')
+                    ? str_starts_with($uri, '/feeds/')
+                    : (preg_match('/^\/feeds\//', $uri) === 1);
                 if ($uri !== '/login' && !$isFeed) {
-                    AuthMiddleware::check();
+                    SessionManager::getInstance()->requireAuth();
                 }
                 call_user_func_array([new $class(), $action], $vars);
                 break;

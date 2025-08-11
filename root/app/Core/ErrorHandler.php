@@ -96,4 +96,32 @@ class ErrorHandler
             echo 'A critical error occurred.';
         }
     }
+
+    /**
+     * Execute the given callback within the error handler context.
+     */
+    public static function handle(callable $callback): void
+    {
+        $handler = self::getInstance();
+        try {
+            $callback();
+        } catch (Throwable $exception) {
+            $handler->handleException($exception);
+        }
+    }
+
+    /**
+     * Display and clear session-based messages.
+     */
+    public static function displayAndClearMessages(): void
+    {
+        $session = SessionManager::getInstance();
+        $messages = $session->get('messages', []);
+        if (!empty($messages)) {
+            foreach ($messages as $message) {
+                echo '<script>showToast(' . json_encode($message) . ');</script>';
+            }
+            $session->set('messages', []);
+        }
+    }
 }

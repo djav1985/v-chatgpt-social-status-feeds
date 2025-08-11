@@ -14,6 +14,8 @@
 
 namespace App\Core;
 
+use App\Services\SecurityService;
+
 class SessionManager
 {
     /**
@@ -108,5 +110,50 @@ class SessionManager
     public function set(string $key, mixed $value): void
     {
         $_SESSION[$key] = $value;
+    }
+
+    /**
+     * Validate the current session and update timeout.
+     *
+     * @return bool True if the session is valid and user is logged in
+     */
+    public function isValid(): bool
+    {
+        $timeoutLimit = defined('SESSION_TIMEOUT_LIMIT') ? SESSION_TIMEOUT_LIMIT : 1800;
+        $timeout = $this->get('timeout');
+        $timeoutExceeded = is_int($timeout) && (time() - $timeout > $timeoutLimit);
+
+        $userAgent = $this->get('user_agent');
+        $userAgentChanged = is_string($userAgent) && $userAgent !== ($_SERVER['HTTP_USER_AGENT'] ?? '');
+
+        if ($timeoutExceeded || $userAgentChanged) {
+            $this->destroy();
+            return false;
+        }
+
+        $this->set('timeout', time());
+
+        return $this->get('logged_in') === true;
+    }
+
+    /**
+     * Enforce that the current request comes from an authenticated user.
+     * Redirects to the login page or exits on failure.
+     *
+     * @return void
+     */
+    public function requireAuth(): void
+    {
+        $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
+        if ($ip && SecurityService::isBlacklisted($ip)) {
+            http_response_code(403);
+            ErrorHandler::getInstance()->log("Blacklisted IP attempted access: $ip", 'error');
+            exit();
+        }
+
+        if (!$this->isValid()) {
+            header('Location: /login');
+            exit();
+        }
     }
 }

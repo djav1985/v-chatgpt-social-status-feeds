@@ -16,7 +16,7 @@ namespace App\Services;
 
 use Exception;
 use App\Core\Database;
-use App\Core\ErrorMiddleware;
+use App\Core\ErrorHandler;
 
 class SecurityService
 {
@@ -47,7 +47,7 @@ class SecurityService
             }
             $db->execute();
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage('Error updating failed attempts: ' . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log('Error updating failed attempts: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -76,7 +76,7 @@ class SecurityService
 
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage('Error checking blacklist status: ' . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log('Error checking blacklist status: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -94,7 +94,7 @@ class SecurityService
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorMiddleware::logMessage('Error clearing IP blacklist: ' . $e->getMessage(), 'error');
+            ErrorHandler::getInstance()->log('Error clearing IP blacklist: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
