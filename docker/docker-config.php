@@ -10,7 +10,7 @@
  *
  * File: docker-config.php
  * Description: AI Social Status Generator
- */
+*/
 
 
 // OpenAI API key for authentication
@@ -68,9 +68,15 @@ define('SMTP_PASSWORD', getenv('SMTP_PASSWORD'));
 define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL'));
 define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME'));
 
+require_once __DIR__ . '/app/Core/SessionManager.php';
+
+use App\Core\SessionManager;
+
+$session = SessionManager::getInstance();
+$session->start();
 // Generate CSRF token if not already set
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+if (!$session->get('csrf_token')) {
+    $session->set('csrf_token', bin2hex(random_bytes(32)));
 }
 
 // Validate required configuration constants
