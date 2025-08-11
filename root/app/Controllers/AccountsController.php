@@ -204,7 +204,6 @@ class AccountsController extends Controller
     private static function generateCalendarOverview(): string
     {
         $session = SessionManager::getInstance();
-        $session = SessionManager::getInstance();
         $username = $session->get('username');
         $accounts = User::getAllUserAccts($username);
 
@@ -339,6 +338,7 @@ class AccountsController extends Controller
      */
     private static function generateAccountList(): string
     {
+        $session = SessionManager::getInstance();
         $username = $session->get('username');
         $accounts = User::getAllUserAccts($username);
         $output = '';
