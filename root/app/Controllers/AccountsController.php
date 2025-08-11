@@ -177,6 +177,8 @@ class AccountsController extends Controller
         $accountOwner = $session->get('username');
         try {
             Account::deleteAccount($accountOwner, $accountName);
+            $queueService = new QueueService();
+            $queueService->removeAllJobs($accountOwner, $accountName);
             MessageHelper::addMessage('Account Deleted.');
         } catch (\Exception $e) {
             MessageHelper::addMessage('Failed to delete account: ' . $e->getMessage());
