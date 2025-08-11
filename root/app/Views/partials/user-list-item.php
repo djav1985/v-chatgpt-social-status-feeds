@@ -1,3 +1,4 @@
+<?php // phpcs:ignoreFile Generic.Files.LineLength.TooLong -- HTML template with long lines for markup convenience ?>
 <div class="column col-6 col-xl-12 col-md-12 col-sm-12">
     <div class="card account-list-card">
         <div class="card-header account-card">

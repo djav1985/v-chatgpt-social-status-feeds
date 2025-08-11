@@ -1,3 +1,4 @@
+<?php // phpcs:ignoreFile Internal.NoCodeFound -- HTML template, no PHP code required ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

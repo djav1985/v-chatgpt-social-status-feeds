@@ -276,4 +276,3 @@ class DatabaseManager
         return in_array((string) $code, $errors, true);
     }
 }
-

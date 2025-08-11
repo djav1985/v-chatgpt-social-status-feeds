@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Project: SocialRSS
  * Author:  Vontainment <services@vontainment.com>
@@ -109,5 +110,4 @@ class ErrorManager
             $handler->handleException($exception);
         }
     }
-
 }

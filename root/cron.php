@@ -48,14 +48,11 @@ if (!in_array($jobType, $validJobTypes)) {
 // Run tasks for the selected job type
 switch ($jobType) {
     case 'daily': {
-        $resetOk = true;
         if (date('j') === '1') {
-            $resetOk = $service->resetApi();
+            $service->resetApi();
         }
-        $purgeIpsOk = $service->purgeIps();
-        if ((date('j') === '1' && !$resetOk) || !$purgeIpsOk) {
-            die(1);
-        }
+
+        $service->purgeIps();
 
         $queue = new QueueService();
         $queue->clearQueue();

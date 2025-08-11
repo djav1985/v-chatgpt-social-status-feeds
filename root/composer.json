@@ -11,11 +11,19 @@
     "enqueue/enqueue": "^0.10.26",
     "enqueue/dbal": "^0.10.26",
     "openai-php/client": "*",
-    "respect/validation": "*"
+    "respect/validation": "*",
+    "symfony/http-client": "^7.3",
+    "nyholm/psr7": "^1.8",
+    "guzzlehttp/guzzle": "^7.9"
   },
   "autoload": {
     "psr-4": {
       "App\\": "app/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
     }
   }
 }
