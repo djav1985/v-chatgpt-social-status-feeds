@@ -163,20 +163,20 @@ Install the project using the following steps:
 6. **Set Up Cron Jobs:**
   - Configure two cron schedules:
     ```sh
-   0 0 * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php daily
-   0 * * * * /usr/bin/php /PATH-TO-CRON.PHP/cron.php hourly
+    0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php daily
+    0 * * * * /usr/bin/php /PATH-TO-APP/cron.php hourly
     ```
-  - Replace `/PATH-TO-CRON.PHP/` with the actual path to your `cron.php` file.
-  - **Daily:** runs `purge_ips`; `reset_usage` also runs but only on the first day of the month.
-  - **Hourly:** purges old statuses and images, enqueues any posts scheduled for the current hour, and processes them immediately.
+  - Replace `/PATH-TO-APP/` with the actual path to your installation.
+   - **Daily:** populates the job queue; on the 1st, it also purges old statuses and images.
+   - **Hourly:** processes queued jobs for the current hour.
+  - To run a persistent worker instead of the hourly cron, execute `bin/status-worker.php` without `--once` under Supervisor or systemd.
 
 ### Queue Table
 
 The `status_jobs` table uses Enqueue's DBAL schema. Each message stores a JSON
-payload identifying the user and account that needs a status update. During the
-hourly cron run, the application enqueues jobs for the current hour and then
-consumes them immediately. Successfully processed messages are acknowledged and
-removed from the table.
+payload identifying the user and account that needs a status update. The daily
+cron populates the table with jobs for the current day, and the worker script
+consumes them, relying on Enqueue for locking and redelivery.
 
 ### 🤖 Usage
 

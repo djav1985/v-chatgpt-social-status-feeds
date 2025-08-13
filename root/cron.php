@@ -23,8 +23,8 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorManager;
-use App\Services\QueueService;
 use App\Services\CronService;
+use App\Services\QueueService;
 
 // Apply configured runtime limits after loading settings
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
@@ -33,43 +33,23 @@ ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M
 // Run the job logic within the error middleware handler
 ErrorManager::handle(function () {
     global $argv;
+
     $service = new CronService();
 
-$validJobTypes = [
-    'daily',
-    'hourly',
-];
-$jobType = $argv[1] ?? 'hourly'; // Default job type is 'hourly'
-
-if (!in_array($jobType, $validJobTypes)) {
-    die("Invalid job type specified.");
-}
-
-// Run tasks for the selected job type
-switch ($jobType) {
-    case 'daily': {
-        if (date('j') === '1') {
-            $service->resetApi();
-        }
-
-        $service->purgeIps();
-
-        $queue = new QueueService();
-        $queue->clearQueue();
-        $queue->enqueueDailyJobs();
-        break;
+    $validJobTypes = ['daily', 'hourly'];
+    $jobType = $argv[1] ?? 'hourly';
+    if (!in_array($jobType, $validJobTypes, true)) {
+        throw new \InvalidArgumentException('Invalid job type specified.');
     }
-    case 'hourly': {
-        $statusOk = $service->purgeStatuses();
-        $imagesOk = $service->purgeImages();
-        if (!$statusOk || !$imagesOk) {
-            die(1);
-        }
-        $queue = new QueueService();
-        $queue->runQueue();
-        break;
+
+    switch ($jobType) {
+        case 'daily':
+            $service->runDaily();
+            break;
+        case 'hourly':
+            $service->runHourly();
+            $queue = new QueueService();
+            $queue->processLoop(true);
+            break;
     }
-    default:
-        die(1);
-}
 });

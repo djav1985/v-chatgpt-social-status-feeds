@@ -16,6 +16,8 @@ namespace App\Services;
 
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use Enqueue\Dbal\DbalConnectionFactory;
+use Enqueue\Util\JSON;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Status;
@@ -103,5 +105,73 @@ class CronService
     public function purgeIps(): bool
     {
         return Blacklist::clearIpBlacklist();
+    }
+
+    /**
+     * Truncate previous jobs and enqueue all of today's jobs.
+     */
+    public function scheduleDailyQueue(): void
+    {
+        $factory = new DbalConnectionFactory([
+            'connection' => [
+                'dbname' => DB_NAME,
+                'user' => DB_USER,
+                'password' => DB_PASSWORD,
+                'host' => DB_HOST,
+                'driver' => 'pdo_mysql',
+                'charset' => 'utf8mb4',
+            ],
+            'table_name' => 'status_jobs',
+            'lazy' => false,
+        ]);
+
+        $context = $factory->createContext();
+        $context->getDbalConnection()->executeStatement('TRUNCATE TABLE status_jobs');
+
+        $queue = $context->createQueue('status_generate');
+        $producer = $context->createProducer();
+
+        $accounts = Account::getAllAccounts();
+        $dayName = strtolower(date('l'));
+
+        foreach ($accounts as $account) {
+            $days = array_map('strtolower', array_map('trim', explode(',', (string) $account->days)));
+            if (!in_array('everyday', $days, true) && !in_array($dayName, $days, true)) {
+                continue;
+            }
+            $hours = array_filter(array_map('trim', explode(',', (string) $account->cron)), 'strlen');
+            foreach ($hours as $hour) {
+                $payload = [
+                    'username' => $account->username,
+                    'account' => $account->account,
+                    'hour' => (int) $hour,
+                ];
+                $message = $context->createMessage(JSON::encode($payload));
+                $message->setContentType('application/json');
+        $producer->send($queue, $message);
+            }
+        }
+    }
+
+    /**
+     * Run hourly maintenance tasks.
+     */
+    public function runHourly(): void
+    {
+        // No hourly maintenance tasks currently.
+    }
+
+    /**
+     * Run all daily maintenance tasks.
+     */
+    public function runDaily(): void
+    {
+        if (date('j') === '1') {
+            $this->resetApi();
+            $this->purgeStatuses();
+            $this->purgeImages();
+        }
+        $this->purgeIps();
+        $this->scheduleDailyQueue();
     }
 }
