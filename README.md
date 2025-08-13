@@ -161,7 +161,7 @@ Install the project using the following steps:
    - Use the default login credentials: `admin` for both username and password.
 
 6. **Set Up Cron Jobs:**
-  - Configure two cron schedules:
+  - Configure cron to call the unified script:
     ```sh
     0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php daily
     0 * * * * /usr/bin/php /PATH-TO-APP/cron.php hourly
@@ -169,7 +169,7 @@ Install the project using the following steps:
   - Replace `/PATH-TO-APP/` with the actual path to your installation.
    - **Daily:** populates the job queue; on the 1st, it also purges old statuses and images.
    - **Hourly:** processes queued jobs for the current hour.
-  - To run a persistent worker instead of the hourly cron, execute `bin/status-worker.php` without `--once` under Supervisor or systemd.
+  - To run the worker continuously, use `php cron.php worker`; for a single iteration, `php cron.php worker --once`.
 
 ### Queue Table
 

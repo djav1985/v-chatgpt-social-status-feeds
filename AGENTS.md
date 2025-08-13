@@ -27,7 +27,10 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 3. Install DB via `/install.php`
 
 **Cron Jobs:**
-- Set up two schedules for `cron.php` (daily/hourly) to purge, reset, and process status jobs.
+- Use `cron.php` as the single entry point:
+  - `php cron.php daily` for maintenance and queue scheduling.
+  - `php cron.php hourly` to process the current hour's jobs.
+  - `php cron.php worker` for a persistent worker or add `--once` to run a single iteration.
 
 **Debugging:**
 - Use `ErrorManager::getInstance()->log()` for error/debug logs. Check `logs/` if enabled.
