@@ -9,7 +9,7 @@
  * Version: 3.0.0
  *
  * File: cron.php
- * Description: AI Social Status Generator
+ * Description: Entry point for maintenance tasks and queue worker
  */
 
 // This script is intended for CLI use only. If accessed via a web server,
@@ -23,7 +23,6 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorManager;
-use App\Services\CronService;
 use App\Services\QueueService;
 
 // Apply configured runtime limits after loading settings
@@ -34,13 +33,15 @@ ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M
 ErrorManager::handle(function () {
     global $argv;
 
-    $service = new CronService();
+    $service = new QueueService();
 
-    $validJobTypes = ['daily', 'hourly'];
+    $validJobTypes = ['daily', 'hourly', 'worker'];
     $jobType = $argv[1] ?? 'hourly';
     if (!in_array($jobType, $validJobTypes, true)) {
         throw new \InvalidArgumentException('Invalid job type specified.');
     }
+
+    $once = in_array('--once', $argv, true);
 
     switch ($jobType) {
         case 'daily':
@@ -48,8 +49,10 @@ ErrorManager::handle(function () {
             break;
         case 'hourly':
             $service->runHourly();
-            $queue = new QueueService();
-            $queue->processLoop(true);
+            $service->processLoop(true);
+            break;
+        case 'worker':
+            $service->processLoop($once);
             break;
     }
 });
