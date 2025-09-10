@@ -1,0 +1,102 @@
+name: CI & Security
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------- App CI (static analysis, tests) ----------
+  build-test-scan:
+    name: CI Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: phpstan
+      # PHPStan
+      - name: PHPStan (root)
+        if: hashFiles('phpstan.neon') != ''
+        continue-on-error: true
+        run: |
+          if [ -f vendor/bin/phpstan ]; then
+            chmod +x vendor/bin/phpstan
+            vendor/bin/phpstan analyse --memory-limit=1G --autoload-file .github/phpstan-bootstrap.php
+          else
+            echo "PHPStan not found in vendor/, skipping."
+          fi
+      # PHPUnit – only if installed in vendor/
+      - name: PHPUnit (root)
+        if: hashFiles('phpunit.xml') != ''
+        run: |
+          if [ -f vendor/bin/phpunit ]; then
+            chmod +x vendor/bin/phpunit
+            vendor/bin/phpunit --coverage-clover coverage.xml
+          else
+            echo "PHPUnit not found in vendor/, skipping."
+          fi
+  # ---------- Security: CodeQL (JS) ----------
+  codeql-js:
+    name: CodeQL (JavaScript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+          config: |
+            paths-ignore:
+              - vendor/**
+      - uses: github/codeql-action/autobuild@v3
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"
+
+
+  # ---------- Security: Semgrep (PHP) with pip cache ----------
+  semgrep-php:
+    name: Semgrep (PHP)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Create dependency file first so caching has a key
+      - name: Seed pip cache key
+        run: echo "semgrep" > requirements-semgrep.txt
+
+      - name: Set up Python (with pip cache)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+          cache-dependency-path: 'requirements-semgrep.txt'
+
+      - name: Install Semgrep
+        run: pip install -r requirements-semgrep.txt
+
+      - name: Run Semgrep (PHP) and output SARIF
+        run: |
+          semgrep --config=p/php \
+                  --include mu-plugin \
+                  --include update-api \
+                  --exclude vendor \
+                  --exclude node_modules \
+                  --exclude dist \
+                  --sarif --output=semgrep.sarif
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif

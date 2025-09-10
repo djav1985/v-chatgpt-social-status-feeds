@@ -1,0 +1,14 @@
+parameters:
+  level: 6
+  paths:
+    - mu-plugin
+    - update-api
+  excludePaths:
+    - update-api/vendor
+    - update-api/vendor/*
+  bootstrapFiles:
+    - .github\phpstan-bootstrap.php
+
+  # Optional: silence WP globals noise you don’t care about
+  ignoreErrors:
+    - '#Call to (function|method) (add_action|add_filter)#'
