@@ -4,8 +4,7 @@ $rootDir = dirname(__DIR__);
 
 // Load Composer autoload from root
 $autoloadFiles = [
-    $rootDir . '/vendor/autoload.php',
-    $rootDir . '/update-api/vendor/autoload.php',
+    $rootDir . '/root/vendor/autoload.php',
 ];
 foreach ($autoloadFiles as $file) {
     if (is_file($file)) {

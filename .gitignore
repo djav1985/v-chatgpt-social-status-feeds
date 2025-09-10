@@ -3,7 +3,6 @@
 *.code-workspace
 
 # Ensure these files are ignored no matter where they are located
-/phpcs.xml
 /composer.lock
 /composer.json
 

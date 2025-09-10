@@ -1,13 +1,14 @@
 parameters:
   level: 6
   paths:
-    - mu-plugin
-    - update-api
+    - root/app
+    - root/cron.php
+    - root/config.php
+    - root/public
   excludePaths:
-    - update-api/vendor
-    - update-api/vendor/*
+    - root/vendor
   bootstrapFiles:
-    - .github\phpstan-bootstrap.php
+    - .github/phpstan-bootstrap.php
 
   # Optional: silence WP globals noise you don’t care about
   ignoreErrors:
