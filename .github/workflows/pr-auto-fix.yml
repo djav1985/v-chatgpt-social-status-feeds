@@ -28,16 +28,15 @@ jobs:
         shell: bash
         run: |
           TARGETS=""
-          [ -d mu-plugin ] && TARGETS="$TARGETS mu-plugin"
-          [ -d update-api ] && TARGETS="$TARGETS update-api"
+          [ -d root/app ] && TARGETS="$TARGETS root/app"
 
           if [ -z "$TARGETS" ]; then
             echo "No target dirs found. Skipping PHPCBF."
             exit 0
           fi
 
-          if [ -f vendor/bin/phpcbf ]; then
-            php vendor/bin/phpcbf --standard=phpcs.xml $TARGETS || true
+          if [ -f root/vendor/bin/phpcbf ]; then
+            php root/vendor/bin/phpcbf --standard=phpcs.xml $TARGETS || true
           elif command -v phpcbf >/dev/null 2>&1; then
             phpcbf --standard=phpcs.xml $TARGETS || true
           else
@@ -49,14 +48,13 @@ jobs:
         shell: bash
         run: |
           if [ -f node_modules/eslint/bin/eslint.js ]; then
-            if find update-api -type f -name "*.js" ! -path "*/vendor/*" | grep -q .; then
+            if find root/public/assets/js -type f -name "*.js" ! -path "*/vendor/*" | grep -q .; then
               node node_modules/eslint/bin/eslint.js \
-                "update-api/**/*.js" \
-                --ignore-pattern "vendor/**" \
-                --ignore-pattern "update-api/vendor/**" \
+                "root/public/assets/js/**/*.js" \
+                --ignore-pattern "root/vendor/**" \
                 --fix || true
             else
-              echo "No JS files under update-api/. Skipping ESLint."
+              echo "No JS files under root/public/assets/js. Skipping ESLint."
             fi
           else
             echo "ESLint not installed locally. Skipping."
@@ -67,14 +65,13 @@ jobs:
         shell: bash
         run: |
           if [ -f node_modules/stylelint/bin/stylelint.mjs ]; then
-            if find update-api -type f -name "*.css" ! -path "*/vendor/*" | grep -q .; then
+            if find root/public/assets/css -type f -name "*.css" ! -path "*/vendor/*" | grep -q .; then
               node node_modules/stylelint/bin/stylelint.mjs \
-                "update-api/**/*.css" \
-                --ignore-pattern "vendor/**" \
-                --ignore-pattern "update-api/vendor/**" \
+                "root/public/assets/css/**/*.css" \
+                --ignore-pattern "root/vendor/**" \
                 --fix || true
             else
-              echo "No CSS files under update-api/. Skipping Stylelint."
+              echo "No CSS files under root/public/assets/css. Skipping Stylelint."
             fi
           else
             echo "Stylelint not installed locally. Skipping."
