@@ -1,13 +1,17 @@
 <?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
- * Project: ChatGPT API
- * Author: Vontainment
- * URL: https://vontainment.com
- * Version: 2.0.0
- * File: config.php
- * Description: Defines configuration settings such as API keys, endpoints, model preferences, domain, system messages, and database connection details for the ChatGPT API Status Generator.
- */
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: docker-config.php
+ * Description: AI Social Status Generator
+*/
+
 
 // OpenAI API key for authentication
 define('API_KEY', getenv('API_KEY'));
@@ -36,8 +40,12 @@ define('MAX_WIDTH', getenv('MAX_WIDTH'));
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', getenv('MAX_STATUSES'));
 
-// Maximum age of images in days before they are removed (should be over 360 days)
+// Maximum age of images in days before they are removed. Default is
+// 360 days and production setups should keep it at least this value.
 define('IMG_AGE', getenv('IMG_AGE'));
+
+// Session timeout limit in seconds (default: 30 minutes)
+define('SESSION_TIMEOUT_LIMIT', getenv('SESSION_TIMEOUT_LIMIT') ?: 1800);
 
 // Default permissions for creating directories
 define('DIR_MODE', 0755);
@@ -60,7 +68,31 @@ define('SMTP_PASSWORD', getenv('SMTP_PASSWORD'));
 define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL'));
 define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME'));
 
+require_once __DIR__ . '/app/Core/SessionManager.php';
+
+use App\Core\SessionManager;
+
+$session = SessionManager::getInstance();
+$session->start();
 // Generate CSRF token if not already set
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+if (!$session->get('csrf_token')) {
+    $session->set('csrf_token', bin2hex(random_bytes(32)));
+}
+
+// Validate required configuration constants
+$required_constants = ['DB_HOST', 'DB_USER', 'DB_NAME', 'API_KEY'];
+$missing_config = [];
+
+foreach ($required_constants as $constant) {
+    if (!defined($constant) || empty(constant($constant))) {
+        $missing_config[] = $constant;
+    }
+}
+
+if (!empty($missing_config)) {
+    error_log("Missing required configuration: " . implode(', ', $missing_config));
+    if (php_sapi_name() !== 'cli') {
+        http_response_code(500);
+        die("Configuration error: Missing required settings. Please check server logs.");
+    }
 }

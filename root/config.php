@@ -2,12 +2,14 @@
 // phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
- * Project: ChatGPT API
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
  * Version: 3.0.0
- * Author: Vontainment
- * URL: https://vontainment.com
+ *
  * File: config.php
- * Description: Defines configuration settings such as API keys, endpoints, model preferences, domain, system messages, and database connection details for the ChatGPT API Status Generator.
+ * Description: AI Social Status Generator
  */
 
 // OpenAI API key for authentication
@@ -35,10 +37,11 @@ define('SYSTEM_MSG', 'You are a social media marketer. You will respond with pro
 define('MAX_WIDTH', 720);
 
 // Maximum number of statuses allowed in each feed
-define('MAX_STATUSES', 8);
+define('MAX_STATUSES', 50);
 
-// Maximum days to keep images. Should be over 360.
-define('IMG_AGE', 180);
+// Maximum days to keep images. Default is 360 and it should be kept at
+// least this value in production.
+define('IMG_AGE', 360);
 
 // Session timeout limit in seconds (default: 30 minutes)
 define('SESSION_TIMEOUT_LIMIT', 1800);
@@ -64,10 +67,6 @@ define('SMTP_PASSWORD', 'password');
 define('SMTP_FROM_EMAIL', 'no-reply@example.com');
 define('SMTP_FROM_NAME', 'ChatGPT API');
 
-// Generate CSRF token if not already set
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
 
 // Validate required configuration constants
 $required_constants = ['DB_HOST', 'DB_USER', 'DB_NAME', 'API_KEY'];

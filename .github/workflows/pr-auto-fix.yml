@@ -1,0 +1,94 @@
+name: PR Lint and Auto-Fix
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  lint-fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: phpcs
+
+      # PHPCBF — uses phpcs.xml for standards and ignores vendor paths
+      - name: PHPCBF
+        shell: bash
+        run: |
+          TARGETS=""
+          [ -d root/app ] && TARGETS="$TARGETS root/app"
+
+          if [ -z "$TARGETS" ]; then
+            echo "No target dirs found. Skipping PHPCBF."
+            exit 0
+          fi
+
+          if [ -f root/vendor/bin/phpcbf ]; then
+            php root/vendor/bin/phpcbf --standard=phpcs.xml $TARGETS || true
+          elif command -v phpcbf >/dev/null 2>&1; then
+            phpcbf --standard=phpcs.xml $TARGETS || true
+          else
+            echo "PHPCBF not available. Skipping."
+          fi
+
+      # ESLint Fix — recursive search, ignoring vendor directories
+      - name: ESLint Fix
+        shell: bash
+        run: |
+          if [ -f node_modules/eslint/bin/eslint.js ]; then
+            if find root/public/assets/js -type f -name "*.js" ! -path "*/vendor/*" | grep -q .; then
+              node node_modules/eslint/bin/eslint.js \
+                "root/public/assets/js/**/*.js" \
+                --ignore-pattern "root/vendor/**" \
+                --fix || true
+            else
+              echo "No JS files under root/public/assets/js. Skipping ESLint."
+            fi
+          else
+            echo "ESLint not installed locally. Skipping."
+          fi
+
+      # Stylelint Fix — recursive search, ignoring vendor directories
+      - name: Stylelint Fix
+        shell: bash
+        run: |
+          if [ -f node_modules/stylelint/bin/stylelint.mjs ]; then
+            if find root/public/assets/css -type f -name "*.css" ! -path "*/vendor/*" | grep -q .; then
+              node node_modules/stylelint/bin/stylelint.mjs \
+                "root/public/assets/css/**/*.css" \
+                --ignore-pattern "root/vendor/**" \
+                --fix || true
+            else
+              echo "No CSS files under root/public/assets/css. Skipping Stylelint."
+            fi
+          else
+            echo "Stylelint not installed locally. Skipping."
+          fi
+
+      # Commit changes directly to the PR branch
+      - name: Commit fixes to PR branch
+        id: commit_push
+        continue-on-error: true
+        run: |
+          git config core.filemode false
+          git add -A
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: auto-lint fixes"
+            git push origin HEAD:${{ github.head_ref }}
+          else
+            echo "No changes to commit."
+          fi

@@ -1,0 +1,15 @@
+parameters:
+  level: 6
+  paths:
+    - root/app
+    - root/cron.php
+    - root/config.php
+    - root/public
+  excludePaths:
+    - root/vendor
+  bootstrapFiles:
+    - .github/phpstan-bootstrap.php
+
+  # Optional: silence WP globals noise you don’t care about
+  ignoreErrors:
+    - '#Call to (function|method) (add_action|add_filter)#'

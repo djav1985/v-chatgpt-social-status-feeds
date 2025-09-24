@@ -1,8 +1,16 @@
 <?php
-// Only allow the install script when explicitly enabled
-if (getenv('INSTALL_ENABLED') !== '1') {
-    exit('Install script is disabled.');
-}
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: install.php
+ * Description: AI Social Status Generator
+ */
 
 require_once __DIR__ . '/../config.php';
 
@@ -36,10 +44,11 @@ if ($conn->multi_query($sql)) {
     echo "Database installed successfully.";
     $conn->close();
 
-    // Delete this script after successful installation unless disabled
-    if (getenv('KEEP_INSTALL') !== '1') {
+    // Delete this script after successful installation
         @unlink(__FILE__);
-    }
+        
+    // Delete the SQL file after successful installation
+        @unlink(__DIR__ . '/../install.sql');
     exit;
 } else {
     echo "Error installing database: " . $conn->error;

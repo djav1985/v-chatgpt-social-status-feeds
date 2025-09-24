@@ -1,27 +1,17 @@
 RewriteEngine On
+RewriteBase /
 
 # Serve a default PNG image if the requested PNG does not exist
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^images/.*\.png$ /assets/images/default.png [L]
 
-# Redirect '/', '/index.php', and '/feeds.php' to '/home' for external requests only
-RewriteCond %{THE_REQUEST} \s(/|/index\.php|/feeds\.php|/login\.php) [NC]
-RewriteRule ^(index\.php|feeds\.php.*)?$ /home [L,R=301]
-
-# Internally rewrite /login to login.php
-RewriteCond %{REQUEST_URI} ^/login$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^login$ /login.php [L]
-
-# Internally rewrite /home, /users, /accounts, /info to index.php?page=home, etc.
-RewriteCond %{REQUEST_URI} ^/(home|users|accounts|info)$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(home|users|accounts|info)$ /index.php?page=$1 [L]
-
 # Internally rewrite user feed URLs
-RewriteRule ^feeds/([^/]+)/([^/]+)$ /feeds.php?user=$1&acct=$2 [L,QSA]
+RewriteRule ^feeds/([^/]+)/([^/]+)$ /index.php?user=$1&account=$2 [L,QSA]
+
+# Route all other requests through the front controller
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L,QSA]
 
 # Enable caching for certain file types
 <IfModule mod_expires.c>

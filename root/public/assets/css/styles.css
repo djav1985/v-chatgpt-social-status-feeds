@@ -58,7 +58,7 @@ header .logo img {
 }
 
 #logout {
-  height: 50px;
+  height: 60px;
 }
 
 footer {
@@ -449,6 +449,46 @@ footer p {
 .button-group .btn {
   flex: 1;
   height: 60px;
+}
+
+/* ================================================
+   CALENDAR OVERVIEW STYLES
+================================================ */
+
+.calendar-overview {
+  margin-top: 40px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.calendar-day {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  padding: 5px;
+}
+
+.calendar-day h4 {
+  margin: 0 0 5px;
+  text-align: center;
+}
+
+.calendar-slot {
+  border-top: 1px solid #eee;
+  padding: 4px;
+  min-height: 40px;
+}
+.calendar-slot:first-of-type {
+  border-top: none;
+}
+.calendar-slot ul {
+  margin: 0;
+  padding-left: 16px;
+  list-style-type: disc;
 }
 
 /* ================================================
