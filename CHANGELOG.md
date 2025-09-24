@@ -7,3 +7,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 ### Added
 - Initialized coding standards and test suite.
 - Updated tooling paths and bootstrap references.
+- Added unit coverage for status identifier normalization and filesystem sanitization.
+
+### Fixed
+- Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.
