@@ -40,6 +40,7 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 - **Cookie Security:** Session cookies are configured via `session_set_cookie_params()`
   with `httponly`, `secure`, and `SameSite=Lax` flags for better protection.
 - **IP Blacklisting:** Monitors and blacklists suspicious IP addresses to prevent brute-force attacks.
+- **Safe Media Storage:** Generates images using sanitized filesystem paths while preserving original account identifiers for database access.
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
 - **Modular Classes:** Core logic is organized into classes such as DatabaseManager, User, Account, StatusService, FeedController, and ErrorManager for maintainability and scalability.
 - **Global Error Handling:** Centralized logging and exception management via the `ErrorManager` singleton.

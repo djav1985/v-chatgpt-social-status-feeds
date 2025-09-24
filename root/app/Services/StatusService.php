@@ -18,8 +18,10 @@ use App\Models\Account;
 use App\Models\User;
 use App\Models\Status;
 use App\Core\ErrorManager;
-use OpenAI;
 use GuzzleHttp\Client as GuzzleClient;
+use InvalidArgumentException;
+use OpenAI;
+use RuntimeException;
 
 class StatusService
 {
@@ -53,84 +55,100 @@ class StatusService
      */
     public static function generateStatus(string $accountName, string $accountOwner): ?array
     {
-    $accountName = htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8');
-    $accountOwner = htmlspecialchars($accountOwner, ENT_QUOTES, 'UTF-8');
+        $accountName = self::normalizeIdentifier($accountName);
+        $accountOwner = self::normalizeIdentifier($accountOwner);
 
-    $systemMessage = SYSTEM_MSG;
-    $accountInfo = Account::getAcctInfo($accountOwner, $accountName);
-    $userInfo = User::getUserInfo($accountOwner);
+        if ($accountName === '' || $accountOwner === '') {
+            $error = 'Account owner and account name are required to generate a status.';
+            ErrorManager::getInstance()->log($error, 'error');
 
-    if (!$accountInfo || !$userInfo) {
-        $error = "Error: Account or user not found for $accountOwner / $accountName";
-        ErrorManager::getInstance()->log($error, 'error');
-        return ["error" => $error];
+            return ['error' => $error];
+        }
+
+        $systemMessage = SYSTEM_MSG;
+        $accountInfo = Account::getAcctInfo($accountOwner, $accountName);
+        $userInfo = User::getUserInfo($accountOwner);
+
+        if (!$accountInfo || !$userInfo) {
+            $error = sprintf(
+                'Error: Account or user not found for owner "%s" and account "%s".',
+                $accountOwner,
+                $accountName
+            );
+            ErrorManager::getInstance()->log($error, 'error');
+
+            return ['error' => $error];
+        }
+
+        $prompt = $accountInfo->prompt;
+        $link = $accountInfo->link;
+        $includeHashtags = (bool) $accountInfo->hashtags;
+        $platform = $accountInfo->platform;
+
+        $systemMessage .= sprintf(
+            ' You work for %s located in %s. %s Your goal is %s.',
+            $userInfo->who,
+            $userInfo->where,
+            $userInfo->what,
+            $userInfo->goal
+        );
+
+        $statusTokens = match ($platform) {
+            'facebook', 'google-business' => 256,
+            'twitter' => 64,
+            'instagram' => 128,
+            default => 100,
+        };
+
+        $totalTags = match ($platform) {
+            'facebook', 'google-business' => '3 to 5',
+            'twitter' => '3',
+            'instagram' => '20 to 30',
+            default => '5 to 10',
+        };
+
+        $statusResponse = self::generateSocialStatus(
+            $systemMessage,
+            $prompt,
+            $link,
+            $includeHashtags,
+            $totalTags,
+            $statusTokens,
+            $accountName,
+            $accountOwner
+        );
+
+        if (isset($statusResponse['error'])) {
+            $errorDetail = is_array($statusResponse['error'])
+                ? json_encode($statusResponse['error'])
+                : $statusResponse['error'];
+
+            return ['error' => $errorDetail];
+        }
+
+        $statusText = trim($statusResponse['status'] ?? '');
+        $cta = trim($statusResponse['cta'] ?? '');
+        $imagePrompt = trim($statusResponse['image_prompt'] ?? '');
+        $hashtagsText = trim($statusResponse['hashtags'] ?? '');
+
+        $finalStatus = $statusText;
+        if ($platform !== 'google-business' && $cta !== '') {
+            $finalStatus .= ' ' . $cta;
+        }
+        if ($includeHashtags && $hashtagsText !== '') {
+            $finalStatus .= ' ' . $hashtagsText;
+        }
+
+        $imageResponse = self::generateSocialImage($imagePrompt, $accountName, $accountOwner);
+        if (isset($imageResponse['error'])) {
+            return ['error' => $imageResponse['error']];
+        }
+
+        $imageName = $imageResponse['image_name'];
+        Status::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
+
+        return ['success' => true];
     }
-
-    $prompt = $accountInfo->prompt;
-    $link = $accountInfo->link;
-    $includeHashtags = $accountInfo->hashtags;
-    $platform = $accountInfo->platform;
-
-    $systemMessage .= " You work for " . $userInfo->who . " located in " . $userInfo->where . ". " . $userInfo->what . " Your goal is " . $userInfo->goal . ".";
-
-    $statusTokens = match ($platform) {
-        'facebook', 'google-business' => 256,
-        'twitter' => 64,
-        'instagram' => 128,
-        default => 100
-    };
-
-    $totalTags = match ($platform) {
-        'facebook', 'google-business' => '3 to 5',
-        'twitter' => '3',
-        'instagram' => '20 to 30',
-        default => '5 to 10'
-    };
-
-    // Generate status using structured output
-    $statusResponse = self::generateSocialStatus(
-        $systemMessage,
-        $prompt,
-        $link,
-        $includeHashtags,
-        $totalTags,
-        $statusTokens,
-        $accountName,
-        $accountOwner
-    );
-
-    if (isset($statusResponse['error'])) {
-        $errorDetail = is_array($statusResponse['error']) ? json_encode($statusResponse['error']) : $statusResponse['error'];
-        $error = "Status generation failed for $accountName owned by $accountOwner: $errorDetail";
-        ErrorManager::getInstance()->log($error, 'error');
-        return ["error" => $error];
-    }
-
-    $statusText = trim($statusResponse['status'] ?? '');
-    $cta = trim($statusResponse['cta'] ?? '');
-    $imagePrompt = trim($statusResponse['image_prompt'] ?? '');
-    $hashtagsText = trim($statusResponse['hashtags'] ?? '');
-
-    $finalStatus = $statusText;
-    if ($platform !== 'google-business' && $cta) {
-        $finalStatus .= ' ' . $cta;
-    }
-    if ($includeHashtags && $hashtagsText) {
-        $finalStatus .= ' ' . $hashtagsText;
-    }
-
-    $imageResponse = self::generateSocialImage($imagePrompt, $accountName, $accountOwner);
-    if (isset($imageResponse['error'])) {
-        $error = "Image generation failed for $accountName owned by $accountOwner: " . $imageResponse['error'];
-        ErrorManager::getInstance()->log($error, 'error');
-        return ["error" => $error];
-    }
-
-    $imageName = $imageResponse['image_name'];
-    Status::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
-
-    return ['success' => true];
-}
 
 /**
  * Makes an HTTP request to the OpenAI API.
@@ -152,7 +170,7 @@ class StatusService
                     $response = $client->images()->create($data);
                     break;
                 default:
-                    throw new \InvalidArgumentException('Unsupported endpoint');
+                    throw new InvalidArgumentException('Unsupported endpoint');
             }
 
             return $response->toArray();
@@ -277,49 +295,138 @@ class StatusService
  * @return array Returns an array containing the image filename or an error message.
  */
     private static function generateSocialImage(string $imagePrompt, string $accountName, string $accountOwner): array
-{
-    $data = [
-             "model"   => "dall-e-3",
-             "prompt"  => $imagePrompt,
-             "n"       => 1,
-             "quality" => "standard",
-             "size"    => "1792x1024",
-            ];
+    {
+        $data = [
+            'model' => 'dall-e-3',
+            'prompt' => $imagePrompt,
+            'n' => 1,
+            'quality' => 'standard',
+            'size' => '1792x1024',
+        ];
 
-    $response = self::openaiApiRequest('images', $data);
+        $response = self::openaiApiRequest('images', $data);
 
-    if (isset($response['error']) || !isset($response['data'][0]['url'])) {
-        $error = "Error generating image for $accountName owned by $accountOwner: " . ($response['error'] ?? 'Unknown error');
-        ErrorManager::getInstance()->log($error, 'error');
-        return ["error" => $error];
+        if (isset($response['error']) || !isset($response['data'][0]['url'])) {
+            $errorMessage = sprintf(
+                'Error generating image for owner "%s" and account "%s": %s',
+                $accountOwner,
+                $accountName,
+                $response['error'] ?? 'Unknown error'
+            );
+            ErrorManager::getInstance()->log($errorMessage, 'error');
+
+            return ['error' => $errorMessage];
+        }
+
+        $imageUrl = $response['data'][0]['url'];
+
+        try {
+            $imageDirectory = self::buildImageDirectory($accountOwner, $accountName);
+            $fileName = self::generateImageFilename();
+        } catch (InvalidArgumentException | RuntimeException $exception) {
+            $errorMessage = sprintf(
+                'Failed to prepare image storage for owner "%s" and account "%s": %s',
+                $accountOwner,
+                $accountName,
+                $exception->getMessage()
+            );
+            ErrorManager::getInstance()->log($errorMessage, 'error');
+
+            return ['error' => $errorMessage];
+        }
+
+        $dirMode = defined('DIR_MODE') ? DIR_MODE : 0755;
+        if (!is_dir($imageDirectory) && !mkdir($imageDirectory, $dirMode, true) && !is_dir($imageDirectory)) {
+            $errorMessage = sprintf(
+                'Failed to create directory for owner "%s" and account "%s".',
+                $accountOwner,
+                $accountName
+            );
+            ErrorManager::getInstance()->log($errorMessage, 'error');
+
+            return ['error' => $errorMessage];
+        }
+
+        $imagePath = $imageDirectory . DIRECTORY_SEPARATOR . $fileName;
+
+        $imageContent = @file_get_contents($imageUrl);
+        if ($imageContent === false || $imageContent === '') {
+            $errorMessage = sprintf(
+                'Failed to download image for owner "%s" and account "%s".',
+                $accountOwner,
+                $accountName
+            );
+            ErrorManager::getInstance()->log($errorMessage, 'error');
+
+            return ['error' => $errorMessage];
+        }
+
+        if (file_put_contents($imagePath, $imageContent) === false) {
+            $errorMessage = sprintf(
+                'Failed to save image for owner "%s" and account "%s".',
+                $accountOwner,
+                $accountName
+            );
+            ErrorManager::getInstance()->log($errorMessage, 'error');
+
+            return ['error' => $errorMessage];
+        }
+
+        return ['image_name' => $fileName];
     }
 
-    $image_url = $response['data'][0]['url'];
-    $random_name = uniqid() . '.png';
-    // Save under root/public/images/<owner>/<account>/
-    $image_path = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName . '/' . $random_name;
-
-    $dirMode = defined('DIR_MODE') ? DIR_MODE : 0755;
-    if (!is_dir(dirname($image_path)) && !mkdir(dirname($image_path), $dirMode, true)) {
-        $error = "Failed to create directory for $accountName owned by $accountOwner.";
-        ErrorManager::getInstance()->log($error, 'error');
-        return ["error" => $error];
+    /**
+     * Normalize incoming account identifiers for lookups.
+     */
+    private static function normalizeIdentifier(string $value): string
+    {
+        return trim($value);
     }
 
-    $imageContent = @file_get_contents($image_url);
-    if ($imageContent === false || $imageContent === '') {
-        $error = "Failed to download image for $accountName owned by $accountOwner.";
-        ErrorManager::getInstance()->log($error, 'error');
-        return ["error" => $error];
+    /**
+     * Build the directory path used to store generated images.
+     */
+    private static function buildImageDirectory(string $accountOwner, string $accountName): string
+    {
+        $ownerSegment = self::sanitizePathSegment($accountOwner);
+        $accountSegment = self::sanitizePathSegment($accountName);
+
+        return __DIR__ . '/../../public/images/' . $ownerSegment . '/' . $accountSegment;
     }
 
-    if (file_put_contents($image_path, $imageContent) === false) {
-        $error = "Failed to save image for $accountName owned by $accountOwner.";
-        ErrorManager::getInstance()->log($error, 'error');
-        return ["error" => $error];
+    /**
+     * Sanitize user-controlled values before using them in filesystem paths.
+     *
+     * @throws InvalidArgumentException When the resulting path segment would be empty.
+     */
+    private static function sanitizePathSegment(string $value): string
+    {
+        $trimmed = trim($value);
+        if ($trimmed === '') {
+            throw new InvalidArgumentException('Path segment cannot be empty.');
+        }
+
+        $normalized = str_replace('\\', '/', $trimmed);
+        $sanitized = basename($normalized);
+
+        if ($sanitized === '') {
+            throw new InvalidArgumentException('Path segment cannot be empty.');
+        }
+
+        return $sanitized;
     }
 
-    return ["image_name" => $random_name];
-}
-
+    /**
+     * Generate a random filename for an image.
+     *
+     * @throws RuntimeException When a secure random filename cannot be generated.
+     */
+    private static function generateImageFilename(): string
+    {
+        try {
+            return bin2hex(random_bytes(16)) . '.png';
+        } catch (\Throwable $throwable) {
+            throw new RuntimeException('Unable to generate image filename.', 0, $throwable);
+        }
+    }
 }

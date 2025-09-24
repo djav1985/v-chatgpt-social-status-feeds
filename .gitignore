@@ -5,6 +5,7 @@
 # Ensure these files are ignored no matter where they are located
 /composer.lock
 /composer.json
+/.phpunit.result.cache
 
 # Ignore vendor only in the root directory
 /vendor

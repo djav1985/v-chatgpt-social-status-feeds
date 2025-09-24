@@ -1,0 +1,9 @@
+# Reduce Docker build context size to production necessities
+.git
+.github/
+.vscode/
+.idea/
+tests/
+AGENTS.md
+CHANGELOG.md
+README.md
