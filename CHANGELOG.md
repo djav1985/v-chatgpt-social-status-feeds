@@ -5,26 +5,16 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ## Unreleased
 ### Added
-- Initialized coding standards and test suite.
-- Updated tooling paths and bootstrap references.
-- Added unit coverage for status identifier normalization and filesystem sanitization.
-- **New QueueService explicit entry points**: `runQueue()`, `fillQueue()`, `runDaily()`, `runMonthly()`
-- **New cron targets**: `run-queue`, `fill-queue`, `daily`, `monthly` for precise cron scheduling
-- **Enhanced queue processing**: Bounded execution per cron pass, time-based job filtering
-- **Improved retry logic**: First failure marks retry=1, second failure deletes job
-- **Comprehensive test coverage**: Queue timing, retry lifecycle, CLI argument parsing
+- Simplified `status_jobs` schema with `scheduled_at`, `account`, `username`, and a lightweight `status` enum for retry tracking.
+- Queue tests covering the new retry lifecycle and fill-queue scheduling rules.
 
-### Changed  
-- **BREAKING**: Replaced legacy `processLoop()` with bounded `runQueue()` - no more long-lived workers
-- **BREAKING**: Removed `--once` flag - each cron invocation now exits after one bounded pass
-- **BREAKING**: Cron targets changed from `daily`/`hourly`/`worker` to `run-queue`/`fill-queue`/`daily`/`monthly`
-- **Queue safety**: `fillQueue()` appends jobs without truncation, enforces uniqueness
-- **Task separation**: `runDaily()` only handles cleanup, `runMonthly()` only resets API
+### Changed
+- `QueueService::runQueue()` now reads due rows directly from the database, deleting successes, marking the first failure as `retry`, and removing permanently after a second failure.
+- `fillQueue()` appends future slots without truncation, skips past hours, and relies on unique `(account, username, scheduled_at)` rows instead of Enqueue payloads.
+- Cron documentation updated to describe the simplified worker behaviour and retry policy.
 
 ### Removed
-- **BREAKING**: Removed `processLoop()`, `scheduleDailyQueue()`, `runHourly()` methods  
-- **BREAKING**: Removed legacy switch statement and long-lived worker support
-- **BREAKING**: Removed `--once` flag handling
+- Enqueue DBAL transport usage and the JSON-backed queue schema.
 
 ### Fixed
 - Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.

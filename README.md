@@ -28,7 +28,7 @@ VIII. [ License](#-license)
 
 ## Overview
 
-v-chatgpt-social-status-feeds is a modular PHP application for managing, scheduling, and distributing social media status updates. It features user authentication, account management, status scheduling, and real-time RSS feeds, all with a focus on security and extensibility. Scheduled posts are queued using Enqueue's DBAL transport and processed by the cron script. Built for social media managers and developers, it streamlines multi-account status posting and automation.
+v-chatgpt-social-status-feeds is a modular PHP application for managing, scheduling, and distributing social media status updates. It features user authentication, account management, status scheduling, and real-time RSS feeds, all with a focus on security and extensibility. Scheduled posts are recorded in a compact `status_jobs` table and processed by purpose-built cron targets. Built for social media managers and developers, it streamlines multi-account status posting and automation.
 
 All PHP source files live inside the `root` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by Composer's `vendor/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
 
@@ -134,7 +134,6 @@ Before getting started with the installation, ensure your runtime environment me
 - **Web Server:** Apache
 - **Programming Language:** PHP 8.0+
 - **Database:** MySQL 8.0+ or compatible MariaDB
-  - Required for the `FOR UPDATE SKIP LOCKED` feature used by the queue to allow concurrent workers.
 
 ### ⚙️ Installation
 
@@ -172,17 +171,28 @@ Install the project using the following steps:
   - Replace `/PATH-TO-APP/` with the actual path to your installation.
    - **daily:** runs cleanup tasks (purge statuses, images, IPs)
    - **fill-queue:** adds future job slots for the current day without truncating existing jobs
-   - **run-queue:** processes only jobs that are scheduled for now or past times
+   - **run-queue:** executes due jobs (`scheduled_at <= now`) and enforces a single retry before permanent failure
    - **monthly:** resets API usage counters (run on the 1st of each month)
 
 ### Queue Table
 
-The `status_jobs` table uses Enqueue's DBAL schema. Each message stores a JSON
-payload identifying the user, account, and scheduled hour for status updates. The
-`fill-queue` cron safely appends future job slots without truncating existing jobs,
-enforcing uniqueness by (account_id, scheduled_time). The `run-queue` cron processes
-only jobs with scheduled_time <= now(), implementing a retry lifecycle: first failure
-marks retry=1, second failure deletes the job.
+The queue uses a lean `status_jobs` table purpose-built for cron orchestration:
+
+```sql
+CREATE TABLE status_jobs (
+    id CHAR(36) PRIMARY KEY,
+    scheduled_at BIGINT NOT NULL,
+    account VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    status ENUM('pending','retry') NOT NULL DEFAULT 'pending'
+);
+CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
+CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
+```
+
+- **fill-queue** runs once daily to append the next 24 hours of work, skipping past hours and leaving existing rows untouched.
+- **run-queue** runs frequently to process records where `scheduled_at <= NOW()`. Successful jobs are deleted. A first failure updates the row to `status = 'retry'`; a second failure deletes the job permanently.
+- `status` only tracks whether the job is on its original attempt (`pending`) or retrying (`retry`). There is no long-lived worker loop—cron cadence controls execution.
 
 ### 🤖 Usage
 

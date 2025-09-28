@@ -5,68 +5,134 @@ declare(strict_types=1);
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use InvalidArgumentException;
+use Tests\Support\TestableQueueService;
 
 final class QueueServiceTest extends TestCase
 {
-    public function testCronArgumentParsing(): void
+    protected function setUp(): void
     {
-        // Test that the cron.php accepts the four new targets
-        $validTargets = ['run-queue', 'fill-queue', 'daily', 'monthly'];
-        
-        // The following assertion was removed because it was redundant and always passed.
-        
-        // Test that old targets are no longer valid
-        $invalidTargets = ['hourly', 'worker'];
-        
-        foreach ($invalidTargets as $target) {
-            $this->assertNotContains($target, $validTargets);
-        }
+        parent::setUp();
+        date_default_timezone_set('UTC');
     }
 
-    public function testQueueServiceHasNewMethods(): void
+    public function testFillQueueSchedulesFutureSlotsWithoutDuplicates(): void
     {
-        // Test that QueueService has the new required methods
-        $this->assertTrue(method_exists('App\Services\QueueService', 'runQueue'));
-        $this->assertTrue(method_exists('App\Services\QueueService', 'fillQueue'));
-        $this->assertTrue(method_exists('App\Services\QueueService', 'runDaily'));
-        $this->assertTrue(method_exists('App\Services\QueueService', 'runMonthly'));
-    }
-
-    public function testQueueServiceOldMethodsRemoved(): void
-    {
-        // Test that old methods have been removed or modified
-        $this->assertFalse(method_exists('App\Services\QueueService', 'processLoop'));
-        $this->assertFalse(method_exists('App\Services\QueueService', 'scheduleDailyQueue'));
-        $this->assertFalse(method_exists('App\Services\QueueService', 'runHourly'));
-    }
-
-    public function testFutureJobsAreRequeued(): void
-    {
-        // This test ensures that when a job is scheduled for a future hour,
-        // it returns REQUEUE instead of ACK so it's not discarded from the queue
-        
-        // Mock the current hour to be earlier than the scheduled hour
-        $currentHour = 10; // Current time: 10 AM
-        $futureHour = 14;  // Scheduled time: 2 PM
-        
-        // Create a test payload for a future job
-        $testPayload = [
-            'username' => 'testuser',
-            'account' => 'testaccount', 
-            'hour' => $futureHour
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 12:00:00');
+        $service->accounts = [
+            (object) [
+                'username' => 'owner',
+                'account' => 'acct',
+                'cron' => '08,14,18',
+                'days' => 'everyday',
+            ],
         ];
-        
-        // We can't easily test the actual queue processing without a database setup,
-        // but we can at least verify that the logic would return REQUEUE for future jobs
-        // by checking the Result constants exist and are properly defined
-        $this->assertTrue(defined('\Enqueue\Consumption\Result::REQUEUE'));
-        $this->assertTrue(defined('\Enqueue\Consumption\Result::ACK'));
-        $this->assertEquals('enqueue.requeue', \Enqueue\Consumption\Result::REQUEUE);
-        $this->assertEquals('enqueue.ack', \Enqueue\Consumption\Result::ACK);
-        
-        // Test that future hour logic works correctly
-        $this->assertGreaterThan($currentHour, $futureHour, 
-            'Future job should be scheduled for later than current hour');
+        $service->addExistingJob('owner', 'acct', strtotime('2024-01-01 14:00:00'));
+
+        $service->fillQueue();
+
+        $this->assertCount(1, $service->storedJobs, 'Only future, non-duplicate hours should be queued.');
+        $stored = $service->storedJobs[0];
+        $this->assertSame('job-1', $stored['id']);
+        $this->assertSame('owner', $stored['username']);
+        $this->assertSame('acct', $stored['account']);
+        $this->assertSame(strtotime('2024-01-01 18:00:00'), $stored['scheduledAt']);
+        $this->assertSame('pending', $stored['status']);
+    }
+
+    public function testEnqueueRemainingJobsRespectsDayAndFutureHours(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 12:00:00'); // Monday in UTC
+        $service->addExistingJob('owner', 'acct', strtotime('2024-01-01 14:00:00'));
+
+        $service->enqueueRemainingJobs('owner', 'acct', '08,14,18', 'monday');
+
+        $this->assertCount(1, $service->storedJobs, 'Only unscheduled future hours should be added.');
+        $this->assertSame(strtotime('2024-01-01 18:00:00'), $service->storedJobs[0]['scheduledAt']);
+    }
+
+    public function testRunQueueDeletesSuccessfulJobs(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 13:00:00');
+        $service->dueJobs = [
+            [
+                'id' => 'job-1',
+                'account' => 'acct',
+                'username' => 'owner',
+                'scheduled_at' => strtotime('2024-01-01 12:00:00'),
+                'status' => 'pending',
+            ],
+        ];
+
+        $service->runQueue();
+
+        $this->assertSame(['job-1'], $service->deletedIds);
+        $this->assertSame([], $service->markedStatuses);
+    }
+
+    public function testRunQueueMarksFirstFailureAsRetry(): void
+    {
+        $service = new TestableQueueService();
+        $service->dueJobs = [
+            [
+                'id' => 'job-2',
+                'account' => 'acct',
+                'username' => 'owner',
+                'scheduled_at' => strtotime('2024-01-01 12:00:00'),
+                'status' => 'pending',
+            ],
+        ];
+        $service->jobOutcomes['job-2'] = 'fail';
+
+        $service->runQueue();
+
+        $this->assertArrayHasKey('job-2', $service->markedStatuses);
+        $this->assertSame('retry', $service->markedStatuses['job-2']);
+        $this->assertNotContains('job-2', $service->deletedIds, 'First failure should not delete the job.');
+    }
+
+    public function testRunQueueDeletesAfterSecondFailure(): void
+    {
+        $service = new TestableQueueService();
+        $service->dueJobs = [
+            [
+                'id' => 'job-3',
+                'account' => 'acct',
+                'username' => 'owner',
+                'scheduled_at' => strtotime('2024-01-01 12:00:00'),
+                'status' => 'retry',
+            ],
+        ];
+        $service->jobOutcomes['job-3'] = 'fail';
+
+        $service->runQueue();
+
+        $this->assertSame(['job-3'], $service->deletedIds);
+        $this->assertArrayNotHasKey('job-3', $service->markedStatuses);
+    }
+
+    public function testRemoveHelpersUseCurrentTimestamp(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = 1704100800; // 2024-01-01 12:00:00 UTC
+
+        $service->removeFutureJobs('owner', 'acct');
+        $service->removeAllJobs('owner', 'acct');
+
+        $this->assertSame([
+            [
+                'username' => 'owner',
+                'account' => 'acct',
+                'fromTimestamp' => 1704100800,
+            ],
+        ], $service->futureRemovals);
+        $this->assertSame([
+            [
+                'username' => 'owner',
+                'account' => 'acct',
+            ],
+        ], $service->allRemovals);
     }
 }

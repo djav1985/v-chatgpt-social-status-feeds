@@ -171,51 +171,17 @@ EXECUTE drop_sql;
 DEALLOCATE PREPARE drop_sql;
 CREATE INDEX created_at ON status_updates (created_at);
 
--- Create the status_jobs table if it doesn't exist
-CREATE TABLE IF NOT EXISTS status_jobs (
-    id CHAR(36) NOT NULL PRIMARY KEY,
-    published_at BIGINT NOT NULL,
-    body TEXT,
-    headers TEXT,
-    properties TEXT,
-    redelivered BOOLEAN DEFAULT NULL,
-    queue VARCHAR(255) NOT NULL,
-    priority SMALLINT DEFAULT NULL,
-    delayed_until BIGINT DEFAULT NULL,
-    time_to_live BIGINT DEFAULT NULL,
-    delivery_id CHAR(36) DEFAULT NULL,
-    redeliver_after BIGINT DEFAULT NULL,
-    status ENUM('pending','retry','failed','done') NOT NULL DEFAULT 'pending',
-    attempts INT DEFAULT 0,
-    INDEX idx_priority (priority, published_at, queue, delivery_id, delayed_until, id),
-    INDEX idx_redeliver (redeliver_after, delivery_id),
-    INDEX idx_ttl (time_to_live, delivery_id),
-    INDEX idx_delivery (delivery_id)
+-- Reset status_jobs to the simplified queue schema
+DROP TABLE IF EXISTS status_jobs;
+CREATE TABLE status_jobs (
+    id CHAR(36) PRIMARY KEY,
+    scheduled_at BIGINT NOT NULL,
+    account VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    status ENUM('pending','retry') NOT NULL DEFAULT 'pending'
 );
-
--- Ensure status_jobs has status column
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND COLUMN_NAME = 'status') = 0,
-    'ALTER TABLE status_jobs ADD COLUMN status ENUM(''pending'',''retry'',''failed'',''done'') NOT NULL DEFAULT ''pending''' ,
-    'SELECT 0');
-PREPARE alter_sql FROM @stmt;
-EXECUTE alter_sql;
-DEALLOCATE PREPARE alter_sql;
-
--- Ensure status_jobs has attempts column
-SET @stmt := IF(
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_jobs'
-          AND COLUMN_NAME = 'attempts') = 0,
-    'ALTER TABLE status_jobs ADD COLUMN attempts INT DEFAULT 0',
-    'SELECT 0');
-PREPARE alter_sql FROM @stmt;
-EXECUTE alter_sql;
-DEALLOCATE PREPARE alter_sql;
+CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
+CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
 
 -- Create accounts table if it doesn’t exist
 CREATE TABLE IF NOT EXISTS accounts (
