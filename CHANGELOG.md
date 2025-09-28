@@ -12,9 +12,12 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - `QueueService::runQueue()` now reads due rows directly from the database, deleting successes, marking the first failure as `retry`, and removing permanently after a second failure.
 - `fillQueue()` appends future slots without truncation, skips past hours, and relies on unique `(account, username, scheduled_at)` rows instead of Enqueue payloads.
 - Cron documentation updated to describe the simplified worker behaviour and retry policy.
+- Dashboard collapse controls now provide deterministic IDs, synchronized ARIA attributes, and visually hidden copy to improve assistive technology support.
+- Footer spacing and layout styles updated so primary content remains visible on compact screens.
 
 ### Removed
 - Enqueue DBAL transport usage and the JSON-backed queue schema.
 
 ### Fixed
 - Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.
+- Scoped full-width form button styling to avoid stretching logout actions in the header.

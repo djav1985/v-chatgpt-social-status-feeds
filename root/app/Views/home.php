@@ -29,16 +29,31 @@ require 'partials/header.php';
             $acctInfo = $acct['info'];
             $statuses = $acct['statuses'];
             $feedUrl = htmlspecialchars($acct['feedUrl'], ENT_QUOTES);
-            $isOpen = $index === 0 ? 'flex' : 'none';
-            $buttonIcon = $index === 0 ? 'icon-arrow-up' : 'icon-arrow-right';
-            $accountActionDisplay = $index === 0 ? 'flex' : 'none';
+            $panelId = 'status-panel-' . $index;
+            $actionsId = 'account-actions-' . $index;
+            $hasStatuses = !empty($statuses);
+            $openDisplay = $hasStatuses ? 'flex' : 'block';
+            $isInitiallyOpen = $index === 0;
+            $panelDisplay = $isInitiallyOpen ? $openDisplay : 'none';
+            $buttonIcon = $isInitiallyOpen ? 'icon-arrow-up' : 'icon-arrow-right';
+            $accountActionDisplay = $isInitiallyOpen ? 'flex' : 'none';
     ?>
 
         <div class="status-container card">
             <div class="status-header card-header">
-                <button class="collapse-button" onclick="toggleSection(this)">
+                <button
+                    class="collapse-button"
+                    type="button"
+                    onclick="toggleSection(this)"
+                    aria-expanded="<?php echo $isInitiallyOpen ? 'true' : 'false'; ?>"
+                    aria-controls="<?php echo $panelId; ?>"
+                    data-actions="<?php echo $actionsId; ?>"
+                    data-default-open="<?php echo $isInitiallyOpen ? 'true' : 'false'; ?>"
+                    data-account-name="<?php echo htmlspecialchars($accountName, ENT_QUOTES); ?>"
+                >
                     <i class="icon <?php
  echo $buttonIcon ?>"></i>
+                    <span class="visually-hidden">Toggle status campaign #<?php echo htmlspecialchars($accountName); ?></span>
                 </button>
                 <h3 class="status-campaign card-title">Status Campaign: #<?php
  echo htmlspecialchars($accountName) ?></h3>
@@ -46,8 +61,13 @@ require 'partials/header.php';
 
             <?php
  if (!empty($statuses)) : ?>
-                <div class="status-content columns" style="display: <?php
- echo $isOpen ?>;">
+                <div
+                    id="<?php echo $panelId; ?>"
+                    class="status-content columns"
+                    style="display: <?php echo $panelDisplay; ?>;"
+                    data-open-display="flex"
+                    aria-hidden="<?php echo $isInitiallyOpen ? 'false' : 'true'; ?>"
+                >
             <?php foreach ($statuses as $status) : ?>
                         <?php if (!empty($status['status'])) : ?>
                             <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
@@ -69,14 +89,25 @@ require 'partials/header.php';
                 </div>
             <?php
  else : ?>
-                <div id="no-status" class="empty">
+                <div
+                    id="<?php echo $panelId; ?>"
+                    class="status-content empty"
+                    style="display: <?php echo $panelDisplay; ?>;"
+                    data-open-display="block"
+                    aria-hidden="<?php echo $isInitiallyOpen ? 'false' : 'true'; ?>"
+                >
                     <p class="empty-title">No statuses available.</p>
                 </div>
             <?php
  endif; ?>
 
-            <div class="account-action-container" style="display: <?php
- echo $accountActionDisplay ?>;">
+            <div
+                id="<?php echo $actionsId; ?>"
+                class="account-action-container"
+                style="display: <?php echo $accountActionDisplay; ?>;"
+                data-open-display="flex"
+                aria-hidden="<?php echo $isInitiallyOpen ? 'false' : 'true'; ?>"
+            >
                 <button class="view-feed-button btn btn-primary" onclick="location.href='<?php
  echo $feedUrl ?>';">View Feed</button>
                 <form class="account-action-form" action="/home" method="POST">
@@ -101,55 +132,70 @@ require 'partials/header.php';
      * Saves the toggle state in localStorage.
      * @param {HTMLElement} button - The button that was clicked to toggle the section.
      */
+    function setDisplayState(element, shouldShow) {
+        if (!element) return;
+
+        const openDisplay = element.dataset.openDisplay || 'block';
+        element.style.display = shouldShow ? openDisplay : 'none';
+        element.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+    }
+
     function toggleSection(button) {
         const statusContainer = button.closest('.status-container');
         if (!statusContainer) return;
 
-        const statusContent = statusContainer.querySelector('.status-content') || statusContainer.querySelector('#no-status');
-        const accountActionContainer = statusContainer.querySelector('.account-action-container');
+        const panelId = button.getAttribute('aria-controls');
+        const statusContent = document.getElementById(panelId);
+        const accountActionContainer = document.getElementById(button.dataset.actions);
         if (!statusContent || !accountActionContainer) return;
 
-        const allStatusContents = document.querySelectorAll('.status-content, #no-status');
-        const allAccountActionContainers = document.querySelectorAll('.account-action-container');
-        const allButtons = document.querySelectorAll('.collapse-button');
+        const isCurrentlyOpen = button.getAttribute('aria-expanded') === 'true';
 
-        // Close all other sections
-        allStatusContents.forEach(content =>
-            content !== statusContent && (content.style.display = 'none'));
+        document.querySelectorAll('.collapse-button').forEach(btn => {
+            const isTargetButton = btn === button;
+            const shouldOpen = isTargetButton ? !isCurrentlyOpen : false;
+            btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
 
-        allAccountActionContainers.forEach(container =>
-            container !== accountActionContainer && (container.style.display = 'none'));
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = shouldOpen ? 'icon icon-arrow-up' : 'icon icon-arrow-right';
+            }
 
-        allButtons.forEach(btn =>
-            btn !== button && (btn.querySelector('i').className = 'icon icon-arrow-right'));
+            const content = document.getElementById(btn.getAttribute('aria-controls'));
+            const actions = document.getElementById(btn.dataset.actions);
+            setDisplayState(content, shouldOpen);
+            setDisplayState(actions, shouldOpen);
+        });
 
-        // Toggle the clicked section
-        const isOpen = statusContent.style.display === 'flex';
-        statusContent.style.display = isOpen ? 'none' : 'flex';
-        accountActionContainer.style.display = isOpen ? 'none' : 'flex';
-        button.querySelector('i').className = isOpen ? 'icon icon-arrow-right' : 'icon icon-arrow-up';
-
-        // Save the state to localStorage (only one open at a time)
-        const accountName = statusContainer.querySelector('.status-campaign').textContent.trim();
-        localStorage.clear(); // Clear all previous entries
-        if (!isOpen) {
-            localStorage.setItem(accountName, true);
+        const accountName = button.dataset.accountName;
+        if (!isCurrentlyOpen) {
+            localStorage.setItem('openAccount', accountName);
+        } else {
+            localStorage.removeItem('openAccount');
         }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        const allStatusContents = document.querySelectorAll('.status-content, #no-status');
-        const allAccountActionContainers = document.querySelectorAll('.account-action-container');
-        const allButtons = document.querySelectorAll('.collapse-button');
+        const storedAccount = localStorage.getItem('openAccount');
+        const buttons = document.querySelectorAll('.collapse-button');
 
-        allStatusContents.forEach((content, index) => {
-            const statusContainer = content.closest('.status-container');
-            const accountName = statusContainer.querySelector('.status-campaign').textContent.trim();
-            const isOpen = localStorage.getItem(accountName) === 'true';
+        buttons.forEach(button => {
+            const accountName = button.dataset.accountName;
+            const panel = document.getElementById(button.getAttribute('aria-controls'));
+            const actions = document.getElementById(button.dataset.actions);
+            const shouldOpen = storedAccount
+                ? storedAccount === accountName
+                : button.dataset.defaultOpen === 'true';
 
-            content.style.display = isOpen ? 'flex' : 'none';
-            allAccountActionContainers[index].style.display = isOpen ? 'flex' : 'none';
-            allButtons[index].querySelector('i').className = isOpen ? 'icon icon-arrow-up' : 'icon icon-arrow-right';
+            button.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+
+            const icon = button.querySelector('i');
+            if (icon) {
+                icon.className = shouldOpen ? 'icon icon-arrow-up' : 'icon icon-arrow-right';
+            }
+
+            setDisplayState(panel, shouldOpen);
+            setDisplayState(actions, shouldOpen);
         });
 
         document.querySelectorAll('.copy-button').forEach(button => {
