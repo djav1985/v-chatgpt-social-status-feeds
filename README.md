@@ -162,22 +162,27 @@ Install the project using the following steps:
    - Use the default login credentials: `admin` for both username and password.
 
 6. **Set Up Cron Jobs:**
-  - Configure cron to call the unified script:
+  - Configure cron to call the explicit entry points:
     ```sh
     0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php daily
-    0 * * * * /usr/bin/php /PATH-TO-APP/cron.php hourly
+    5 0 * * * /usr/bin/php /PATH-TO-APP/cron.php fill-queue  
+    */10 * * * * /usr/bin/php /PATH-TO-APP/cron.php run-queue
+    0 0 1 * * /usr/bin/php /PATH-TO-APP/cron.php monthly
     ```
   - Replace `/PATH-TO-APP/` with the actual path to your installation.
-   - **Daily:** populates the job queue; on the 1st, it also purges old statuses and images.
-   - **Hourly:** processes queued jobs for the current hour.
-  - To run the worker continuously, use `php cron.php worker`; for a single iteration, `php cron.php worker --once`.
+   - **daily:** runs cleanup tasks (purge statuses, images, IPs)
+   - **fill-queue:** adds future job slots for the current day without truncating existing jobs
+   - **run-queue:** processes only jobs that are scheduled for now or past times
+   - **monthly:** resets API usage counters (run on the 1st of each month)
 
 ### Queue Table
 
 The `status_jobs` table uses Enqueue's DBAL schema. Each message stores a JSON
-payload identifying the user and account that needs a status update. The daily
-cron populates the table with jobs for the current day, and the worker script
-consumes them, relying on Enqueue for locking and redelivery.
+payload identifying the user, account, and scheduled hour for status updates. The
+`fill-queue` cron safely appends future job slots without truncating existing jobs,
+enforcing uniqueness by (account_id, scheduled_time). The `run-queue` cron processes
+only jobs with scheduled_time <= now(), implementing a retry lifecycle: first failure
+marks retry=1, second failure deletes the job.
 
 ### 🤖 Usage
 
