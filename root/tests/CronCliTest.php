@@ -83,7 +83,8 @@ final class CronCliTest extends TestCase
         // The --once flag should no longer be recognized or needed
         $result = $this->runCronScript(['run-queue', '--once']);
         
-        // Should still work (ignoring the extra flag) since we removed --once handling
-        $this->assertStringNotContainsString('Usage: php cron.php', $result['output']);
+        // Should reject the obsolete --once flag and show usage/help
+        $this->assertEquals(1, $result['exitCode']);
+        $this->assertStringContainsString('Usage: php cron.php', $result['output']);
     }
 }
