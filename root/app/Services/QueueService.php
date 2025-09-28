@@ -191,7 +191,7 @@ class QueueService
             $currentHour = (int) date('G');
             $scheduledHour = (int) $data['hour'];
             if ($scheduledHour > $currentHour) {
-                return Result::ACK; // Skip future jobs
+                return Result::REQUEUE; // Requeue future jobs for later processing
             }
 
             try {

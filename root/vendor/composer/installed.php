@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'appsbyv/v-chatgpt-social-status-feeds',
-        'pretty_version' => 'dev-copilot/fix-ac656470-98ec-43c1-bcb0-21ca156182a5',
-        'version' => 'dev-copilot/fix-ac656470-98ec-43c1-bcb0-21ca156182a5',
-        'reference' => '6e8d7b6a298ae2712320a4f3ce0e6872d102d06c',
+        'pretty_version' => 'dev-copilot/fix-189eef3b-0036-4706-a7e1-d0312cc0e370',
+        'version' => 'dev-copilot/fix-189eef3b-0036-4706-a7e1-d0312cc0e370',
+        'reference' => '38a10d26d23419a445ced183cdffc74373021ce3',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'appsbyv/v-chatgpt-social-status-feeds' => array(
-            'pretty_version' => 'dev-copilot/fix-ac656470-98ec-43c1-bcb0-21ca156182a5',
-            'version' => 'dev-copilot/fix-ac656470-98ec-43c1-bcb0-21ca156182a5',
-            'reference' => '6e8d7b6a298ae2712320a4f3ce0e6872d102d06c',
+            'pretty_version' => 'dev-copilot/fix-189eef3b-0036-4706-a7e1-d0312cc0e370',
+            'version' => 'dev-copilot/fix-189eef3b-0036-4706-a7e1-d0312cc0e370',
+            'reference' => '38a10d26d23419a445ced183cdffc74373021ce3',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
