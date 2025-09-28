@@ -44,6 +44,19 @@ final class TestableQueueService extends QueueService
         return $this->dueJobs;
     }
 
+    public function claimDueJobs(int $now): array
+    {
+        // For testing, simulate atomic claiming by adding _original_status to each job
+        $claimedJobs = [];
+        foreach ($this->dueJobs as $job) {
+            $claimedJob = $job;
+            $claimedJob['_original_status'] = $job['status'] ?? 'pending';
+            $claimedJob['status'] = 'processing';
+            $claimedJobs[] = $claimedJob;
+        }
+        return $claimedJobs;
+    }
+
     protected function insertJobInStorage(
         string $id,
         string $username,

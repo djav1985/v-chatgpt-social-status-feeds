@@ -178,7 +178,7 @@ CREATE TABLE status_jobs (
     scheduled_at BIGINT NOT NULL,
     account VARCHAR(255) NOT NULL,
     username VARCHAR(255) NOT NULL,
-    status ENUM('pending','retry') NOT NULL DEFAULT 'pending'
+    status ENUM('pending','retry','processing') NOT NULL DEFAULT 'pending'
 );
 CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
 CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
