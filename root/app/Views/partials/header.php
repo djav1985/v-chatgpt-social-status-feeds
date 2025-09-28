@@ -31,9 +31,11 @@
 <body>
 <header class="columns">
     <div class="column col-6">
-        <a href="/home">
-            <img src="/assets/images/logo.png" alt="Logo" class="img-responsive">
-        </a>
+        <div class="logo">
+            <a href="/home">
+                <img src="/assets/images/logo.png" alt="Logo" class="img-responsive">
+            </a>
+        </div>
     </div>
     <div class="column col-6 text-right">
         <form action="/login" method="POST" class="form-inline">

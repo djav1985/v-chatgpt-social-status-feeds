@@ -13,11 +13,24 @@ body {
 
 main {
   margin-bottom: 48px;
+  padding-bottom: 120px;
 }
 
 .container {
   border-top: 4px solid #66cc33;
   padding: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .btn.btn-lg {
@@ -69,12 +82,19 @@ footer {
   z-index: 99;
   background-color: #66cc33;
   text-align: center;
+  min-height: 60px;
 }
 
 footer p {
   margin: 0;
   color: #ffffff;
   font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  main {
+    padding-bottom: 160px;
+  }
 }
 
 /* ================================================

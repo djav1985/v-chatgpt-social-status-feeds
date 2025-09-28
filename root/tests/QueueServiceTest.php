@@ -27,7 +27,7 @@ final class QueueServiceTest extends TestCase
                 'days' => 'everyday',
             ],
         ];
-        $service->addExistingJob('owner', 'acct', strtotime('2024-01-01 14:00:00'));
+        $service->seedExistingJob('owner', 'acct', strtotime('2024-01-01 14:00:00'));
 
         $service->fillQueue();
 
@@ -44,7 +44,7 @@ final class QueueServiceTest extends TestCase
     {
         $service = new TestableQueueService();
         $service->fakeNow = strtotime('2024-01-01 12:00:00'); // Monday in UTC
-        $service->addExistingJob('owner', 'acct', strtotime('2024-01-01 14:00:00'));
+        $service->seedExistingJob('owner', 'acct', strtotime('2024-01-01 14:00:00'));
 
         $service->enqueueRemainingJobs('owner', 'acct', '08,14,18', 'monday');
 

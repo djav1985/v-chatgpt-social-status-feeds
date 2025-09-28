@@ -86,9 +86,17 @@ select:focus {
   border: none;
   border-radius: 6px;
   padding: 0.75rem 1rem;
-  width: 100%;
   font-size: 1rem;
   text-align: center;
+}
+
+form:not(.form-inline) .btn,
+.form-group .btn {
+  width: 100%;
+}
+
+form.form-inline .btn {
+  width: auto;
 }
 
 /* Original .btn-primary shadow */

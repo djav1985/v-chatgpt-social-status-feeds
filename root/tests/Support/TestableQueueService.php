@@ -105,6 +105,11 @@ final class TestableQueueService extends QueueService
         return sprintf('job-%d', count($this->storedJobs) + 1);
     }
 
+    public function seedExistingJob(string $username, string $account, int $scheduledAt): void
+    {
+        $this->addExistingJob($username, $account, $scheduledAt);
+    }
+
     protected function addExistingJob(string $username, string $account, int $scheduledAt): void
     {
         $this->existingJobs[$this->key($username, $account, $scheduledAt)] = true;

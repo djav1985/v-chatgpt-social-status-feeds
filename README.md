@@ -44,6 +44,7 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
 - **Modular Classes:** Core logic is organized into classes such as DatabaseManager, User, Account, StatusService, FeedController, and ErrorManager for maintainability and scalability.
 - **Global Error Handling:** Centralized logging and exception management via the `ErrorManager` singleton.
+- **Accessible Dashboard UI:** Collapsible status feeds expose synchronized ARIA states, scoped form controls, and responsive footer spacing so navigation and content remain usable across assistive technologies and compact screens.
 
 
 ## Features
