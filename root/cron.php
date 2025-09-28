@@ -19,6 +19,18 @@ if (php_sapi_name() !== 'cli') {
     exit('Forbidden');
 }
 
+// Validate arguments before loading config
+$validJobTypes = ['run-queue', 'fill-queue', 'daily', 'monthly'];
+$jobType = $argv[1] ?? '';
+if (!in_array($jobType, $validJobTypes, true)) {
+    echo "Usage: php cron.php {run-queue|fill-queue|daily|monthly}\n";
+    echo "  run-queue  - Process queued jobs with scheduled_time <= now\n";
+    echo "  fill-queue - Add future job slots without truncating existing jobs\n";
+    echo "  daily      - Run daily cleanup (purge statuses, images, IPs)\n";
+    echo "  monthly    - Reset API usage counters\n";
+    exit(1);
+}
+
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -30,29 +42,21 @@ ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRO
 ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M');
 
 // Run the job logic within the error middleware handler
-ErrorManager::handle(function () {
-    global $argv;
-
+ErrorManager::handle(function () use ($jobType) {
     $service = new QueueService();
 
-    $validJobTypes = ['daily', 'hourly', 'worker'];
-    $jobType = $argv[1] ?? 'hourly';
-    if (!in_array($jobType, $validJobTypes, true)) {
-        throw new \InvalidArgumentException('Invalid job type specified.');
-    }
-
-    $once = in_array('--once', $argv, true);
-
     switch ($jobType) {
+        case 'run-queue':
+            $service->runQueue();
+            break;
+        case 'fill-queue':
+            $service->fillQueue();
+            break;
         case 'daily':
             $service->runDaily();
             break;
-        case 'hourly':
-            $service->runHourly();
-            $service->processLoop(true);
-            break;
-        case 'worker':
-            $service->processLoop($once);
+        case 'monthly':
+            $service->runMonthly();
             break;
     }
 });
