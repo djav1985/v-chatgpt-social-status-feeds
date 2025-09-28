@@ -24,7 +24,7 @@ $validJobTypes = ['run-queue', 'fill-queue', 'daily', 'monthly'];
 $jobType = $argv[1] ?? '';
 if (!in_array($jobType, $validJobTypes, true)) {
     echo "Usage: php cron.php {run-queue|fill-queue|daily|monthly}\n";
-    echo "  run-queue  - Process queued jobs with scheduled_time <= now\n";
+    echo "  run-queue  - Process queued jobs with scheduled_at <= now\n";
     echo "  fill-queue - Add future job slots without truncating existing jobs\n";
     echo "  daily      - Run daily cleanup (purge statuses, images, IPs)\n";
     echo "  monthly    - Reset API usage counters\n";

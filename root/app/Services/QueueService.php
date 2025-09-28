@@ -3,11 +3,6 @@
 
 namespace App\Services;
 
-use Enqueue\Dbal\DbalConnectionFactory;
-use Enqueue\Consumption\QueueConsumer;
-use Enqueue\Consumption\Extension\LimitConsumptionTimeExtension;
-use Enqueue\Consumption\Result;
-use Enqueue\Util\JSON;
 use App\Core\DatabaseManager;
 use App\Services\StatusService;
 use App\Models\Account;
@@ -15,79 +10,50 @@ use App\Models\User;
 use App\Models\Status;
 use App\Core\Mailer;
 use App\Models\Blacklist;
+use DateTimeImmutable;
+use DateTimeZone;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Interop\Queue\Message;
 
 /**
  * Service for queue operations and scheduled maintenance tasks.
  */
 class QueueService
 {
-    private \Interop\Queue\Context $context;
-    private \Interop\Queue\Queue $queue;
-
     public function __construct()
     {
-        $factory = new DbalConnectionFactory([
-            'connection' => [
-                'dbname' => DB_NAME,
-                'user' => DB_USER,
-                'password' => DB_PASSWORD,
-                'host' => DB_HOST,
-                'driver' => 'pdo_mysql',
-                'charset' => 'utf8mb4',
-            ],
-            'table_name' => 'status_jobs',
-            'lazy' => false,
-        ]);
-        $this->context = $factory->createContext();
-        $this->queue = $this->context->createQueue('status_generate');
-    }
-
-    private function enqueueStatusForHour(string $username, string $account, int $hour): void
-    {
-        $payload = ['username' => $username, 'account' => $account, 'hour' => $hour];
-        $message = $this->context->createMessage(JSON::encode($payload));
-        $message->setContentType('application/json');
-        $this->context->createProducer()->send($this->queue, $message);
     }
 
     public function enqueueRemainingJobs(string $username, string $account, string $cron, string $days): void
     {
-        $dayName = strtolower(date('l'));
-        $currentHour = (int) date('G');
-        $daysArr = array_map('strtolower', array_map('trim', explode(',', $days)));
-        if (!in_array('everyday', $daysArr, true) && !in_array($dayName, $daysArr, true)) {
+        $dayName = strtolower(date('l', $this->now()));
+        $daysArr = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) $days))), 'strlen');
+        if (!empty($daysArr) && !in_array('everyday', $daysArr, true) && !in_array($dayName, $daysArr, true)) {
             return;
         }
-        $hours = array_filter(array_map('trim', explode(',', $cron)), 'strlen');
-        foreach ($hours as $hour) {
-            $intHour = (int) $hour;
-            if ($intHour > $currentHour) {
-                $this->enqueueStatusForHour($username, $account, $intHour);
+
+        foreach ($this->normalizeHours($cron) as $hour) {
+            $scheduledAt = $this->scheduledTimestampForHour($hour, $this->now());
+            if ($scheduledAt <= $this->now()) {
+                continue;
             }
+
+            if ($this->jobExistsInStorage($username, $account, $scheduledAt)) {
+                continue;
+            }
+
+            $this->storeJob($username, $account, $scheduledAt, 'pending');
         }
     }
 
     public function removeFutureJobs(string $username, string $account): void
     {
-        $currentHour = (int) date('G');
-        $db = DatabaseManager::getInstance();
-        $db->query("DELETE FROM status_jobs WHERE JSON_EXTRACT(body, '\$.username') = :user AND JSON_EXTRACT(body, '\$.account') = :acct AND JSON_EXTRACT(body, '\$.hour') >= :hr");
-        $db->bind(':user', $username);
-        $db->bind(':acct', $account);
-        $db->bind(':hr', $currentHour);
-        $db->execute();
+        $this->deleteFutureJobs($username, $account, $this->now());
     }
 
     public function removeAllJobs(string $username, string $account): void
     {
-        $db = DatabaseManager::getInstance();
-        $db->query("DELETE FROM status_jobs WHERE JSON_EXTRACT(body, '\$.username') = :user AND JSON_EXTRACT(body, '\$.account') = :acct");
-        $db->bind(':user', $username);
-        $db->bind(':acct', $account);
-        $db->execute();
+        $this->deleteAllJobsForAccount($username, $account);
     }
 
     /**
@@ -173,84 +139,63 @@ class QueueService
 
 
 
-    /**
-     * Run a single bounded pass to consume jobs with scheduled_time <= now().
-     * On failure: first mark retry=1 while keeping the original scheduled time;
-     * on a second failure delete the job.
-     */
     public function runQueue(): void
     {
-        $consumer = new QueueConsumer($this->context);
-        $consumer->bindCallback($this->queue, function (Message $message) {
-            $data = JSON::decode($message->getBody());
-            if (!is_array($data) || !isset($data['account'], $data['username'], $data['hour'])) {
-                return Result::REJECT;
+        $jobs = $this->fetchDueJobs($this->now());
+
+        foreach ($jobs as $job) {
+            if (!isset($job['id'], $job['account'], $job['username'])) {
+                continue;
             }
-            
-            // Only process jobs scheduled for current hour or past hours
-            $currentHour = (int) date('G');
-            $scheduledHour = (int) $data['hour'];
-            if ($scheduledHour > $currentHour) {
-                return Result::REQUEUE; // Requeue future jobs for later processing
+
+            $status = strtolower((string) ($job['status'] ?? 'pending'));
+            if ($status !== 'pending' && $status !== 'retry') {
+                $this->deleteJobById($job['id']);
+                continue;
             }
 
             try {
-                StatusService::generateStatus($data['account'], $data['username']);
-                return Result::ACK;
+                $this->processJobPayload($job);
+                $this->deleteJobById($job['id']);
             } catch (\Throwable $e) {
-                $retry = (int) $message->getProperty('retry', 0);
-                if ($retry >= 1) {
-                    // Second failure - delete the job
-                    return Result::REJECT;
+                if ($status === 'pending') {
+                    $this->markJobStatus($job['id'], 'retry');
+                } else {
+                    $this->deleteJobById($job['id']);
                 }
-                // First failure - mark for retry
-                $message->setProperty('retry', 1);
-                $message->setPriority(3); // MessagePriority::HIGH equivalent
-                return Result::REQUEUE;
             }
-        });
-
-        // Perform a single bounded pass
-        $consumer->consume(new LimitConsumptionTimeExtension(new \DateTime('+5 minutes')));
+        }
     }
 
-    /**
-     * Append future slots without truncating status_jobs.
-     * Enforce uniqueness with (account_id, scheduled_time) so it's safe to re-run.
-     */
     public function fillQueue(): void
     {
-        $producer = $this->context->createProducer();
-        $accounts = Account::getAllAccounts();
-        $dayName = strtolower(date('l'));
+        $accounts = $this->getAccounts();
+        $dayName = strtolower(date('l', $this->now()));
 
         foreach ($accounts as $account) {
-            $days = array_map('strtolower', array_map('trim', explode(',', (string) $account->days)));
-            if (!in_array('everyday', $days, true) && !in_array($dayName, $days, true)) {
+            $days = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) ($account->days ?? '')))), 'strlen');
+            if (!empty($days) && !in_array('everyday', $days, true) && !in_array($dayName, $days, true)) {
                 continue;
             }
-            $hours = array_filter(array_map('trim', explode(',', (string) $account->cron)), 'strlen');
-            foreach ($hours as $hour) {
-                $payload = [
-                    'username' => $account->username,
-                    'account' => $account->account,
-                    'hour' => (int) $hour,
-                ];
-                
-                // Check if job already exists for this account and hour
-                $db = DatabaseManager::getInstance();
-                $db->query("SELECT COUNT(*) as count FROM status_jobs WHERE JSON_EXTRACT(body, '$.username') = :user AND JSON_EXTRACT(body, '$.account') = :acct AND JSON_EXTRACT(body, '$.hour') = :hr");
-                $db->bind(':user', $account->username);
-                $db->bind(':acct', $account->account);
-                $db->bind(':hr', (int) $hour);
-                $existing = $db->single();
-                
-                // Only enqueue if not already present
-                if (!$existing || $existing->count == 0) {
-                    $message = $this->context->createMessage(JSON::encode($payload));
-                    $message->setContentType('application/json');
-                    $producer->send($this->queue, $message);
+
+            foreach ($this->normalizeHours((string) ($account->cron ?? '')) as $hour) {
+                $scheduledAt = $this->scheduledTimestampForHour($hour, $this->now());
+                if ($scheduledAt <= $this->now()) {
+                    continue;
                 }
+
+                $username = (string) ($account->username ?? '');
+                $acct = (string) ($account->account ?? '');
+
+                if ($username === '' || $acct === '') {
+                    continue;
+                }
+
+                if ($this->jobExistsInStorage($username, $acct, $scheduledAt)) {
+                    continue;
+                }
+
+                $this->storeJob($username, $acct, $scheduledAt, 'pending');
             }
         }
     }
@@ -271,5 +216,130 @@ class QueueService
     public function runMonthly(): void
     {
         $this->resetApi();
+    }
+
+    protected function now(): int
+    {
+        return time();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function fetchDueJobs(int $now): array
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status IN (\'pending\', \'retry\') AND scheduled_at <= :now ORDER BY scheduled_at ASC');
+        $db->bind(':now', $now);
+        return $db->resultSet();
+    }
+
+    protected function deleteJobById(string $id): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('DELETE FROM status_jobs WHERE id = :id');
+        $db->bind(':id', $id);
+        $db->execute();
+    }
+
+    protected function markJobStatus(string $id, string $status): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('UPDATE status_jobs SET status = :status WHERE id = :id');
+        $db->bind(':status', $status);
+        $db->bind(':id', $id);
+        $db->execute();
+    }
+
+    protected function jobExistsInStorage(string $username, string $account, int $scheduledAt): bool
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('SELECT id FROM status_jobs WHERE username = :username AND account = :account AND scheduled_at = :scheduled_at LIMIT 1');
+        $db->bind(':username', $username);
+        $db->bind(':account', $account);
+        $db->bind(':scheduled_at', $scheduledAt);
+        return $db->single() !== null;
+    }
+
+    protected function storeJob(string $username, string $account, int $scheduledAt, string $status): void
+    {
+        $this->insertJobInStorage($this->generateJobId(), $username, $account, $scheduledAt, $status);
+    }
+
+    protected function insertJobInStorage(string $id, string $username, string $account, int $scheduledAt, string $status): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('INSERT INTO status_jobs (id, scheduled_at, account, username, status) VALUES (:id, :scheduled_at, :account, :username, :status)');
+        $db->bind(':id', $id);
+        $db->bind(':scheduled_at', $scheduledAt);
+        $db->bind(':account', $account);
+        $db->bind(':username', $username);
+        $db->bind(':status', $status);
+        $db->execute();
+    }
+
+    protected function deleteFutureJobs(string $username, string $account, int $fromTimestamp): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('DELETE FROM status_jobs WHERE username = :username AND account = :account AND scheduled_at >= :scheduled_at');
+        $db->bind(':username', $username);
+        $db->bind(':account', $account);
+        $db->bind(':scheduled_at', $fromTimestamp);
+        $db->execute();
+    }
+
+    protected function deleteAllJobsForAccount(string $username, string $account): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('DELETE FROM status_jobs WHERE username = :username AND account = :account');
+        $db->bind(':username', $username);
+        $db->bind(':account', $account);
+        $db->execute();
+    }
+
+    protected function getAccounts(): array
+    {
+        return Account::getAllAccounts();
+    }
+
+    protected function processJobPayload(array $job): void
+    {
+        StatusService::generateStatus((string) $job['account'], (string) $job['username']);
+    }
+
+    protected function generateJobId(): string
+    {
+        $data = random_bytes(16);
+        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+    /**
+     * @return int[]
+     */
+    protected function normalizeHours(string $cron): array
+    {
+        $parts = array_filter(array_map('trim', explode(',', $cron)), 'strlen');
+        $hours = [];
+        foreach ($parts as $part) {
+            if (!is_numeric($part)) {
+                continue;
+            }
+            $int = (int) $part;
+            if ($int < 0 || $int > 23) {
+                continue;
+            }
+            $hours[] = $int;
+        }
+        return array_values(array_unique($hours));
+    }
+
+    protected function scheduledTimestampForHour(int $hour, int $reference): int
+    {
+        $tz = new DateTimeZone(date_default_timezone_get());
+        $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);
+        return (int) $referenceTime->setTime($hour, 0, 0)->format('U');
     }
 }

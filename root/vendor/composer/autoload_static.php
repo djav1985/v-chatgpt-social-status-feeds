@@ -9,7 +9,6 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '2df68f9e79c919e2d88506611769ed2e' => __DIR__ . '/..' . '/respect/stringifier/src/stringify.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -20,6 +19,10 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
     );
 
     public static $prefixLengthsPsr4 = array (
+        'T' => 
+        array (
+            'Tests\\' => 6,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -31,8 +34,6 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             'Respect\\Validation\\' => 19,
             'Respect\\Stringifier\\' => 20,
-            'Ramsey\\Uuid\\' => 12,
-            'Ramsey\\Collection\\' => 18,
         ),
         'P' => 
         array (
@@ -52,11 +53,6 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             'Nyholm\\Psr7\\' => 12,
         ),
-        'I' => 
-        array (
-            'Interop\\Queue\\' => 14,
-            'Interop\\Amqp\\' => 13,
-        ),
         'H' => 
         array (
             'Http\\Message\\MultipartStream\\' => 29,
@@ -72,24 +68,12 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             'FastRoute\\' => 10,
         ),
-        'E' => 
-        array (
-            'Enqueue\\Null\\' => 13,
-            'Enqueue\\Dsn\\' => 12,
-            'Enqueue\\Dbal\\' => 13,
-            'Enqueue\\' => 8,
-        ),
         'D' => 
         array (
-            'Doctrine\\Persistence\\' => 21,
             'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\DBAL\\' => 14,
             'Doctrine\\Common\\' => 16,
             'DeepCopy\\' => 9,
-        ),
-        'B' => 
-        array (
-            'Brick\\Math\\' => 11,
         ),
         'A' => 
         array (
@@ -98,6 +82,10 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
     );
 
     public static $prefixDirsPsr4 = array (
+        'Tests\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
+        ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
@@ -121,14 +109,6 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         'Respect\\Stringifier\\' => 
         array (
             0 => __DIR__ . '/..' . '/respect/stringifier/src',
-        ),
-        'Ramsey\\Uuid\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ramsey/uuid/src',
-        ),
-        'Ramsey\\Collection\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -167,14 +147,6 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             0 => __DIR__ . '/..' . '/nyholm/psr7/src',
         ),
-        'Interop\\Queue\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/queue-interop/queue-interop/src',
-        ),
-        'Interop\\Amqp\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/queue-interop/amqp-interop/src',
-        ),
         'Http\\Message\\MultipartStream\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-http/multipart-stream-builder/src',
@@ -199,26 +171,6 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
         ),
-        'Enqueue\\Null\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/enqueue/null',
-        ),
-        'Enqueue\\Dsn\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/enqueue/dsn',
-        ),
-        'Enqueue\\Dbal\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/enqueue/dbal',
-        ),
-        'Enqueue\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/enqueue/enqueue',
-        ),
-        'Doctrine\\Persistence\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/persistence/src/Persistence',
-        ),
         'Doctrine\\Deprecations\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
@@ -234,10 +186,6 @@ class ComposerStaticInit8084c09a02084f99b55336a6fd7c8068
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
-        ),
-        'Brick\\Math\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/brick/math/src',
         ),
         'App\\' => 
         array (
