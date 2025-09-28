@@ -141,7 +141,7 @@ class QueueService
 
     public function runQueue(): void
     {
-        $jobs = $this->fetchDueJobs($this->now());
+        $jobs = $this->claimDueJobs($this->now());
 
         foreach ($jobs as $job) {
             if (!isset($job['id'], $job['account'], $job['username'])) {
@@ -158,8 +158,9 @@ class QueueService
                 $this->processJobPayload($job);
                 $this->deleteJobById($job['id']);
             } catch (\Throwable $e) {
+                // On failure, reset processing flag and handle retry logic
                 if ($status === 'pending') {
-                    $this->markJobStatus($job['id'], 'retry');
+                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
                 } else {
                     $this->deleteJobById($job['id']);
                 }
@@ -234,6 +235,37 @@ class QueueService
         return $db->resultSet();
     }
 
+    /**
+     * Atomically claim jobs for processing to prevent concurrent execution.
+     * @return array<int, array<string, mixed>>
+     */
+    protected function claimDueJobs(int $now): array
+    {
+        $db = DatabaseManager::getInstance();
+        $claimedJobs = [];
+        
+        // First, get candidate job IDs 
+        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status IN (\'pending\', \'retry\') AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
+        $db->bind(':now', $now);
+        $candidates = $db->resultSet();
+        
+        // Atomically claim each job individually by setting processing = TRUE
+        foreach ($candidates as $candidate) {
+            // Try to atomically claim this specific job
+            $db->query('UPDATE status_jobs SET processing = TRUE WHERE id = :id AND processing = FALSE');
+            $db->bind(':id', $candidate['id']);
+            $db->execute();
+            
+            // If we successfully claimed it (rowCount = 1), add to our list
+            if ($db->rowCount() === 1) {
+                $candidate['processing'] = true;
+                $claimedJobs[] = $candidate;
+            }
+        }
+        
+        return $claimedJobs;
+    }
+
     protected function deleteJobById(string $id): void
     {
         $db = DatabaseManager::getInstance();
@@ -247,6 +279,16 @@ class QueueService
         $db = DatabaseManager::getInstance();
         $db->query('UPDATE status_jobs SET status = :status WHERE id = :id');
         $db->bind(':status', $status);
+        $db->bind(':id', $id);
+        $db->execute();
+    }
+
+    protected function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('UPDATE status_jobs SET status = :status, processing = :processing WHERE id = :id');
+        $db->bind(':status', $status);
+        $db->bind(':processing', $processing ? 1 : 0);
         $db->bind(':id', $id);
         $db->execute();
     }
