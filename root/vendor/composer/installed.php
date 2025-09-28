@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'appsbyv/v-chatgpt-social-status-feeds',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => 'baf0ade94eee70d97ecd31d33266bcc27b1de7a2',
+        'pretty_version' => 'dev-copilot/fix-ac656470-98ec-43c1-bcb0-21ca156182a5',
+        'version' => 'dev-copilot/fix-ac656470-98ec-43c1-bcb0-21ca156182a5',
+        'reference' => '6b772b4d26c077cc24184621b074814182a700df',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'appsbyv/v-chatgpt-social-status-feeds' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'baf0ade94eee70d97ecd31d33266bcc27b1de7a2',
+            'pretty_version' => 'dev-copilot/fix-ac656470-98ec-43c1-bcb0-21ca156182a5',
+            'version' => 'dev-copilot/fix-ac656470-98ec-43c1-bcb0-21ca156182a5',
+            'reference' => '6b772b4d26c077cc24184621b074814182a700df',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
