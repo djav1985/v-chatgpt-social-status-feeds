@@ -246,7 +246,7 @@ class QueueService
                 $existing = $db->single();
                 
                 // Only enqueue if not already present
-                if ($existing && $existing->count == 0) {
+                if (!$existing || $existing->count == 0) {
                     $message = $this->context->createMessage(JSON::encode($payload));
                     $message->setContentType('application/json');
                     $producer->send($this->queue, $message);
