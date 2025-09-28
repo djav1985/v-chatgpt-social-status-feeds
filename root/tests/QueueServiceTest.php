@@ -14,9 +14,7 @@ final class QueueServiceTest extends TestCase
         // Test that the cron.php accepts the four new targets
         $validTargets = ['run-queue', 'fill-queue', 'daily', 'monthly'];
         
-        foreach ($validTargets as $target) {
-            $this->assertContains($target, $validTargets);
-        }
+        // The following assertion was removed because it was redundant and always passed.
         
         // Test that old targets are no longer valid
         $invalidTargets = ['hourly', 'worker'];
