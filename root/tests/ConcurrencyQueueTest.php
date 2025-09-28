@@ -49,23 +49,23 @@ final class ConcurrencyQueueTest extends TestCase
         $claimed1 = $service1->claimDueJobs($now);
         $claimed2 = $service2->claimDueJobs($now);
 
-        // Verify both get the jobs with processing status and original status preserved
+        // Verify both get the jobs with processing flag set
         $this->assertCount(2, $claimed1);
         $this->assertCount(2, $claimed2);
 
-        // Check first job status tracking
-        $this->assertSame('processing', $claimed1[0]['status']);
-        $this->assertSame('pending', $claimed1[0]['_original_status']);
+        // Check first job processing flag
+        $this->assertTrue($claimed1[0]['processing']);
+        $this->assertSame('pending', $claimed1[0]['status']);
         
-        // Check second job status tracking
-        $this->assertSame('processing', $claimed1[1]['status']);
-        $this->assertSame('retry', $claimed1[1]['_original_status']);
+        // Check second job processing flag
+        $this->assertTrue($claimed1[1]['processing']);
+        $this->assertSame('retry', $claimed1[1]['status']);
         
         // Both services should get identical results in the test environment
         $this->assertEquals($claimed1, $claimed2);
     }
 
-    public function testRunQueueUsesOriginalStatusForRetryLogic(): void
+    public function testRunQueueUsesStatusForRetryLogic(): void
     {
         $service = new TestableQueueService();
         $service->dueJobs = [

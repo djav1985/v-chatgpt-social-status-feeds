@@ -148,8 +148,8 @@ class QueueService
                 continue;
             }
 
-            $status = strtolower((string) ($job['status'] ?? 'processing'));
-            if ($status !== 'processing') {
+            $status = strtolower((string) ($job['status'] ?? 'pending'));
+            if ($status !== 'pending' && $status !== 'retry') {
                 $this->deleteJobById($job['id']);
                 continue;
             }
@@ -158,10 +158,9 @@ class QueueService
                 $this->processJobPayload($job);
                 $this->deleteJobById($job['id']);
             } catch (\Throwable $e) {
-                // On failure, reset to retry status or delete if already retried
-                $originalStatus = $job['_original_status'] ?? 'pending';
-                if ($originalStatus === 'pending') {
-                    $this->markJobStatus($job['id'], 'retry');
+                // On failure, reset processing flag and handle retry logic
+                if ($status === 'pending') {
+                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
                 } else {
                     $this->deleteJobById($job['id']);
                 }
@@ -246,24 +245,20 @@ class QueueService
         $claimedJobs = [];
         
         // First, get candidate job IDs 
-        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status IN (\'pending\', \'retry\') AND scheduled_at <= :now ORDER BY scheduled_at ASC');
+        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status IN (\'pending\', \'retry\') AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
         $db->bind(':now', $now);
         $candidates = $db->resultSet();
         
-        // Atomically claim each job individually
+        // Atomically claim each job individually by setting processing = TRUE
         foreach ($candidates as $candidate) {
-            $originalStatus = $candidate['status'];
-            
             // Try to atomically claim this specific job
-            $db->query('UPDATE status_jobs SET status = \'processing\' WHERE id = :id AND status = :original_status');
+            $db->query('UPDATE status_jobs SET processing = TRUE WHERE id = :id AND processing = FALSE');
             $db->bind(':id', $candidate['id']);
-            $db->bind(':original_status', $originalStatus);
             $db->execute();
             
             // If we successfully claimed it (rowCount = 1), add to our list
             if ($db->rowCount() === 1) {
-                $candidate['status'] = 'processing';
-                $candidate['_original_status'] = $originalStatus; // Track original status for retry logic
+                $candidate['processing'] = true;
                 $claimedJobs[] = $candidate;
             }
         }
@@ -284,6 +279,16 @@ class QueueService
         $db = DatabaseManager::getInstance();
         $db->query('UPDATE status_jobs SET status = :status WHERE id = :id');
         $db->bind(':status', $status);
+        $db->bind(':id', $id);
+        $db->execute();
+    }
+
+    protected function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('UPDATE status_jobs SET status = :status, processing = :processing WHERE id = :id');
+        $db->bind(':status', $status);
+        $db->bind(':processing', $processing ? 1 : 0);
         $db->bind(':id', $id);
         $db->execute();
     }

@@ -46,12 +46,11 @@ final class TestableQueueService extends QueueService
 
     public function claimDueJobs(int $now): array
     {
-        // For testing, simulate atomic claiming by adding _original_status to each job
+        // For testing, simulate atomic claiming by setting processing flag
         $claimedJobs = [];
         foreach ($this->dueJobs as $job) {
             $claimedJob = $job;
-            $claimedJob['_original_status'] = $job['status'] ?? 'pending';
-            $claimedJob['status'] = 'processing';
+            $claimedJob['processing'] = true;
             $claimedJobs[] = $claimedJob;
         }
         return $claimedJobs;
@@ -87,6 +86,12 @@ final class TestableQueueService extends QueueService
     protected function markJobStatus(string $id, string $status): void
     {
         $this->markedStatuses[$id] = $status;
+    }
+
+    protected function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
+    {
+        $this->markedStatuses[$id] = $status;
+        // In testing, we don't need to track the processing flag separately
     }
 
     protected function deleteFutureJobs(string $username, string $account, int $fromTimestamp): void
