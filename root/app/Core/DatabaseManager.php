@@ -29,7 +29,9 @@ class DatabaseManager
     private static int $idleTimeout = 10;
 
     private string $sql = '';
+    /** @var array<string, mixed> */
     private array $params = [];
+    /** @var array<string, int> */
     private array $types = [];
     private ?Result $result = null;
     private ?int $affectedRows = null;
@@ -196,7 +198,7 @@ class DatabaseManager
     /**
      * Execute the query and return all rows.
      *
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public function resultSet(): array
     {
@@ -207,12 +209,12 @@ class DatabaseManager
     /**
      * Execute the query and return a single row.
      *
-     * @return mixed
+     * @return array<string, mixed>|false
      */
-    public function single(): mixed
+    public function single(): array|false
     {
         $this->execute();
-        return $this->result ? $this->result->fetchAssociative() : null;
+        return $this->result ? $this->result->fetchAssociative() : false;
     }
 
     /**

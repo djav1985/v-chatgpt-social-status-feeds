@@ -113,7 +113,7 @@ class AccountsController extends Controller
         if ($invalidCron) {
             MessageHelper::addMessage('Invalid cron hour(s) supplied. Hours must be between 0 and 23.');
         }
-        if (empty($cron) || empty($days) || empty($platform) || !isset($hashtags)) {
+        if ($cron === 'null' || empty($days) || empty($platform)) {
             MessageHelper::addMessage('Error processing input.');
         }
         if (empty($prompt)) {
@@ -267,8 +267,8 @@ class AccountsController extends Controller
     /**
      * Convert the overview array to an HTML grid.
      *
-     * @param array $overview    Organized array of posts
-     * @param array $daysOfWeek  Days of the week in order
+     * @param array<string, array<string, array<int, array<string, mixed>>>> $overview    Organized array of posts
+     * @param array<int, string> $daysOfWeek  Days of the week in order
      * @return string HTML table grid
      */
     private static function overviewToHtml(array $overview, array $daysOfWeek): string
@@ -354,7 +354,7 @@ class AccountsController extends Controller
             $cronArr = array_filter(
                 array_map('trim', explode(',', $accountData->cron)),
                 function (string $hour): bool {
-                    return is_numeric($hour) && $hour !== '';
+                    return $hour !== '' && is_numeric($hour);
                 }
             );
             $timesStr = 'Off';

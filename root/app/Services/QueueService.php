@@ -27,7 +27,7 @@ class QueueService
     public function enqueueRemainingJobs(string $username, string $account, string $cron, string $days): void
     {
         $dayName = strtolower(date('l', $this->now()));
-        $daysArr = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) $days))), 'strlen');
+        $daysArr = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) $days))), fn($v) => strlen($v) > 0);
         if (!empty($daysArr) && !in_array('everyday', $daysArr, true) && !in_array($dayName, $daysArr, true)) {
             return;
         }
@@ -174,7 +174,7 @@ class QueueService
         $dayName = strtolower(date('l', $this->now()));
 
         foreach ($accounts as $account) {
-            $days = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) ($account->days ?? '')))), 'strlen');
+            $days = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) ($account->days ?? '')))), fn($v) => strlen($v) > 0);
             if (!empty($days) && !in_array('everyday', $days, true) && !in_array($dayName, $days, true)) {
                 continue;
             }
@@ -339,11 +339,22 @@ class QueueService
         $db->execute();
     }
 
+    /**
+     * Get all accounts.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     protected function getAccounts(): array
     {
         return Account::getAllAccounts();
     }
 
+    /**
+     * Process a job payload.
+     *
+     * @param array<string, mixed> $job
+     * @return void
+     */
     protected function processJobPayload(array $job): void
     {
         StatusService::generateStatus((string) $job['account'], (string) $job['username']);
@@ -363,7 +374,7 @@ class QueueService
      */
     protected function normalizeHours(string $cron): array
     {
-        $parts = array_filter(array_map('trim', explode(',', $cron)), 'strlen');
+        $parts = array_filter(array_map('trim', explode(',', $cron)), fn($v) => strlen($v) > 0);
         $hours = [];
         foreach ($parts as $part) {
             if (!is_numeric($part)) {

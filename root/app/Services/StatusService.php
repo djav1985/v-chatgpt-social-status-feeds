@@ -51,7 +51,7 @@ class StatusService
      *
      * @param string $accountName The name of the account.
      * @param string $accountOwner The owner of the account.
-     * @return array|null Returns an array with success status and message, or null if the operation fails.
+     * @return array<string, mixed>|null Returns an array with success status and message, or null if the operation fails.
      */
     public static function generateStatus(string $accountName, string $accountOwner): ?array
     {
@@ -157,8 +157,8 @@ class StatusService
  * Makes an HTTP request to the OpenAI API.
  *
  * @param string $endpoint The API endpoint to call.
- * @param array|null $data Optional data to send in the request body.
- * @return array Returns the API response as an associative array.
+ * @param array<string, mixed> $data Optional data to send in the request body.
+ * @return array<string, mixed> Returns the API response as an associative array.
  */
     private static function openaiApiRequest(string $endpoint, array $data = []): array
     {
@@ -195,7 +195,7 @@ class StatusService
  * @param int $statusTokens The number of tokens for the status.
  * @param string $accountName The name of the account.
  * @param string $accountOwner The owner of the account.
- * @return array Returns the API response containing structured data or an error array.
+ * @return array<string, mixed> Returns the API response containing structured data or an error array.
  */
     private static function generateSocialStatus(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array
 {
@@ -295,7 +295,7 @@ class StatusService
  * @param string $imagePrompt The prompt describing the image to generate.
  * @param string $accountName The name of the account.
  * @param string $accountOwner The owner of the account.
- * @return array Returns an array containing the image filename or an error message.
+ * @return array<string, mixed> Returns an array containing the image filename or an error message.
  */
     private static function generateSocialImage(string $imagePrompt, string $accountName, string $accountOwner): array
     {

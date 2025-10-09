@@ -53,6 +53,13 @@ class Status
         }
     }
 
+    /**
+     * Get status info for a user and account.
+     *
+     * @param string $username
+     * @param string $account
+     * @return array<int, array<string, mixed>>
+     */
     public static function getStatusInfo(string $username, string $account): array
     {
         try {
@@ -85,6 +92,13 @@ class Status
         }
     }
 
+    /**
+     * Get status updates for a user and account.
+     *
+     * @param string $username
+     * @param string $account
+     * @return array<int, array<string, mixed>>
+     */
     public static function getStatusUpdates(string $username, string $account): array
     {
         try {

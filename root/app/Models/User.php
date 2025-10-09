@@ -23,7 +23,7 @@ class User
     /**
      * Get all users from the database.
      *
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public static function getAllUsers(): array
     {
@@ -183,7 +183,7 @@ class User
      * Get all user accounts for a specific user.
      *
      * @param string $username
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public static function getAllUserAccts(string $username): array
     {
