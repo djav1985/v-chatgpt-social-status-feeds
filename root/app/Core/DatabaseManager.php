@@ -33,6 +33,8 @@ class DatabaseManager
     private array $types = [];
     private ?Result $result = null;
     private ?int $affectedRows = null;
+    private int $retryCount = 0;
+    private const MAX_RETRIES = 3;
 
     /**
      * Create a new DatabaseManager instance and connect.
@@ -173,12 +175,19 @@ class DatabaseManager
             } else {
                 $this->affectedRows = self::$dbh->executeStatement($this->sql, $this->params, $this->types);
             }
+            $this->retryCount = 0;
             return true;
         } catch (DBALException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorManager::getInstance()->log('MySQL connection lost during execution. Attempting to reconnect...', 'warning');
-                $this->reconnect();
-                return $this->execute();
+                if ($this->retryCount < self::MAX_RETRIES) {
+                    $this->retryCount++;
+                    ErrorManager::getInstance()->log('MySQL connection lost during execution. Attempting to reconnect... Retry ' . $this->retryCount, 'warning');
+                    $this->reconnect();
+                    return $this->execute();
+                } else {
+                    ErrorManager::getInstance()->log('Max database reconnection attempts reached. Aborting query.', 'error');
+                    throw new Exception('Max database reconnection attempts reached.');
+                }
             }
             throw $e;
         }

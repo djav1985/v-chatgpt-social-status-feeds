@@ -39,6 +39,9 @@ class HomeController extends Controller
         $accounts = \App\Models\Account::getAllUserAccts($accountOwner);
         $accountsData = [];
         foreach ($accounts as $account) {
+            if (is_array($account)) {
+                $account = (object)$account;
+            }
             $name = $account->account;
             $acctInfo = \App\Models\Account::getAcctInfo($accountOwner, $name);
             $statuses = Status::getStatusInfo($accountOwner, $name);

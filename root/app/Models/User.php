@@ -50,6 +50,9 @@ class User
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
             $result = $db->single();
+            if (is_array($result)) {
+                $result = (object)$result;
+            }
             return $result ?: null; // Explicitly return null if no user is found
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error checking if user exists: " . $e->getMessage(), 'error');
@@ -165,7 +168,11 @@ class User
             $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
-            return $db->single();
+            $result = $db->single();
+            if (is_array($result)) {
+                $result = (object)$result;
+            }
+            return $result;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error retrieving user info: " . $e->getMessage(), 'error');
             throw $e;

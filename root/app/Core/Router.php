@@ -87,15 +87,21 @@ class Router
                 header('HTTP/1.0 405 Method Not Allowed');
                 break;
             case Dispatcher::FOUND:
-                [$class, $action] = $routeInfo[1];
+                $handler = $routeInfo[1];
                 $vars = $routeInfo[2];
-                $isFeed = function_exists('str_starts_with')
-                    ? str_starts_with($uri, '/feeds/')
-                    : (preg_match('/^\/feeds\//', $uri) === 1);
-                if ($uri !== '/login' && !$isFeed) {
-                    SessionManager::getInstance()->requireAuth();
+                if ($handler instanceof \Closure) {
+                    // Directly call the closure
+                    call_user_func_array($handler, $vars);
+                } elseif (is_array($handler) && count($handler) === 2) {
+                    [$class, $action] = $handler;
+                    $isFeed = function_exists('str_starts_with')
+                        ? str_starts_with($uri, '/feeds/')
+                        : (preg_match('/^\/feeds\//', $uri) === 1);
+                    if ($uri !== '/login' && !$isFeed) {
+                        SessionManager::getInstance()->requireAuth();
+                    }
+                    call_user_func_array([new $class(), $action], $vars);
                 }
-                call_user_func_array([new $class(), $action], $vars);
                 break;
         }
     }

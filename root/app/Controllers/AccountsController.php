@@ -209,7 +209,13 @@ class AccountsController extends Controller
         }
 
         foreach ($accounts as $acct) {
+            if (is_array($acct)) {
+                $acct = (object)$acct;
+            }
             $acctInfo = Account::getAcctInfo($username, $acct->account);
+            if (is_array($acctInfo)) {
+                $acctInfo = (object)$acctInfo;
+            }
             if (!$acctInfo) {
                 continue;
             }
@@ -334,8 +340,14 @@ class AccountsController extends Controller
         $accounts = User::getAllUserAccts($username);
         $output = '';
         foreach ($accounts as $account) {
+            if (is_array($account)) {
+                $account = (object)$account;
+            }
             $accountName = $account->account;
             $accountData = Account::getAcctInfo($username, $accountName);
+            if (is_array($accountData)) {
+                $accountData = (object)$accountData;
+            }
 
             $daysArr = array_map('ucfirst', array_map('trim', explode(',', $accountData->days)));
             $daysStr = implode(', ', $daysArr);

@@ -78,9 +78,6 @@ if (!isset($_GET['code']) && !isset($_POST['provider'])) {
 require 'vendor/autoload.php';
 
 session_start();
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
 
 $providerName = '';
 $clientId = '';

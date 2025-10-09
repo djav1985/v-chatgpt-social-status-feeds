@@ -10,31 +10,31 @@
 namespace SebastianBergmann\CodeCoverage\Report;
 
 use function count;
+use function dirname;
+use function file_put_contents;
 use function is_string;
 use function ksort;
 use function max;
 use function range;
+use function str_contains;
 use function time;
 use DOMDocument;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Driver\WriteOperationFailedException;
 use SebastianBergmann\CodeCoverage\Node\File;
 use SebastianBergmann\CodeCoverage\Util\Filesystem;
-use SebastianBergmann\CodeCoverage\Util\Xml;
-use SebastianBergmann\CodeCoverage\WriteOperationFailedException;
 
 final class Clover
 {
     /**
-     * @param null|non-empty-string $target
-     * @param null|non-empty-string $name
-     *
      * @throws WriteOperationFailedException
      */
     public function process(CodeCoverage $coverage, ?string $target = null, ?string $name = null): string
     {
         $time = (string) time();
 
-        $xmlDocument = new DOMDocument('1.0', 'UTF-8');
+        $xmlDocument               = new DOMDocument('1.0', 'UTF-8');
+        $xmlDocument->formatOutput = true;
 
         $xmlCoverage = $xmlDocument->createElement('coverage');
         $xmlCoverage->setAttribute('generated', $time);
@@ -73,13 +73,7 @@ final class Clover
                 $coveredMethods         = 0;
                 $classMethods           = 0;
 
-                // Assumption: one namespace per file
-                if ($class['namespace'] !== '') {
-                    $namespace = $class['namespace'];
-                }
-
                 foreach ($class['methods'] as $methodName => $method) {
-                    /** @phpstan-ignore equal.notAllowed */
                     if ($method['executableLines'] == 0) {
                         continue;
                     }
@@ -88,7 +82,6 @@ final class Clover
                     $classStatements        += $method['executableLines'];
                     $coveredClassStatements += $method['executedLines'];
 
-                    /** @phpstan-ignore equal.notAllowed */
                     if ($method['coverage'] == 100) {
                         $coveredMethods++;
                     }
@@ -111,9 +104,41 @@ final class Clover
                     ];
                 }
 
+                if (!empty($class['package']['namespace'])) {
+                    $namespace = $class['package']['namespace'];
+                }
+
                 $xmlClass = $xmlDocument->createElement('class');
                 $xmlClass->setAttribute('name', $className);
                 $xmlClass->setAttribute('namespace', $namespace);
+
+                if (!empty($class['package']['fullPackage'])) {
+                    $xmlClass->setAttribute(
+                        'fullPackage',
+                        $class['package']['fullPackage'],
+                    );
+                }
+
+                if (!empty($class['package']['category'])) {
+                    $xmlClass->setAttribute(
+                        'category',
+                        $class['package']['category'],
+                    );
+                }
+
+                if (!empty($class['package']['package'])) {
+                    $xmlClass->setAttribute(
+                        'package',
+                        $class['package']['package'],
+                    );
+                }
+
+                if (!empty($class['package']['subpackage'])) {
+                    $xmlClass->setAttribute(
+                        'subpackage',
+                        $class['package']['subpackage'],
+                    );
+                }
 
                 $xmlFile->appendChild($xmlClass);
 
@@ -170,8 +195,8 @@ final class Clover
             $linesOfCode = $item->linesOfCode();
 
             $xmlMetrics = $xmlDocument->createElement('metrics');
-            $xmlMetrics->setAttribute('loc', (string) $linesOfCode->linesOfCode());
-            $xmlMetrics->setAttribute('ncloc', (string) $linesOfCode->nonCommentLinesOfCode());
+            $xmlMetrics->setAttribute('loc', (string) $linesOfCode['linesOfCode']);
+            $xmlMetrics->setAttribute('ncloc', (string) $linesOfCode['nonCommentLinesOfCode']);
             $xmlMetrics->setAttribute('classes', (string) $item->numberOfClassesAndTraits());
             $xmlMetrics->setAttribute('methods', (string) $item->numberOfMethods());
             $xmlMetrics->setAttribute('coveredmethods', (string) $item->numberOfTestedMethods());
@@ -203,8 +228,8 @@ final class Clover
 
         $xmlMetrics = $xmlDocument->createElement('metrics');
         $xmlMetrics->setAttribute('files', (string) count($report));
-        $xmlMetrics->setAttribute('loc', (string) $linesOfCode->linesOfCode());
-        $xmlMetrics->setAttribute('ncloc', (string) $linesOfCode->nonCommentLinesOfCode());
+        $xmlMetrics->setAttribute('loc', (string) $linesOfCode['linesOfCode']);
+        $xmlMetrics->setAttribute('ncloc', (string) $linesOfCode['nonCommentLinesOfCode']);
         $xmlMetrics->setAttribute('classes', (string) $report->numberOfClassesAndTraits());
         $xmlMetrics->setAttribute('methods', (string) $report->numberOfMethods());
         $xmlMetrics->setAttribute('coveredmethods', (string) $report->numberOfTestedMethods());
@@ -216,10 +241,16 @@ final class Clover
         $xmlMetrics->setAttribute('coveredelements', (string) ($report->numberOfTestedMethods() + $report->numberOfExecutedLines() + $report->numberOfExecutedBranches()));
         $xmlProject->appendChild($xmlMetrics);
 
-        $buffer = Xml::asString($xmlDocument);
+        $buffer = $xmlDocument->saveXML();
 
         if ($target !== null) {
-            Filesystem::write($target, $buffer);
+            if (!str_contains($target, '://')) {
+                Filesystem::createDirectory(dirname($target));
+            }
+
+            if (@file_put_contents($target, $buffer) === false) {
+                throw new WriteOperationFailedException($target);
+            }
         }
 
         return $buffer;

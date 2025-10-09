@@ -108,17 +108,25 @@ require 'partials/header.php';
 
                 // Select the appropriate cron options
                 const selectedCronValues = this.dataset.cron?.split(',') || [];
-                selectedCronValues.length === 0 || selectedCronValues.includes('off')
-                    ? cronField.querySelector('option[value="off"]').selected = true
-                    : selectedCronValues.forEach(value =>
-                        cronField.querySelector(`option[value="${value}"]`)?.selected = true);
+                if (selectedCronValues.length === 0 || selectedCronValues.includes('off')) {
+                    cronField.querySelector('option[value="off"]').selected = true;
+                } else {
+                    selectedCronValues.forEach(value => {
+                        const option = cronField.querySelector(`option[value="${value}"]`);
+                        if (option) option.selected = true;
+                    });
+                }
 
                 // Select the appropriate days options
                 const selectedDaysValues = this.dataset.days?.split(',') || [];
-                selectedDaysValues.length === 0 || selectedDaysValues.includes('everyday')
-                    ? daysField.querySelector('option[value="everyday"]').selected = true
-                    : selectedDaysValues.forEach(value =>
-                        daysField.querySelector(`option[value="${value}"]`)?.selected = true);
+                if (selectedDaysValues.length === 0 || selectedDaysValues.includes('everyday')) {
+                    daysField.querySelector('option[value="everyday"]').selected = true;
+                } else {
+                    selectedDaysValues.forEach(value => {
+                        const option = daysField.querySelector(`option[value="${value}"]`);
+                        if (option) option.selected = true;
+                    });
+                }
 
                 platformSelect.value = this.dataset.platform;
                 accountNameField.readOnly = true;

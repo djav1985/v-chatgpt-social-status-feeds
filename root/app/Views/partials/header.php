@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="/assets/css/styles.css">
     <link rel="stylesheet" href="/assets/css/forms.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="/assets/js/header-scripts.js"></script>
+    <script src="assets/js/header-scripts.js"></script>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <title>Dashboard</title>
 </head>

@@ -240,6 +240,9 @@ class UsersController extends Controller
         $users = User::getAllUsers();
         $output = '';
         foreach ($users as $user) {
+            if (is_array($user)) {
+                $user = (object)$user;
+            }
             $dataAttributes  = "data-username=\"" . htmlspecialchars($user->username) . "\" ";
             $dataAttributes .= "data-email=\"" . htmlspecialchars($user->email) . "\" ";
             $dataAttributes .= "data-admin=\"" . htmlspecialchars($user->admin) . "\" ";
