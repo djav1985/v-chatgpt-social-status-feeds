@@ -9,6 +9,7 @@
  */
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
+use function assert;
 use function phpversion;
 use DateTimeImmutable;
 use DOMElement;
@@ -17,9 +18,9 @@ use SebastianBergmann\Environment\Runtime;
 /**
  * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
  */
-final class BuildInformation
+final readonly class BuildInformation
 {
-    private readonly DOMElement $contextNode;
+    private DOMElement $contextNode;
 
     public function __construct(DOMElement $contextNode)
     {
@@ -65,7 +66,7 @@ final class BuildInformation
             $name,
         )->item(0);
 
-        if (!$node) {
+        if ($node === null) {
             $node = $this->contextNode->appendChild(
                 $this->contextNode->ownerDocument->createElementNS(
                     'https://schema.phpunit.de/coverage/1.0',
@@ -73,6 +74,8 @@ final class BuildInformation
                 ),
             );
         }
+
+        assert($node instanceof DOMElement);
 
         return $node;
     }

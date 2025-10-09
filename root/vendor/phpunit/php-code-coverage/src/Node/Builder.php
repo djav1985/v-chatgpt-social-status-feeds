@@ -28,11 +28,11 @@ use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
 /**
  * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
  *
- * @psalm-import-type TestType from \SebastianBergmann\CodeCoverage\CodeCoverage
+ * @phpstan-import-type TestType from CodeCoverage
  */
-final class Builder
+final readonly class Builder
 {
-    private readonly FileAnalyser $analyser;
+    private FileAnalyser $analyser;
 
     public function __construct(FileAnalyser $analyser)
     {
@@ -58,7 +58,7 @@ final class Builder
     }
 
     /**
-     * @psalm-param array<string, TestType> $tests
+     * @param array<string, TestType> $tests
      */
     private function addItems(Directory $root, array $items, array $tests): void
     {
@@ -70,6 +70,8 @@ final class Builder
                 $filename = $root->pathAsString() . DIRECTORY_SEPARATOR . $key;
 
                 if (is_file($filename)) {
+                    $analysisResult = $this->analyser->analyse($filename);
+
                     $root->addFile(
                         new File(
                             $key,
@@ -77,10 +79,10 @@ final class Builder
                             $value['lineCoverage'],
                             $value['functionCoverage'],
                             $tests,
-                            $this->analyser->classesIn($filename),
-                            $this->analyser->traitsIn($filename),
-                            $this->analyser->functionsIn($filename),
-                            $this->analyser->linesOfCodeFor($filename),
+                            $analysisResult->classes(),
+                            $analysisResult->traits(),
+                            $analysisResult->functions(),
+                            $analysisResult->linesOfCode(),
                         ),
                     );
                 }
@@ -132,7 +134,7 @@ final class Builder
      * )
      * </code>
      *
-     * @psalm-return array<string, array<string, array{lineCoverage: array<int, int>, functionCoverage: array<string, array<int, int>>}>>
+     * @return array<string, array<string, array{lineCoverage: array<int, int>, functionCoverage: array<string, array<int, int>>}>>
      */
     private function buildDirectoryStructure(ProcessedCodeCoverageData $data): array
     {
@@ -201,7 +203,7 @@ final class Builder
      */
     private function reducePaths(ProcessedCodeCoverageData $coverage): string
     {
-        if (empty($coverage->coveredFiles())) {
+        if ($coverage->coveredFiles() === []) {
             return '.';
         }
 
@@ -223,9 +225,10 @@ final class Builder
                 $paths[$i] = substr($paths[$i], 7);
                 $paths[$i] = str_replace('/', DIRECTORY_SEPARATOR, $paths[$i]);
             }
+
             $paths[$i] = explode(DIRECTORY_SEPARATOR, $paths[$i]);
 
-            if (empty($paths[$i][0])) {
+            if ($paths[$i][0] === '') {
                 $paths[$i][0] = DIRECTORY_SEPARATOR;
             }
         }
