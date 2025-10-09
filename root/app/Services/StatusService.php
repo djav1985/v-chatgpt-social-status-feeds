@@ -83,6 +83,7 @@ class StatusService
             return ['error' => $error];
         }
 
+        $accountInfo = is_array($accountInfo) ? (object)$accountInfo : $accountInfo;
         $prompt = $accountInfo->prompt;
         $link = $accountInfo->link;
         $includeHashtags = (bool) $accountInfo->hashtags;

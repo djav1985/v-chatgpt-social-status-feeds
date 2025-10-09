@@ -78,6 +78,7 @@ class FeedController extends Controller
             $accounts = Account::getAllUserAccts($accountOwner);
 
             foreach ($accounts as $account) {
+                $account = (object)$account;
                 $currentAccountName = htmlspecialchars($account->account);
 
                 // Retrieve account link
@@ -87,6 +88,7 @@ class FeedController extends Controller
                 $statusInfo = Status::getStatusUpdates($accountOwner, $currentAccountName);
 
                 foreach ($statusInfo as $status) {
+                    $status = (object)$status;
                     $status->accountLink = $accountLink;
                     $statuses[] = $status;
                 }
@@ -106,9 +108,11 @@ class FeedController extends Controller
             // Retrieve status updates for the account
             $statuses = Status::getStatusUpdates($accountOwner, $accountName);
 
-            foreach ($statuses as $status) {
+            foreach ($statuses as &$status) {
+                $status = (object)$status;
                 $status->accountLink = $accountLink;
             }
+            unset($status);
         }
 
         // Set the content type to RSS XML
@@ -128,6 +132,7 @@ class FeedController extends Controller
 
         // Output each status as an RSS item
         foreach ($statuses as $status) {
+            $status = (object)$status;
             $enclosureTag = '';
 
             // Include image enclosure if available

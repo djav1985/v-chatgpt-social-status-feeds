@@ -135,6 +135,9 @@ class AccountsController extends Controller
             $queue = new QueueService();
             if (Account::accountExists($accountOwner, $accountName)) {
                 $oldInfo = Account::getAcctInfo($accountOwner, $accountName);
+                if (is_array($oldInfo)) {
+                    $oldInfo = (object)$oldInfo;
+                }
                 Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
                 if ($oldInfo && ($oldInfo->cron !== $cron || $oldInfo->days !== $days)) {
                     $queue->removeFutureJobs($accountOwner, $accountName);
@@ -209,13 +212,9 @@ class AccountsController extends Controller
         }
 
         foreach ($accounts as $acct) {
-            if (is_array($acct)) {
-                $acct = (object)$acct;
-            }
+            $acct = (object)$acct;
             $acctInfo = Account::getAcctInfo($username, $acct->account);
-            if (is_array($acctInfo)) {
-                $acctInfo = (object)$acctInfo;
-            }
+            $acctInfo = is_array($acctInfo) ? (object)$acctInfo : $acctInfo;
             if (!$acctInfo) {
                 continue;
             }
@@ -267,7 +266,7 @@ class AccountsController extends Controller
     /**
      * Convert the overview array to an HTML grid.
      *
-     * @param array<string, array<string, array<int, array<string, mixed>>>> $overview    Organized array of posts
+     * @param array<string, array<string, list<string>>> $overview    Organized array of posts
      * @param array<int, string> $daysOfWeek  Days of the week in order
      * @return string HTML table grid
      */
@@ -282,7 +281,7 @@ class AccountsController extends Controller
                 $html .= '<strong>' . ucfirst($slot) . '</strong>';
                 $html .= '<ul>';
                 foreach ($overview[$day][$slot] as $entry) {
-                    $html .= '<li>' . htmlspecialchars($entry) . '</li>';
+                    $html .= '<li>' . htmlspecialchars((string)$entry) . '</li>';
                 }
                 if (empty($overview[$day][$slot])) {
                     $html .= '<li>&nbsp;</li>';
@@ -340,13 +339,12 @@ class AccountsController extends Controller
         $accounts = User::getAllUserAccts($username);
         $output = '';
         foreach ($accounts as $account) {
-            if (is_array($account)) {
-                $account = (object)$account;
-            }
+            $account = (object)$account;
             $accountName = $account->account;
             $accountData = Account::getAcctInfo($username, $accountName);
-            if (is_array($accountData)) {
-                $accountData = (object)$accountData;
+            $accountData = is_array($accountData) ? (object)$accountData : $accountData;
+            if (!$accountData) {
+                continue;
             }
 
             $daysArr = array_map('ucfirst', array_map('trim', explode(',', $accountData->days)));

@@ -67,6 +67,7 @@ class QueueService
         }
 
         foreach ($accounts as $account) {
+            $account = (object)$account;
             $accountName = $account->account;
             $accountOwner = $account->username;
             $statusCount = Status::countStatuses($accountName, $accountOwner);
@@ -119,6 +120,7 @@ class QueueService
         }
         $users = User::getAllUsers();
         foreach ($users as $user) {
+            $user = (object)$user;
             Mailer::sendTemplate(
                 $user->email,
                 'API Usage Reset',
@@ -174,6 +176,7 @@ class QueueService
         $dayName = strtolower(date('l', $this->now()));
 
         foreach ($accounts as $account) {
+            $account = (object)$account;
             $days = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) ($account->days ?? '')))), fn($v) => strlen($v) > 0);
             if (!empty($days) && !in_array('everyday', $days, true) && !in_array($dayName, $days, true)) {
                 continue;
@@ -300,7 +303,7 @@ class QueueService
         $db->bind(':username', $username);
         $db->bind(':account', $account);
         $db->bind(':scheduled_at', $scheduledAt);
-        return $db->single() !== null;
+        return $db->single() !== false;
     }
 
     protected function storeJob(string $username, string $account, int $scheduledAt, string $status): void

@@ -39,14 +39,13 @@ class HomeController extends Controller
         $accounts = \App\Models\Account::getAllUserAccts($accountOwner);
         $accountsData = [];
         foreach ($accounts as $account) {
-            if (is_array($account)) {
-                $account = (object)$account;
-            }
+            $account = (object)$account;
             $name = $account->account;
             $acctInfo = \App\Models\Account::getAcctInfo($accountOwner, $name);
             $statuses = Status::getStatusInfo($accountOwner, $name);
             $statusList = [];
             foreach ($statuses as $status) {
+                $status = (object)$status;
                 $statusList[] = [
                     'status' => $status->status,
                     'status_image' => $status->status_image,
