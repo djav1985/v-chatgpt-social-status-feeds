@@ -150,6 +150,7 @@ class Account
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
             $current = $db->single();
+            $current = $current ? (object)$current : (object)['cron' => '', 'days' => ''];
             $oldCron = $current->cron ?? '';
             $oldDays = $current->days ?? '';
 
