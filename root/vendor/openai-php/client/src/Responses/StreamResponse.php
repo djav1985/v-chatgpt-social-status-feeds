@@ -57,7 +57,7 @@ final class StreamResponse implements ResponseHasMetaInformationContract, Respon
             $response = json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 
             if (isset($response['error'])) {
-                throw new ErrorException($response['error'], $this->response);
+                throw new ErrorException($response['error'], $this->response->getStatusCode());
             }
 
             if (isset($response['type']) && $response['type'] === 'ping') {
@@ -95,6 +95,7 @@ final class StreamResponse implements ResponseHasMetaInformationContract, Respon
 
     public function meta(): MetaInformation
     {
+        // @phpstan-ignore-next-line
         return MetaInformation::from($this->response->getHeaders());
     }
 }

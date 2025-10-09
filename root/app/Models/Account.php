@@ -23,7 +23,7 @@ class Account
     /**
      * Get all accounts from the database.
      *
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public static function getAllAccounts(): array
     {
@@ -41,7 +41,7 @@ class Account
      * Get all user accounts for a specific user.
      *
      * @param string $username
-     * @return array
+     * @return array<int, array<string, mixed>>
      */
     public static function getAllUserAccts(string $username): array
     {
@@ -82,9 +82,9 @@ class Account
      *
      * @param string $username
      * @param string $account
-     * @return mixed
+     * @return array<string, mixed>|false
      */
-    public static function getAcctInfo(string $username, string $account): mixed
+    public static function getAcctInfo(string $username, string $account): array|false|null
     {
         try {
             $db = DatabaseManager::getInstance();
@@ -117,8 +117,8 @@ class Account
             $db->bind(':account', $account);
             $acctInfo = $db->single();
 
-            if (is_object($acctInfo) && isset($acctInfo->link)) {
-                return htmlspecialchars($acctInfo->link);
+            if (is_array($acctInfo) && isset($acctInfo['link'])) {
+                return htmlspecialchars($acctInfo['link']);
             }
 
             return '';
@@ -150,6 +150,7 @@ class Account
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
             $current = $db->single();
+            $current = $current ? (object)$current : (object)['cron' => '', 'days' => ''];
             $oldCron = $current->cron ?? '';
             $oldDays = $current->days ?? '';
 

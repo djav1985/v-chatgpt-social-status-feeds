@@ -9,14 +9,15 @@
  */
 namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
+use function assert;
 use DOMElement;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
  */
-final class Unit
+final readonly class Unit
 {
-    private readonly DOMElement $contextNode;
+    private DOMElement $contextNode;
 
     public function __construct(DOMElement $context, string $name)
     {
@@ -44,7 +45,7 @@ final class Unit
             'namespace',
         )->item(0);
 
-        if (!$node) {
+        if ($node === null) {
             $node = $this->contextNode->appendChild(
                 $this->contextNode->ownerDocument->createElementNS(
                     'https://schema.phpunit.de/coverage/1.0',
@@ -52,6 +53,8 @@ final class Unit
                 ),
             );
         }
+
+        assert($node instanceof DOMElement);
 
         $node->setAttribute('name', $namespace);
     }
@@ -64,6 +67,8 @@ final class Unit
                 'method',
             ),
         );
+
+        assert($node instanceof DOMElement);
 
         return new Method($node, $name);
     }

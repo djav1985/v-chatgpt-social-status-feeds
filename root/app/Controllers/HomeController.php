@@ -39,14 +39,13 @@ class HomeController extends Controller
         $accounts = \App\Models\Account::getAllUserAccts($accountOwner);
         $accountsData = [];
         foreach ($accounts as $account) {
-            if (is_array($account)) {
-                $account = (object)$account;
-            }
+            $account = (object)$account;
             $name = $account->account;
             $acctInfo = \App\Models\Account::getAcctInfo($accountOwner, $name);
             $statuses = Status::getStatusInfo($accountOwner, $name);
             $statusList = [];
             foreach ($statuses as $status) {
+                $status = (object)$status;
                 $statusList[] = [
                     'status' => $status->status,
                     'status_image' => $status->status_image,
@@ -212,7 +211,7 @@ class HomeController extends Controller
         $content .= "<form action='/home' method='POST' class='delete-form'>";
         $content .= "<input type='hidden' name='account' value='" . htmlspecialchars($accountName, ENT_QUOTES) . "'>";
         $content .= "<input type='hidden' name='username' value='" . htmlspecialchars($accountOwner, ENT_QUOTES) . "'>";
-        $content .= "<input type='hidden' name='id' value='" . htmlspecialchars($statusId, ENT_QUOTES) . "'>";
+        $content .= "<input type='hidden' name='id' value='" . htmlspecialchars((string) $statusId, ENT_QUOTES) . "'>";
         $content .= "<input type='hidden' name='csrf_token' value='" . htmlspecialchars(SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES) . "'>";
         $content .= "<button class='btn btn-error square-button delete-button' type='submit' name='delete_status'>{$deleteSvg}</button>";
         $content .= "</form>";

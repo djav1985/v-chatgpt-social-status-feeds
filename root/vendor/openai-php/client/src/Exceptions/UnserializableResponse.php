@@ -6,11 +6,13 @@ namespace OpenAI\Exceptions;
 
 use Exception;
 use JsonException;
-use Psr\Http\Message\ResponseInterface;
 
 final class UnserializableResponse extends Exception
 {
-    public function __construct(JsonException $exception, public ResponseInterface $response)
+    /**
+     * Creates a new Exception instance.
+     */
+    public function __construct(JsonException $exception)
     {
         parent::__construct($exception->getMessage(), 0, $exception);
     }

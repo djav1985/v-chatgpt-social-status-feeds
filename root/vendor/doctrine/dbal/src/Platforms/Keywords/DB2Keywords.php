@@ -5,7 +5,7 @@ namespace Doctrine\DBAL\Platforms\Keywords;
 use Doctrine\Deprecations\Deprecation;
 
 /**
- * Db2 Keywords.
+ * DB2 Keywords.
  */
 class DB2Keywords extends KeywordList
 {

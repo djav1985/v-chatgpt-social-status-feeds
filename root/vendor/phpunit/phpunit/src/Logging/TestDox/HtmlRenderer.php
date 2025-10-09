@@ -16,12 +16,9 @@ use function sprintf;
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class HtmlRenderer
+final readonly class HtmlRenderer
 {
-    /**
-     * @var string
-     */
-    private const PAGE_HEADER = <<<'EOT'
+    private const string PAGE_HEADER = <<<'EOT'
 <!doctype html>
 <html lang="en">
     <head>
@@ -76,35 +73,23 @@ final class HtmlRenderer
     </head>
     <body>
 EOT;
-
-    /**
-     * @var string
-     */
-    private const CLASS_HEADER = <<<'EOT'
+    private const string CLASS_HEADER = <<<'EOT'
 
         <h2>%s</h2>
         <ul>
 
 EOT;
-
-    /**
-     * @var string
-     */
-    private const CLASS_FOOTER = <<<'EOT'
+    private const string CLASS_FOOTER = <<<'EOT'
         </ul>
 EOT;
-
-    /**
-     * @var string
-     */
-    private const PAGE_FOOTER = <<<'EOT'
+    private const string PAGE_FOOTER = <<<'EOT'
 
     </body>
 </html>
 EOT;
 
     /**
-     * @psalm-param array<string, TestResultCollection> $tests
+     * @param array<string, TestResultCollection> $tests
      */
     public function render(array $tests): string
     {
@@ -131,7 +116,7 @@ EOT;
     }
 
     /**
-     * @psalm-return array<string, 'success'|'defect'>
+     * @return array<string, 'defect'|'success'>
      */
     private function reduce(TestResultCollection $tests): array
     {

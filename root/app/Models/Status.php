@@ -30,7 +30,11 @@ class Status
             $db->bind(':account', $accountName);
             $db->bind(':username', $accountOwner);
             $status = $db->single();
-            return $status ? $status->status_image : null;
+            if ($status) {
+                $status = (object)$status;
+                return $status->status_image;
+            }
+            return null;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error retrieving status image path: " . $e->getMessage(), 'error');
             throw $e;
@@ -53,6 +57,13 @@ class Status
         }
     }
 
+    /**
+     * Get status info for a user and account.
+     *
+     * @param string $username
+     * @param string $account
+     * @return array<int, array<string, mixed>>
+     */
     public static function getStatusInfo(string $username, string $account): array
     {
         try {
@@ -85,6 +96,13 @@ class Status
         }
     }
 
+    /**
+     * Get status updates for a user and account.
+     *
+     * @param string $username
+     * @param string $account
+     * @return array<int, array<string, mixed>>
+     */
     public static function getStatusUpdates(string $username, string $account): array
     {
         try {
@@ -106,7 +124,12 @@ class Status
             $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account AND username = :username");
             $db->bind(':account', $accountName);
             $db->bind(':username', $accountOwner);
-            return $db->single()->count;
+            $result = $db->single();
+            if ($result) {
+                $result = (object)$result;
+                return $result->count;
+            }
+            return 0;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error counting statuses: " . $e->getMessage(), 'error');
             throw $e;
@@ -142,7 +165,12 @@ class Status
             $db->bind(':start', $start);
             $db->bind(':end', $end);
 
-            return $db->single()->count > 0;
+            $result = $db->single();
+            if ($result) {
+                $result = (object)$result;
+                return $result->count > 0;
+            }
+            return false;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error checking if status has been posted: " . $e->getMessage(), 'error');
             throw $e;
@@ -156,7 +184,8 @@ class Status
             $db->query("SELECT * FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at DESC LIMIT 1");
             $db->bind(':account', $accountName);
             $db->bind(':username', $accountOwner);
-            return $db->single();
+            $result = $db->single();
+            return $result ? (object)$result : null;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error retrieving latest status update: " . $e->getMessage(), 'error');
             throw $e;

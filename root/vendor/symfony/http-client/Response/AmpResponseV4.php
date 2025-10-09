@@ -101,8 +101,7 @@ final class AmpResponseV4 implements ResponseInterface, StreamableInterface
 
         $throttleWatcher = null;
 
-        $this->id = $id = self::$nextId;
-        self::$nextId = str_increment(self::$nextId);
+        $this->id = $id = self::$nextId++;
         Loop::defer(static function () use ($request, $multi, $id, &$info, &$headers, $canceller, &$options, $onProgress, &$handle, $logger, &$pause) {
             return new Coroutine(self::generateResponse($request, $multi, $id, $info, $headers, $canceller, $options, $onProgress, $handle, $logger, $pause));
         });
@@ -142,12 +141,12 @@ final class AmpResponseV4 implements ResponseInterface, StreamableInterface
         return null !== $type ? $this->info[$type] ?? null : $this->info;
     }
 
-    public function __serialize(): array
+    public function __sleep(): array
     {
         throw new \BadMethodCallException('Cannot serialize '.__CLASS__);
     }
 
-    public function __unserialize(array $data): void
+    public function __wakeup(): void
     {
         throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
     }

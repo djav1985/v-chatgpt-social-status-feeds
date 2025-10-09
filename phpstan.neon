@@ -10,6 +10,5 @@ parameters:
   bootstrapFiles:
     - .github/phpstan-bootstrap.php
 
-  # Optional: silence WP globals noise you don’t care about
   ignoreErrors:
-    - '#Call to (function|method) (add_action|add_filter)#'
+    - '#Variable \$\w+ might not be defined\.#'

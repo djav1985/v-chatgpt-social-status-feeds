@@ -13,8 +13,6 @@ use OpenAI\Testing\Resources\AudioTestResource;
 use OpenAI\Testing\Resources\BatchesTestResource;
 use OpenAI\Testing\Resources\ChatTestResource;
 use OpenAI\Testing\Resources\CompletionsTestResource;
-use OpenAI\Testing\Resources\ContainersTestResource;
-use OpenAI\Testing\Resources\ConversationsTestResource;
 use OpenAI\Testing\Resources\EditsTestResource;
 use OpenAI\Testing\Resources\EmbeddingsTestResource;
 use OpenAI\Testing\Resources\FilesTestResource;
@@ -141,11 +139,6 @@ class ClientFake implements ClientContract
         return new ResponsesTestResource($this);
     }
 
-    public function conversations(): ConversationsTestResource
-    {
-        return new ConversationsTestResource($this);
-    }
-
     public function realtime(): RealtimeTestResource
     {
         return new RealtimeTestResource($this);
@@ -159,11 +152,6 @@ class ClientFake implements ClientContract
     public function chat(): ChatTestResource
     {
         return new ChatTestResource($this);
-    }
-
-    public function containers(): ContainersTestResource
-    {
-        return new ContainersTestResource($this);
     }
 
     public function embeddings(): EmbeddingsTestResource

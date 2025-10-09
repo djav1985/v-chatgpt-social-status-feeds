@@ -66,7 +66,7 @@ class Mailer
      * @param string $to       Recipient address
      * @param string $subject  Email subject
      * @param string $template Template filename without extension
-     * @param array  $data     Variables to extract into the template
+     * @param array<string, mixed>  $data     Variables to extract into the template
      */
     public static function sendTemplate(string $to, string $subject, string $template, array $data = []): bool
     {

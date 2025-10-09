@@ -20,7 +20,7 @@ class Controller
      * Renders a view file with the provided data.
      *
      * @param string $view The view name relative to the Views directory.
-     * @param array $data Optional data extracted for use within the view.
+     * @param array<string, mixed> $data Optional data extracted for use within the view.
      */
     protected function render(string $view, array $data = []): void
     {
