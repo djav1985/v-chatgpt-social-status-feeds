@@ -18,31 +18,17 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
 
-      - uses: shivammathur/setup-php@v2
+    steps:
+      - uses: actions/checkout@v4
         with:
-          php-version: '8.2'
-          tools: phpcs
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
-      # PHPCBF — uses phpcs.xml for standards and ignores vendor paths
-      - name: PHPCBF
-        shell: bash
-        run: |
-          TARGETS=""
-          [ -d root/app ] && TARGETS="$TARGETS root/app"
-
-          if [ -z "$TARGETS" ]; then
-            echo "No target dirs found. Skipping PHPCBF."
-            exit 0
-          fi
-
-          if [ -f root/vendor/bin/phpcbf ]; then
-            php root/vendor/bin/phpcbf --standard=phpcs.xml $TARGETS || true
-          elif command -v phpcbf >/dev/null 2>&1; then
-            phpcbf --standard=phpcs.xml $TARGETS || true
-          else
-            echo "PHPCBF not available. Skipping."
-          fi
-
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.18.x
+          
       # ESLint Fix — recursive search, ignoring vendor directories
       - name: ESLint Fix
         shell: bash
