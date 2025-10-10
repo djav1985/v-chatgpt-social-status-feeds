@@ -25,6 +25,8 @@ final class TestableQueueService extends QueueService
     public array $allRemovals = [];
     /** @var array<string, string> */
     public array $jobOutcomes = [];
+    public int $statusGenerations = 0;
+    public ?int $fakeBatchSize = null;
 
     /** @var array<string, bool> */
     private array $existingJobs = [];
@@ -111,16 +113,32 @@ final class TestableQueueService extends QueueService
         ];
     }
 
-    protected function processJobPayload(array $job): void
-    {
-        if (($this->jobOutcomes[$job['id']] ?? 'success') === 'fail') {
-            throw new \RuntimeException('fail');
-        }
-    }
-
     protected function generateJobId(): string
     {
         return sprintf('job-%d', count($this->storedJobs) + 1);
+    }
+
+    protected function generateStatusesForJob(array $job, int $count): void
+    {
+        $outcome = $this->jobOutcomes[$job['id']] ?? 'success';
+        $attempts = max(1, $count);
+
+        for ($i = 0; $i < $attempts; $i++) {
+            $this->statusGenerations++;
+
+            if ($outcome === 'fail') {
+                throw new \RuntimeException('fail');
+            }
+        }
+    }
+
+    protected function statusesPerJob(): int
+    {
+        if ($this->fakeBatchSize !== null) {
+            return max(1, $this->fakeBatchSize);
+        }
+
+        return parent::statusesPerJob();
     }
 
     public function seedExistingJob(string $username, string $account, int $scheduledAt): void

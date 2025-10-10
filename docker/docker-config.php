@@ -40,6 +40,9 @@ define('MAX_WIDTH', getenv('MAX_WIDTH'));
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', getenv('MAX_STATUSES'));
 
+// Number of statuses generated each time a queue job runs
+define('STATUS_JOB_BATCH_SIZE', getenv('STATUS_JOB_BATCH_SIZE') ?: 3);
+
 // Maximum age of images in days before they are removed. Default is
 // 360 days and production setups should keep it at least this value.
 define('IMG_AGE', getenv('IMG_AGE'));
