@@ -30,3 +30,4 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.
 - Scoped full-width form button styling to avoid stretching logout actions in the header.
 - Sanitized Semgrep SARIF output in the CI workflow to keep GitHub Code Scanning from rejecting the uploaded report.
+- Hardened JSON repair in `StatusService` to close truncated payloads correctly and added coverage for the decoder recovery path.

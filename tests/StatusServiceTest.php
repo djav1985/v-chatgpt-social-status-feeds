@@ -46,4 +46,22 @@ final class StatusServiceTest extends TestCase
 
         $this->assertMatchesRegularExpression('/^[a-f0-9]{32}\\.png$/', $result);
     }
+
+    public function testDecodeStructuredContentRepairsTruncatedJson(): void
+    {
+        $rawPayload = '{"status":"Ready","cta":"Click now","image_prompt":"Prompt","hashtags":"#one #two"';
+
+        $result = $this->invokePrivateMethod(
+            'decodeStructuredContent',
+            $rawPayload,
+            'demo-account',
+            'demo-owner'
+        );
+
+        $this->assertIsArray($result);
+        $this->assertSame('Ready', $result['status']);
+        $this->assertSame('Click now', $result['cta']);
+        $this->assertSame('Prompt', $result['image_prompt']);
+        $this->assertSame('#one #two', $result['hashtags']);
+    }
 }
