@@ -28,6 +28,8 @@ final class TestableQueueService extends QueueService
     public int $statusGenerations = 0;
     public ?int $fakeBatchSize = null;
 
+    private ?string $currentJobId = null;
+
     /** @var array<string, bool> */
     private array $existingJobs = [];
 
@@ -120,16 +122,36 @@ final class TestableQueueService extends QueueService
 
     protected function generateStatusesForJob(array $job, int $count): void
     {
-        $outcome = $this->jobOutcomes[$job['id']] ?? 'success';
-        $attempts = max(1, $count);
+        $previousJobId = $this->currentJobId;
+        $this->currentJobId = $job['id'] ?? null;
 
-        for ($i = 0; $i < $attempts; $i++) {
-            $this->statusGenerations++;
-
-            if ($outcome === 'fail') {
-                throw new \RuntimeException('fail');
-            }
+        try {
+            parent::generateStatusesForJob($job, $count);
+        } finally {
+            $this->currentJobId = $previousJobId;
         }
+    }
+
+    protected function callStatusServiceGenerateStatus(string $account, string $username): ?array
+    {
+        $this->statusGenerations++;
+
+        $jobId = $this->currentJobId ?? '';
+        $outcome = $this->jobOutcomes[$jobId] ?? 'success';
+
+        if ($outcome === 'exception') {
+            throw new \RuntimeException('Simulated exception for job ' . ($jobId !== '' ? $jobId : 'unknown'));
+        }
+
+        if ($outcome === 'fail') {
+            $message = $jobId !== ''
+                ? sprintf('Simulated failure for job %s', $jobId)
+                : 'Simulated failure';
+
+            return ['error' => $message];
+        }
+
+        return ['success' => true];
     }
 
     protected function statusesPerJob(): int

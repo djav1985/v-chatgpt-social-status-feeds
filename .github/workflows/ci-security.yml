@@ -96,6 +96,14 @@ jobs:
                   --exclude dist \
                   --sarif --output=semgrep.sarif
 
+      - name: Sanitize Semgrep SARIF for GitHub Code Scanning
+        run: |
+          if [ -f semgrep.sarif ]; then
+            tmp_file="$(mktemp)"
+            jq '(.runs[]?.results[]? |= (del(.fingerprints)))' semgrep.sarif > "$tmp_file"
+            mv "$tmp_file" semgrep.sarif
+          fi
+
       - name: Upload SARIF to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:

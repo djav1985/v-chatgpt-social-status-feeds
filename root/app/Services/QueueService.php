@@ -14,6 +14,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use RuntimeException;
 
 /**
  * Service for queue operations and scheduled maintenance tasks.
@@ -161,6 +162,14 @@ class QueueService
                 $this->deleteJobById($job['id']);
             } catch (\Throwable $e) {
                 // On failure, reset processing flag and handle retry logic
+                error_log(sprintf(
+                    '[QueueService] Job %s for %s/%s (status: %s) failed: %s',
+                    (string) ($job['id'] ?? 'unknown'),
+                    (string) ($job['username'] ?? 'unknown'),
+                    (string) ($job['account'] ?? 'unknown'),
+                    $status,
+                    $e->getMessage()
+                ));
                 if ($status === 'pending') {
                     $this->markJobStatusAndProcessing($job['id'], 'retry', false);
                 } else {
@@ -374,11 +383,19 @@ class QueueService
 
         $attempts = max(1, $count);
         for ($i = 0; $i < $attempts; $i++) {
-            $result = StatusService::generateStatus($account, $username);
+            $result = $this->callStatusServiceGenerateStatus($account, $username);
             if (isset($result['error'])) {
-                break;
+                throw new RuntimeException((string) $result['error']);
             }
         }
+    }
+
+    /**
+     * Wrapper for status generation to allow easier testing.
+     */
+    protected function callStatusServiceGenerateStatus(string $account, string $username): ?array
+    {
+        return StatusService::generateStatus($account, $username);
     }
 
     protected function statusesPerJob(): int
