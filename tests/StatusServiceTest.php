@@ -62,4 +62,35 @@ final class StatusServiceTest extends TestCase
 
         $this->assertSame($input, $result);
     }
+
+    public function testRepairTruncatedJsonDoesNotCorruptValidJsonWithUnmatchedBracesInStrings(): void
+    {
+        $input = '{"status":"Use {brace"}';
+        $result = $this->invokePrivateMethod('repairTruncatedJson', $input);
+
+        $this->assertSame($input, $result);
+        $decoded = json_decode($result, true);
+        $this->assertSame(JSON_ERROR_NONE, json_last_error());
+        $this->assertSame('Use {brace', $decoded['status']);
+    }
+
+    public function testRepairTruncatedJsonHandlesMultipleUnmatchedBracesInStrings(): void
+    {
+        $input = '{"status":"Code example: { and } and {","cta":"Learn more"}';
+        $result = $this->invokePrivateMethod('repairTruncatedJson', $input);
+
+        $this->assertSame($input, $result);
+        $decoded = json_decode($result, true);
+        $this->assertSame(JSON_ERROR_NONE, json_last_error());
+    }
+
+    public function testRepairTruncatedJsonRepairsActuallyTruncatedJson(): void
+    {
+        $input = '{"status":"Great day","cta":"Visit us"';
+        $result = $this->invokePrivateMethod('repairTruncatedJson', $input);
+
+        $this->assertSame('{"status":"Great day","cta":"Visit us"}', $result);
+        $decoded = json_decode($result, true);
+        $this->assertSame(JSON_ERROR_NONE, json_last_error());
+    }
 }
