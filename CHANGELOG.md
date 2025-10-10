@@ -11,6 +11,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - `MIGRATION.md` documentation file detailing the migration process and schema changes.
 
 ### Changed
+- Queue worker now generates multiple statuses per job using a configurable batch size (default 3) to support bulk content creation.
 - Introduced lightweight in-memory caches for frequent account and user lookups to cut duplicate database queries during status generation and dashboard actions.
 - `QueueService::runQueue()` now reads due rows directly from the database, deleting successes, marking the first failure as `retry`, and removing permanently after a second failure.
 - `fillQueue()` appends future slots without truncation, skips past hours, and relies on unique `(account, username, scheduled_at)` rows instead of Enqueue payloads.

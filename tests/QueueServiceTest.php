@@ -72,6 +72,27 @@ final class QueueServiceTest extends TestCase
         $this->assertSame([], $service->markedStatuses);
     }
 
+    public function testRunQueueGeneratesConfiguredBatchSize(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 13:00:00');
+        $service->dueJobs = [
+            [
+                'id' => 'job-4',
+                'account' => 'acct',
+                'username' => 'owner',
+                'scheduled_at' => strtotime('2024-01-01 12:00:00'),
+                'status' => 'pending',
+            ],
+        ];
+        $service->fakeBatchSize = 3;
+
+        $service->runQueue();
+
+        $this->assertSame(3, $service->statusGenerations);
+        $this->assertSame(['job-4'], $service->deletedIds);
+    }
+
     public function testRunQueueMarksFirstFailureAsRetry(): void
     {
         $service = new TestableQueueService();

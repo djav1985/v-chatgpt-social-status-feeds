@@ -360,7 +360,37 @@ class QueueService
      */
     protected function processJobPayload(array $job): void
     {
-        StatusService::generateStatus((string) $job['account'], (string) $job['username']);
+        $this->generateStatusesForJob($job, $this->statusesPerJob());
+    }
+
+    protected function generateStatusesForJob(array $job, int $count): void
+    {
+        $account = (string) ($job['account'] ?? '');
+        $username = (string) ($job['username'] ?? '');
+
+        if ($account === '' || $username === '') {
+            return;
+        }
+
+        $attempts = max(1, $count);
+        for ($i = 0; $i < $attempts; $i++) {
+            $result = StatusService::generateStatus($account, $username);
+            if (isset($result['error'])) {
+                break;
+            }
+        }
+    }
+
+    protected function statusesPerJob(): int
+    {
+        if (defined('STATUS_JOB_BATCH_SIZE')) {
+            $batchSize = (int) constant('STATUS_JOB_BATCH_SIZE');
+            if ($batchSize > 0) {
+                return $batchSize;
+            }
+        }
+
+        return 1;
     }
 
     protected function generateJobId(): string
