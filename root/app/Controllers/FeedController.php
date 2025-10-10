@@ -167,7 +167,12 @@ class FeedController extends Controller
 
             $description = htmlspecialchars((string)$status->status, ENT_QUOTES, 'UTF-8');
             echo '<item>' . PHP_EOL;
-            echo '<guid isPermaLink="false">' . md5($status->status) . '</guid>' . PHP_EOL;
+            $guidSource = isset($status->id)
+                ? 'status:' . (string)$status->id
+                : ($status->account ?? '') . '|' . ($status->created_at ?? '') . '|' . ($status->status ?? '');
+            $escapedGuid = htmlspecialchars((string)$guidSource, ENT_QUOTES, 'UTF-8');
+
+            echo '<guid isPermaLink="false">' . $escapedGuid . '</guid>' . PHP_EOL;
             echo '<pubDate>' . date('r', strtotime($status->created_at)) . '</pubDate>' . PHP_EOL;
             echo '<title>' . $escapedStatusAccount . '</title>' . PHP_EOL;
             echo '<link>' . $escapedAccountLink . '</link>' . PHP_EOL;

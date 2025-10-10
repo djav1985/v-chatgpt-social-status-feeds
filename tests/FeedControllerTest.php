@@ -44,6 +44,7 @@ class FeedControllerTest extends TestCase
             $owner => [
                 $account => [
                     [
+                        'id' => 42,
                         'account' => $account,
                         'status' => $statusContent,
                         'created_at' => '2024-01-01 12:00:00',
@@ -65,6 +66,7 @@ class FeedControllerTest extends TestCase
         $this->assertStringContainsString('<link>https://example.test/profile?name=Acme &amp; Co</link>', $output);
         $this->assertStringContainsString($descriptionExpectation, $output);
         $this->assertStringContainsString($enclosureExpectation, $output);
+        $this->assertStringContainsString('<guid isPermaLink="false">status:42</guid>', $output);
 
         $this->assertSame([
             ['owner' => $owner, 'account' => $account],
@@ -73,5 +75,52 @@ class FeedControllerTest extends TestCase
         $this->assertSame([
             ['owner' => $owner, 'account' => $account],
         ], FeedControllerTestDouble::$requestedStatusLookups);
+    }
+
+    public function testGuidUsesUniqueIdentifierForDuplicateStatusText(): void
+    {
+        FeedControllerTestDouble::reset();
+
+        $owner = 'owner';
+        $account = 'Acme';
+        $statusText = 'Duplicate body text';
+
+        FeedControllerTestDouble::$accountsByOwner = [
+            $owner => [
+                ['account' => $account],
+            ],
+        ];
+
+        FeedControllerTestDouble::$linksByOwner = [
+            $owner => [
+                $account => 'https://example.test/profile?name=' . $account,
+            ],
+        ];
+
+        FeedControllerTestDouble::$statusesByOwner = [
+            $owner => [
+                $account => [
+                    [
+                        'id' => 10,
+                        'account' => $account,
+                        'status' => $statusText,
+                        'created_at' => '2024-01-01 12:00:00',
+                    ],
+                    [
+                        'id' => 11,
+                        'account' => $account,
+                        'status' => $statusText,
+                        'created_at' => '2024-01-01 13:00:00',
+                    ],
+                ],
+            ],
+        ];
+
+        $output = FeedControllerTestDouble::renderFeed($account, $owner);
+
+        preg_match_all('#<guid[^>]*>([^<]+)</guid>#', $output, $matches);
+
+        $this->assertSame(['status:10', 'status:11'], $matches[1]);
+        $this->assertCount(2, $matches[1]);
     }
 }
