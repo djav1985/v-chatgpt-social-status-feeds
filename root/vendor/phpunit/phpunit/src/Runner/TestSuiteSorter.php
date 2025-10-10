@@ -25,7 +25,6 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Runner\ResultCache\NullResultCache;
 use PHPUnit\Runner\ResultCache\ResultCache;
-use PHPUnit\Runner\ResultCache\ResultCacheId;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
@@ -34,17 +33,37 @@ use PHPUnit\Runner\ResultCache\ResultCacheId;
  */
 final class TestSuiteSorter
 {
-    public const int ORDER_DEFAULT       = 0;
-    public const int ORDER_RANDOMIZED    = 1;
-    public const int ORDER_REVERSED      = 2;
-    public const int ORDER_DEFECTS_FIRST = 3;
-    public const int ORDER_DURATION      = 4;
-    public const int ORDER_SIZE          = 5;
+    /**
+     * @var int
+     */
+    public const ORDER_DEFAULT = 0;
 
     /**
-     * @var non-empty-array<non-empty-string, positive-int>
+     * @var int
      */
-    private const array SIZE_SORT_WEIGHT = [
+    public const ORDER_RANDOMIZED = 1;
+
+    /**
+     * @var int
+     */
+    public const ORDER_REVERSED = 2;
+
+    /**
+     * @var int
+     */
+    public const ORDER_DEFECTS_FIRST = 3;
+
+    /**
+     * @var int
+     */
+    public const ORDER_DURATION = 4;
+
+    /**
+     * @var int
+     */
+    public const ORDER_SIZE = 5;
+
+    private const SIZE_SORT_WEIGHT = [
         'small'   => 1,
         'medium'  => 2,
         'large'   => 3,
@@ -52,18 +71,18 @@ final class TestSuiteSorter
     ];
 
     /**
-     * @var array<string, int> Associative array of (string => DEFECT_SORT_WEIGHT) elements
+     * @psalm-var array<string, int> Associative array of (string => DEFECT_SORT_WEIGHT) elements
      */
     private array $defectSortOrder = [];
     private readonly ResultCache $cache;
 
     /**
-     * @var array<string> A list of normalized names of tests before reordering
+     * @psalm-var array<string> A list of normalized names of tests before reordering
      */
     private array $originalExecutionOrder = [];
 
     /**
-     * @var array<string> A list of normalized names of tests affected by reordering
+     * @psalm-var array<string> A list of normalized names of tests affected by reordering
      */
     private array $executionOrder = [];
 
@@ -119,17 +138,11 @@ final class TestSuiteSorter
         }
     }
 
-    /**
-     * @return array<string>
-     */
     public function getOriginalExecutionOrder(): array
     {
         return $this->originalExecutionOrder;
     }
 
-    /**
-     * @return array<string>
-     */
     public function getExecutionOrder(): array
     {
         return $this->executionOrder;
@@ -137,7 +150,7 @@ final class TestSuiteSorter
 
     private function sort(TestSuite $suite, int $order, bool $resolveDependencies, int $orderDefects): void
     {
-        if ($suite->tests() === []) {
+        if (empty($suite->tests())) {
             return;
         }
 
@@ -158,8 +171,6 @@ final class TestSuiteSorter
         if ($resolveDependencies && !($suite instanceof DataProviderTestSuite)) {
             $tests = $suite->tests();
 
-            /** @noinspection PhpParamsInspection */
-            /** @phpstan-ignore argument.type */
             $suite->setTests($this->resolveDependencies($tests));
         }
     }
@@ -173,32 +184,20 @@ final class TestSuiteSorter
                 continue;
             }
 
-            $sortId = $test->sortId();
-
-            if (!isset($this->defectSortOrder[$sortId])) {
-                $this->defectSortOrder[$sortId] = $this->cache->status(ResultCacheId::fromReorderable($test))->asInt();
-                $max                            = max($max, $this->defectSortOrder[$sortId]);
+            if (!isset($this->defectSortOrder[$test->sortId()])) {
+                $this->defectSortOrder[$test->sortId()] = $this->cache->status($test->sortId())->asInt();
+                $max                                    = max($max, $this->defectSortOrder[$test->sortId()]);
             }
         }
 
         $this->defectSortOrder[$suite->sortId()] = $max;
     }
 
-    /**
-     * @param list<Test> $tests
-     *
-     * @return list<Test>
-     */
     private function reverse(array $tests): array
     {
         return array_reverse($tests);
     }
 
-    /**
-     * @param list<Test> $tests
-     *
-     * @return list<Test>
-     */
     private function randomize(array $tests): array
     {
         shuffle($tests);
@@ -206,46 +205,31 @@ final class TestSuiteSorter
         return $tests;
     }
 
-    /**
-     * @param list<Test> $tests
-     *
-     * @return list<Test>
-     */
     private function sortDefectsFirst(array $tests): array
     {
         usort(
             $tests,
-            fn (Test $left, Test $right) => $this->cmpDefectPriorityAndTime($left, $right),
+            fn ($left, $right) => $this->cmpDefectPriorityAndTime($left, $right),
         );
 
         return $tests;
     }
 
-    /**
-     * @param list<Test> $tests
-     *
-     * @return list<Test>
-     */
     private function sortByDuration(array $tests): array
     {
         usort(
             $tests,
-            fn (Test $left, Test $right) => $this->cmpDuration($left, $right),
+            fn ($left, $right) => $this->cmpDuration($left, $right),
         );
 
         return $tests;
     }
 
-    /**
-     * @param list<Test> $tests
-     *
-     * @return list<Test>
-     */
     private function sortBySize(array $tests): array
     {
         usort(
             $tests,
-            fn (Test $left, Test $right) => $this->cmpSize($left, $right),
+            fn ($left, $right) => $this->cmpSize($left, $right),
         );
 
         return $tests;
@@ -267,12 +251,12 @@ final class TestSuiteSorter
         $priorityA = $this->defectSortOrder[$a->sortId()] ?? 0;
         $priorityB = $this->defectSortOrder[$b->sortId()] ?? 0;
 
-        if (($priorityB <=> $priorityA) > 0) {
+        if ($priorityB <=> $priorityA) {
             // Sort defect weight descending
             return $priorityB <=> $priorityA;
         }
 
-        if ($priorityA > 0 || $priorityB > 0) {
+        if ($priorityA || $priorityB) {
             return $this->cmpDuration($a, $b);
         }
 
@@ -289,7 +273,7 @@ final class TestSuiteSorter
             return 0;
         }
 
-        return $this->cache->time(ResultCacheId::fromReorderable($a)) <=> $this->cache->time(ResultCacheId::fromReorderable($b));
+        return $this->cache->time($a->sortId()) <=> $this->cache->time($b->sortId());
     }
 
     /**
@@ -318,9 +302,9 @@ final class TestSuiteSorter
      * 3. If the test has dependencies but none left to do: mark done, start again from the top
      * 4. When we reach the end add any leftover tests to the end. These will be marked 'skipped' during execution.
      *
-     * @param array<TestCase> $tests
+     * @psalm-param array<DataProviderTestSuite|TestCase> $tests
      *
-     * @return array<TestCase>
+     * @psalm-return array<DataProviderTestSuite|TestCase>
      */
     private function resolveDependencies(array $tests): array
     {
@@ -336,14 +320,11 @@ final class TestSuiteSorter
             } else {
                 $i++;
             }
-        } while ($tests !== [] && ($i < count($tests)));
+        } while (!empty($tests) && ($i < count($tests)));
 
         return array_merge($newTestOrder, $tests);
     }
 
-    /**
-     * @return array<string>
-     */
     private function calculateTestExecutionOrder(Test $suite): array
     {
         $tests = [];

@@ -69,13 +69,8 @@ SET @stmt := IF(
     'CREATE INDEX idx_timestamp ON ip_blacklist (timestamp)');
 PREPARE idx_sql FROM @stmt;
 EXECUTE idx_sql;
-DEALLOCATE PREPARE idx_sql;
-
--- =========================
--- status_updates
 -- =========================
 CREATE TABLE IF NOT EXISTS status_updates (
-    id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     account VARCHAR(255) NOT NULL,
     status TEXT,
@@ -104,12 +99,10 @@ SET @stmt := IF(
     'SELECT 0');
 PREPARE alter_sql FROM @stmt;
 EXECUTE alter_sql;
-DEALLOCATE PREPARE alter_sql;
 
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'status_updates'
           AND COLUMN_NAME = 'status') = 0,
     'ALTER TABLE status_updates ADD COLUMN status TEXT',
     'SELECT 0');
@@ -187,7 +180,6 @@ CREATE TABLE status_jobs (
 );
 CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
 CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
-
 -- =========================
 -- accounts table migration
 -- =========================
