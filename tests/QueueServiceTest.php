@@ -34,13 +34,21 @@ final class QueueServiceTest extends TestCase
 
         $service->fillQueue();
 
-        $this->assertCount(1, $service->storedJobs, 'Only future, non-duplicate hours should be queued.');
-        $stored = $service->storedJobs[0];
-        $this->assertSame('job-1', $stored['id']);
-        $this->assertSame('owner', $stored['username']);
-        $this->assertSame('acct', $stored['account']);
-        $this->assertSame(strtotime('2024-01-01 18:00:00'), $stored['scheduledAt']);
-        $this->assertSame('pending', $stored['status']);
+        $this->assertCount(2, $service->storedJobs, 'Future hours should roll forward to the next day while avoiding duplicates.');
+
+        $firstStored = $service->storedJobs[0];
+        $this->assertSame('job-1', $firstStored['id']);
+        $this->assertSame('owner', $firstStored['username']);
+        $this->assertSame('acct', $firstStored['account']);
+        $this->assertSame(strtotime('2024-01-02 08:00:00'), $firstStored['scheduledAt']);
+        $this->assertSame('pending', $firstStored['status']);
+
+        $secondStored = $service->storedJobs[1];
+        $this->assertSame('job-2', $secondStored['id']);
+        $this->assertSame('owner', $secondStored['username']);
+        $this->assertSame('acct', $secondStored['account']);
+        $this->assertSame(strtotime('2024-01-01 18:00:00'), $secondStored['scheduledAt']);
+        $this->assertSame('pending', $secondStored['status']);
     }
 
     public function testEnqueueRemainingJobsRespectsDayAndFutureHours(): void
@@ -51,8 +59,9 @@ final class QueueServiceTest extends TestCase
 
         $service->enqueueRemainingJobs('owner', 'acct', '08,14,18', 'monday');
 
-        $this->assertCount(1, $service->storedJobs, 'Only unscheduled future hours should be added.');
-        $this->assertSame(strtotime('2024-01-01 18:00:00'), $service->storedJobs[0]['scheduledAt']);
+        $this->assertCount(2, $service->storedJobs, 'Future hours should include next-day slots when earlier hours have passed.');
+        $this->assertSame(strtotime('2024-01-02 08:00:00'), $service->storedJobs[0]['scheduledAt']);
+        $this->assertSame(strtotime('2024-01-01 18:00:00'), $service->storedJobs[1]['scheduledAt']);
     }
 
     public function testRunQueueDeletesSuccessfulJobs(): void
@@ -335,5 +344,96 @@ final class QueueServiceTest extends TestCase
         $this->assertNotContains('job-3', $service->deletedIds);
         $this->assertNotContains('job-4', $service->deletedIds);
         $this->assertNotContains('job-5', $service->deletedIds);
+    }
+
+    public function testScheduledTimestampRollsForwardForPastHours(): void
+    {
+        $service = new TestableQueueService();
+        $reference = strtotime('2024-01-01 12:00:00');
+
+        $this->assertSame(
+            strtotime('2024-01-02 08:00:00'),
+            $service->callScheduledTimestampForHour(8, $reference)
+        );
+    }
+
+    public function testRunQueueReleasesStaleJobsBeforeClaiming(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 13:00:00');
+        $service->fakeReleasedCount = 2;
+
+        $service->runQueue();
+
+        $this->assertSame(2, $service->releaseCallCount, 'Release should run once per status bucket.');
+        $this->assertSame([
+            $service->fakeNow,
+            $service->fakeNow,
+        ], $service->releaseTimestamps);
+    }
+
+    public function testRunQueueIncrementsApiUsageOnSuccess(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 13:00:00');
+        $service->dueJobs = [
+            [
+                'id' => 'job-1',
+                'account' => 'acct',
+                'username' => 'owner',
+                'scheduled_at' => strtotime('2024-01-01 12:00:00'),
+                'status' => 'pending',
+            ],
+        ];
+        $service->setUserQuota('owner', 1, 5);
+
+        $service->runQueue();
+
+        $this->assertSame(1, $service->statusGenerations);
+        $this->assertSame(['job-1'], $service->deletedIds);
+        $this->assertSame(2, $service->updatedUsedApiCalls['owner'] ?? 0);
+        $this->assertSame(2, $service->userInfoMap['owner']->used_api_calls);
+    }
+
+    public function testRunQueueRespectsApiQuotaAndMarksForRetry(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 13:00:00');
+        $service->dueJobs = [
+            [
+                'id' => 'job-1',
+                'account' => 'acct',
+                'username' => 'owner',
+                'scheduled_at' => strtotime('2024-01-01 12:00:00'),
+                'status' => 'pending',
+            ],
+        ];
+        $service->setUserQuota('owner', 3, 3);
+
+        $service->runQueue();
+
+        $this->assertSame(0, $service->statusGenerations, 'Quota exhaustion should short-circuit generation.');
+        $this->assertArrayHasKey('job-1', $service->markedStatuses);
+        $this->assertSame('retry', $service->markedStatuses['job-1']);
+        $this->assertArrayHasKey('owner', $service->limitEmailUpdates);
+        $this->assertTrue($service->limitEmailUpdates['owner']);
+        $this->assertSame(['owner'], $service->sentLimitEmails);
+        $this->assertArrayNotHasKey('owner', $service->updatedUsedApiCalls, 'Usage should not increase when over the limit.');
+        $this->assertNotContains('job-1', $service->deletedIds);
+    }
+
+    public function testPurgeImagesHandlesMissingDirectory(): void
+    {
+        $service = new TestableQueueService();
+        $tempDir = sys_get_temp_dir() . '/queue-service-missing-' . uniqid('', true);
+        $service->imageDirectoryOverride = $tempDir;
+
+        $this->assertTrue($service->purgeImages());
+        $this->assertDirectoryExists($tempDir);
+
+        $iterator = new \FilesystemIterator($tempDir);
+        $this->assertCount(0, iterator_to_array($iterator));
+
+        $this->assertTrue(@rmdir($tempDir));
     }
 }
