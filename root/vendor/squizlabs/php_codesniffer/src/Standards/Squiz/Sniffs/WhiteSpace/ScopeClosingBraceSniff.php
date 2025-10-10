@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the closing braces of scopes are aligned correctly.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ScopeClosingBraceSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -53,7 +52,8 @@ class ScopeClosingBraceSniff implements Sniff
         // or an if with an else before it, then we need to start the scope
         // checking from there, rather than the current token.
         $lineStart = $phpcsFile->findFirstOnLine([T_WHITESPACE, T_INLINE_HTML], $stackPtr, true);
-        while ($tokens[$lineStart]['code'] === T_CONSTANT_ENCAPSED_STRING
+        while (
+            $tokens[$lineStart]['code'] === T_CONSTANT_ENCAPSED_STRING
             && $tokens[($lineStart - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
         ) {
             $lineStart = $phpcsFile->findFirstOnLine([T_WHITESPACE, T_INLINE_HTML], ($lineStart - 1), true);
@@ -67,7 +67,8 @@ class ScopeClosingBraceSniff implements Sniff
         $lastContent = $phpcsFile->findPrevious([T_INLINE_HTML, T_WHITESPACE, T_OPEN_TAG], ($scopeEnd - 1), $scopeStart, true);
         for ($lineStart = $scopeEnd; $tokens[$lineStart]['column'] > 1; $lineStart--);
 
-        if ($tokens[$lastContent]['line'] === $tokens[$scopeEnd]['line']
+        if (
+            $tokens[$lastContent]['line'] === $tokens[$scopeEnd]['line']
             || ($tokens[$lineStart]['code'] === T_INLINE_HTML
             && trim($tokens[$lineStart]['content']) !== '')
         ) {
@@ -87,7 +88,8 @@ class ScopeClosingBraceSniff implements Sniff
         // Check now that the closing brace is lined up correctly.
         $lineStart   = $phpcsFile->findFirstOnLine([T_WHITESPACE, T_INLINE_HTML], $scopeEnd, true);
         $braceIndent = $tokens[$lineStart]['column'];
-        if ($tokens[$stackPtr]['code'] !== T_DEFAULT
+        if (
+            $tokens[$stackPtr]['code'] !== T_DEFAULT
             && $tokens[$stackPtr]['code'] !== T_CASE
             && $braceIndent !== $startColumn
         ) {

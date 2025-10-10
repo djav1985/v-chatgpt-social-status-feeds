@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bans the use of size-based functions in loop conditions.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DisallowSizeFunctionsInLoopsSniff implements Sniff
 {
-
     /**
      * An array of functions we don't want in the condition of loops.
      *
@@ -76,13 +76,15 @@ class DisallowSizeFunctionsInLoopsSniff implements Sniff
         }
 
         for ($i = ($start + 1); $i < $end; $i++) {
-            if (($tokens[$i]['code'] === T_STRING || $tokens[$i]['code'] === T_NAME_FULLY_QUALIFIED)
+            if (
+                ($tokens[$i]['code'] === T_STRING || $tokens[$i]['code'] === T_NAME_FULLY_QUALIFIED)
                 && isset(static::FORBIDDEN_FUNCTIONS[ltrim($tokens[$i]['content'], '\\')]) === true
             ) {
                 $functionName = $tokens[$i]['content'];
 
                 // Make sure it isn't a member var.
-                if ($tokens[($i - 1)]['code'] === T_OBJECT_OPERATOR
+                if (
+                    $tokens[($i - 1)]['code'] === T_OBJECT_OPERATOR
                     || $tokens[($i - 1)]['code'] === T_NULLSAFE_OBJECT_OPERATOR
                 ) {
                     continue;

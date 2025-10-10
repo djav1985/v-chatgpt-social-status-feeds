@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Enforces switch statement formatting.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SwitchDeclarationSniff implements Sniff
 {
-
     /**
      * The number of spaces code should be indented.
      *
@@ -50,7 +50,8 @@ class SwitchDeclarationSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         // We can't process SWITCH statements unless we know where they start and end.
-        if (isset($tokens[$stackPtr]['scope_opener']) === false
+        if (
+            isset($tokens[$stackPtr]['scope_opener']) === false
             || isset($tokens[$stackPtr]['scope_closer']) === false
         ) {
             return;
@@ -97,7 +98,8 @@ class SwitchDeclarationSniff implements Sniff
 
                 if ($fix === true) {
                     $padding = str_repeat(' ', ($caseAlignment - 1));
-                    if ($tokens[$nextCase]['column'] === 1
+                    if (
+                        $tokens[$nextCase]['column'] === 1
                         || $tokens[($nextCase - 1)]['code'] !== T_WHITESPACE
                     ) {
                         $phpcsFile->fixer->addContentBefore($nextCase, $padding);
@@ -107,7 +109,8 @@ class SwitchDeclarationSniff implements Sniff
                 }
             }
 
-            if ($type === 'Case'
+            if (
+                $type === 'Case'
                 && ($tokens[($nextCase + 1)]['type'] !== 'T_WHITESPACE'
                 || $tokens[($nextCase + 1)]['content'] !== ' ')
             ) {
@@ -137,7 +140,8 @@ class SwitchDeclarationSniff implements Sniff
             }
 
             $nextBreak = $tokens[$nextCase]['scope_closer'];
-            if ($tokens[$nextBreak]['code'] === T_BREAK
+            if (
+                $tokens[$nextBreak]['code'] === T_BREAK
                 || $tokens[$nextBreak]['code'] === T_RETURN
                 || $tokens[$nextBreak]['code'] === T_CONTINUE
                 || $tokens[$nextBreak]['code'] === T_THROW
@@ -154,7 +158,8 @@ class SwitchDeclarationSniff implements Sniff
 
                         if ($fix === true) {
                             $padding = str_repeat(' ', ($caseAlignment - 1));
-                            if ($tokens[$nextBreak]['column'] === 1
+                            if (
+                                $tokens[$nextBreak]['column'] === 1
                                 || $tokens[($nextBreak - 1)]['code'] !== T_WHITESPACE
                             ) {
                                 $phpcsFile->fixer->addContentBefore($nextBreak, $padding);

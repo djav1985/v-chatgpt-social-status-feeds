@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that class members are spaced correctly.
  *
@@ -17,7 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class MemberVarSpacingSniff extends AbstractVariableSniff
 {
-
     /**
      * The number of blank lines between member vars.
      *
@@ -85,7 +85,8 @@ class MemberVarSpacingSniff extends AbstractVariableSniff
                 continue;
             }
 
-            if ($tokens[$prev]['code'] === T_ATTRIBUTE_END
+            if (
+                $tokens[$prev]['code'] === T_ATTRIBUTE_END
                 && isset($tokens[$prev]['attribute_opener']) === true
             ) {
                 $prev  = $tokens[$prev]['attribute_opener'];
@@ -113,7 +114,8 @@ class MemberVarSpacingSniff extends AbstractVariableSniff
                 continue;
             }
 
-            if ($tokens[$i]['column'] !== 1
+            if (
+                $tokens[$i]['column'] !== 1
                 || $tokens[$i]['code'] !== T_WHITESPACE
                 || $tokens[$i]['line'] === $tokens[($i + 1)]['line']
                 // Do not report blank lines after a PHPCS annotation as removing the blank lines could change the meaning.
@@ -163,14 +165,16 @@ class MemberVarSpacingSniff extends AbstractVariableSniff
 
         // Determine if this is the first member var.
         $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($first - 1), null, true);
-        if ($tokens[$prev]['code'] === T_CLOSE_CURLY_BRACKET
+        if (
+            $tokens[$prev]['code'] === T_CLOSE_CURLY_BRACKET
             && isset($tokens[$prev]['scope_condition']) === true
             && $tokens[$tokens[$prev]['scope_condition']]['code'] === T_FUNCTION
         ) {
             return;
         }
 
-        if ($tokens[$prev]['code'] === T_OPEN_CURLY_BRACKET
+        if (
+            $tokens[$prev]['code'] === T_OPEN_CURLY_BRACKET
             && isset(Tokens::OO_SCOPE_TOKENS[$tokens[$tokens[$prev]['scope_condition']]['code']]) === true
         ) {
             $errorMsg  = 'Expected %s blank line(s) before first member var; %s found';

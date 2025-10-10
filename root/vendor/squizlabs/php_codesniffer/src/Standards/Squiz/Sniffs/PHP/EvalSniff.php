@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The use of eval() is discouraged.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class EvalSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

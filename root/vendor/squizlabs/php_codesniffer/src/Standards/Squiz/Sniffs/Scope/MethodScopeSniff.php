@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that class methods have scope modifiers.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class MethodScopeSniff extends AbstractScopeSniff
 {
-
-
     /**
      * Constructs a Squiz_Sniffs_Scope_MethodScopeSniff.
      */

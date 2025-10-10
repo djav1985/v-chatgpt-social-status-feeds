@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that there is one empty line before the closing brace of a function.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class FunctionClosingBraceSpaceSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -53,7 +52,8 @@ class FunctionClosingBraceSpaceSniff implements Sniff
         $prevContent = $phpcsFile->findPrevious(T_WHITESPACE, ($closeBrace - 1), null, true);
 
         $nestedFunction = false;
-        if ($phpcsFile->hasCondition($stackPtr, [T_FUNCTION, T_CLOSURE]) === true
+        if (
+            $phpcsFile->hasCondition($stackPtr, [T_FUNCTION, T_CLOSURE]) === true
             || isset($tokens[$stackPtr]['nested_parenthesis']) === true
         ) {
             $nestedFunction = true;

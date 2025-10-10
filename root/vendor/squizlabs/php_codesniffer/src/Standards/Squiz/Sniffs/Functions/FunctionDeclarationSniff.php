@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the function declaration is correct.
  *
@@ -14,8 +15,6 @@ use PHP_CodeSniffer\Sniffs\AbstractPatternSniff;
 
 class FunctionDeclarationSniff extends AbstractPatternSniff
 {
-
-
     /**
      * Returns an array of patterns to check are correct.
      *

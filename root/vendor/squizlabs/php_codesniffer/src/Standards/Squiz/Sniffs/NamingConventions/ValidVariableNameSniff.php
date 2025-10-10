@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the naming of variables and member variables.
  *
@@ -18,8 +19,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ValidVariableNameSniff extends AbstractVariableSniff
 {
-
-
     /**
      * Processes this test, when one of its tokens is encountered.
      *
@@ -40,7 +39,8 @@ class ValidVariableNameSniff extends AbstractVariableSniff
         }
 
         $objOperator = $phpcsFile->findNext([T_WHITESPACE], ($stackPtr + 1), null, true);
-        if ($tokens[$objOperator]['code'] === T_OBJECT_OPERATOR
+        if (
+            $tokens[$objOperator]['code'] === T_OBJECT_OPERATOR
             || $tokens[$objOperator]['code'] === T_NULLSAFE_OBJECT_OPERATOR
         ) {
             // Check to see if we are using a variable from an object.

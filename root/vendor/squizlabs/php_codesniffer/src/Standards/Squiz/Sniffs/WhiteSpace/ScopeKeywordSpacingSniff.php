@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure there is a single space after scope keywords.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ScopeKeywordSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -55,7 +54,8 @@ class ScopeKeywordSpacingSniff implements Sniff
         $nextToken = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
 
         if ($tokens[$stackPtr]['code'] === T_STATIC) {
-            if (($nextToken === false || $tokens[$nextToken]['code'] === T_DOUBLE_COLON)
+            if (
+                ($nextToken === false || $tokens[$nextToken]['code'] === T_DOUBLE_COLON)
                 || $tokens[$prevToken]['code'] === T_NEW
                 || $tokens[$prevToken]['code'] === T_INSTANCEOF
             ) {
@@ -63,25 +63,29 @@ class ScopeKeywordSpacingSniff implements Sniff
                 return;
             }
 
-            if ($prevToken !== false
+            if (
+                $prevToken !== false
                 && $tokens[$prevToken]['code'] === T_TYPE_UNION
             ) {
                 // Not a scope keyword, but a union return type.
                 return;
             }
 
-            if ($prevToken !== false
+            if (
+                $prevToken !== false
                 && $tokens[$prevToken]['code'] === T_NULLABLE
             ) {
                 // Not a scope keyword, but a return type.
                 return;
             }
 
-            if ($prevToken !== false
+            if (
+                $prevToken !== false
                 && $tokens[$prevToken]['code'] === T_COLON
             ) {
                 $prevPrevToken = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($prevToken - 1), null, true);
-                if ($prevPrevToken !== false
+                if (
+                    $prevPrevToken !== false
                     && $tokens[$prevPrevToken]['code'] === T_CLOSE_PARENTHESIS
                 ) {
                     // Not a scope keyword, but a return type.
@@ -101,14 +105,16 @@ class ScopeKeywordSpacingSniff implements Sniff
             // In that case, we can't have multi-property definitions.
             $nestedParens    = $tokens[$stackPtr]['nested_parenthesis'];
             $lastCloseParens = end($nestedParens);
-            if (isset($tokens[$lastCloseParens]['parenthesis_owner']) === true
+            if (
+                isset($tokens[$lastCloseParens]['parenthesis_owner']) === true
                 && $tokens[$tokens[$lastCloseParens]['parenthesis_owner']]['code'] === T_FUNCTION
             ) {
                 $isInFunctionDeclaration = true;
             }
         }
 
-        if ($nextToken !== false
+        if (
+            $nextToken !== false
             && $tokens[$nextToken]['code'] === T_VARIABLE
             && $isInFunctionDeclaration === false
         ) {
@@ -119,7 +125,8 @@ class ScopeKeywordSpacingSniff implements Sniff
             }
 
             $multiProperty = $phpcsFile->findNext(T_VARIABLE, ($nextToken + 1), $endOfStatement);
-            if ($multiProperty !== false
+            if (
+                $multiProperty !== false
                 && $tokens[$stackPtr]['line'] !== $tokens[$nextToken]['line']
                 && $tokens[$nextToken]['line'] !== $tokens[$endOfStatement]['line']
             ) {

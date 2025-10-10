@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that there is a space between each condition of foreach loops.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ForEachLoopDeclarationSniff implements Sniff
 {
-
     /**
      * How many spaces should follow the opening bracket.
      *

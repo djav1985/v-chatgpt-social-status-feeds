@@ -19,7 +19,7 @@ final class ConcurrencyQueueTest extends TestCase
     {
         $service1 = new TestableQueueService();
         $service2 = new TestableQueueService();
-        
+
         $now = strtotime('2024-01-01 12:00:00');
         $service1->fakeNow = $now;
         $service2->fakeNow = $now;
@@ -56,11 +56,11 @@ final class ConcurrencyQueueTest extends TestCase
         // Check first job processing flag
         $this->assertTrue($claimed1[0]['processing']);
         $this->assertSame('pending', $claimed1[0]['status']);
-        
+
         // Check second job processing flag
         $this->assertTrue($claimed1[1]['processing']);
         $this->assertSame('retry', $claimed1[1]['status']);
-        
+
         // Both services should get identical results in the test environment
         $this->assertEquals($claimed1, $claimed2);
     }

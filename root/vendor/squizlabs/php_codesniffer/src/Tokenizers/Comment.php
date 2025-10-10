@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tokenizes doc block comments.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class Comment
 {
-
-
     /**
      * Splits a single doc block comment token up into something that can be easily iterated over.
      *
@@ -207,7 +206,8 @@ class Comment
             // The content up until the first whitespace is the tag name.
             $matches = [];
             preg_match('/@[^\s]+/', $comment, $matches, 0, $start);
-            if (isset($matches[0]) === true
+            if (
+                isset($matches[0]) === true
                 && substr(strtolower($matches[0]), 0, 7) !== '@phpcs:'
             ) {
                 $tagName  = $matches[0];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Stops inline IF statements from being used.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DisallowInlineIfSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

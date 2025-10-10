@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Print the Help information.
  *
@@ -21,8 +22,6 @@ use PHP_CodeSniffer\Util\Common;
 
 final class Help
 {
-
-
     /**
      * Short options which are available for both the `phpcs` as well as the `phpcbf` command.
      *

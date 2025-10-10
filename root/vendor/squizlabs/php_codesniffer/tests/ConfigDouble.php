@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config class for use in the tests.
  *
@@ -22,7 +23,6 @@ use ReflectionProperty;
 
 final class ConfigDouble extends Config
 {
-
     /**
      * Whether or not the setting of a standard should be skipped.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Warns about code that can never been executed.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class NonExecutableCodeSniff implements Sniff
 {
-
     /**
      * Tokens for terminating expressions, which can be used inline.
      *
@@ -72,7 +72,8 @@ class NonExecutableCodeSniff implements Sniff
             // If this token is preceded by a logical operator, it only relates to one line
             // and should be ignored. For example: fopen() or die().
             // Note: There is one exception: throw expressions can not be used with xor.
-            if (isset(Tokens::BOOLEAN_OPERATORS[$tokens[$prev]['code']]) === true
+            if (
+                isset(Tokens::BOOLEAN_OPERATORS[$tokens[$prev]['code']]) === true
                 && ($tokens[$stackPtr]['code'] === T_THROW && $tokens[$prev]['code'] === T_LOGICAL_XOR) === false
             ) {
                 return;
@@ -97,7 +98,8 @@ class NonExecutableCodeSniff implements Sniff
         // This token may be part of an inline condition.
         // If we find a closing parenthesis that belongs to a condition,
         // or an "else", we should ignore this token.
-        if ($tokens[$prev]['code'] === T_ELSE
+        if (
+            $tokens[$prev]['code'] === T_ELSE
             || (isset($tokens[$prev]['parenthesis_owner']) === true
             && ($tokens[$tokens[$prev]['parenthesis_owner']]['code'] === T_IF
             || $tokens[$tokens[$prev]['parenthesis_owner']]['code'] === T_ELSEIF))
@@ -114,7 +116,8 @@ class NonExecutableCodeSniff implements Sniff
                     // then this return statement doesn't return anything
                     // and is not required anyway.
                     $owner = $tokens[$next]['scope_condition'];
-                    if ($tokens[$owner]['code'] === T_FUNCTION
+                    if (
+                        $tokens[$owner]['code'] === T_FUNCTION
                         || $tokens[$owner]['code'] === T_CLOSURE
                     ) {
                         $warning = 'Empty return statement not required here';
@@ -182,7 +185,8 @@ class NonExecutableCodeSniff implements Sniff
             // used to close a CASE statement, so it is most likely non-executable
             // code itself (as is the case when you put return; break; at the end of
             // a case). So we need to ignore this token.
-            if ($tokens[$condition]['code'] === T_SWITCH
+            if (
+                $tokens[$condition]['code'] === T_SWITCH
                 && $tokens[$stackPtr]['code'] === T_BREAK
             ) {
                 return;
@@ -227,14 +231,16 @@ class NonExecutableCodeSniff implements Sniff
                 break;
             }
 
-            if (isset($tokens[$start]['parenthesis_closer']) === true
+            if (
+                isset($tokens[$start]['parenthesis_closer']) === true
                 && $tokens[$start]['code'] === T_OPEN_PARENTHESIS
             ) {
                 $start = $tokens[$start]['parenthesis_closer'];
                 continue;
             }
 
-            if (isset($tokens[$start]['bracket_closer']) === true
+            if (
+                isset($tokens[$start]['bracket_closer']) === true
                 && $tokens[$start]['code'] === T_OPEN_CURLY_BRACKET
             ) {
                 $start = $tokens[$start]['bracket_closer'];
@@ -252,7 +258,8 @@ class NonExecutableCodeSniff implements Sniff
 
         $lastLine = $tokens[$start]['line'];
         for ($i = ($start + 1); $i < $end; $i++) {
-            if (isset(Tokens::EMPTY_TOKENS[$tokens[$i]['code']]) === true
+            if (
+                isset(Tokens::EMPTY_TOKENS[$tokens[$i]['code']]) === true
                 || isset(Tokens::BRACKET_TOKENS[$tokens[$i]['code']]) === true
                 || $tokens[$i]['code'] === T_SEMICOLON
             ) {
@@ -261,7 +268,8 @@ class NonExecutableCodeSniff implements Sniff
 
             // Skip whole functions and classes/interfaces because they are not
             // technically executed code, but rather declarations that may be used.
-            if (isset(Tokens::OO_SCOPE_TOKENS[$tokens[$i]['code']]) === true
+            if (
+                isset(Tokens::OO_SCOPE_TOKENS[$tokens[$i]['code']]) === true
                 || $tokens[$i]['code'] === T_FUNCTION
                 || $tokens[$i]['code'] === T_CLOSURE
             ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Collect messages for display at a later point in the process flow.
  *
@@ -27,7 +28,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 final class MessageCollector
 {
-
     /**
      * Indicator for a (blocking) error.
      *
@@ -102,7 +102,8 @@ final class MessageCollector
             throw new InvalidArgumentException('The $message should be of type string. Received: ' . gettype($message) . '.');
         }
 
-        if ($type !== self::ERROR
+        if (
+            $type !== self::ERROR
             && $type !== self::WARNING
             && $type !== self::NOTICE
             && $type !== self::DEPRECATED

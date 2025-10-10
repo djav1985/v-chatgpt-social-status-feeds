@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures all control structure keywords are lowercase.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class LowercaseDeclarationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

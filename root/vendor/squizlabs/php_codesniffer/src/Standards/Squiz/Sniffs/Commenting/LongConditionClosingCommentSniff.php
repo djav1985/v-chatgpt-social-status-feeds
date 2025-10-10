@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures long conditions have a comment at the end.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class LongConditionClosingCommentSniff implements Sniff
 {
-
     /**
      * The condition openers that we are interested in.
      *
@@ -102,11 +102,13 @@ class LongConditionClosingCommentSniff implements Sniff
                 $nextToken = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
                 if ($tokens[$nextToken]['code'] === T_ELSE || $tokens[$nextToken]['code'] === T_ELSEIF) {
                     // Check for ELSE IF (2 tokens) as opposed to ELSEIF (1 token).
-                    if ($tokens[$nextToken]['code'] === T_ELSE
+                    if (
+                        $tokens[$nextToken]['code'] === T_ELSE
                         && isset($tokens[$nextToken]['scope_closer']) === false
                     ) {
                         $nextToken = $phpcsFile->findNext(T_WHITESPACE, ($nextToken + 1), null, true);
-                        if ($tokens[$nextToken]['code'] !== T_IF
+                        if (
+                            $tokens[$nextToken]['code'] !== T_IF
                             || isset($tokens[$nextToken]['scope_closer']) === false
                         ) {
                             // Not an ELSE IF or is an inline ELSE IF.
@@ -133,7 +135,8 @@ class LongConditionClosingCommentSniff implements Sniff
             // TRY statements need to check until the end of all CATCH statements.
             do {
                 $nextToken = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-                if ($tokens[$nextToken]['code'] === T_CATCH
+                if (
+                    $tokens[$nextToken]['code'] === T_CATCH
                     || $tokens[$nextToken]['code'] === T_FINALLY
                 ) {
                     // The end brace becomes the CATCH end brace.
@@ -148,7 +151,8 @@ class LongConditionClosingCommentSniff implements Sniff
         if ($startCondition['code'] === T_MATCH) {
             // Move the stackPtr to after the semicolon/comma if there is one.
             $nextToken = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-            if ($nextToken !== false
+            if (
+                $nextToken !== false
                 && ($tokens[$nextToken]['code'] === T_SEMICOLON
                 || $tokens[$nextToken]['code'] === T_COMMA)
             ) {

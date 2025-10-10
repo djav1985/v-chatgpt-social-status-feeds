@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that duplicate arguments are not used in function declarations.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class FunctionDuplicateArgumentSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

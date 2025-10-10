@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that operators have valid spacing surrounding them.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class LogicalOperatorSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -51,7 +50,8 @@ class LogicalOperatorSpacingSniff implements Sniff
             }
         } else {
             $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-            if ($tokens[$stackPtr]['line'] === $tokens[$prev]['line']
+            if (
+                $tokens[$stackPtr]['line'] === $tokens[$prev]['line']
                 && $tokens[($stackPtr - 1)]['length'] !== 1
             ) {
                 $found = $tokens[($stackPtr - 1)]['length'];
@@ -73,7 +73,8 @@ class LogicalOperatorSpacingSniff implements Sniff
             }
         } else {
             $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-            if ($tokens[$stackPtr]['line'] === $tokens[$next]['line']
+            if (
+                $tokens[$stackPtr]['line'] === $tokens[$next]['line']
                 && $tokens[($stackPtr + 1)]['length'] !== 1
             ) {
                 $found = $tokens[($stackPtr + 1)]['length'];

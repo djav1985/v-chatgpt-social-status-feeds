@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures there is only one assignment on a line, and that it is the first thing on the line.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DisallowMultipleAssignmentsSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -61,7 +60,8 @@ class DisallowMultipleAssignmentsSniff implements Sniff
         if (isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
             $nested = $tokens[$stackPtr]['nested_parenthesis'];
             foreach ($nested as $opener => $closer) {
-                if (isset($tokens[$opener]['parenthesis_owner']) === true
+                if (
+                    isset($tokens[$opener]['parenthesis_owner']) === true
                     && $tokens[$tokens[$opener]['parenthesis_owner']]['code'] === T_WHILE
                 ) {
                     return;
@@ -136,7 +136,8 @@ class DisallowMultipleAssignmentsSniff implements Sniff
 
         $varToken = $phpcsFile->findPrevious($allowed, ($varToken - 1), null, true);
 
-        if ($varToken < $start
+        if (
+            $varToken < $start
             && $tokens[$varToken]['code'] !== T_OPEN_PARENTHESIS
             && $tokens[$varToken]['code'] !== T_OPEN_SQUARE_BRACKET
         ) {
@@ -153,7 +154,8 @@ class DisallowMultipleAssignmentsSniff implements Sniff
             }
         }
 
-        if ($tokens[$varToken]['code'] === T_VARIABLE
+        if (
+            $tokens[$varToken]['code'] === T_VARIABLE
             || $tokens[$varToken]['code'] === T_OPEN_TAG
             || $tokens[$varToken]['code'] === T_GOTO_COLON
             || $tokens[$varToken]['code'] === T_INLINE_THEN
@@ -178,7 +180,8 @@ class DisallowMultipleAssignmentsSniff implements Sniff
                 T_MATCH  => T_MATCH,
             ];
             foreach ($nested as $opener => $closer) {
-                if (isset($tokens[$opener]['parenthesis_owner']) === true
+                if (
+                    isset($tokens[$opener]['parenthesis_owner']) === true
                     && isset($controlStructures[$tokens[$tokens[$opener]['parenthesis_owner']]['code']]) === true
                 ) {
                     $errorCode .= 'InControlStructure';

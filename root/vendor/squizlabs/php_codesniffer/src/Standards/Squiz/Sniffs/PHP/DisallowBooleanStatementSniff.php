@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures that boolean operators are only used inside control structure conditions.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DisallowBooleanStatementSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

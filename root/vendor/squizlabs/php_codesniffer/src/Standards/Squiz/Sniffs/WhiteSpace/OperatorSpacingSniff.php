@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that operators have valid spacing surrounding them.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class OperatorSpacingSniff implements Sniff
 {
-
     /**
      * Allow newlines instead of spaces.
      *
@@ -160,7 +160,8 @@ class OperatorSpacingSniff implements Sniff
                 }
 
                 $phpcsFile->recordMetric($stackPtr, 'Space before operator', $found);
-                if ($found !== 1
+                if (
+                    $found !== 1
                     && ($found !== 'newline' || $this->ignoreNewlines === false)
                 ) {
                     $error = 'Expected 1 space before "&" operator; %s found';
@@ -195,7 +196,8 @@ class OperatorSpacingSniff implements Sniff
                 }
 
                 $phpcsFile->recordMetric($stackPtr, 'Space after operator', $found);
-                if ($found !== 1
+                if (
+                    $found !== 1
                     && ($found !== 'newline' || $this->ignoreNewlines === false)
                 ) {
                     $error = 'Expected 1 space after "&" operator; %s found';
@@ -212,7 +214,8 @@ class OperatorSpacingSniff implements Sniff
 
         $operator = $tokens[$stackPtr]['content'];
 
-        if ($tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
+        if (
+            $tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
             && (($tokens[($stackPtr - 1)]['code'] === T_INLINE_THEN
             && $tokens[($stackPtr)]['code'] === T_INLINE_ELSE) === false)
         ) {
@@ -223,7 +226,8 @@ class OperatorSpacingSniff implements Sniff
             }
 
             $phpcsFile->recordMetric($stackPtr, 'Space before operator', 0);
-        } elseif (isset(Tokens::ASSIGNMENT_TOKENS[$tokens[$stackPtr]['code']]) === false
+        } elseif (
+            isset(Tokens::ASSIGNMENT_TOKENS[$tokens[$stackPtr]['code']]) === false
             || $this->ignoreSpacingBeforeAssignments === false
         ) {
             // Throw an error for assignments only if enabled using the sniff property
@@ -236,7 +240,8 @@ class OperatorSpacingSniff implements Sniff
             }
 
             $phpcsFile->recordMetric($stackPtr, 'Space before operator', $found);
-            if ($found !== 1
+            if (
+                $found !== 1
                 && ($found !== 'newline' || $this->ignoreNewlines === false)
             ) {
                 $error = 'Expected 1 space before "%s"; %s found';
@@ -278,7 +283,8 @@ class OperatorSpacingSniff implements Sniff
 
         if ($tokens[($stackPtr + 1)]['code'] !== T_WHITESPACE) {
             // Skip short ternary such as: "$foo = $bar ?: true;".
-            if (($tokens[$stackPtr]['code'] === T_INLINE_THEN
+            if (
+                ($tokens[$stackPtr]['code'] === T_INLINE_THEN
                 && $tokens[($stackPtr + 1)]['code'] === T_INLINE_ELSE)
             ) {
                 return;
@@ -292,7 +298,8 @@ class OperatorSpacingSniff implements Sniff
 
             $phpcsFile->recordMetric($stackPtr, 'Space after operator', 0);
         } else {
-            if (isset($tokens[($stackPtr + 2)]) === true
+            if (
+                isset($tokens[($stackPtr + 2)]) === true
                 && $tokens[($stackPtr + 2)]['line'] !== $tokens[$stackPtr]['line']
             ) {
                 $found = 'newline';
@@ -301,7 +308,8 @@ class OperatorSpacingSniff implements Sniff
             }
 
             $phpcsFile->recordMetric($stackPtr, 'Space after operator', $found);
-            if ($found !== 1
+            if (
+                $found !== 1
                 && ($found !== 'newline' || $this->ignoreNewlines === false)
             ) {
                 $error = 'Expected 1 space after "%s"; %s found';
@@ -311,7 +319,8 @@ class OperatorSpacingSniff implements Sniff
                 ];
 
                 $nextNonWhitespace = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-                if ($nextNonWhitespace !== false
+                if (
+                    $nextNonWhitespace !== false
                     && isset(Tokens::COMMENT_TOKENS[$tokens[$nextNonWhitespace]['code']]) === true
                     && $found === 'newline'
                 ) {
@@ -354,7 +363,8 @@ class OperatorSpacingSniff implements Sniff
                 $bracket     = array_pop($parenthesis);
                 if (isset($tokens[$bracket]['parenthesis_owner']) === true) {
                     $function = $tokens[$bracket]['parenthesis_owner'];
-                    if ($tokens[$function]['code'] === T_FUNCTION
+                    if (
+                        $tokens[$function]['code'] === T_FUNCTION
                         || $tokens[$function]['code'] === T_CLOSURE
                         || $tokens[$function]['code'] === T_FN
                     ) {
@@ -366,7 +376,8 @@ class OperatorSpacingSniff implements Sniff
 
         if ($tokens[$stackPtr]['code'] === T_EQUAL) {
             // Skip for '=&' case.
-            if (isset($tokens[($stackPtr + 1)]) === true
+            if (
+                isset($tokens[($stackPtr + 1)]) === true
                 && $tokens[($stackPtr + 1)]['code'] === T_BITWISE_AND
             ) {
                 return false;

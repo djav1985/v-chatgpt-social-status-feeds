@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks for usage of $this in static methods, which will cause runtime errors.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class StaticThisUsageSniff extends AbstractScopeSniff
 {
-
-
     /**
      * Constructs the test with the tokens it wishes to listen for.
      */

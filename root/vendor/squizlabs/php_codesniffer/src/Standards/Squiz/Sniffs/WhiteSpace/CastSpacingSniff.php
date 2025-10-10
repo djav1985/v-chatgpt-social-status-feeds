@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure cast statements don't contain whitespace.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class CastSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

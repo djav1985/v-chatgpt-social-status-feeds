@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that there is adequate spacing between comments.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class InlineCommentSniff implements Sniff
 {
-
     /**
      * Characters which are accepted to end a sentence.
      *
@@ -275,7 +275,8 @@ class InlineCommentSniff implements Sniff
                 $type         = end($conditions);
                 $conditionPtr = key($conditions);
 
-                if (($type === T_FUNCTION || $type === T_CLOSURE)
+                if (
+                    ($type === T_FUNCTION || $type === T_CLOSURE)
                     && $tokens[$conditionPtr]['scope_closer'] === $next
                 ) {
                     $errorCode = 'SpacingAfterAtFunctionEnd';

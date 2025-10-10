@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks for unneeded whitespace.
  *
@@ -19,7 +20,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class SuperfluousWhitespaceSniff implements Sniff
 {
-
     /**
      * If TRUE, whitespace rules are not checked for blank lines.
      *
@@ -139,14 +139,16 @@ class SuperfluousWhitespaceSniff implements Sniff
             */
 
             // Ignore whitespace that is not at the end of a line.
-            if (isset($tokens[($stackPtr + 1)]['line']) === true
+            if (
+                isset($tokens[($stackPtr + 1)]['line']) === true
                 && $tokens[($stackPtr + 1)]['line'] === $tokens[$stackPtr]['line']
             ) {
                 return;
             }
 
             // Ignore blank lines if required.
-            if ($this->ignoreBlankLines === true
+            if (
+                $this->ignoreBlankLines === true
                 && $tokens[$stackPtr]['code'] === T_WHITESPACE
                 && $tokens[($stackPtr - 1)]['line'] !== $tokens[$stackPtr]['line']
             ) {
@@ -161,7 +163,8 @@ class SuperfluousWhitespaceSniff implements Sniff
                         $phpcsFile->fixer->replaceToken($stackPtr, rtrim($tokenContent) . $phpcsFile->eolChar);
                     }
                 }
-            } elseif ($tokens[($stackPtr - 1)]['content'] !== rtrim($tokens[($stackPtr - 1)]['content'])
+            } elseif (
+                $tokens[($stackPtr - 1)]['content'] !== rtrim($tokens[($stackPtr - 1)]['content'])
                 && $tokens[($stackPtr - 1)]['line'] === $tokens[$stackPtr]['line']
             ) {
                 $fix = $phpcsFile->addFixableError('Whitespace found at end of line', ($stackPtr - 1), 'EndLine');
@@ -174,7 +177,8 @@ class SuperfluousWhitespaceSniff implements Sniff
                 Check for multiple blank lines in a function.
             */
 
-            if (($phpcsFile->hasCondition($stackPtr, [T_FUNCTION, T_CLOSURE]) === true)
+            if (
+                ($phpcsFile->hasCondition($stackPtr, [T_FUNCTION, T_CLOSURE]) === true)
                 && $tokens[($stackPtr - 1)]['line'] < $tokens[$stackPtr]['line']
                 && $tokens[($stackPtr - 2)]['line'] === $tokens[($stackPtr - 1)]['line']
             ) {

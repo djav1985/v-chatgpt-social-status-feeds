@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Makes sure there are no spaces around the concatenation operator.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ConcatenationSpacingSniff implements Sniff
 {
-
     /**
      * The number of spaces before and after a string concat.
      *
@@ -95,7 +95,8 @@ class ConcatenationSpacingSniff implements Sniff
 
         $phpcsFile->recordMetric($stackPtr, 'Spacing after string concat', $after);
 
-        if (($ignoreBefore === true
+        if (
+            ($ignoreBefore === true
             || $before === $this->spacing
             || ($before === 'newline'
             && $this->ignoreNewlines === true))
@@ -127,7 +128,8 @@ class ConcatenationSpacingSniff implements Sniff
                 if ($tokens[($stackPtr - 1)]['code'] === T_WHITESPACE) {
                     $phpcsFile->fixer->beginChangeset();
                     $phpcsFile->fixer->replaceToken(($stackPtr - 1), $padding);
-                    if ($this->spacing === 0
+                    if (
+                        $this->spacing === 0
                         && ($tokens[($stackPtr - 2)]['code'] === T_LNUMBER
                         || $tokens[($stackPtr - 2)]['code'] === T_DNUMBER)
                     ) {
@@ -144,7 +146,8 @@ class ConcatenationSpacingSniff implements Sniff
                 if ($tokens[($stackPtr + 1)]['code'] === T_WHITESPACE) {
                     $phpcsFile->fixer->beginChangeset();
                     $phpcsFile->fixer->replaceToken(($stackPtr + 1), $padding);
-                    if ($this->spacing === 0
+                    if (
+                        $this->spacing === 0
                         && ($tokens[($stackPtr + 2)]['code'] === T_LNUMBER
                         || $tokens[($stackPtr + 2)]['code'] === T_DNUMBER)
                     ) {

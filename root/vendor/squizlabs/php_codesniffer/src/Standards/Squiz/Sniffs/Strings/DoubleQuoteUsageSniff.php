@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Makes sure that any use of double quotes strings are warranted.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DoubleQuoteUsageSniff implements Sniff
 {
-
     /**
      * Escape chars which are supported in double quoted strings, but not in single quoted strings.
      *
@@ -82,7 +82,8 @@ class DoubleQuoteUsageSniff implements Sniff
 
         $i = ($stackPtr + 1);
         if (isset($tokens[$i]) === true) {
-            while ($i < $phpcsFile->numTokens
+            while (
+                $i < $phpcsFile->numTokens
                 && $tokens[$i]['code'] === $tokens[$stackPtr]['code']
             ) {
                 if (isset($tokens[$i]['orig_content']) === true) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to manage a list of sniffs to ignore.
  *
@@ -20,7 +21,6 @@ namespace PHP_CodeSniffer\Util;
  */
 final class IgnoreList
 {
-
     /**
      * Ignore data.
      *

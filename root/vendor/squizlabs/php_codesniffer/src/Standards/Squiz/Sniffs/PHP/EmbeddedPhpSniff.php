@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the indentation of embedded PHP code segments.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class EmbeddedPhpSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -116,7 +115,8 @@ class EmbeddedPhpSniff implements Sniff
             }
         } else {
             // Check the indent of the first line, except if it is a scope closer.
-            if (isset($tokens[$firstContent]['scope_closer']) === false
+            if (
+                isset($tokens[$firstContent]['scope_closer']) === false
                 || $tokens[$firstContent]['scope_closer'] !== $firstContent
             ) {
                 // Check for a blank line at the top.
@@ -132,7 +132,8 @@ class EmbeddedPhpSniff implements Sniff
                     if ($fix === true) {
                         $phpcsFile->fixer->beginChangeset();
                         for ($i = ($stackPtr + 1); $i < $firstContent; $i++) {
-                            if ($tokens[$i]['line'] === $tokens[$firstContent]['line']
+                            if (
+                                $tokens[$i]['line'] === $tokens[$firstContent]['line']
                                 || $tokens[$i]['line'] === $tokens[$stackPtr]['line']
                             ) {
                                 continue;
@@ -167,7 +168,8 @@ class EmbeddedPhpSniff implements Sniff
         }
 
         $lastContentBeforeBlock = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        if ($tokens[$lastContentBeforeBlock]['line'] === $tokens[$stackPtr]['line']
+        if (
+            $tokens[$lastContentBeforeBlock]['line'] === $tokens[$stackPtr]['line']
             && (($tokens[$lastContentBeforeBlock]['code'] === T_INLINE_HTML
             && trim($tokens[$lastContentBeforeBlock]['content']) !== '')
             || ($tokens[($lastContentBeforeBlock - 1)]['code'] !== T_INLINE_HTML
@@ -182,7 +184,8 @@ class EmbeddedPhpSniff implements Sniff
                 $phpcsFile->fixer->addContentBefore($stackPtr, $phpcsFile->eolChar . str_repeat(' ', $padding));
 
                 // Make sure we don't leave trailing whitespace behind.
-                if ($tokens[($stackPtr - 1)]['code'] === T_INLINE_HTML
+                if (
+                    $tokens[($stackPtr - 1)]['code'] === T_INLINE_HTML
                     && trim($tokens[($stackPtr - 1)]['content']) === ''
                 ) {
                     $phpcsFile->fixer->replaceToken(($stackPtr - 1), '');
@@ -232,7 +235,8 @@ class EmbeddedPhpSniff implements Sniff
                 // If the close tag is on the same line as the first content, re-use the indent
                 // calculated for the first content line to prevent the indent being based on an
                 // "old" indent, not the _new_ (fixed) indent.
-                if ($tokens[$firstContent]['line'] === $tokens[$lastContent]['line']
+                if (
+                    $tokens[$firstContent]['line'] === $tokens[$lastContent]['line']
                     && isset($indent) === true
                 ) {
                     $closerIndent = $indent;
@@ -250,7 +254,8 @@ class EmbeddedPhpSniff implements Sniff
                 $phpcsFile->fixer->addNewlineBefore($closingTag);
                 $phpcsFile->fixer->endChangeset();
             }
-        } elseif ($firstContentAfterBlock !== false
+        } elseif (
+            $firstContentAfterBlock !== false
             && $tokens[$firstContentAfterBlock]['line'] === $tokens[$closingTag]['line']
         ) {
             $error = 'Closing PHP tag must be on a line by itself';
@@ -272,7 +277,8 @@ class EmbeddedPhpSniff implements Sniff
                     }
                 }
 
-                if ($tokens[$firstContentAfterBlock]['code'] === T_OPEN_TAG
+                if (
+                    $tokens[$firstContentAfterBlock]['code'] === T_OPEN_TAG
                     || $tokens[$firstContentAfterBlock]['code'] === T_OPEN_TAG_WITH_ECHO
                 ) {
                     // Next token is a PHP open tag which will also have thrown an error.
@@ -292,7 +298,8 @@ class EmbeddedPhpSniff implements Sniff
 
         // Check for a blank line at the bottom.
         $lastNonEmpty = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closingTag - 1), ($stackPtr + 1), true);
-        if ((isset($tokens[$lastNonEmpty]['scope_closer']) === false
+        if (
+            (isset($tokens[$lastNonEmpty]['scope_closer']) === false
             || $tokens[$lastNonEmpty]['scope_closer'] !== $lastNonEmpty)
             && $tokens[$lastContent]['line'] < ($tokens[$closingTag]['line'] - 1)
         ) {
@@ -307,7 +314,8 @@ class EmbeddedPhpSniff implements Sniff
             if ($fix === true) {
                 $phpcsFile->fixer->beginChangeset();
                 for ($i = ($lastContent + 1); $i < $closingTag; $i++) {
-                    if ($tokens[$i]['line'] === $tokens[$lastContent]['line']
+                    if (
+                        $tokens[$i]['line'] === $tokens[$lastContent]['line']
                         || $tokens[$i]['line'] === $tokens[$closingTag]['line']
                     ) {
                         continue;
@@ -367,7 +375,8 @@ class EmbeddedPhpSniff implements Sniff
 
         $prev = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closeTag - 1), $stackPtr, true);
         if ($prev !== $stackPtr) {
-            if ((isset($tokens[$prev]['scope_opener']) === false
+            if (
+                (isset($tokens[$prev]['scope_opener']) === false
                 || $tokens[$prev]['scope_opener'] !== $prev)
                 && (isset($tokens[$prev]['scope_closer']) === false
                 || $tokens[$prev]['scope_closer'] !== $prev)
@@ -402,7 +411,8 @@ class EmbeddedPhpSniff implements Sniff
         $trailingSpace = 0;
         if ($tokens[($closeTag - 1)]['code'] === T_WHITESPACE) {
             $trailingSpace = $tokens[($closeTag - 1)]['length'];
-        } elseif (($tokens[($closeTag - 1)]['code'] === T_COMMENT
+        } elseif (
+            ($tokens[($closeTag - 1)]['code'] === T_COMMENT
             || isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[($closeTag - 1)]['code']]) === true)
             && substr($tokens[($closeTag - 1)]['content'], -1) === ' '
         ) {
@@ -416,7 +426,8 @@ class EmbeddedPhpSniff implements Sniff
             if ($fix === true) {
                 if ($trailingSpace === 0) {
                     $phpcsFile->fixer->addContentBefore($closeTag, ' ');
-                } elseif ($tokens[($closeTag - 1)]['code'] === T_COMMENT
+                } elseif (
+                    $tokens[($closeTag - 1)]['code'] === T_COMMENT
                     || isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[($closeTag - 1)]['code']]) === true
                 ) {
                     $phpcsFile->fixer->replaceToken(($closeTag - 1), rtrim($tokens[($closeTag - 1)]['content']) . ' ');
@@ -451,7 +462,8 @@ class EmbeddedPhpSniff implements Sniff
             }
 
             // Prevent leaving indentation whitespace behind when the empty tag set is the only thing on the affected lines.
-            if (isset($tokens[($closeTag + 1)]) === true
+            if (
+                isset($tokens[($closeTag + 1)]) === true
                 && $tokens[($closeTag + 1)]['line'] !== $tokens[$closeTag]['line']
                 && $tokens[($stackPtr - 1)]['code'] === T_INLINE_HTML
                 && $tokens[($stackPtr - 1)]['line'] === $tokens[$stackPtr]['line']
@@ -483,7 +495,8 @@ class EmbeddedPhpSniff implements Sniff
 
         // Check if this is a subsequent line in a star-slash comment containing leading indent.
         // In that case, we'll need the first line of the comment to correctly determine the indent.
-        while ($tokens[$firstOnLine]['code'] === T_COMMENT
+        while (
+            $tokens[$firstOnLine]['code'] === T_COMMENT
             && $tokens[$firstOnLine]['content'] !== ltrim($tokens[$firstOnLine]['content'])
         ) {
             for (--$firstOnLine; $tokens[$firstOnLine]['column'] !== 1; $firstOnLine--);
@@ -492,7 +505,8 @@ class EmbeddedPhpSniff implements Sniff
         $indent = 0;
         if ($tokens[$firstOnLine]['code'] === T_WHITESPACE) {
             $indent = ($tokens[($firstOnLine + 1)]['column'] - 1);
-        } elseif ($tokens[$firstOnLine]['code'] === T_INLINE_HTML
+        } elseif (
+            $tokens[$firstOnLine]['code'] === T_INLINE_HTML
             || $tokens[$firstOnLine]['code'] === T_END_HEREDOC
             || $tokens[$firstOnLine]['code'] === T_END_NOWDOC
         ) {

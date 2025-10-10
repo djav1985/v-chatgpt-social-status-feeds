@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A Sniff to enforce the use of IDENTICAL type operators rather than EQUAL operators.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ComparisonOperatorUsageSniff implements Sniff
 {
-
     /**
      * A list of valid comparison operators.
      *
@@ -103,7 +103,8 @@ class ComparisonOperatorUsageSniff implements Sniff
                         // Stop if this is the start of a pair of
                         // parentheses that surrounds the inline
                         // IF statement.
-                        if (isset($tokens[$i]['parenthesis_closer']) === true
+                        if (
+                            isset($tokens[$i]['parenthesis_closer']) === true
                             && $tokens[$i]['parenthesis_closer'] >= $stackPtr
                         ) {
                             break;
@@ -161,7 +162,8 @@ class ComparisonOperatorUsageSniff implements Sniff
                 $foundOps++;
             }
 
-            if ($type === T_OPEN_PARENTHESIS
+            if (
+                $type === T_OPEN_PARENTHESIS
                 && isset($tokens[$i]['parenthesis_closer']) === true
                 && isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$lastNonEmpty]['code']]) === true
             ) {
@@ -174,7 +176,8 @@ class ComparisonOperatorUsageSniff implements Sniff
                 $foundBooleans++;
             }
 
-            if ($tokens[$i]['code'] === T_BOOLEAN_AND
+            if (
+                $tokens[$i]['code'] === T_BOOLEAN_AND
                 || $tokens[$i]['code'] === T_BOOLEAN_OR
             ) {
                 $requiredOps++;

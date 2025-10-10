@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that class members have scope modifiers.
  *
@@ -18,8 +19,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class MemberVarScopeSniff extends AbstractVariableSniff
 {
-
-
     /**
      * Only listen to variables within OO scopes.
      */

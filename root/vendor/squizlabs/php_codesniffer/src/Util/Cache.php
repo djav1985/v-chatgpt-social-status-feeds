@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Function for caching between runs.
  *
@@ -21,7 +22,6 @@ use RecursiveIteratorIterator;
 
 class Cache
 {
-
     /**
      * The filesystem location of the cache file.
      *
@@ -120,7 +120,8 @@ class Cache
                     return false;
                 }
 
-                if ($iterator->hasChildren() === true
+                if (
+                    $iterator->hasChildren() === true
                     && ($filename === 'Standards'
                     || $filename === 'Exceptions'
                     || $filename === 'Reports'

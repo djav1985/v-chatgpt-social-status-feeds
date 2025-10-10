@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure single and multi-line function declarations are defined correctly.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class MultiLineFunctionDeclarationSniff extends PEARFunctionDeclarationSniff
 {
-
-
     /**
      * Determine if this is a multi-line function declaration.
      *

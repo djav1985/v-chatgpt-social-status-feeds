@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Warn about commented out code.
  *
@@ -19,7 +20,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class CommentedOutCodeSniff implements Sniff
 {
-
     /**
      * If a comment is more than $maxPercentage% code, a warning will be shown.
      *
@@ -80,7 +80,8 @@ class CommentedOutCodeSniff implements Sniff
                 continue;
             }
 
-            if ($commentStyle === 'line'
+            if (
+                $commentStyle === 'line'
                 && ($lastLineSeen + 1) <= $tokens[$i]['line']
                 && strpos($tokens[$i]['content'], '/*') === 0
             ) {
@@ -88,7 +89,8 @@ class CommentedOutCodeSniff implements Sniff
                 break;
             }
 
-            if ($commentStyle === 'line'
+            if (
+                $commentStyle === 'line'
                 && ($lastLineSeen + 1) < $tokens[$i]['line']
             ) {
                 // Blank line breaks a '//' style comment block.
@@ -204,7 +206,8 @@ class CommentedOutCodeSniff implements Sniff
         }
 
         // Last token is always the closing tag, unless something went wrong.
-        if (isset($stringTokens[($numTokens - 1)]) === false
+        if (
+            isset($stringTokens[($numTokens - 1)]) === false
             || $stringTokens[($numTokens - 1)]['code'] !== T_CLOSE_TAG
         ) {
             return ($lastCommentBlockToken + 1);
@@ -239,7 +242,8 @@ class CommentedOutCodeSniff implements Sniff
 
         for ($i = 0; $i < $numTokens; $i++) {
             // Do not count comments.
-            if (isset($emptyTokens[$stringTokens[$i]['code']]) === false
+            if (
+                isset($emptyTokens[$stringTokens[$i]['code']]) === false
                 // Commented out HTML/XML and other docs contain a lot of these
                 // characters, so it is best to not use them directly.
                 && isset(Tokens::COMPARISON_TOKENS[$stringTokens[$i]['code']]) === false

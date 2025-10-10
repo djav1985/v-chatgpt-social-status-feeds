@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures objects are assigned to a variable when instantiated.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ObjectInstantiationSniff implements Sniff
 {
-
-
     /**
      * Registers the token types that this sniff wishes to listen to.
      *

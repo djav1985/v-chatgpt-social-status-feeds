@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base class to use when testing utility methods.
  *
@@ -20,7 +21,6 @@ use PHPUnit\Framework\TestCase;
 
 abstract class AbstractMethodTestCase extends TestCase
 {
-
     /**
      * The tab width setting to use when tokenizing the file.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * An abstract class that all sniff unit tests must extend.
  *
@@ -26,7 +27,6 @@ use ReflectionClass;
 
 abstract class AbstractSniffTestCase extends TestCase
 {
-
     /**
      * Ruleset template with placeholders.
      *

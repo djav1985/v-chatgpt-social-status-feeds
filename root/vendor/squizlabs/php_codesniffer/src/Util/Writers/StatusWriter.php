@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Status Writer to send output to STDERR.
  *
@@ -19,7 +20,6 @@ namespace PHP_CodeSniffer\Util\Writers;
 
 final class StatusWriter
 {
-
     /**
      * The stream to write to.
      *

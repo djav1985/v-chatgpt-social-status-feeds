@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures all calls to inbuilt PHP functions are lowercase.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class LowercasePHPFunctionsSniff implements Sniff
 {
-
     /**
      * Hash map of all php built in function names
      *
@@ -99,7 +99,8 @@ class LowercasePHPFunctionsSniff implements Sniff
 
         if ($tokens[$next]['code'] !== T_OPEN_PARENTHESIS) {
             // Is this a use statement importing a PHP native function ?
-            if ($tokens[$stackPtr]['code'] === T_STRING
+            if (
+                $tokens[$stackPtr]['code'] === T_STRING
                 && $tokens[$prev]['code'] === T_STRING
                 && $tokens[$prev]['content'] === 'function'
                 && $prevPrev !== false
@@ -131,7 +132,8 @@ class LowercasePHPFunctionsSniff implements Sniff
             return;
         }
 
-        if ($tokens[$prev]['code'] === T_OBJECT_OPERATOR
+        if (
+            $tokens[$prev]['code'] === T_OBJECT_OPERATOR
             || $tokens[$prev]['code'] === T_NULLSAFE_OBJECT_OPERATOR
         ) {
             // Not an inbuilt function.

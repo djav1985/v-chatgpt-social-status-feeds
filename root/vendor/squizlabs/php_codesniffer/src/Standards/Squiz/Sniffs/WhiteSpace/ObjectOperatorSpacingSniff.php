@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure there is no whitespace before/after an object operator.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ObjectOperatorSpacingSniff implements Sniff
 {
-
     /**
      * Allow newlines instead of spaces.
      *
@@ -64,7 +64,8 @@ class ObjectOperatorSpacingSniff implements Sniff
         $phpcsFile->recordMetric($stackPtr, 'Spacing before object operator', $before);
         $this->checkSpacingBeforeOperator($phpcsFile, $stackPtr, $before);
 
-        if (isset($tokens[($stackPtr + 1)]) === false
+        if (
+            isset($tokens[($stackPtr + 1)]) === false
             || isset($tokens[($stackPtr + 2)]) === false
         ) {
             return;
@@ -98,7 +99,8 @@ class ObjectOperatorSpacingSniff implements Sniff
      */
     protected function checkSpacingBeforeOperator(File $phpcsFile, int $stackPtr, $before)
     {
-        if ($before !== 0
+        if (
+            $before !== 0
             && ($before !== 'newline' || $this->ignoreNewlines === false)
         ) {
             $error = 'Space found before object operator';
@@ -136,7 +138,8 @@ class ObjectOperatorSpacingSniff implements Sniff
      */
     protected function checkSpacingAfterOperator(File $phpcsFile, int $stackPtr, $after)
     {
-        if ($after !== 0
+        if (
+            $after !== 0
             && ($after !== 'newline' || $this->ignoreNewlines === false)
         ) {
             $error = 'Space found after object operator';

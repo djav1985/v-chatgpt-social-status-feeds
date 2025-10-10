@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests that classes and interfaces are not declared in .php files.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class FileExtensionSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

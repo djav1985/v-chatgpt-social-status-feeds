@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parses and verifies the doc comments for functions.
  *
@@ -17,7 +18,6 @@ use PHP_CodeSniffer\Util\Common;
 
 class FunctionCommentSniff extends PEARFunctionCommentSniff
 {
-
     /**
      * Whether to skip inheritdoc comments.
      *
@@ -119,14 +119,16 @@ class FunctionCommentSniff extends PEARFunctionCommentSniff
                     if (isset($tokens[$stackPtr]['scope_closer']) === true) {
                         $endToken = $tokens[$stackPtr]['scope_closer'];
                         for ($returnToken = $stackPtr; $returnToken < $endToken; $returnToken++) {
-                            if ($tokens[$returnToken]['code'] === T_CLOSURE
+                            if (
+                                $tokens[$returnToken]['code'] === T_CLOSURE
                                 || $tokens[$returnToken]['code'] === T_ANON_CLASS
                             ) {
                                 $returnToken = $tokens[$returnToken]['scope_closer'];
                                 continue;
                             }
 
-                            if ($tokens[$returnToken]['code'] === T_RETURN
+                            if (
+                                $tokens[$returnToken]['code'] === T_RETURN
                                 || $tokens[$returnToken]['code'] === T_YIELD
                                 || $tokens[$returnToken]['code'] === T_YIELD_FROM
                             ) {
@@ -144,7 +146,8 @@ class FunctionCommentSniff extends PEARFunctionCommentSniff
                             }
                         }
                     }
-                } elseif ($returnType !== 'mixed'
+                } elseif (
+                    $returnType !== 'mixed'
                     && $returnType !== 'never'
                     && in_array('void', $typeNames, true) === false
                 ) {
@@ -153,14 +156,16 @@ class FunctionCommentSniff extends PEARFunctionCommentSniff
                     if (isset($tokens[$stackPtr]['scope_closer']) === true) {
                         $endToken = $tokens[$stackPtr]['scope_closer'];
                         for ($returnToken = $stackPtr; $returnToken < $endToken; $returnToken++) {
-                            if ($tokens[$returnToken]['code'] === T_CLOSURE
+                            if (
+                                $tokens[$returnToken]['code'] === T_CLOSURE
                                 || $tokens[$returnToken]['code'] === T_ANON_CLASS
                             ) {
                                 $returnToken = $tokens[$returnToken]['scope_closer'];
                                 continue;
                             }
 
-                            if ($tokens[$returnToken]['code'] === T_RETURN
+                            if (
+                                $tokens[$returnToken]['code'] === T_RETURN
                                 || $tokens[$returnToken]['code'] === T_YIELD
                                 || $tokens[$returnToken]['code'] === T_YIELD_FROM
                             ) {
@@ -476,7 +481,8 @@ class FunctionCommentSniff extends PEARFunctionCommentSniff
                         ];
 
                         $errorCode = 'TypeHintMissing';
-                        if ($suggestedTypeHint === 'string'
+                        if (
+                            $suggestedTypeHint === 'string'
                             || $suggestedTypeHint === 'int'
                             || $suggestedTypeHint === 'float'
                             || $suggestedTypeHint === 'bool'
@@ -531,7 +537,8 @@ class FunctionCommentSniff extends PEARFunctionCommentSniff
 
                     // Fix up the indent of additional comment lines.
                     foreach ($param['commentLines'] as $lineNum => $line) {
-                        if ($lineNum === 0
+                        if (
+                            $lineNum === 0
                             || $param['commentLines'][$lineNum]['indent'] === 0
                         ) {
                             continue;
@@ -676,7 +683,8 @@ class FunctionCommentSniff extends PEARFunctionCommentSniff
                 // Fix up the indent of additional comment lines.
                 $diff = ($param['type_space'] - $spaces);
                 foreach ($param['commentLines'] as $lineNum => $line) {
-                    if ($lineNum === 0
+                    if (
+                        $lineNum === 0
                         || $param['commentLines'][$lineNum]['indent'] === 0
                     ) {
                         continue;
@@ -733,7 +741,8 @@ class FunctionCommentSniff extends PEARFunctionCommentSniff
 
                 // Fix up the indent of additional comment lines.
                 foreach ($param['commentLines'] as $lineNum => $line) {
-                    if ($lineNum === 0
+                    if (
+                        $lineNum === 0
                         || $param['commentLines'][$lineNum]['indent'] === 0
                     ) {
                         continue;

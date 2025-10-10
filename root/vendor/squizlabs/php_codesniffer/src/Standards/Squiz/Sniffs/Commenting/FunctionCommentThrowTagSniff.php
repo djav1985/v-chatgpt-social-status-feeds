@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that a @throws tag exists for each exception type a function throws.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionCommentThrowTagSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -55,7 +54,8 @@ class FunctionCommentThrowTagSniff implements Sniff
                 continue;
             }
 
-            if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
+            if (
+                $tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
                 && isset($tokens[$commentEnd]['attribute_opener']) === true
             ) {
                 $commentEnd = $tokens[$commentEnd]['attribute_opener'];
@@ -105,7 +105,8 @@ class FunctionCommentThrowTagSniff implements Sniff
             */
 
             $nextToken = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($currPos + 1), null, true);
-            if ($tokens[$nextToken]['code'] === T_NEW
+            if (
+                $tokens[$nextToken]['code'] === T_NEW
                 || isset(Tokens::NAME_TOKENS[$tokens[$nextToken]['code']]) === true
             ) {
                 if ($tokens[$nextToken]['code'] === T_NEW) {
@@ -119,7 +120,8 @@ class FunctionCommentThrowTagSniff implements Sniff
                     $currException = $nextToken;
                 }
 
-                if ($currException !== false
+                if (
+                    $currException !== false
                     && isset(Tokens::NAME_TOKENS[$tokens[$currException]['code']]) === true
                 ) {
                     if ($tokens[$currException]['code'] === T_NAME_RELATIVE) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bans the use of heredocs and nowdocs.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class HeredocSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

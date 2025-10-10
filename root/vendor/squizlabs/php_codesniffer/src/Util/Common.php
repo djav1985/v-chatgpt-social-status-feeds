@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Basic util functions.
  *
@@ -15,7 +16,6 @@ use Phar;
 
 class Common
 {
-
     /**
      * An array of variable types for param/var we will check.
      *
@@ -540,7 +540,8 @@ class Common
 
         $parts      = explode('\\', $sniffClass);
         $partsCount = count($parts);
-        if ($partsCount < 4
+        if (
+            $partsCount < 4
             || ($parts[($partsCount - 3)] !== 'Sniffs'
             && $parts[($partsCount - 3)] !== 'Tests')
             || $parts[($partsCount - 2)] === 'Sniffs'

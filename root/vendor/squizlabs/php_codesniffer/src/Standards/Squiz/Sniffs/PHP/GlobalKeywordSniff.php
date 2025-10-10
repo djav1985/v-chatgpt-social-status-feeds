@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Stops the usage of the "global" keyword.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class GlobalKeywordSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

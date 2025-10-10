@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests for functions outside of classes.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class GlobalFunctionSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

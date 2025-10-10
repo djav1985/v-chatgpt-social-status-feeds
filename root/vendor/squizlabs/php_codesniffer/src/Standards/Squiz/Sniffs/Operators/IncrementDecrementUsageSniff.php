@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures that the ++ operators are used when possible.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class IncrementDecrementUsageSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -71,7 +70,8 @@ class IncrementDecrementUsageSniff implements Sniff
 
         // Work out where the variable is so we know where to
         // start looking for other operators.
-        if ($tokens[($stackPtr - 1)]['code'] === T_VARIABLE
+        if (
+            $tokens[($stackPtr - 1)]['code'] === T_VARIABLE
             || ($tokens[($stackPtr - 1)]['code'] === T_STRING
             && ($tokens[($stackPtr - 2)]['code'] === T_OBJECT_OPERATOR
             || $tokens[($stackPtr - 2)]['code'] === T_NULLSAFE_OBJECT_OPERATOR))

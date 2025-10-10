@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Exit codes.
  *
@@ -22,7 +23,6 @@ use PHP_CodeSniffer\Reporter;
 
 final class ExitCode
 {
-
     /**
      * Exit code to indicate no issues were found in the code under scan; or a non-scan request succeeded.
      *
@@ -120,7 +120,8 @@ final class ExitCode
         // Next figure out what the exit code should be.
         $exitCode = self::OKAY;
 
-        if (PHP_CODESNIFFER_CBF === true
+        if (
+            PHP_CODESNIFFER_CBF === true
             && ($reporter->totalFixableErrors + $reporter->totalFixableWarnings) > 0
         ) {
             // Something failed to fix.

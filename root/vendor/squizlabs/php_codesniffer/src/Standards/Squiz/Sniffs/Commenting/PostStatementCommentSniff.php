@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks to ensure that there are no comments after statements.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class PostStatementCommentSniff implements Sniff
 {
-
     /**
      * Exceptions to the rule.
      *
@@ -66,7 +66,8 @@ class PostStatementCommentSniff implements Sniff
         $commentLine = $tokens[$stackPtr]['line'];
         $lastContent = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
 
-        if ($lastContent === false
+        if (
+            $lastContent === false
             || $tokens[$lastContent]['line'] !== $commentLine
             || $tokens[$stackPtr]['column'] === 1
         ) {
@@ -78,7 +79,8 @@ class PostStatementCommentSniff implements Sniff
         }
 
         // Special case for closures.
-        if ($tokens[$lastContent]['code'] === T_COMMA
+        if (
+            $tokens[$lastContent]['code'] === T_COMMA
             || $tokens[$lastContent]['code'] === T_SEMICOLON
         ) {
             $lastContent = $phpcsFile->findPrevious(T_WHITESPACE, ($lastContent - 1), null, true);
@@ -91,7 +93,8 @@ class PostStatementCommentSniff implements Sniff
         if (isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
             $nestedParens = $tokens[$stackPtr]['nested_parenthesis'];
             foreach ($nestedParens as $open => $close) {
-                if (isset($tokens[$open]['parenthesis_owner']) === true
+                if (
+                    isset($tokens[$open]['parenthesis_owner']) === true
                     && isset(self::CONTROL_STRUCTURE_EXCEPTIONS[$tokens[$tokens[$open]['parenthesis_owner']]['code']]) === true
                 ) {
                     return;

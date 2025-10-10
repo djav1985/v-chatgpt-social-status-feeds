@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Timing functions for the run.
  *
@@ -22,7 +23,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 final class Timing
 {
-
     /**
      * Number of milliseconds in a minute.
      *

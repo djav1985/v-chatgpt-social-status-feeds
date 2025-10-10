@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that arguments in function declarations are spaced correctly.
  *
@@ -17,7 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionDeclarationArgumentSpacingSniff implements Sniff
 {
-
     /**
      * How many spaces should surround the equals signs.
      *
@@ -68,7 +68,8 @@ class FunctionDeclarationArgumentSpacingSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]['parenthesis_opener']) === false
+        if (
+            isset($tokens[$stackPtr]['parenthesis_opener']) === false
             || isset($tokens[$stackPtr]['parenthesis_closer']) === false
         ) {
             return;
@@ -302,7 +303,8 @@ class FunctionDeclarationArgumentSpacingSniff implements Sniff
                 $afterVisibilityToken = $phpcsFile->findNext(T_WHITESPACE, ($visibilityToken + 1), $param['token'], true);
 
                 $spacesAfter = 0;
-                if ($afterVisibilityToken !== false
+                if (
+                    $afterVisibilityToken !== false
                     && $tokens[$visibilityToken]['line'] !== $tokens[$afterVisibilityToken]['line']
                 ) {
                     $spacesAfter = 'newline';
@@ -336,7 +338,8 @@ class FunctionDeclarationArgumentSpacingSniff implements Sniff
                 $afterVisibilityToken = $phpcsFile->findNext(T_WHITESPACE, ($visibilityToken + 1), $param['token'], true);
 
                 $spacesAfter = 0;
-                if ($afterVisibilityToken !== false
+                if (
+                    $afterVisibilityToken !== false
                     && $tokens[$visibilityToken]['line'] !== $tokens[$afterVisibilityToken]['line']
                 ) {
                     $spacesAfter = 'newline';
@@ -370,7 +373,8 @@ class FunctionDeclarationArgumentSpacingSniff implements Sniff
                 $afterReadonlyToken = $phpcsFile->findNext(T_WHITESPACE, ($readonlyToken + 1), $param['token'], true);
 
                 $spacesAfter = 0;
-                if ($afterReadonlyToken !== false
+                if (
+                    $afterReadonlyToken !== false
                     && $tokens[$readonlyToken]['line'] !== $tokens[$afterReadonlyToken]['line']
                 ) {
                     $spacesAfter = 'newline';
@@ -431,14 +435,16 @@ class FunctionDeclarationArgumentSpacingSniff implements Sniff
                                 $phpcsFile->fixer->replaceToken($i, '');
                             }
                         } else {
-                            for ($i = ($commaToken - 1);
+                            for (
+                                $i = ($commaToken - 1);
                                 $tokens[$i]['code'] === T_WHITESPACE && $tokens[$endOfPreviousParam]['line'] !== $tokens[$i]['line'];
                                 $i--
                             ) {
                                 $phpcsFile->fixer->replaceToken($i, '');
                             }
 
-                            for ($i = ($commaToken + 1);
+                            for (
+                                $i = ($commaToken + 1);
                                 $tokens[$i]['code'] === T_WHITESPACE && $tokens[$commaToken]['line'] === $tokens[$i]['line'];
                                 $i++
                             ) {

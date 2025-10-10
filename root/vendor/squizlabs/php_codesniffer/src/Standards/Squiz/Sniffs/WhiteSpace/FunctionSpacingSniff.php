@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the separation between functions and methods.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionSpacingSniff implements Sniff
 {
-
     /**
      * The number of blank lines between functions.
      *
@@ -70,7 +70,8 @@ class FunctionSpacingSniff implements Sniff
     {
         $tokens           = $phpcsFile->getTokens();
         $previousNonEmpty = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        if ($previousNonEmpty !== false
+        if (
+            $previousNonEmpty !== false
             && $tokens[$previousNonEmpty]['code'] === T_OPEN_TAG
             && $tokens[$previousNonEmpty]['line'] !== 1
         ) {
@@ -82,7 +83,8 @@ class FunctionSpacingSniff implements Sniff
         // that value for all spacing rules.
         if ($this->rulesetProperties === null) {
             $this->rulesetProperties = [];
-            if (isset($phpcsFile->ruleset->ruleset['Squiz.WhiteSpace.FunctionSpacing']) === true
+            if (
+                isset($phpcsFile->ruleset->ruleset['Squiz.WhiteSpace.FunctionSpacing']) === true
                 && isset($phpcsFile->ruleset->ruleset['Squiz.WhiteSpace.FunctionSpacing']['properties']) === true
             ) {
                 $this->rulesetProperties = $phpcsFile->ruleset->ruleset['Squiz.WhiteSpace.FunctionSpacing']['properties'];
@@ -156,7 +158,8 @@ class FunctionSpacingSniff implements Sniff
         }
 
         $next = $phpcsFile->findNext($ignore, ($closer + 1), null, true);
-        if (isset(Tokens::EMPTY_TOKENS[$tokens[$next]['code']]) === true
+        if (
+            isset(Tokens::EMPTY_TOKENS[$tokens[$next]['code']]) === true
             && $tokens[$next]['line'] === $tokens[$closer]['line']
         ) {
             // Skip past "end" comments.
@@ -269,7 +272,8 @@ class FunctionSpacingSniff implements Sniff
             $prevLineToken = 0;
         } else {
             $firstBefore = $phpcsFile->findPrevious(T_WHITESPACE, ($startOfDeclarationLine - 1), null, true);
-            if ($tokens[$firstBefore]['code'] === T_COMMENT
+            if (
+                $tokens[$firstBefore]['code'] === T_COMMENT
                 || isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$firstBefore]['code']]) === true
             ) {
                 // Ignore comments as they can have different spacing rules, and this
@@ -294,7 +298,8 @@ class FunctionSpacingSniff implements Sniff
 
             for ($i = $prevContent; $i > $stopAt; $i--) {
                 if ($tokens[$i]['code'] === T_CLOSE_CURLY_BRACKET) {
-                    if (isset($tokens[$i]['scope_condition']) === true
+                    if (
+                        isset($tokens[$i]['scope_condition']) === true
                         && $tokens[$tokens[$i]['scope_condition']]['code'] === T_FUNCTION
                     ) {
                         // Found a previous function.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Makes sure that any strings that are "echoed" are not enclosed in brackets.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class EchoedStringsSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that there is no empty line after the opening brace of a function.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class FunctionOpeningBraceSpaceSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parses and verifies the variable doc comment.
  *
@@ -18,8 +19,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class VariableCommentSniff extends AbstractVariableSniff
 {
-
-
     /**
      * Only listen to variables within OO scopes.
      */
@@ -68,7 +67,8 @@ class VariableCommentSniff extends AbstractVariableSniff
                 continue;
             }
 
-            if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
+            if (
+                $tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
                 && isset($tokens[$commentEnd]['attribute_opener']) === true
             ) {
                 $commentEnd = $tokens[$commentEnd]['attribute_opener'];
@@ -78,7 +78,8 @@ class VariableCommentSniff extends AbstractVariableSniff
             break;
         }
 
-        if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
+        if (
+            $tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {
             $phpcsFile->addError('Missing member variable doc comment', $stackPtr, 'Missing');

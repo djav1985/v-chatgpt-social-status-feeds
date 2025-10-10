@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests that all arithmetic operations are bracketed.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class OperatorBracketSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -100,12 +99,14 @@ class OperatorBracketSniff implements Sniff
             }
         }
 
-        if ($tokens[$stackPtr]['code'] === T_BITWISE_OR
+        if (
+            $tokens[$stackPtr]['code'] === T_BITWISE_OR
             && isset($tokens[$stackPtr]['nested_parenthesis']) === true
         ) {
             $brackets    = $tokens[$stackPtr]['nested_parenthesis'];
             $lastBracket = array_pop($brackets);
-            if (isset($tokens[$lastBracket]['parenthesis_owner']) === true
+            if (
+                isset($tokens[$lastBracket]['parenthesis_owner']) === true
                 && $tokens[$tokens[$lastBracket]['parenthesis_owner']]['code'] === T_CATCH
             ) {
                 // This is a pipe character inside a catch statement, so it is acting
@@ -147,7 +148,8 @@ class OperatorBracketSniff implements Sniff
                     break;
                 }
 
-                if (isset(Tokens::NAME_TOKENS[$prevCode]) === true
+                if (
+                    isset(Tokens::NAME_TOKENS[$prevCode]) === true
                     || $prevCode === T_SWITCH
                     || $prevCode === T_MATCH
                 ) {
@@ -276,7 +278,8 @@ class OperatorBracketSniff implements Sniff
 
         // Find the first token in the expression.
         for ($before = ($stackPtr - 1); $before > 0; $before--) {
-            if (isset(Tokens::EMPTY_TOKENS[$tokens[$before]['code']]) === true
+            if (
+                isset(Tokens::EMPTY_TOKENS[$tokens[$before]['code']]) === true
                 || isset(Tokens::OPERATORS[$tokens[$before]['code']]) === true
                 || isset(Tokens::CAST_TOKENS[$tokens[$before]['code']]) === true
                 || isset(Tokens::NAME_TOKENS[$tokens[$before]['code']]) === true
@@ -311,7 +314,8 @@ class OperatorBracketSniff implements Sniff
 
         // Find the last token in the expression.
         for ($after = ($stackPtr + 1); $after < $phpcsFile->numTokens; $after++) {
-            if (isset(Tokens::EMPTY_TOKENS[$tokens[$after]['code']]) === true
+            if (
+                isset(Tokens::EMPTY_TOKENS[$tokens[$after]['code']]) === true
                 || isset(Tokens::OPERATORS[$tokens[$after]['code']]) === true
                 || isset(Tokens::CAST_TOKENS[$tokens[$after]['code']]) === true
                 || isset(Tokens::NAME_TOKENS[$tokens[$after]['code']]) === true
@@ -330,7 +334,8 @@ class OperatorBracketSniff implements Sniff
                 continue;
             }
 
-            if (($tokens[$after]['code'] === T_OPEN_SQUARE_BRACKET
+            if (
+                ($tokens[$after]['code'] === T_OPEN_SQUARE_BRACKET
                 || $tokens[$after]['code'] === T_OPEN_SHORT_ARRAY)
             ) {
                 if (isset($tokens[$after]['bracket_closer']) === false) {

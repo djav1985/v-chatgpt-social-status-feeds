@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Stores weightings and groupings of tokens.
  *
@@ -160,7 +161,6 @@ define('T_PHPCS_IGNORE_FILE', 'PHPCS_T_PHPCS_IGNORE_FILE');
 
 final class Tokens
 {
-
     /**
      * Tokens that represent assignments.
      *

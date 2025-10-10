@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures that the value of a comparison is not assigned to a variable.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DisallowComparisonAssignmentSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -60,7 +59,8 @@ class DisallowComparisonAssignmentSniff implements Sniff
             true
         );
 
-        if ($nextNonEmpty !== false
+        if (
+            $nextNonEmpty !== false
             && ($tokens[$nextNonEmpty]['code'] === T_ARRAY
             || $tokens[$nextNonEmpty]['code'] === T_MATCH)
         ) {
@@ -75,7 +75,8 @@ class DisallowComparisonAssignmentSniff implements Sniff
         $ignore[] = T_WHITESPACE;
 
         $next = $phpcsFile->findNext($ignore, ($stackPtr + 1), null, true);
-        if ($tokens[$next]['code'] === T_CLOSURE
+        if (
+            $tokens[$next]['code'] === T_CLOSURE
             || ($tokens[$next]['code'] === T_OPEN_PARENTHESIS
             && isset(Tokens::NAME_TOKENS[$tokens[($next - 1)]['code']]) === true)
         ) {
@@ -86,7 +87,8 @@ class DisallowComparisonAssignmentSniff implements Sniff
 
         $endStatement = $phpcsFile->findEndOfStatement($stackPtr);
         for ($i = ($stackPtr + 1); $i < $endStatement; $i++) {
-            if ((isset(Tokens::COMPARISON_TOKENS[$tokens[$i]['code']]) === true
+            if (
+                (isset(Tokens::COMPARISON_TOKENS[$tokens[$i]['code']]) === true
                 && $tokens[$i]['code'] !== T_COALESCE)
                 || $tokens[$i]['code'] === T_INLINE_THEN
             ) {
@@ -95,7 +97,8 @@ class DisallowComparisonAssignmentSniff implements Sniff
                 break;
             }
 
-            if (isset(Tokens::BOOLEAN_OPERATORS[$tokens[$i]['code']]) === true
+            if (
+                isset(Tokens::BOOLEAN_OPERATORS[$tokens[$i]['code']]) === true
                 || $tokens[$i]['code'] === T_BOOLEAN_NOT
             ) {
                 $error = 'The value of a boolean operation must not be assigned to a variable';

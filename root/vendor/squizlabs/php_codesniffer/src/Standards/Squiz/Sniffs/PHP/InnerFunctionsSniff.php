@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures that functions within functions are never used.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class InnerFunctionsSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
