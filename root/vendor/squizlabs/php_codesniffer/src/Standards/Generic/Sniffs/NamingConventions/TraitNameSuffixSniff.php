@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that traits are suffixed by Trait.
  *
@@ -13,8 +14,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class TraitNameSuffixSniff implements Sniff
 {
-
-
     /**
      * Registers the tokens that this sniff wants to listen for.
      *

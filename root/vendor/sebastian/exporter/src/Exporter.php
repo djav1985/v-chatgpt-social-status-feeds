@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/exporter.
  *
@@ -30,6 +33,7 @@ use function sprintf;
 use function str_repeat;
 use function str_replace;
 use function var_export;
+
 use BackedEnum;
 use SebastianBergmann\RecursionContext\Context;
 use SplObjectStorage;
@@ -58,10 +62,10 @@ final class Exporter
     public function shortenedRecursiveExport(array &$data, ?Context $context = null): string
     {
         $result   = [];
-        $exporter = new self;
+        $exporter = new self();
 
         if (!$context) {
-            $context = new Context;
+            $context = new Context();
         }
 
         $array = $data;
@@ -272,7 +276,7 @@ final class Exporter
         $whitespace = str_repeat(' ', 4 * $indentation);
 
         if (!$processed) {
-            $processed = new Context;
+            $processed = new Context();
         }
 
         if (is_array($value)) {

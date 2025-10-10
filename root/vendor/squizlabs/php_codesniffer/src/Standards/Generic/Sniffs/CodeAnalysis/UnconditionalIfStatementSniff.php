@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Detects unconditional if- and elseif-statements.
  *
@@ -33,8 +34,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UnconditionalIfStatementSniff implements Sniff
 {
-
-
     /**
      * Registers the tokens that this sniff wants to listen for.
      *

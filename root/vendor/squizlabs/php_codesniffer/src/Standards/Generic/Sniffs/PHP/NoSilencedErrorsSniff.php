@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Throws an error or warning when any code prefixed with an asperand is encountered.
  *
@@ -22,7 +23,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class NoSilencedErrorsSniff implements Sniff
 {
-
     /**
      * If true, an error will be thrown; otherwise a warning.
      *

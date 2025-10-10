@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the nesting level for methods.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class NestingLevelSniff implements Sniff
 {
-
     /**
      * A nesting level higher than this value will throw a warning.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Stores the configuration used to run PHPCS and PHPCBF.
  *
@@ -84,7 +85,6 @@ use PHP_CodeSniffer\Util\Standards;
  */
 class Config
 {
-
     /**
      * The current version.
      *
@@ -295,7 +295,7 @@ class Config
         }
 
         switch ($name) {
-            case 'reportWidth' :
+            case 'reportWidth':
                 if (is_string($value) === true && $value === 'auto') {
                     // Nothing to do. Leave at 'auto'.
                     break;
@@ -310,7 +310,7 @@ class Config
                 }
                 break;
 
-            case 'standards' :
+            case 'standards':
                 $cleaned = [];
 
                 // Check if the standard name is valid, or if the case is invalid.
@@ -342,7 +342,7 @@ class Config
                 }
                 break;
 
-            default :
+            default:
                 // No validation required.
                 break;
         }
@@ -447,7 +447,8 @@ class Config
             } while ($currentDir !== '.' && $currentDir !== $lastDir && Common::isReadable($currentDir) === true);
         }
 
-        if (defined('STDIN') === false
+        if (
+            defined('STDIN') === false
             || PHP_OS_FAMILY === 'Windows'
         ) {
             return;
@@ -456,7 +457,8 @@ class Config
         $handle = fopen('php://stdin', 'r');
 
         // Check for content on STDIN.
-        if ($this->stdin === true
+        if (
+            $this->stdin === true
             || (Common::isStdinATTY() === false
             && feof($handle) === false)
         ) {
@@ -674,10 +676,10 @@ class Config
             case '?':
                 $this->printUsage();
                 throw new DeepExitException('', ExitCode::OKAY);
-            case 'i' :
+            case 'i':
                 $output = Standards::prepareInstalledStandardsForDisplay() . PHP_EOL;
                 throw new DeepExitException($output, ExitCode::OKAY);
-            case 'v' :
+            case 'v':
                 if ($this->quiet === true) {
                     // Ignore when quiet mode is enabled.
                     break;
@@ -686,15 +688,15 @@ class Config
                 $this->verbosity++;
                 $this->overriddenDefaults['verbosity'] = true;
                 break;
-            case 'l' :
+            case 'l':
                 $this->local = true;
                 $this->overriddenDefaults['local'] = true;
                 break;
-            case 's' :
+            case 's':
                 $this->showSources = true;
                 $this->overriddenDefaults['showSources'] = true;
                 break;
-            case 'a' :
+            case 'a':
                 $this->interactive = true;
                 $this->overriddenDefaults['interactive'] = true;
                 break;
@@ -702,7 +704,7 @@ class Config
                 $this->explain = true;
                 $this->overriddenDefaults['explain'] = true;
                 break;
-            case 'p' :
+            case 'p':
                 if ($this->quiet === true) {
                     // Ignore when quiet mode is enabled.
                     break;
@@ -711,7 +713,7 @@ class Config
                 $this->showProgress = true;
                 $this->overriddenDefaults['showProgress'] = true;
                 break;
-            case 'q' :
+            case 'q':
                 // Quiet mode disables a few other settings as well.
                 $this->quiet        = true;
                 $this->showProgress = false;
@@ -719,11 +721,11 @@ class Config
 
                 $this->overriddenDefaults['quiet'] = true;
                 break;
-            case 'm' :
+            case 'm':
                 $this->recordErrors = false;
                 $this->overriddenDefaults['recordErrors'] = true;
                 break;
-            case 'd' :
+            case 'd':
                 $ini = explode('=', $this->cliArgs[($pos + 1)]);
                 $this->cliArgs[($pos + 1)] = '';
                 if (isset($ini[1]) === false) {
@@ -745,13 +747,13 @@ class Config
                     throw new DeepExitException($error, ExitCode::PROCESS_ERROR);
                 }
                 break;
-            case 'n' :
+            case 'n':
                 if (isset($this->overriddenDefaults['warningSeverity']) === false) {
                     $this->warningSeverity = 0;
                     $this->overriddenDefaults['warningSeverity'] = true;
                 }
                 break;
-            case 'w' :
+            case 'w':
                 if (isset($this->overriddenDefaults['warningSeverity']) === false) {
                     $this->warningSeverity = $this->errorSeverity;
                     $this->overriddenDefaults['warningSeverity'] = true;
@@ -829,7 +831,8 @@ class Config
                 $this->overriddenDefaults['annotations'] = true;
                 break;
             case 'config-set':
-                if (isset($this->cliArgs[($pos + 1)]) === false
+                if (
+                    isset($this->cliArgs[($pos + 1)]) === false
                     || isset($this->cliArgs[($pos + 2)]) === false
                 ) {
                     $error  = 'ERROR: Setting a config option requires a name and value' . PHP_EOL . PHP_EOL;
@@ -884,7 +887,8 @@ class Config
                 $output .= $this->prepareConfigDataForDisplay($data);
                 throw new DeepExitException($output, ExitCode::OKAY);
             case 'runtime-set':
-                if (isset($this->cliArgs[($pos + 1)]) === false
+                if (
+                    isset($this->cliArgs[($pos + 1)]) === false
                     || isset($this->cliArgs[($pos + 2)]) === false
                 ) {
                     $error  = 'ERROR: Setting a runtime config option requires a name and value' . PHP_EOL . PHP_EOL;
@@ -919,7 +923,8 @@ class Config
                     $this->exclude = $this->parseSniffCodes(substr($arg, 8), 'exclude');
                     $this->overriddenDefaults['exclude'] = true;
                 } elseif (substr($arg, 0, 6) === 'cache=') {
-                    if ((isset($this->overriddenDefaults['cache']) === true
+                    if (
+                        (isset($this->overriddenDefaults['cache']) === true
                         && $this->cache === false)
                         || isset($this->overriddenDefaults['cacheFile']) === true
                     ) {
@@ -1235,7 +1240,8 @@ class Config
 
                     $this->ignored = $ignored;
                     $this->overriddenDefaults['ignored'] = true;
-                } elseif (substr($arg, 0, 10) === 'generator='
+                } elseif (
+                    substr($arg, 0, 10) === 'generator='
                     && PHP_CODESNIFFER_CBF === false
                 ) {
                     if (isset($this->overriddenDefaults['generator']) === true) {
@@ -1616,7 +1622,8 @@ class Config
      */
     public function setConfigData(string $key, ?string $value, bool $temp = false)
     {
-        if (isset($this->overriddenDefaults['runtime-set']) === true
+        if (
+            isset($this->overriddenDefaults['runtime-set']) === true
             && isset($this->overriddenDefaults['runtime-set'][$key]) === true
         ) {
             return false;
@@ -1634,7 +1641,8 @@ class Config
                 $configFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CodeSniffer.conf';
             }
 
-            if (is_file($configFile) === true
+            if (
+                is_file($configFile) === true
                 && is_writable($configFile) === false
             ) {
                 $error = 'ERROR: Config file ' . $configFile . ' is not writable' . PHP_EOL . PHP_EOL;

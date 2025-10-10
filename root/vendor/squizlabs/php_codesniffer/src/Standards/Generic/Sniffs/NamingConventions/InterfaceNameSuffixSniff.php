@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that interfaces are suffixed by Interface.
  *
@@ -13,8 +14,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class InterfaceNameSuffixSniff implements Sniff
 {
-
-
     /**
      * Registers the tokens that this sniff wants to listen for.
      *

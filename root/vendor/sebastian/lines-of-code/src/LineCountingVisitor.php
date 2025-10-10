@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/lines-of-code.
  *
@@ -13,6 +16,7 @@ use function array_merge;
 use function array_unique;
 use function assert;
 use function count;
+
 use PhpParser\Comment;
 use PhpParser\Node;
 use PhpParser\Node\Expr;

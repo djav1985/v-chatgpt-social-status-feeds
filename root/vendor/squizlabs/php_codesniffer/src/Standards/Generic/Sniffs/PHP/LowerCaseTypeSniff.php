@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that all PHP types are lowercase.
  *
@@ -17,7 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class LowerCaseTypeSniff implements Sniff
 {
-
     /**
      * Native types supported by PHP.
      *
@@ -97,7 +97,8 @@ class LowerCaseTypeSniff implements Sniff
 
             for ($i = ($tokens[$stackPtr]['scope_opener'] + 1); $i < $tokens[$stackPtr]['scope_closer']; $i++) {
                 // Skip over potentially large docblocks.
-                if ($tokens[$i]['code'] === T_DOC_COMMENT_OPEN_TAG
+                if (
+                    $tokens[$i]['code'] === T_DOC_COMMENT_OPEN_TAG
                     && isset($tokens[$i]['comment_closer']) === true
                 ) {
                     $i = $tokens[$i]['comment_closer'];
@@ -105,7 +106,8 @@ class LowerCaseTypeSniff implements Sniff
                 }
 
                 // Skip over function declarations and everything nested within.
-                if ($tokens[$i]['code'] === T_FUNCTION
+                if (
+                    $tokens[$i]['code'] === T_FUNCTION
                     && isset($tokens[$i]['scope_closer']) === true
                 ) {
                     $i = $tokens[$i]['scope_closer'];
@@ -277,12 +279,14 @@ class LowerCaseTypeSniff implements Sniff
                 continue;
             }
 
-            if ($tokens[$i]['code'] === T_TYPE_UNION
+            if (
+                $tokens[$i]['code'] === T_TYPE_UNION
                 || $tokens[$i]['code'] === T_TYPE_INTERSECTION
                 || $tokens[$i]['code'] === T_TYPE_OPEN_PARENTHESIS
                 || $tokens[$i]['code'] === T_TYPE_CLOSE_PARENTHESIS
             ) {
-                if ($typeTokenCount === 1
+                if (
+                    $typeTokenCount === 1
                     && $type !== ''
                     && isset(self::PHP_TYPES[strtolower($type)]) === true
                 ) {
@@ -306,7 +310,8 @@ class LowerCaseTypeSniff implements Sniff
         }
 
         // Handle type at end of type string.
-        if ($typeTokenCount === 1
+        if (
+            $typeTokenCount === 1
             && $type !== ''
             && isset(self::PHP_TYPES[strtolower($type)]) === true
         ) {

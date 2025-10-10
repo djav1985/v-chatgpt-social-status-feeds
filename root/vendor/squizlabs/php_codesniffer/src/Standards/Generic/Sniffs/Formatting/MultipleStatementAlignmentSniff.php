@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks alignment of assignments.
  *
@@ -19,7 +20,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class MultipleStatementAlignmentSniff implements Sniff
 {
-
     /**
      * The maximum amount of padding before the alignment is ignored.
      *
@@ -126,7 +126,8 @@ class MultipleStatementAlignmentSniff implements Sniff
                 break;
             }
 
-            if (isset($tokens[$assign]['scope_opener']) === true
+            if (
+                isset($tokens[$assign]['scope_opener']) === true
                 && $tokens[$assign]['level'] === $tokens[$stackPtr]['level']
             ) {
                 if (isset($scopes[$tokens[$assign]['code']]) === true) {
@@ -153,7 +154,8 @@ class MultipleStatementAlignmentSniff implements Sniff
 
             if (isset($find[$tokens[$assign]['code']]) === false) {
                 // A blank line indicates that the assignment block has ended.
-                if (isset(Tokens::EMPTY_TOKENS[$tokens[$assign]['code']]) === false
+                if (
+                    isset(Tokens::EMPTY_TOKENS[$tokens[$assign]['code']]) === false
                     && ($tokens[$assign]['line'] - $tokens[$lastCode]['line']) > 1
                     && $tokens[$assign]['level'] === $tokens[$stackPtr]['level']
                     && $arrayEnd === null
@@ -166,13 +168,15 @@ class MultipleStatementAlignmentSniff implements Sniff
                     break;
                 }
 
-                if ($tokens[$assign]['code'] === T_OPEN_SHORT_ARRAY
+                if (
+                    $tokens[$assign]['code'] === T_OPEN_SHORT_ARRAY
                     && isset($tokens[$assign]['bracket_closer']) === true
                 ) {
                     $arrayEnd = $tokens[$assign]['bracket_closer'];
                 }
 
-                if ($tokens[$assign]['code'] === T_ARRAY
+                if (
+                    $tokens[$assign]['code'] === T_ARRAY
                     && isset($tokens[$assign]['parenthesis_opener']) === true
                     && isset($tokens[$tokens[$assign]['parenthesis_opener']]['parenthesis_closer']) === true
                 ) {

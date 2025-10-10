@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Detects variable assignments being made within conditions.
  *
@@ -20,7 +21,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class AssignmentInConditionSniff implements Sniff
 {
-
     /**
      * Assignment tokens to trigger on.
      *

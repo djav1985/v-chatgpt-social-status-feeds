@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Detects for-loops that use a function call in the test expression.
  *
@@ -33,8 +34,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ForLoopWithTestFunctionCallSniff implements Sniff
 {
-
-
     /**
      * Registers the tokens that this sniff wants to listen for.
      *

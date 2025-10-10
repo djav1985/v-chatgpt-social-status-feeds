@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Discourage the use of the PHP `goto` language construct.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DiscourageGotoSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

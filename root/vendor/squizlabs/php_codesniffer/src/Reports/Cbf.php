@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CBF report for PHP_CodeSniffer.
  *
@@ -24,8 +25,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class Cbf implements Report
 {
-
-
     /**
      * Generate a partial report for a single processed file.
      *
@@ -261,8 +260,6 @@ class Cbf implements Report
     private function createReporterInstance(File $phpcsFile)
     {
         $reporter = new class extends Reporter {
-
-
             /**
              * Overload the constructor as we don't need it.
              */

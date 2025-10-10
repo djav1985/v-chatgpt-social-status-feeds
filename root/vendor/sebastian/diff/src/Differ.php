@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/diff.
  *
@@ -12,6 +15,7 @@ namespace SebastianBergmann\Diff;
 use const PHP_INT_SIZE;
 use const PREG_SPLIT_DELIM_CAPTURE;
 use const PREG_SPLIT_NO_EMPTY;
+
 use function array_shift;
 use function array_unshift;
 use function array_values;
@@ -26,6 +30,7 @@ use function prev;
 use function reset;
 use function str_ends_with;
 use function substr;
+
 use SebastianBergmann\Diff\Output\DiffOutputBuilderInterface;
 
 final class Differ
@@ -123,10 +128,10 @@ final class Differ
         $memoryLimit = 100 * 1024 * 1024;
 
         if ($this->calculateEstimatedFootprint($from, $to) > $memoryLimit) {
-            return new MemoryEfficientLongestCommonSubsequenceCalculator;
+            return new MemoryEfficientLongestCommonSubsequenceCalculator();
         }
 
-        return new TimeEfficientLongestCommonSubsequenceCalculator;
+        return new TimeEfficientLongestCommonSubsequenceCalculator();
     }
 
     private function calculateEstimatedFootprint(array $from, array $to): float|int

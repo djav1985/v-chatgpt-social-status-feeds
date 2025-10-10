@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -10,6 +13,7 @@
 namespace SebastianBergmann\Comparator;
 
 use function assert;
+
 use SebastianBergmann\Exporter\Exporter;
 use SplObjectStorage;
 
@@ -28,7 +32,7 @@ final class SplObjectStorageComparator extends Comparator
         assert($expected instanceof SplObjectStorage);
         assert($actual instanceof SplObjectStorage);
 
-        $exporter = new Exporter;
+        $exporter = new Exporter();
 
         foreach ($actual as $object) {
             if (!$expected->offsetExists($object)) {

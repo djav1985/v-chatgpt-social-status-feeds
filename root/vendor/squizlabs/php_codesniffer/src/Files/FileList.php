@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Represents a list of files on the file system that are to be checked during the run.
  *
@@ -29,7 +30,6 @@ use ReturnTypeWillChange;
 
 class FileList implements Iterator, Countable
 {
-
     /**
      * A list of file paths that are included in the list.
      *

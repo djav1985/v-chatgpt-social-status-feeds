@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Represents a piece of content being checked during the run.
  *
@@ -22,7 +23,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class File
 {
-
     /**
      * The absolute path to the file associated with this object.
      *
@@ -374,7 +374,8 @@ class File
         // token, get them to process it.
         foreach ($this->tokens as $stackPtr => $token) {
             // Check for ignored lines.
-            if ($checkAnnotations === true
+            if (
+                $checkAnnotations === true
                 && ($token['code'] === T_COMMENT
                 || $token['code'] === T_PHPCS_IGNORE_FILE
                 || $token['code'] === T_PHPCS_SET
@@ -384,7 +385,8 @@ class File
             ) {
                 $commentText      = ltrim($this->tokens[$stackPtr]['content'], " \t/*#");
                 $commentTextLower = strtolower($commentText);
-                if (substr($commentTextLower, 0, 16) === 'phpcs:ignorefile'
+                if (
+                    substr($commentTextLower, 0, 16) === 'phpcs:ignorefile'
                     || substr($commentTextLower, 0, 17) === '@phpcs:ignorefile'
                 ) {
                     // Ignoring the whole file, just a little late.
@@ -395,7 +397,8 @@ class File
                     $this->fixableErrorCount = 0;
                     $this->fixableWarningCount = 0;
                     return;
-                } elseif (substr($commentTextLower, 0, 9) === 'phpcs:set'
+                } elseif (
+                    substr($commentTextLower, 0, 9) === 'phpcs:set'
                     || substr($commentTextLower, 0, 10) === '@phpcs:set'
                 ) {
                     if (isset($token['sniffCode']) === true) {
@@ -428,7 +431,8 @@ class File
             }
 
             foreach ($this->ruleset->tokenListeners[$token['code']] as $listenerData) {
-                if (isset($this->ignoredListeners[$listenerData['class']]) === true
+                if (
+                    isset($this->ignoredListeners[$listenerData['class']]) === true
                     || (isset($listenerIgnoreTo[$listenerData['class']]) === true
                     && $listenerIgnoreTo[$listenerData['class']] > $stackPtr)
                 ) {
@@ -887,7 +891,8 @@ class File
         }
 
         $includeAll = true;
-        if ($this->configCache['cache'] === false
+        if (
+            $this->configCache['cache'] === false
             || $this->configCache['recordErrors'] === false
         ) {
             $includeAll = false;
@@ -896,7 +901,8 @@ class File
         // Filter out any messages for sniffs that shouldn't have run
         // due to the use of the --sniffs or --exclude command line argument,
         // but don't filter out "Internal" messages.
-        if ($includeAll === false
+        if (
+            $includeAll === false
             && (($parts[0] !== 'Internal'
             && empty($this->configCache['sniffs']) === false
             && in_array(strtolower($listenerCode), $this->configCache['sniffs'], true) === false)
@@ -920,7 +926,8 @@ class File
 
         foreach ($checkCodes as $checkCode) {
             // Make sure this message type has not been set to the opposite message type.
-            if (isset($this->ruleset->ruleset[$checkCode]['type']) === true
+            if (
+                isset($this->ruleset->ruleset[$checkCode]['type']) === true
                 && $this->ruleset->ruleset[$checkCode]['type'] === $oppositeType
             ) {
                 $error = !$error;
@@ -1035,7 +1042,8 @@ class File
             }
         }
 
-        if ($this->configCache['recordErrors'] === false
+        if (
+            $this->configCache['recordErrors'] === false
             && $includeAll === false
         ) {
             return true;
@@ -1045,7 +1053,8 @@ class File
         // But don't do this if we are replaying errors because replayed
         // errors have already used the custom format and have had their
         // data replaced.
-        if ($this->replayingErrors === false
+        if (
+            $this->replayingErrors === false
             && isset($this->ruleset->ruleset[$sniffCode]['message']) === true
         ) {
             $message = $this->ruleset->ruleset[$sniffCode]['message'];
@@ -1071,7 +1080,8 @@ class File
             'fixable'  => $fixable,
         ];
 
-        if (PHP_CODESNIFFER_VERBOSITY > 1
+        if (
+            PHP_CODESNIFFER_VERBOSITY > 1
             && $this->fixer->enabled === true
             && $fixable === true
         ) {
@@ -1294,7 +1304,8 @@ class File
     {
         $tokenCode = $this->tokens[$stackPtr]['code'];
 
-        if ($tokenCode !== T_FUNCTION
+        if (
+            $tokenCode !== T_FUNCTION
             && $tokenCode !== T_CLASS
             && $tokenCode !== T_INTERFACE
             && $tokenCode !== T_TRAIT
@@ -1382,7 +1393,8 @@ class File
      */
     public function getMethodParameters(int $stackPtr)
     {
-        if ($this->tokens[$stackPtr]['code'] !== T_FUNCTION
+        if (
+            $this->tokens[$stackPtr]['code'] !== T_FUNCTION
             && $this->tokens[$stackPtr]['code'] !== T_CLOSURE
             && $this->tokens[$stackPtr]['code'] !== T_USE
             && $this->tokens[$stackPtr]['code'] !== T_FN
@@ -1390,7 +1402,8 @@ class File
             throw new RuntimeException('$stackPtr must be of type T_FUNCTION or T_CLOSURE or T_USE or T_FN');
         }
 
-        if ($this->tokens[$stackPtr]['code'] === T_USE
+        if (
+            $this->tokens[$stackPtr]['code'] === T_USE
             && isset($this->tokens[$stackPtr]['parenthesis_owner']) === false
         ) {
             throw new RuntimeException('$stackPtr was not a valid T_USE');
@@ -1434,7 +1447,8 @@ class File
             // it's likely to be an array which might have arguments in it. This
             // could cause problems in our parsing below, so lets just skip to the
             // end of it.
-            if ($this->tokens[$i]['code'] !== T_TYPE_OPEN_PARENTHESIS
+            if (
+                $this->tokens[$i]['code'] !== T_TYPE_OPEN_PARENTHESIS
                 && isset($this->tokens[$i]['parenthesis_opener']) === true
             ) {
                 // Don't do this if it's the close parenthesis for the method.
@@ -1692,7 +1706,8 @@ class File
      */
     public function getMethodProperties(int $stackPtr)
     {
-        if ($this->tokens[$stackPtr]['code'] !== T_FUNCTION
+        if (
+            $this->tokens[$stackPtr]['code'] !== T_FUNCTION
             && $this->tokens[$stackPtr]['code'] !== T_CLOSURE
             && $this->tokens[$stackPtr]['code'] !== T_FN
         ) {
@@ -1782,7 +1797,8 @@ class File
             ];
 
             for ($i = $this->tokens[$stackPtr]['parenthesis_closer']; $i < $this->numTokens; $i++) {
-                if (($scopeOpener === null && $this->tokens[$i]['code'] === T_SEMICOLON)
+                if (
+                    ($scopeOpener === null && $this->tokens[$i]['code'] === T_SEMICOLON)
                     || ($scopeOpener !== null && $i === $scopeOpener)
                 ) {
                     // End of function definition.
@@ -1890,7 +1906,8 @@ class File
         $conditions = $this->tokens[$stackPtr]['conditions'];
         $conditions = array_keys($conditions);
         $ptr        = array_pop($conditions);
-        if (isset($this->tokens[$ptr]) === false
+        if (
+            isset($this->tokens[$ptr]) === false
             || isset(Tokens::OO_SCOPE_TOKENS[$this->tokens[$ptr]['code']]) === false
             || $this->tokens[$ptr]['code'] === T_ENUM
         ) {
@@ -1901,7 +1918,8 @@ class File
         if (empty($this->tokens[$stackPtr]['nested_parenthesis']) === false) {
             $parenthesis = array_keys($this->tokens[$stackPtr]['nested_parenthesis']);
             $deepestOpen = array_pop($parenthesis);
-            if ($deepestOpen > $ptr
+            if (
+                $deepestOpen > $ptr
                 && isset($this->tokens[$deepestOpen]['parenthesis_owner']) === true
                 && $this->tokens[$this->tokens[$deepestOpen]['parenthesis_owner']]['code'] === T_FUNCTION
             ) {
@@ -2130,7 +2148,8 @@ class File
             true
         );
 
-        if ($this->tokens[$tokenBefore]['code'] === T_FUNCTION
+        if (
+            $this->tokens[$tokenBefore]['code'] === T_FUNCTION
             || $this->tokens[$tokenBefore]['code'] === T_CLOSURE
             || $this->tokens[$tokenBefore]['code'] === T_FN
         ) {
@@ -2170,7 +2189,8 @@ class File
             $lastBracket = array_pop($brackets);
             if (isset($this->tokens[$lastBracket]['parenthesis_owner']) === true) {
                 $owner = $this->tokens[$this->tokens[$lastBracket]['parenthesis_owner']];
-                if ($owner['code'] === T_FUNCTION
+                if (
+                    $owner['code'] === T_FUNCTION
                     || $owner['code'] === T_CLOSURE
                     || $owner['code'] === T_FN
                     || $owner['code'] === T_USE
@@ -2187,7 +2207,8 @@ class File
         }
 
         // Pass by reference in function calls and assign by reference in arrays.
-        if ($this->tokens[$tokenBefore]['code'] === T_OPEN_PARENTHESIS
+        if (
+            $this->tokens[$tokenBefore]['code'] === T_OPEN_PARENTHESIS
             || $this->tokens[$tokenBefore]['code'] === T_COMMA
             || $this->tokens[$tokenBefore]['code'] === T_OPEN_SHORT_ARRAY
         ) {
@@ -2317,15 +2338,18 @@ class File
             }
 
             if ($local === true) {
-                if (isset($this->tokens[$i]['scope_opener']) === true
+                if (
+                    isset($this->tokens[$i]['scope_opener']) === true
                     && $i === $this->tokens[$i]['scope_closer']
                 ) {
                     $i = $this->tokens[$i]['scope_opener'];
-                } elseif (isset($this->tokens[$i]['bracket_opener']) === true
+                } elseif (
+                    isset($this->tokens[$i]['bracket_opener']) === true
                     && $i === $this->tokens[$i]['bracket_closer']
                 ) {
                     $i = $this->tokens[$i]['bracket_opener'];
-                } elseif (isset($this->tokens[$i]['parenthesis_opener']) === true
+                } elseif (
+                    isset($this->tokens[$i]['parenthesis_opener']) === true
                     && $i === $this->tokens[$i]['parenthesis_closer']
                 ) {
                     $i = $this->tokens[$i]['parenthesis_opener'];
@@ -2450,7 +2474,8 @@ class File
             $lastConditionOwner = end($conditions);
             $matchExpression    = key($conditions);
 
-            if ($lastConditionOwner === T_MATCH
+            if (
+                $lastConditionOwner === T_MATCH
                 // Check if the $start token is at the same parentheses nesting level as the match token.
                 && ((empty($this->tokens[$matchExpression]['nested_parenthesis']) === true
                 && empty($this->tokens[$start]['nested_parenthesis']) === true)
@@ -2472,14 +2497,16 @@ class File
                     }
 
                     // Skip nested statements.
-                    if (isset($this->tokens[$prevMatch]['bracket_opener']) === true
+                    if (
+                        isset($this->tokens[$prevMatch]['bracket_opener']) === true
                         && $prevMatch === $this->tokens[$prevMatch]['bracket_closer']
                     ) {
                         $prevMatch = $this->tokens[$prevMatch]['bracket_opener'];
                         continue;
                     }
 
-                    if (isset($this->tokens[$prevMatch]['parenthesis_opener']) === true
+                    if (
+                        isset($this->tokens[$prevMatch]['parenthesis_opener']) === true
                         && $prevMatch === $this->tokens[$prevMatch]['parenthesis_closer']
                     ) {
                         $prevMatch = $this->tokens[$prevMatch]['parenthesis_opener'];
@@ -2488,7 +2515,8 @@ class File
 
                     // Stop if we're _within_ a nested short array statement, which may contain comma's too.
                     // No need to deal with parentheses, those are handled above via the `nested_parenthesis` checks.
-                    if (isset($this->tokens[$prevMatch]['bracket_opener']) === true
+                    if (
+                        isset($this->tokens[$prevMatch]['bracket_opener']) === true
                         && $this->tokens[$prevMatch]['bracket_closer'] > $start
                     ) {
                         $inNestedExpression = true;
@@ -2535,7 +2563,8 @@ class File
         // the start and continue from there.
         // If we are starting at a token that ends a statement, skip this
         // token so we find the true start of the statement.
-        while (isset($endTokens[$this->tokens[$start]['code']]) === true
+        while (
+            isset($endTokens[$this->tokens[$start]['code']]) === true
             || (isset($this->tokens[$start]['scope_condition']) === true
             && $start === $this->tokens[$start]['scope_closer'])
         ) {
@@ -2547,14 +2576,16 @@ class File
         }
 
         for ($i = $start; $i >= 0; $i--) {
-            if (isset($startTokens[$this->tokens[$i]['code']]) === true
+            if (
+                isset($startTokens[$this->tokens[$i]['code']]) === true
                 || isset($endTokens[$this->tokens[$i]['code']]) === true
             ) {
                 // Found the end of the previous statement.
                 return $lastNotEmpty;
             }
 
-            if (isset($this->tokens[$i]['scope_opener']) === true
+            if (
+                isset($this->tokens[$i]['scope_opener']) === true
                 && $i === $this->tokens[$i]['scope_closer']
                 && $this->tokens[$i]['code'] !== T_CLOSE_PARENTHESIS
                 && $this->tokens[$i]['code'] !== T_END_NOWDOC
@@ -2571,11 +2602,13 @@ class File
             }
 
             // Skip nested statements.
-            if (isset($this->tokens[$i]['bracket_opener']) === true
+            if (
+                isset($this->tokens[$i]['bracket_opener']) === true
                 && $i === $this->tokens[$i]['bracket_closer']
             ) {
                 $i = $this->tokens[$i]['bracket_opener'];
-            } elseif (isset($this->tokens[$i]['parenthesis_opener']) === true
+            } elseif (
+                isset($this->tokens[$i]['parenthesis_opener']) === true
                 && $i === $this->tokens[$i]['parenthesis_closer']
             ) {
                 $i = $this->tokens[$i]['parenthesis_opener'];
@@ -2656,7 +2689,8 @@ class File
         for ($i = $start; $i < $this->numTokens; $i++) {
             if ($i !== $start && isset($endTokens[$this->tokens[$i]['code']]) === true) {
                 // Found the end of the statement.
-                if ($this->tokens[$i]['code'] === T_CLOSE_PARENTHESIS
+                if (
+                    $this->tokens[$i]['code'] === T_CLOSE_PARENTHESIS
                     || $this->tokens[$i]['code'] === T_CLOSE_SQUARE_BRACKET
                     || $this->tokens[$i]['code'] === T_CLOSE_CURLY_BRACKET
                     || $this->tokens[$i]['code'] === T_CLOSE_SHORT_ARRAY
@@ -2670,7 +2704,8 @@ class File
             }
 
             // Skip nested statements.
-            if (isset($this->tokens[$i]['scope_closer']) === true
+            if (
+                isset($this->tokens[$i]['scope_closer']) === true
                 && ($i === $this->tokens[$i]['scope_opener']
                 || $i === $this->tokens[$i]['scope_condition'])
             ) {
@@ -2685,11 +2720,13 @@ class File
                 }
 
                 $i = $this->tokens[$i]['scope_closer'];
-            } elseif (isset($this->tokens[$i]['bracket_closer']) === true
+            } elseif (
+                isset($this->tokens[$i]['bracket_closer']) === true
                 && $i === $this->tokens[$i]['bracket_opener']
             ) {
                 $i = $this->tokens[$i]['bracket_closer'];
-            } elseif (isset($this->tokens[$i]['parenthesis_closer']) === true
+            } elseif (
+                isset($this->tokens[$i]['parenthesis_closer']) === true
                 && $i === $this->tokens[$i]['parenthesis_opener']
             ) {
                 $i = $this->tokens[$i]['parenthesis_closer'];
@@ -2862,7 +2899,8 @@ class File
             return false;
         }
 
-        if ($this->tokens[$stackPtr]['code'] !== T_CLASS
+        if (
+            $this->tokens[$stackPtr]['code'] !== T_CLASS
             && $this->tokens[$stackPtr]['code'] !== T_ANON_CLASS
             && $this->tokens[$stackPtr]['code'] !== T_INTERFACE
         ) {
@@ -2910,7 +2948,8 @@ class File
             return false;
         }
 
-        if ($this->tokens[$stackPtr]['code'] !== T_CLASS
+        if (
+            $this->tokens[$stackPtr]['code'] !== T_CLASS
             && $this->tokens[$stackPtr]['code'] !== T_ANON_CLASS
             && $this->tokens[$stackPtr]['code'] !== T_ENUM
         ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * An exception thrown by PHP_CodeSniffer when it encounters an error in the XML document being processed
  * by one of the documentation Generators.
@@ -13,5 +14,4 @@ use DomainException;
 
 class GeneratorException extends DomainException
 {
-
 }

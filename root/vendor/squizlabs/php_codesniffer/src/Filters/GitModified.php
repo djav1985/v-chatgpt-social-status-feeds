@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A filter to only include files that have been modified or added in a Git repository.
  *
@@ -14,8 +15,6 @@ use PHP_CodeSniffer\Util\Common;
 
 class GitModified extends ExactMatch
 {
-
-
     /**
      * Get a list of file paths to exclude.
      *

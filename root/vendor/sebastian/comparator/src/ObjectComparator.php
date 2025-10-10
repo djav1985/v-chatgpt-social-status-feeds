@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -14,6 +17,7 @@ use function in_array;
 use function is_object;
 use function sprintf;
 use function substr_replace;
+
 use SebastianBergmann\Exporter\Exporter;
 
 class ObjectComparator extends ArrayComparator
@@ -32,7 +36,7 @@ class ObjectComparator extends ArrayComparator
         assert(is_object($actual));
 
         if ($actual::class !== $expected::class) {
-            $exporter = new Exporter;
+            $exporter = new Exporter();
 
             throw new ComparisonFailure(
                 $expected,
@@ -48,8 +52,10 @@ class ObjectComparator extends ArrayComparator
         }
 
         // don't compare twice to allow for cyclic dependencies
-        if (in_array([$actual, $expected], $processed, true) ||
-            in_array([$expected, $actual], $processed, true)) {
+        if (
+            in_array([$actual, $expected], $processed, true) ||
+            in_array([$expected, $actual], $processed, true)
+        ) {
             return;
         }
 
@@ -83,6 +89,6 @@ class ObjectComparator extends ArrayComparator
 
     protected function toArray(object $object): array
     {
-        return (new Exporter)->toArray($object);
+        return (new Exporter())->toArray($object);
     }
 }

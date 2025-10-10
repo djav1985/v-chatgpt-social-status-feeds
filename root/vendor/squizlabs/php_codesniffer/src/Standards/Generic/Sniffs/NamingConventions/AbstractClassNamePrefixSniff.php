@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that abstract classes are prefixed by Abstract.
  *
@@ -13,8 +14,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class AbstractClassNamePrefixSniff implements Sniff
 {
-
-
     /**
      * Registers the tokens that this sniff wants to listen for.
      *

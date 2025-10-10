@@ -1,4 +1,5 @@
 <?php
+
 /**
  * An interface that PHP_CodeSniffer reports must implement.
  *
@@ -14,8 +15,6 @@ use PHP_CodeSniffer\Files\File;
 
 interface Report
 {
-
-
     /**
      * Generate a partial report for a single processed file.
      *

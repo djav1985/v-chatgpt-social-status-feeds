@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\Comparator;
 
 use function assert;
 use function is_resource;
+
 use SebastianBergmann\Exporter\Exporter;
 
 final class ResourceComparator extends Comparator
@@ -28,7 +32,7 @@ final class ResourceComparator extends Comparator
         assert(is_resource($expected));
         assert(is_resource($actual));
 
-        $exporter = new Exporter;
+        $exporter = new Exporter();
 
         if ($actual != $expected) {
             throw new ComparisonFailure(

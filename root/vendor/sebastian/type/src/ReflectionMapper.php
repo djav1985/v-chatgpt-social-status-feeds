@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/type.
  *
@@ -10,6 +13,7 @@
 namespace SebastianBergmann\Type;
 
 use function assert;
+
 use ReflectionFunction;
 use ReflectionIntersectionType;
 use ReflectionMethod;
@@ -32,7 +36,7 @@ final class ReflectionMapper
             assert($name !== '');
 
             if (!$parameter->hasType()) {
-                $parameters[] = new Parameter($name, new UnknownType);
+                $parameters[] = new Parameter($name, new UnknownType());
 
                 continue;
             }
@@ -71,7 +75,7 @@ final class ReflectionMapper
     public function fromReturnType(ReflectionFunction|ReflectionMethod $functionOrMethod): Type
     {
         if (!$this->hasReturnType($functionOrMethod)) {
-            return new UnknownType;
+            return new UnknownType();
         }
 
         $returnType = $this->returnType($functionOrMethod);
@@ -108,7 +112,7 @@ final class ReflectionMapper
         }
 
         if ($type->getName() === 'mixed') {
-            return new MixedType;
+            return new MixedType();
         }
 
         if ($functionOrMethod instanceof ReflectionMethod && $type->getName() === 'parent') {

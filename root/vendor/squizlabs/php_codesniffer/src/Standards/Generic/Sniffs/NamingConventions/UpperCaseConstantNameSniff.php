@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures that constant names are all uppercase.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UpperCaseConstantNameSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -90,7 +89,8 @@ class UpperCaseConstantNameSniff implements Sniff
 
         // Make sure this is not a method call or class instantiation.
         $prev = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        if ($tokens[$prev]['code'] === T_OBJECT_OPERATOR
+        if (
+            $tokens[$prev]['code'] === T_OBJECT_OPERATOR
             || $tokens[$prev]['code'] === T_DOUBLE_COLON
             || $tokens[$prev]['code'] === T_NULLSAFE_OBJECT_OPERATOR
             || $tokens[$prev]['code'] === T_NEW

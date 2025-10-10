@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures PHP believes the syntax is clean.
  *
@@ -18,7 +19,6 @@ use PHP_CodeSniffer\Util\Common;
 
 class SyntaxSniff implements Sniff
 {
-
     /**
      * The path to the PHP version we are checking with.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A doc generator that outputs text-based documentation.
  *
@@ -17,8 +18,6 @@ use DOMElement;
 
 class Text extends Generator
 {
-
-
     /**
      * Process the documentation for a single sniff.
      *

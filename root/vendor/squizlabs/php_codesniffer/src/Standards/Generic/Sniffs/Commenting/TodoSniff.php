@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Warns about TODO comments.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class TodoSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

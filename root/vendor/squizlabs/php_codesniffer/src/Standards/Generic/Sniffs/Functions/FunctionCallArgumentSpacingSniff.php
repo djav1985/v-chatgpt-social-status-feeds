@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that calls to methods and functions are spaced correctly.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionCallArgumentSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -65,7 +64,8 @@ class FunctionCallArgumentSpacingSniff implements Sniff
             return;
         }
 
-        if ($tokens[$stackPtr]['code'] === T_CLOSE_CURLY_BRACKET
+        if (
+            $tokens[$stackPtr]['code'] === T_CLOSE_CURLY_BRACKET
             && isset($tokens[$stackPtr]['scope_condition']) === true
         ) {
             // Not a function call.
@@ -115,7 +115,8 @@ class FunctionCallArgumentSpacingSniff implements Sniff
         ];
 
         while (($nextSeparator = $phpcsFile->findNext($find, ($nextSeparator + 1), $closeBracket)) !== false) {
-            if ($tokens[$nextSeparator]['code'] === T_CLOSURE
+            if (
+                $tokens[$nextSeparator]['code'] === T_CLOSURE
                 || $tokens[$nextSeparator]['code'] === T_ANON_CLASS
                 || $tokens[$nextSeparator]['code'] === T_MATCH
             ) {

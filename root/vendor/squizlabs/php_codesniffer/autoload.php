@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Autoloads files for PHP_CodeSniffer and tracks what has been loaded.
  *
@@ -23,7 +24,6 @@ use Exception;
 if (class_exists('PHP_CodeSniffer\Autoload', false) === false) {
     class Autoload
     {
-
         /**
          * The composer autoloader.
          *
@@ -78,7 +78,8 @@ if (class_exists('PHP_CodeSniffer\Autoload', false) === false) {
                     return false;
                 }
 
-                if (strpos(__DIR__, 'phar://') !== 0
+                if (
+                    strpos(__DIR__, 'phar://') !== 0
                     && @file_exists(__DIR__ . '/../../autoload.php') === true
                 ) {
                     self::$composerAutoloader = include __DIR__ . '/../../autoload.php';

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Allows tests that extend this class to listen for tokens within a particular scope.
  *
@@ -32,7 +33,6 @@ use PHP_CodeSniffer\Files\File;
 
 abstract class AbstractScopeSniff implements Sniff
 {
-
     /**
      * The token types that this test wishes to listen to within the scope.
      *

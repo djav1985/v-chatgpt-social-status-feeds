@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forbid mixing different binary boolean operators within a single expression without making precedence
  * clear using parentheses.
@@ -35,7 +36,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class RequireExplicitBooleanOperatorPrecedenceSniff implements Sniff
 {
-
     /**
      * Array of tokens this test searches for to find either a boolean
      * operator or the start of the current (sub-)expression. Used for

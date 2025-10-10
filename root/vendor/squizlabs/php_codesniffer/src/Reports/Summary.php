@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Summary report for PHP_CodeSniffer.
  *
@@ -14,8 +15,6 @@ use PHP_CodeSniffer\Files\File;
 
 class Summary implements Report
 {
-
-
     /**
      * Generate a partial report for a single processed file.
      *
@@ -33,7 +32,8 @@ class Summary implements Report
      */
     public function generateFileReport(array $report, File $phpcsFile, bool $showSources = false, int $width = 80)
     {
-        if (PHP_CODESNIFFER_VERBOSITY === 0
+        if (
+            PHP_CODESNIFFER_VERBOSITY === 0
             && $report['errors'] === 0
             && $report['warnings'] === 0
         ) {

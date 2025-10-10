@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the opening brace of a function is on the line after the function declaration.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class OpeningFunctionBraceBsdAllmanSniff implements Sniff
 {
-
     /**
      * Should this sniff check function braces?
      *
@@ -63,7 +63,8 @@ class OpeningFunctionBraceBsdAllmanSniff implements Sniff
             return;
         }
 
-        if (($tokens[$stackPtr]['code'] === T_FUNCTION
+        if (
+            ($tokens[$stackPtr]['code'] === T_FUNCTION
             && (bool) $this->checkFunctions === false)
             || ($tokens[$stackPtr]['code'] === T_CLOSURE
             && (bool) $this->checkClosures === false)

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/type.
  *
@@ -18,11 +21,11 @@ abstract class Type
     {
         if ($allowsNull === false) {
             if ($value === true) {
-                return new TrueType;
+                return new TrueType();
             }
 
             if ($value === false) {
-                return new FalseType;
+                return new FalseType();
             }
         }
 
@@ -45,16 +48,16 @@ abstract class Type
     {
         return match (strtolower($typeName)) {
             'callable'     => new CallableType($allowsNull),
-            'true'         => new TrueType,
-            'false'        => new FalseType,
+            'true'         => new TrueType(),
+            'false'        => new FalseType(),
             'iterable'     => new IterableType($allowsNull),
-            'never'        => new NeverType,
-            'null'         => new NullType,
+            'never'        => new NeverType(),
+            'null'         => new NullType(),
             'object'       => new GenericObjectType($allowsNull),
-            'unknown type' => new UnknownType,
-            'void'         => new VoidType,
+            'unknown type' => new UnknownType(),
+            'void'         => new VoidType(),
             'array', 'bool', 'boolean', 'double', 'float', 'int', 'integer', 'real', 'resource', 'resource (closed)', 'string' => new SimpleType($typeName, $allowsNull),
-            'mixed' => new MixedType,
+            'mixed' => new MixedType(),
             default => new ObjectType(TypeName::fromQualifiedName($typeName), $allowsNull),
         };
     }

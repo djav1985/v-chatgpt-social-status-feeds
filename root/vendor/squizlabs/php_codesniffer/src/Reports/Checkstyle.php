@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checkstyle report for PHP_CodeSniffer.
  *
@@ -16,8 +17,6 @@ use XMLWriter;
 
 class Checkstyle implements Report
 {
-
-
     /**
      * Generate a partial report for a single processed file.
      *
@@ -35,7 +34,7 @@ class Checkstyle implements Report
      */
     public function generateFileReport(array $report, File $phpcsFile, bool $showSources = false, int $width = 80)
     {
-        $out = new XMLWriter;
+        $out = new XMLWriter();
         $out->openMemory();
         $out->setIndent(true);
 

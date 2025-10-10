@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures the $_REQUEST superglobal is not used
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DisallowRequestSuperglobalSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Warns about FIXME comments.
  *
@@ -17,8 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FixmeSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A doc generator that outputs documentation in Markdown format.
  *
@@ -17,8 +18,6 @@ use PHP_CodeSniffer\Exceptions\GeneratorException;
 
 class Markdown extends Generator
 {
-
-
     /**
      * Generates the documentation for a standard.
      *
@@ -156,7 +155,8 @@ class Markdown extends Generator
             }
 
             // Check if the _next_ line is blank.
-            if (isset($nodeLines[($i + 1)]) === false
+            if (
+                isset($nodeLines[($i + 1)]) === false
                 || trim($nodeLines[($i + 1)]) === ''
             ) {
                 // Next line is blank, just add the line.

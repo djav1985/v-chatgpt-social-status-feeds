@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bans the use of the backtick execution operator.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class BacktickOperatorSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

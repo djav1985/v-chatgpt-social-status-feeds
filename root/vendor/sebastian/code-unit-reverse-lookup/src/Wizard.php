@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/code-unit-reverse-lookup.
  *
@@ -16,6 +19,7 @@ use function get_declared_traits;
 use function get_defined_functions;
 use function is_array;
 use function range;
+
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;

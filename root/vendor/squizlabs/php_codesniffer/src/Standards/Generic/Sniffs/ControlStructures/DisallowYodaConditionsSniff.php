@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ban the use of Yoda conditions.
  *
@@ -17,8 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DisallowYodaConditionsSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

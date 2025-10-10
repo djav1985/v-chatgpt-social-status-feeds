@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A local file represents a chunk of text has a file system location.
  *
@@ -18,8 +19,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class LocalFile extends File
 {
-
-
     /**
      * Creates a LocalFile object and sets the content.
      *
@@ -111,7 +110,8 @@ class LocalFile extends File
                 $this->fixableWarningCount = $cache['fixableWarningCount'];
             }
 
-            if (PHP_CODESNIFFER_VERBOSITY > 0
+            if (
+                PHP_CODESNIFFER_VERBOSITY > 0
                 || (PHP_CODESNIFFER_CBF === true && empty($this->config->files) === false)
             ) {
                 StatusWriter::write('[loaded from cache]... ', 0, 0);

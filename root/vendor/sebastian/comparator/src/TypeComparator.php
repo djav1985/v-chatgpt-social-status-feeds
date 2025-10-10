@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\Comparator;
 
 use function gettype;
 use function sprintf;
+
 use SebastianBergmann\Exporter\Exporter;
 
 final class TypeComparator extends Comparator
@@ -34,7 +38,7 @@ final class TypeComparator extends Comparator
                 '',
                 sprintf(
                     '%s does not match expected type "%s".',
-                    (new Exporter)->shortenedExport($actual),
+                    (new Exporter())->shortenedExport($actual),
                     gettype($expected),
                 ),
             );

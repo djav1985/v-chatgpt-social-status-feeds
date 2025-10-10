@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -16,6 +19,7 @@ use function is_nan;
 use function is_numeric;
 use function is_string;
 use function sprintf;
+
 use SebastianBergmann\Exporter\Exporter;
 
 final class NumericComparator extends ScalarComparator
@@ -36,10 +40,12 @@ final class NumericComparator extends ScalarComparator
             return;
         }
 
-        if (($this->isInfinite($actual) xor $this->isInfinite($expected)) ||
+        if (
+            ($this->isInfinite($actual) xor $this->isInfinite($expected)) ||
             ($this->isNan($actual) || $this->isNan($expected)) ||
-            abs($actual - $expected) > $delta) {
-            $exporter = new Exporter;
+            abs($actual - $expected) > $delta
+        ) {
+            $exporter = new Exporter();
 
             throw new ComparisonFailure(
                 $expected,

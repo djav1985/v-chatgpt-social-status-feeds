@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This sniff class detected empty statement.
  *
@@ -30,8 +31,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class EmptyStatementSniff implements Sniff
 {
-
-
     /**
      * Registers the tokens that this sniff wants to listen for.
      *

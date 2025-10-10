@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Detects unnecessary overridden methods that simply call their parent.
  *
@@ -28,7 +29,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UselessOverridingMethodSniff implements Sniff
 {
-
     /**
      * Object-Oriented scopes in which a call to parent::method() can exist.
      *

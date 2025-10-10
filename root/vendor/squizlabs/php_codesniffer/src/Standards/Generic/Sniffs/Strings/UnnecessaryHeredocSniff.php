@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Prefer the use of nowdoc over heredoc.
  *
@@ -14,7 +15,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class UnnecessaryHeredocSniff implements Sniff
 {
-
     /**
      * Escape chars which are supported in heredocs, but not in nowdocs.
      *
@@ -89,7 +89,8 @@ class UnnecessaryHeredocSniff implements Sniff
                 continue;
             }
 
-            if ($bodyToken[0] === T_DOLLAR_OPEN_CURLY_BRACES
+            if (
+                $bodyToken[0] === T_DOLLAR_OPEN_CURLY_BRACES
                 || $bodyToken[0] === T_VARIABLE
             ) {
                 // Contains interpolation or expression.
@@ -97,7 +98,8 @@ class UnnecessaryHeredocSniff implements Sniff
                 return;
             }
 
-            if ($bodyToken[0] === T_CURLY_OPEN
+            if (
+                $bodyToken[0] === T_CURLY_OPEN
                 && is_array($tokenizedBody[($ptr + 1)]) === false
                 && $tokenizedBody[($ptr + 1)] === '$'
             ) {

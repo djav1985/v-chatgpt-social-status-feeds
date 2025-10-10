@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Notify-send report for PHP_CodeSniffer.
  *
@@ -23,7 +24,6 @@ use PHP_CodeSniffer\Util\Common;
 
 class Notifysend implements Report
 {
-
     /**
      * Notification timeout in milliseconds.
      *

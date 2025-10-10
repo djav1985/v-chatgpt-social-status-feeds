@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/diff.
  *
@@ -23,6 +26,7 @@ use function min;
 use function sprintf;
 use function stream_get_contents;
 use function substr;
+
 use SebastianBergmann\Diff\ConfigurationException;
 use SebastianBergmann\Diff\Differ;
 

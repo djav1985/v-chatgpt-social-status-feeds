@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that all uses of true, false and null are lowercase.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class LowerCaseConstantSniff implements Sniff
 {
-
     /**
      * The tokens this sniff is targetting.
      *
@@ -119,7 +119,8 @@ class LowerCaseConstantSniff implements Sniff
          * declarations, in which case, it is correct to skip over them.
          */
 
-        if (isset(Tokens::SCOPE_MODIFIERS[$tokens[$stackPtr]['code']]) === true
+        if (
+            isset(Tokens::SCOPE_MODIFIERS[$tokens[$stackPtr]['code']]) === true
             || $tokens[$stackPtr]['code'] === T_VAR
             || $tokens[$stackPtr]['code'] === T_STATIC
             || $tokens[$stackPtr]['code'] === T_READONLY
@@ -137,7 +138,8 @@ class LowerCaseConstantSniff implements Sniff
         }
 
         // Handle function declarations separately as they may contain the keywords in type declarations.
-        if ($tokens[$stackPtr]['code'] === T_FUNCTION
+        if (
+            $tokens[$stackPtr]['code'] === T_FUNCTION
             || $tokens[$stackPtr]['code'] === T_CLOSURE
             || $tokens[$stackPtr]['code'] === T_FN
         ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that only one object structure is declared per file.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class OneObjectStructurePerFileSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

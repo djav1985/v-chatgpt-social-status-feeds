@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Detects for-loops that can be simplified to a while-loop.
  *
@@ -29,8 +30,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ForLoopShouldBeWhileLoopSniff implements Sniff
 {
-
-
     /**
      * Registers the tokens that this sniff wants to listen for.
      *

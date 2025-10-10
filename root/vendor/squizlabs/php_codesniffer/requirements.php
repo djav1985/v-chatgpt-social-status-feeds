@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Requirements check for PHP_CodeSniffer.
  *
@@ -20,7 +21,6 @@
  */
 
 namespace PHP_CodeSniffer;
-
 
 /**
  * Exits if the minimum requirements of PHP_CodeSniffer are not met.

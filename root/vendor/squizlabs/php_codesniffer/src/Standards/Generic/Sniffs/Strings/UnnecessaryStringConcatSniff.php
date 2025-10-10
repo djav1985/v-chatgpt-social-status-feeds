@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that two strings are not concatenated together; suggests using one string instead.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UnnecessaryStringConcatSniff implements Sniff
 {
-
     /**
      * If true, strings concatenated over multiple lines are allowed.
      *
@@ -58,7 +58,8 @@ class UnnecessaryStringConcatSniff implements Sniff
             return;
         }
 
-        if (isset(Tokens::STRING_TOKENS[$tokens[$prev]['code']]) === false
+        if (
+            isset(Tokens::STRING_TOKENS[$tokens[$prev]['code']]) === false
             || isset(Tokens::STRING_TOKENS[$tokens[$next]['code']]) === false
         ) {
             // Bow out as at least one of the two tokens being concatenated is not a string.
@@ -80,7 +81,8 @@ class UnnecessaryStringConcatSniff implements Sniff
             return;
         }
 
-        if ($this->allowMultiline === true
+        if (
+            $this->allowMultiline === true
             && $tokens[$prev]['line'] !== $tokens[$next]['line']
         ) {
             return;

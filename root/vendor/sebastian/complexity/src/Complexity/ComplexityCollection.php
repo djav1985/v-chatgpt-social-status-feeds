@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/complexity.
  *
@@ -15,6 +18,7 @@ use function array_reverse;
 use function array_values;
 use function count;
 use function usort;
+
 use Countable;
 use IteratorAggregate;
 
@@ -121,8 +125,7 @@ final class ComplexityCollection implements Countable, IteratorAggregate
 
         usort(
             $items,
-            static function (Complexity $a, Complexity $b): int
-            {
+            static function (Complexity $a, Complexity $b): int {
                 return $a->cyclomaticComplexity() <=> $b->cyclomaticComplexity();
             },
         );

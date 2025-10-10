@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks against empty PHP statements.
  *
@@ -19,8 +20,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class EmptyPHPStatementSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -70,7 +69,8 @@ class EmptyPHPStatementSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         $prevNonEmpty = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        if ($tokens[$prevNonEmpty]['code'] !== T_SEMICOLON
+        if (
+            $tokens[$prevNonEmpty]['code'] !== T_SEMICOLON
             && $tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG
             && $tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG_WITH_ECHO
         ) {
@@ -78,7 +78,8 @@ class EmptyPHPStatementSniff implements Sniff
                 return;
             }
 
-            if ($tokens[$prevNonEmpty]['scope_opener'] !== $prevNonEmpty
+            if (
+                $tokens[$prevNonEmpty]['scope_opener'] !== $prevNonEmpty
                 && $tokens[$prevNonEmpty]['code'] !== T_CLOSE_CURLY_BRACKET
             ) {
                 return;
@@ -95,7 +96,8 @@ class EmptyPHPStatementSniff implements Sniff
         if (isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
             $nested     = $tokens[$stackPtr]['nested_parenthesis'];
             $lastCloser = array_pop($nested);
-            if (isset($tokens[$lastCloser]['parenthesis_owner']) === true
+            if (
+                isset($tokens[$lastCloser]['parenthesis_owner']) === true
                 && $tokens[$tokens[$lastCloser]['parenthesis_owner']]['code'] === T_FOR
             ) {
                 // Empty for() condition.
@@ -121,7 +123,8 @@ class EmptyPHPStatementSniff implements Sniff
             $phpcsFile->fixer->replaceToken($stackPtr, $replacement);
 
             for ($i = ($stackPtr - 1); $i > $prevNonEmpty; $i--) {
-                if ($tokens[$i]['code'] !== T_SEMICOLON
+                if (
+                    $tokens[$i]['code'] !== T_SEMICOLON
                     && $tokens[$i]['code'] !== T_WHITESPACE
                 ) {
                     break;
@@ -149,7 +152,8 @@ class EmptyPHPStatementSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         $prevNonEmpty = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        if ($tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG
+        if (
+            $tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG
             && $tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG_WITH_ECHO
         ) {
             return;

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/recursion-context.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\RecursionContext;
 
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
+
 use function array_key_exists;
 use function array_pop;
 use function array_slice;
@@ -18,6 +22,7 @@ use function count;
 use function is_array;
 use function random_int;
 use function spl_object_hash;
+
 use SplObjectStorage;
 
 final class Context
@@ -27,7 +32,7 @@ final class Context
 
     public function __construct()
     {
-        $this->objects = new SplObjectStorage;
+        $this->objects = new SplObjectStorage();
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Version control report base class for PHP_CodeSniffer.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Files\File;
 
 abstract class VersionControl implements Report
 {
-
     /**
      * The name of the report we want in the output.
      *

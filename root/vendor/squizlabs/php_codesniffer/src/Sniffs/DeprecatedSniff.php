@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Marks a sniff as deprecated.
  *
@@ -17,8 +18,6 @@ namespace PHP_CodeSniffer\Sniffs;
 
 interface DeprecatedSniff
 {
-
-
     /**
      * Provide the version number in which the sniff was deprecated.
      *

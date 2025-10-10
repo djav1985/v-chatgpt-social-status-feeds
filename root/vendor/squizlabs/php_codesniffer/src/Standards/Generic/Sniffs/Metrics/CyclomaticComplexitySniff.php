@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the cyclomatic complexity (McCabe) for functions.
  *
@@ -20,7 +21,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class CyclomaticComplexitySniff implements Sniff
 {
-
     /**
      * Predicate nodes for PHP.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Full report for PHP_CodeSniffer.
  *
@@ -14,8 +15,6 @@ use PHP_CodeSniffer\Files\File;
 
 class Full implements Report
 {
-
-
     /**
      * Generate a partial report for a single processed file.
      *

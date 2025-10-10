@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Processes single and multi-line arrays.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 abstract class AbstractArraySniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -122,7 +121,8 @@ abstract class AbstractArraySniff implements Sniff
                 $ptr = $tokens[$ptr]['bracket_closer'];
             }
 
-            if ($tokens[$ptr]['code'] === T_COMMA
+            if (
+                $tokens[$ptr]['code'] === T_COMMA
                 || $tokens[$ptr]['code'] === T_DOUBLE_ARROW
             ) {
                 return $ptr;

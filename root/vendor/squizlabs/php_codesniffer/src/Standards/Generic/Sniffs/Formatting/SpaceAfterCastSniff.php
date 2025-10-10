@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures there is a single space after cast tokens.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SpaceAfterCastSniff implements Sniff
 {
-
     /**
      * The number of spaces desired after a cast token.
      *
@@ -61,7 +61,8 @@ class SpaceAfterCastSniff implements Sniff
             $pluralizeSpace = '';
         }
 
-        if ($tokens[$stackPtr]['code'] === T_BINARY_CAST
+        if (
+            $tokens[$stackPtr]['code'] === T_BINARY_CAST
             && $tokens[$stackPtr]['content'] === 'b'
         ) {
             // You can't replace a space after this type of binary casting.
@@ -73,7 +74,8 @@ class SpaceAfterCastSniff implements Sniff
             return;
         }
 
-        if ($this->ignoreNewlines === true
+        if (
+            $this->ignoreNewlines === true
             && $tokens[$stackPtr]['line'] !== $tokens[$nextNonEmpty]['line']
         ) {
             $phpcsFile->recordMetric($stackPtr, 'Spacing after cast statement', 'newline');

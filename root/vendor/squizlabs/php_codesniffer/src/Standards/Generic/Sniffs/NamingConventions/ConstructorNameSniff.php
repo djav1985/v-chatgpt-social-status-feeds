@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bans PHP 4 style constructors.
  *
@@ -20,7 +21,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ConstructorNameSniff extends AbstractScopeSniff
 {
-
     /**
      * The name of the class we are currently checking.
      *
@@ -110,7 +110,8 @@ class ConstructorNameSniff extends AbstractScopeSniff
         $startIndex       = $tokens[$stackPtr]['scope_opener'];
         while (($doubleColonIndex = $phpcsFile->findNext(T_DOUBLE_COLON, ($startIndex + 1), $endFunctionIndex)) !== false) {
             $nextNonEmpty = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($doubleColonIndex + 1), null, true);
-            if ($tokens[$nextNonEmpty]['code'] !== T_STRING
+            if (
+                $tokens[$nextNonEmpty]['code'] !== T_STRING
                 || strtolower($tokens[$nextNonEmpty]['content']) !== $parentClassNameLc
             ) {
                 $startIndex = $nextNonEmpty;
@@ -118,7 +119,8 @@ class ConstructorNameSniff extends AbstractScopeSniff
             }
 
             $prevNonEmpty = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($doubleColonIndex - 1), null, true);
-            if ($tokens[$prevNonEmpty]['code'] === T_PARENT
+            if (
+                $tokens[$prevNonEmpty]['code'] === T_PARENT
                 || $tokens[$prevNonEmpty]['code'] === T_SELF
                 || $tokens[$prevNonEmpty]['code'] === T_STATIC
                 || ($tokens[$prevNonEmpty]['code'] === T_STRING

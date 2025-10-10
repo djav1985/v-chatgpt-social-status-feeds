@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A dummy file represents a chunk of text that does not have a file system location.
  *
@@ -20,8 +21,6 @@ use PHP_CodeSniffer\Ruleset;
 
 class DummyFile extends File
 {
-
-
     /**
      * Creates a DummyFile object and sets the content.
      *

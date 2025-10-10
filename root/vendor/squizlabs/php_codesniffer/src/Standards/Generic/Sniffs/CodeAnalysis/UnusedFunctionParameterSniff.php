@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks for unused function parameters.
  *
@@ -23,7 +24,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UnusedFunctionParameterSniff implements Sniff
 {
-
     /**
      * A list of all PHP magic methods with fixed method signatures.
      *
@@ -183,7 +183,8 @@ class UnusedFunctionParameterSniff implements Sniff
                         true
                     );
 
-                    if ($secondNonEmptyTokenAfterReturn !== false
+                    if (
+                        $secondNonEmptyTokenAfterReturn !== false
                         && $tokens[$secondNonEmptyTokenAfterReturn]['code'] === T_SEMICOLON
                         && $implements !== false
                     ) {
@@ -208,7 +209,8 @@ class UnusedFunctionParameterSniff implements Sniff
                         }
                     }
                 }
-            } elseif ($code === T_DOUBLE_QUOTED_STRING
+            } elseif (
+                $code === T_DOUBLE_QUOTED_STRING
                 || $code === T_START_HEREDOC
                 || $code === T_START_NOWDOC
             ) {

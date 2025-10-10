@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/cli-parser.
  *
@@ -10,6 +13,7 @@
 namespace SebastianBergmann\CliParser;
 
 use function sprintf;
+
 use RuntimeException;
 
 final class AmbiguousOptionException extends RuntimeException implements Exception

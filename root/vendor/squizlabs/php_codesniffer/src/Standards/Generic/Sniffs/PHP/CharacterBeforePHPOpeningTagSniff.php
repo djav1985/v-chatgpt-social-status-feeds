@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the opening PHP tag is the first content in a file.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class CharacterBeforePHPOpeningTagSniff implements Sniff
 {
-
     /**
      * List of supported BOM definitions.
      *

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/code-unit.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\CodeUnit;
 
 use function array_merge;
 use function count;
+
 use Countable;
 use IteratorAggregate;
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that inline control statements are not present.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class InlineControlStructureSniff implements Sniff
 {
-
     /**
      * If true, an error will be thrown; otherwise a warning.
      *
@@ -90,7 +90,8 @@ class InlineControlStructureSniff implements Sniff
             }
         }
 
-        if (isset($tokens[$stackPtr]['parenthesis_opener'], $tokens[$stackPtr]['parenthesis_closer']) === false
+        if (
+            isset($tokens[$stackPtr]['parenthesis_opener'], $tokens[$stackPtr]['parenthesis_closer']) === false
             && $tokens[$stackPtr]['code'] !== T_ELSE
         ) {
             if ($tokens[$stackPtr]['code'] !== T_DO) {
@@ -99,7 +100,8 @@ class InlineControlStructureSniff implements Sniff
             }
 
             $nextWhile = $phpcsFile->findNext(T_WHILE, ($stackPtr + 1));
-            if ($nextWhile !== false
+            if (
+                $nextWhile !== false
                 && isset($tokens[$nextWhile]['parenthesis_opener'], $tokens[$nextWhile]['parenthesis_closer']) === false
             ) {
                 // Live coding or parse error.
@@ -120,7 +122,8 @@ class InlineControlStructureSniff implements Sniff
             return;
         }
 
-        if ($tokens[$nextNonEmpty]['code'] === T_OPEN_CURLY_BRACKET
+        if (
+            $tokens[$nextNonEmpty]['code'] === T_OPEN_CURLY_BRACKET
             || $tokens[$nextNonEmpty]['code'] === T_COLON
         ) {
             // T_CLOSE_CURLY_BRACKET missing, or alternative control structure with
@@ -174,7 +177,8 @@ class InlineControlStructureSniff implements Sniff
                 break;
             }
 
-            if (in_array($tokens[$end]['code'], $fixableScopeOpeners, true) === true
+            if (
+                in_array($tokens[$end]['code'], $fixableScopeOpeners, true) === true
                 && isset($tokens[$end]['scope_opener']) === false
             ) {
                 // The best way to fix nested inline scopes is middle-out.
@@ -186,7 +190,8 @@ class InlineControlStructureSniff implements Sniff
             if (isset($tokens[$end]['scope_opener']) === true) {
                 $type = $tokens[$end]['code'];
                 $end  = $tokens[$end]['scope_closer'];
-                if ($type === T_DO
+                if (
+                    $type === T_DO
                     || $type === T_IF || $type === T_ELSEIF
                     || $type === T_TRY || $type === T_CATCH || $type === T_FINALLY
                 ) {
@@ -198,7 +203,8 @@ class InlineControlStructureSniff implements Sniff
                     $nextType = $tokens[$next]['code'];
 
                     // Let additional conditions loop and find their ending.
-                    if (($type === T_IF
+                    if (
+                        ($type === T_IF
                         || $type === T_ELSEIF)
                         && ($nextType === T_ELSEIF
                         || $nextType === T_ELSE)
@@ -207,7 +213,8 @@ class InlineControlStructureSniff implements Sniff
                     }
 
                     // Account for TRY... CATCH/FINALLY statements.
-                    if (($type === T_TRY
+                    if (
+                        ($type === T_TRY
                         || $type === T_CATCH
                         || $type === T_FINALLY)
                         && ($nextType === T_CATCH
@@ -228,7 +235,8 @@ class InlineControlStructureSniff implements Sniff
                     }
                 }
 
-                if ($tokens[$end]['code'] !== T_END_HEREDOC
+                if (
+                    $tokens[$end]['code'] !== T_END_HEREDOC
                     && $tokens[$end]['code'] !== T_END_NOWDOC
                 ) {
                     break;
@@ -255,14 +263,16 @@ class InlineControlStructureSniff implements Sniff
         if ($nextContent === false || $tokens[$nextContent]['line'] !== $tokens[$end]['line']) {
             // Account for a comment on the end of the line.
             for ($endLine = $end; $endLine < $phpcsFile->numTokens; $endLine++) {
-                if (isset($tokens[($endLine + 1)]) === false
+                if (
+                    isset($tokens[($endLine + 1)]) === false
                     || $tokens[$endLine]['line'] !== $tokens[($endLine + 1)]['line']
                 ) {
                     break;
                 }
             }
 
-            if (isset(Tokens::COMMENT_TOKENS[$tokens[$endLine]['code']]) === false
+            if (
+                isset(Tokens::COMMENT_TOKENS[$tokens[$endLine]['code']]) === false
                 && ($tokens[$endLine]['code'] !== T_WHITESPACE
                 || isset(Tokens::COMMENT_TOKENS[$tokens[($endLine - 1)]['code']]) === false)
             ) {
@@ -279,7 +289,8 @@ class InlineControlStructureSniff implements Sniff
             $endToken     = $end;
             $addedContent = $phpcsFile->eolChar;
 
-            if ($tokens[$end]['code'] !== T_SEMICOLON
+            if (
+                $tokens[$end]['code'] !== T_SEMICOLON
                 && $tokens[$end]['code'] !== T_CLOSE_CURLY_BRACKET
             ) {
                 $phpcsFile->fixer->addContent($end, '; ');
@@ -287,7 +298,8 @@ class InlineControlStructureSniff implements Sniff
         }
 
         $next = $phpcsFile->findNext(T_WHITESPACE, ($endToken + 1), null, true);
-        if ($next !== false
+        if (
+            $next !== false
             && ($tokens[$next]['code'] === T_ELSE
             || $tokens[$next]['code'] === T_ELSEIF)
         ) {
@@ -302,7 +314,8 @@ class InlineControlStructureSniff implements Sniff
 
             if ($tokens[$first]['code'] === T_WHITESPACE) {
                 $indent = $tokens[$first]['content'];
-            } elseif ($tokens[$first]['code'] === T_INLINE_HTML
+            } elseif (
+                $tokens[$first]['code'] === T_INLINE_HTML
                 || $tokens[$first]['code'] === T_OPEN_TAG
             ) {
                 $addedContent = '';

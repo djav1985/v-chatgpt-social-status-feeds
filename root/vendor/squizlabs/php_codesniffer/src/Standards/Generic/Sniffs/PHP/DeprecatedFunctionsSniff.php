@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Discourages the use of deprecated PHP functions.
  *
@@ -16,7 +17,6 @@ use ReflectionFunction;
 
 class DeprecatedFunctionsSniff extends ForbiddenFunctionsSniff
 {
-
     /**
      * A list of forbidden functions with their alternatives.
      *

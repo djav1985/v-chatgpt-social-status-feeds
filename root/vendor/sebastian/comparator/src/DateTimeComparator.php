@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -13,6 +16,7 @@ use function abs;
 use function assert;
 use function floor;
 use function sprintf;
+
 use DateInterval;
 use DateTimeInterface;
 use DateTimeZone;

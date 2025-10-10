@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/type.
  *
@@ -13,6 +16,7 @@ use function array_pop;
 use function explode;
 use function implode;
 use function substr;
+
 use ReflectionClass;
 
 final class TypeName

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Makes sure that shorthand PHP open tags are not used.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DisallowShortOpenTagSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

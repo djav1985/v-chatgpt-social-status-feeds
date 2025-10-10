@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A filter to only include files that have been staged for commit in a Git repository.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Common;
 
 class GitStaged extends ExactMatch
 {
-
-
     /**
      * Get a list of file paths to exclude.
      *

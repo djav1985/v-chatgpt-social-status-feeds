@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures method and functions are named correctly.
  *
@@ -17,7 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class CamelCapsFunctionNameSniff extends AbstractScopeSniff
 {
-
     /**
      * A list of all PHP magic methods.
      *
@@ -157,7 +157,8 @@ class CamelCapsFunctionNameSniff extends AbstractScopeSniff
         // Is this a magic method. i.e., is prefixed with "__" ?
         if (preg_match('|^__[^_]|', $methodName) !== 0) {
             $magicPart = substr($methodNameLc, 2);
-            if (isset(static::MAGIC_METHODS[$magicPart]) === true
+            if (
+                isset(static::MAGIC_METHODS[$magicPart]) === true
                 || isset(static::DOUBLE_UNDERSCORE_METHODS[$magicPart]) === true
             ) {
                 return;

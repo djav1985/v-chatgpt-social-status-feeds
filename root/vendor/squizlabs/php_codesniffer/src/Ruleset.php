@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Stores the rules used to check and fix files.
  *
@@ -28,7 +29,6 @@ use stdClass;
 
 class Ruleset
 {
-
     /**
      * The name of the coding standard being used.
      *
@@ -189,7 +189,8 @@ class Ruleset
             $installed = Standards::getInstalledStandardPath($standard);
             if ($installed === null) {
                 $standard = Common::realpath($standard);
-                if (is_dir($standard) === true
+                if (
+                    is_dir($standard) === true
                     && is_file(Common::realpath($standard . DIRECTORY_SEPARATOR . 'ruleset.xml')) === true
                 ) {
                     $standard = Common::realpath($standard . DIRECTORY_SEPARATOR . 'ruleset.xml');
@@ -372,7 +373,8 @@ class Ruleset
         // Documentation and explain will mark a sniff as deprecated natively
         // and also call the Ruleset multiple times which would lead to duplicate
         // display of the deprecation messages.
-        if ($this->config->quiet === true
+        if (
+            $this->config->quiet === true
             || $this->config->explain === true
             || $this->config->generator !== null
         ) {
@@ -499,7 +501,8 @@ class Ruleset
         // or when the documentation is being shown.
         // Documentation and explain will call the Ruleset multiple times which
         // would lead to duplicate display of the messages.
-        if ($this->msgCache->containsBlockingErrors() === false
+        if (
+            $this->msgCache->containsBlockingErrors() === false
             && ($this->config->quiet === true
             || $this->config->explain === true
             || $this->config->generator !== null)
@@ -599,7 +602,8 @@ class Ruleset
 
             $name = (string) $config['name'];
 
-            if (isset($this->configDirectivesApplied[$name]) === true
+            if (
+                isset($this->configDirectivesApplied[$name]) === true
                 && $this->configDirectivesApplied[$name] < $depth
             ) {
                 // Ignore this config. A higher level ruleset has already set a value for this directive.
@@ -636,7 +640,8 @@ class Ruleset
                     $cliSettingName = $this->config::CLI_FLAGS_TO_SETTING_NAME[$name];
                 }
 
-                if (isset($this->cliSettingsApplied[$cliSettingName]) === true
+                if (
+                    isset($this->cliSettingsApplied[$cliSettingName]) === true
                     && $this->cliSettingsApplied[$cliSettingName] < $depth
                 ) {
                     // Ignore this CLI flag. A higher level ruleset has already set a value for this setting.
@@ -670,7 +675,8 @@ class Ruleset
                         $cliSettingName = $this->config::CLI_FLAGS_TO_SETTING_NAME[$flag];
                     }
 
-                    if (isset($this->cliSettingsApplied[$cliSettingName]) === true
+                    if (
+                        isset($this->cliSettingsApplied[$cliSettingName]) === true
                         && $this->cliSettingsApplied[$cliSettingName] < $depth
                     ) {
                         // Ignore this CLI flag. A higher level ruleset has already set a value for this setting.
@@ -702,7 +708,8 @@ class Ruleset
         }
 
         foreach ($ruleset->rule as $rule) {
-            if (isset($rule['ref']) === false
+            if (
+                isset($rule['ref']) === false
                 || $this->shouldProcessElement($rule) === false
             ) {
                 continue;
@@ -717,13 +724,15 @@ class Ruleset
             $includedSniffs = array_merge($includedSniffs, $expandedSniffs);
 
             $parts = explode('.', $rule['ref']);
-            if (count($parts) === 4
+            if (
+                count($parts) === 4
                 && $parts[0] !== ''
                 && $parts[1] !== ''
                 && $parts[2] !== ''
             ) {
                 $sniffCode = $parts[0] . '.' . $parts[1] . '.' . $parts[2];
-                if (isset($this->ruleset[$sniffCode]['severity']) === true
+                if (
+                    isset($this->ruleset[$sniffCode]['severity']) === true
                     && $this->ruleset[$sniffCode]['severity'] === 0
                 ) {
                     // This sniff code has already been turned off, but now
@@ -1046,7 +1055,8 @@ class Ruleset
                 $newRef  = false;
                 $stdPath = Standards::getInstalledStandardPath($stdName);
                 if ($stdPath !== null && $path !== '') {
-                    if (Common::isPharFile($stdPath) === true
+                    if (
+                        Common::isPharFile($stdPath) === true
                         && strpos($stdPath, 'ruleset.xml') === false
                     ) {
                         // Phar files can only return the directory,
@@ -1140,7 +1150,8 @@ class Ruleset
 
         $parts      = explode('.', $ref);
         $partsCount = count($parts);
-        if ($partsCount <= 2
+        if (
+            $partsCount <= 2
             || $partsCount > count(array_filter($parts))
             || in_array($ref, $newSniffs) === true
         ) {
@@ -1162,7 +1173,8 @@ class Ruleset
 
         foreach ($todo as $code) {
             // Custom severity.
-            if (isset($rule->severity) === true
+            if (
+                isset($rule->severity) === true
                 && $this->shouldProcessElement($rule->severity) === true
             ) {
                 if (isset($this->ruleset[$code]) === false) {
@@ -1181,7 +1193,8 @@ class Ruleset
             }
 
             // Custom message type.
-            if (isset($rule->type) === true
+            if (
+                isset($rule->type) === true
                 && $this->shouldProcessElement($rule->type) === true
             ) {
                 if (isset($this->ruleset[$code]) === false) {
@@ -1206,7 +1219,8 @@ class Ruleset
             }
 
             // Custom message.
-            if (isset($rule->message) === true
+            if (
+                isset($rule->message) === true
                 && $this->shouldProcessElement($rule->message) === true
             ) {
                 if (isset($this->ruleset[$code]) === false) {
@@ -1225,7 +1239,8 @@ class Ruleset
             }
 
             // Custom properties.
-            if (isset($rule->properties) === true
+            if (
+                isset($rule->properties) === true
                 && $this->shouldProcessElement($rule->properties) === true
             ) {
                 $propertyScope = 'standard';
@@ -1247,7 +1262,8 @@ class Ruleset
                     }
 
                     $name = (string) $prop['name'];
-                    if (isset($prop['type']) === true
+                    if (
+                        isset($prop['type']) === true
                         && (string) $prop['type'] === 'array'
                     ) {
                         if (isset($prop['value']) === true) {
@@ -1385,21 +1401,24 @@ class Ruleset
      */
     private function shouldProcessElement(SimpleXMLElement $element)
     {
-        if (isset($element['phpcbf-only']) === false
+        if (
+            isset($element['phpcbf-only']) === false
             && isset($element['phpcs-only']) === false
         ) {
             // No exceptions are being made.
             return true;
         }
 
-        if (PHP_CODESNIFFER_CBF === true
+        if (
+            PHP_CODESNIFFER_CBF === true
             && isset($element['phpcbf-only']) === true
             && (string) $element['phpcbf-only'] === 'true'
         ) {
             return true;
         }
 
-        if (PHP_CODESNIFFER_CBF === false
+        if (
+            PHP_CODESNIFFER_CBF === false
             && isset($element['phpcs-only']) === true
             && (string) $element['phpcs-only'] === 'true'
         ) {
@@ -1443,7 +1462,8 @@ class Ruleset
 
             // If they have specified a list of sniffs to restrict to, check
             // to see if this sniff is allowed.
-            if (empty($restrictions) === false
+            if (
+                empty($restrictions) === false
                 && isset($restrictions[$compareName]) === false
             ) {
                 continue;
@@ -1451,7 +1471,8 @@ class Ruleset
 
             // If they have specified a list of sniffs to exclude, check
             // to see if this sniff is allowed.
-            if (empty($exclusions) === false
+            if (
+                empty($exclusions) === false
                 && isset($exclusions[$compareName]) === true
             ) {
                 continue;
@@ -1475,7 +1496,8 @@ class Ruleset
                 // Using the default value as the class is not yet instantiated and this is not a property which should get changed anyway.
                 $value = $reflection->getDefaultProperties()['supportedTokenizers'];
 
-                if (is_array($value) === true
+                if (
+                    is_array($value) === true
                     && empty($value) === false
                     && in_array('PHP', $value, true) === false
                 ) {
@@ -1620,7 +1642,8 @@ class Ruleset
 
         $isSettable  = false;
         $sniffObject = $this->sniffs[$sniffClass];
-        if (property_exists($sniffObject, $propertyName) === true
+        if (
+            property_exists($sniffObject, $propertyName) === true
             || ($sniffObject instanceof stdClass) === true
             || method_exists($sniffObject, '__set') === true
         ) {
@@ -1658,7 +1681,8 @@ class Ruleset
             $value = $this->getRealPropertyValue($value);
         }
 
-        if (isset($settings['extend']) === true
+        if (
+            isset($settings['extend']) === true
             && $settings['extend'] === true
             && isset($sniffObject->$propertyName) === true
             && is_array($sniffObject->$propertyName) === true

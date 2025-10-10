@@ -1,4 +1,5 @@
 <?php
+
 /**
  * An exception thrown by PHP_CodeSniffer when it encounters an unrecoverable error.
  *
@@ -14,5 +15,4 @@ use RuntimeException as PHPRuntimeException;
 
 class RuntimeException extends PHPRuntimeException
 {
-
 }

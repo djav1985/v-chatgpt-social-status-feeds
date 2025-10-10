@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -12,6 +15,7 @@ namespace SebastianBergmann\Comparator;
 use function array_keys;
 use function assert;
 use function str_starts_with;
+
 use PHPUnit\Framework\MockObject\Stub;
 
 /**

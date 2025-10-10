@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures there is a single space after a NOT operator.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SpaceAfterNotSniff implements Sniff
 {
-
     /**
      * The number of spaces desired after the NOT operator.
      *
@@ -66,7 +66,8 @@ class SpaceAfterNotSniff implements Sniff
             return;
         }
 
-        if ($this->ignoreNewlines === true
+        if (
+            $this->ignoreNewlines === true
             && $tokens[$stackPtr]['line'] !== $tokens[$nextNonEmpty]['line']
         ) {
             return;

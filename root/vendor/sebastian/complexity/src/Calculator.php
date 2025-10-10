@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/complexity.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\Complexity;
 
 use function assert;
 use function file_get_contents;
+
 use PhpParser\Error;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
@@ -34,7 +38,7 @@ final class Calculator
     public function calculateForSourceString(string $source): ComplexityCollection
     {
         try {
-            $nodes = (new ParserFactory)->createForHostVersion()->parse($source);
+            $nodes = (new ParserFactory())->createForHostVersion()->parse($source);
 
             assert($nodes !== null);
 
@@ -58,11 +62,11 @@ final class Calculator
      */
     public function calculateForAbstractSyntaxTree(array $nodes): ComplexityCollection
     {
-        $traverser                    = new NodeTraverser;
+        $traverser                    = new NodeTraverser();
         $complexityCalculatingVisitor = new ComplexityCalculatingVisitor(true);
 
-        $traverser->addVisitor(new NameResolver);
-        $traverser->addVisitor(new ParentConnectingVisitor);
+        $traverser->addVisitor(new NameResolver());
+        $traverser->addVisitor(new ParentConnectingVisitor());
         $traverser->addVisitor($complexityCalculatingVisitor);
 
         try {

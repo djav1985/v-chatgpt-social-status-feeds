@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests that files are not executable.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ExecutableFileSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

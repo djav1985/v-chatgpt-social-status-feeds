@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Responsible for running PHPCS and PHPCBF.
  *
@@ -30,7 +31,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class Runner
 {
-
     /**
      * The config data for the run.
      *
@@ -505,7 +505,8 @@ class Runner
 
         restore_error_handler();
 
-        if (PHP_CODESNIFFER_VERBOSITY === 0
+        if (
+            PHP_CODESNIFFER_VERBOSITY === 0
             && $this->config->interactive === false
             && $this->config->showProgress === true
         ) {
@@ -605,7 +606,8 @@ class Runner
             if (empty($sniffStack) === false) {
                 $sniffCode = '';
                 try {
-                    if (empty($nextStack) === false
+                    if (
+                        empty($nextStack) === false
                         && isset($nextStack['class']) === true
                     ) {
                         $sniffCode = 'the ' . Common::getSniffCode($nextStack['class']) . ' sniff';
@@ -767,7 +769,8 @@ class Runner
      */
     public function printProgress(File $file, int $numFiles, int $numProcessed)
     {
-        if (PHP_CODESNIFFER_VERBOSITY > 0
+        if (
+            PHP_CODESNIFFER_VERBOSITY > 0
             || $this->config->showProgress === false
         ) {
             return;
@@ -849,7 +852,8 @@ class Runner
 
         $percent = round(($numProcessed / $numFiles) * 100);
         $padding = (strlen($numFiles) - strlen($numProcessed));
-        if ($numProcessed === $numFiles
+        if (
+            $numProcessed === $numFiles
             && $numFiles > $numPerLine
             && ($numProcessed % $numPerLine) !== 0
         ) {

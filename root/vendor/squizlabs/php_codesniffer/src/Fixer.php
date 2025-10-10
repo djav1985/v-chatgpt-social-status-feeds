@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A helper class for fixing errors.
  *
@@ -21,7 +22,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class Fixer
 {
-
     /**
      * Is the fixer enabled and fixing a file?
      *
@@ -376,7 +376,8 @@ class Fixer
      */
     public function getTokenContent(int $stackPtr)
     {
-        if ($this->inChangeset === true
+        if (
+            $this->inChangeset === true
             && isset($this->changeset[$stackPtr]) === true
         ) {
             return $this->changeset[$stackPtr];
@@ -506,7 +507,8 @@ class Fixer
             return false;
         }
 
-        if ($this->inChangeset === false
+        if (
+            $this->inChangeset === false
             && isset($this->fixedTokens[$stackPtr]) === true
         ) {
             $depth = 1;
@@ -563,7 +565,8 @@ class Fixer
                 'loop' => $this->loops,
             ];
         } else {
-            if ($this->oldTokenValues[$stackPtr]['prev'] === $content
+            if (
+                $this->oldTokenValues[$stackPtr]['prev'] === $content
                 && $this->oldTokenValues[$stackPtr]['loop'] === ($this->loops - 1)
             ) {
                 if (PHP_CODESNIFFER_VERBOSITY > 1) {
@@ -779,14 +782,16 @@ class Fixer
         }
 
         for ($i = $start; $i <= $end; $i++) {
-            if ($tokens[$i]['column'] !== 1
+            if (
+                $tokens[$i]['column'] !== 1
                 || $tokens[($i + 1)]['line'] !== $tokens[$i]['line']
             ) {
                 continue;
             }
 
             $length = 0;
-            if ($tokens[$i]['code'] === T_WHITESPACE
+            if (
+                $tokens[$i]['code'] === T_WHITESPACE
                 || $tokens[$i]['code'] === T_DOC_COMMENT_WHITESPACE
             ) {
                 $length = $tokens[$i]['length'];

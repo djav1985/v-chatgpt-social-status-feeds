@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/object-enumerator.
  *
@@ -12,6 +15,7 @@ namespace SebastianBergmann\ObjectEnumerator;
 use function array_merge;
 use function is_array;
 use function is_object;
+
 use SebastianBergmann\ObjectReflector\ObjectReflector;
 use SebastianBergmann\RecursionContext\Context;
 
@@ -20,7 +24,7 @@ final class Enumerator
     /**
      * @psalm-return list<object>
      */
-    public function enumerate(array|object $variable, Context $processed = new Context): array
+    public function enumerate(array|object $variable, Context $processed = new Context()): array
     {
         $objects = [];
 
@@ -51,7 +55,7 @@ final class Enumerator
 
         $objects[] = $variable;
 
-        foreach ((new ObjectReflector)->getProperties($variable) as $value) {
+        foreach ((new ObjectReflector())->getProperties($variable) as $value) {
             if (!is_array($value) && !is_object($value)) {
                 continue;
             }

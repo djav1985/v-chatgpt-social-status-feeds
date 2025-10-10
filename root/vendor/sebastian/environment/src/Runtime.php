@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/environment.
  *
@@ -14,6 +17,7 @@ use const PHP_BINDIR;
 use const PHP_MAJOR_VERSION;
 use const PHP_SAPI;
 use const PHP_VERSION;
+
 use function array_map;
 use function array_merge;
 use function escapeshellarg;

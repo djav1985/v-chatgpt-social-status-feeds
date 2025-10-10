@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/code-unit.
  *
@@ -15,6 +18,7 @@ use function file_exists;
 use function is_readable;
 use function range;
 use function sprintf;
+
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionMethod;

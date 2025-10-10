@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -16,6 +19,7 @@ use function is_string;
 use function mb_strtolower;
 use function method_exists;
 use function sprintf;
+
 use SebastianBergmann\Exporter\Exporter;
 
 /**
@@ -39,7 +43,7 @@ class ScalarComparator extends Comparator
     {
         $expectedToCompare = $expected;
         $actualToCompare   = $actual;
-        $exporter          = new Exporter;
+        $exporter          = new Exporter();
 
         // always compare as strings to avoid strange behaviour
         // otherwise 0 == 'Foobar'

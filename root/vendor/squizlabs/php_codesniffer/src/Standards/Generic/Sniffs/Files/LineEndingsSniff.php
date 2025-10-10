@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that end of line characters are correct.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class LineEndingsSniff implements Sniff
 {
-
     /**
      * The valid EOL character.
      *
@@ -65,7 +65,8 @@ class LineEndingsSniff implements Sniff
         if ($found === '\n') {
             $tokens    = $phpcsFile->getTokens();
             $lastToken = ($phpcsFile->numTokens - 1);
-            if ($tokens[$lastToken]['line'] === 1
+            if (
+                $tokens[$lastToken]['line'] === 1
                 && $tokens[$lastToken]['content'] !== "\n"
             ) {
                 return $phpcsFile->numTokens;
@@ -102,7 +103,8 @@ class LineEndingsSniff implements Sniff
             }
 
             for ($i = 0; $i < $phpcsFile->numTokens; $i++) {
-                if (isset($tokens[($i + 1)]) === true
+                if (
+                    isset($tokens[($i + 1)]) === true
                     && $tokens[($i + 1)]['line'] <= $tokens[$i]['line']
                 ) {
                     continue;

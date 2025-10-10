@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Git blame report for PHP_CodeSniffer.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\ExitCode;
 
 class Gitblame extends VersionControl
 {
-
     /**
      * The name of the report we want in the output
      *

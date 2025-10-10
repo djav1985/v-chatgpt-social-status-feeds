@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the strict_types has been declared.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class RequireStrictTypesSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -61,7 +60,8 @@ class RequireStrictTypesSniff implements Sniff
                     true
                 );
 
-                if ($next !== false
+                if (
+                    $next !== false
                     && $tokens[$next]['code'] === T_STRING
                     && strtolower($tokens[$next]['content']) === 'strict_types'
                 ) {
@@ -86,7 +86,8 @@ class RequireStrictTypesSniff implements Sniff
         $skip[]   = T_EQUAL;
         $valuePtr = $phpcsFile->findNext($skip, ($next + 1), null, true);
 
-        if ($valuePtr !== false
+        if (
+            $valuePtr !== false
             && $tokens[$valuePtr]['code'] === T_LNUMBER
             && $tokens[$valuePtr]['content'] === '0'
         ) {

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/global-state.
  *
@@ -28,6 +31,7 @@ use function is_resource;
 use function is_scalar;
 use function serialize;
 use function unserialize;
+
 use ReflectionClass;
 use SebastianBergmann\ObjectReflector\ObjectReflector;
 use SebastianBergmann\RecursionContext\Context;
@@ -53,7 +57,7 @@ class Snapshot
 
     public function __construct(?ExcludeList $excludeList = null, bool $includeGlobalVariables = true, bool $includeStaticProperties = true, bool $includeConstants = true, bool $includeFunctions = true, bool $includeClasses = true, bool $includeInterfaces = true, bool $includeTraits = true, bool $includeIniSettings = true, bool $includeIncludedFiles = true)
     {
-        $this->excludeList = $excludeList ?: new ExcludeList;
+        $this->excludeList = $excludeList ?: new ExcludeList();
 
         if ($includeConstants) {
             $this->snapshotConstants();
@@ -208,10 +212,12 @@ class Snapshot
         }
 
         foreach (array_keys($GLOBALS) as $key) {
-            if ($key !== 'GLOBALS' &&
+            if (
+                $key !== 'GLOBALS' &&
                 !in_array($key, $superGlobalArrays, true) &&
                 $this->canBeSerialized($GLOBALS[$key]) &&
-                !$this->excludeList->isGlobalVariableExcluded($key)) {
+                !$this->excludeList->isGlobalVariableExcluded($key)
+            ) {
                 /* @noinspection UnserializeExploitsInspection */
                 $this->globalVariables[$key] = unserialize(serialize($GLOBALS[$key]));
             }
@@ -314,7 +320,7 @@ class Snapshot
         if (isset(func_get_args()[1])) {
             $processed = func_get_args()[1];
         } else {
-            $processed = new Context;
+            $processed = new Context();
         }
 
         assert($processed instanceof Context);
@@ -349,7 +355,7 @@ class Snapshot
         } else {
             $result[] = $variable;
 
-            foreach ((new ObjectReflector)->getProperties($variable) as $value) {
+            foreach ((new ObjectReflector())->getProperties($variable) as $value) {
                 if (!is_array($value) && !is_object($value) && !is_resource($value)) {
                     continue;
                 }

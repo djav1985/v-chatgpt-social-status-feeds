@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Discourages the use of alias functions.
  *
@@ -19,7 +20,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ForbiddenFunctionsSniff implements Sniff
 {
-
     /**
      * A list of forbidden functions with their alternatives.
      *
@@ -154,7 +154,8 @@ class ForbiddenFunctionsSniff implements Sniff
             return;
         }
 
-        if (($tokens[$stackPtr]['code'] === T_STRING || $tokens[$stackPtr]['code'] === T_NAME_FULLY_QUALIFIED)
+        if (
+            ($tokens[$stackPtr]['code'] === T_STRING || $tokens[$stackPtr]['code'] === T_NAME_FULLY_QUALIFIED)
             && $tokens[$nextToken]['code'] !== T_OPEN_PARENTHESIS
         ) {
             // Not a call to a PHP function.

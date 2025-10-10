@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A doc generator that outputs documentation in one big HTML file.
  *
@@ -22,7 +23,6 @@ use PHP_CodeSniffer\Exceptions\GeneratorException;
 
 class HTML extends Generator
 {
-
     /**
      * Stylesheet for the HTML output.
      *

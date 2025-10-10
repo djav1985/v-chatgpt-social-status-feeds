@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -16,6 +19,7 @@ use function sort;
 use function sprintf;
 use function str_replace;
 use function trim;
+
 use SebastianBergmann\Exporter\Exporter;
 
 /**
@@ -47,7 +51,7 @@ class ArrayComparator extends Comparator
         $actualAsString   = "Array (\n";
         $expectedAsString = "Array (\n";
         $equal            = true;
-        $exporter         = new Exporter;
+        $exporter         = new Exporter();
 
         foreach ($expected as $key => $value) {
             unset($remaining[$key]);

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/type.
  *
@@ -12,6 +15,7 @@ namespace SebastianBergmann\Type;
 use function assert;
 use function class_exists;
 use function is_iterable;
+
 use ReflectionClass;
 
 final class IterableType extends Type

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * An exception thrown by PHP_CodeSniffer when it wants to exit from somewhere not in the main runner.
  *
@@ -21,5 +22,4 @@ use Exception;
 
 class DeepExitException extends Exception
 {
-
 }

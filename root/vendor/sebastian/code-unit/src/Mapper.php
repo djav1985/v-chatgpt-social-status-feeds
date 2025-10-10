@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/code-unit.
  *
@@ -23,6 +26,7 @@ use function sort;
 use function sprintf;
 use function str_contains;
 use function trait_exists;
+
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionMethod;

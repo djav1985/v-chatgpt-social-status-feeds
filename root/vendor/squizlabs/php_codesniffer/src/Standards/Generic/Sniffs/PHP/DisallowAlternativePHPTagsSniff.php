@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that no alternative PHP tags are used.
  *
@@ -17,8 +18,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DisallowAlternativePHPTagsSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

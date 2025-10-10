@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Diff report for PHP_CodeSniffer.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class Diff implements Report
 {
-
-
     /**
      * Generate a partial report for a single processed file.
      *

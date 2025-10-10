@@ -1,4 +1,5 @@
 <?php
+
 return [
   "country" => "United States Minor Outlying Islands",
   "subdivisions" => [

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures the file does not end with a newline character.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class EndFileNoNewlineSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

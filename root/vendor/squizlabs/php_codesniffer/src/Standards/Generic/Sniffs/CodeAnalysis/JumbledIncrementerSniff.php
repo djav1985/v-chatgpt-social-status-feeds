@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Detects incrementer jumbling in for loops.
  *
@@ -35,8 +36,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class JumbledIncrementerSniff implements Sniff
 {
-
-
     /**
      * Registers the tokens that this sniff wants to listen for.
      *

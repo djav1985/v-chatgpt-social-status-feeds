@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manages reporting of errors and warnings.
  *
@@ -25,7 +26,6 @@ use PHP_CodeSniffer\Util\ExitCode;
  */
 class Reporter
 {
-
     /**
      * The config data for the run.
      *

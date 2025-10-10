@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures the PHP_SAPI constant is used instead of php_sapi_name().
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class SAPIUsageSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/complexity.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\Complexity;
 
 use function assert;
 use function is_array;
+
 use PhpParser\Node;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Name;
@@ -84,9 +88,9 @@ final class ComplexityCalculatingVisitor extends NodeVisitorAbstract
      */
     private function cyclomaticComplexity(array $statements): int
     {
-        $traverser = new NodeTraverser;
+        $traverser = new NodeTraverser();
 
-        $cyclomaticComplexityCalculatingVisitor = new CyclomaticComplexityCalculatingVisitor;
+        $cyclomaticComplexityCalculatingVisitor = new CyclomaticComplexityCalculatingVisitor();
 
         $traverser->addVisitor($cyclomaticComplexityCalculatingVisitor);
 

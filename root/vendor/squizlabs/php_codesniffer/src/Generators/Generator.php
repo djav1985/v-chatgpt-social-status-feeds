@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The base class for all PHP_CodeSniffer documentation generators.
  *
@@ -23,7 +24,6 @@ use PHP_CodeSniffer\Ruleset;
 
 abstract class Generator
 {
-
     /**
      * The ruleset used for the run.
      *

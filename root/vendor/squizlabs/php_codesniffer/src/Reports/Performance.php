@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Performance report for PHP_CodeSniffer.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Util\Timing;
 
 class Performance implements Report
 {
-
-
     /**
      * Generate a partial report for a single processed file.
      *

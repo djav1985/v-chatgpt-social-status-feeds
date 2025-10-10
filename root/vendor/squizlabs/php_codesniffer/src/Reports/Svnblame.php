@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SVN blame report for PHP_CodeSniffer.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Util\ExitCode;
 
 class Svnblame extends VersionControl
 {
-
     /**
      * The name of the report we want in the output
      *

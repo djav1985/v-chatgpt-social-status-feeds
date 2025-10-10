@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the opening brace of a class/interface/trait is on the same line as the class declaration.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class OpeningBraceSameLineSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A base filter class for filtering out files and folders during a run.
  *
@@ -21,7 +22,6 @@ use ReturnTypeWillChange;
 
 class Filter extends RecursiveFilterIterator
 {
-
     /**
      * The top-level path we are filtering.
      *

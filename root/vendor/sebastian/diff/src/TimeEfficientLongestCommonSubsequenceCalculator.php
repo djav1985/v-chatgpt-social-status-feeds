@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/diff.
  *
@@ -12,6 +15,7 @@ namespace SebastianBergmann\Diff;
 use function array_reverse;
 use function count;
 use function max;
+
 use SplFixedArray;
 
 final class TimeEfficientLongestCommonSubsequenceCalculator implements LongestCommonSubsequenceCalculator

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures that array are indented one tab stop.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ArrayIndentSniff extends AbstractArraySniff
 {
-
     /**
      * The number of spaces each array key should be indented.
      *

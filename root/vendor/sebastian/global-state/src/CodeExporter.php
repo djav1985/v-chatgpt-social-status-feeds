@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/global-state.
  *
@@ -10,6 +13,7 @@
 namespace SebastianBergmann\GlobalState;
 
 use const PHP_EOL;
+
 use function is_array;
 use function is_scalar;
 use function serialize;
@@ -77,8 +81,10 @@ EOT;
 
     private function exportVariable(mixed $variable): string
     {
-        if (is_scalar($variable) || null === $variable ||
-            (is_array($variable) && $this->arrayOnlyContainsScalars($variable))) {
+        if (
+            is_scalar($variable) || null === $variable ||
+            (is_array($variable) && $this->arrayOnlyContainsScalars($variable))
+        ) {
             return var_export($variable, true);
         }
 

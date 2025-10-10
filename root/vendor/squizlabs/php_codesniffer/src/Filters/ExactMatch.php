@@ -1,4 +1,5 @@
 <?php
+
 /**
  * An abstract filter class for checking files and folders against exact matches.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Common;
 
 abstract class ExactMatch extends Filter
 {
-
     /**
      * A list of files to exclude.
      *

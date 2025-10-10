@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of sebastian/comparator.
  *
@@ -12,6 +15,7 @@ namespace SebastianBergmann\Comparator;
 use function assert;
 use function mb_strtolower;
 use function sprintf;
+
 use DOMDocument;
 use DOMNode;
 use ValueError;
@@ -54,7 +58,7 @@ final class DOMNodeComparator extends ObjectComparator
     private function nodeToText(DOMNode $node, bool $canonicalize, bool $ignoreCase): string
     {
         if ($canonicalize) {
-            $document = new DOMDocument;
+            $document = new DOMDocument();
 
             try {
                 $c14n = $node->C14N();

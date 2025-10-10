@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures the whole file is PHP only, with no whitespace or inline HTML.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class InlineHTMLSniff implements Sniff
 {
-
     /**
      * List of supported BOM definitions.
      *

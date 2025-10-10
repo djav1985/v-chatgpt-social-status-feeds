@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that open PHP tags are paired with closing tags.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ClosingPHPTagSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

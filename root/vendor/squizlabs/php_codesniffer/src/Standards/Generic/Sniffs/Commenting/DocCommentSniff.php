@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures doc blocks follow basic formatting.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DocCommentSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -42,7 +41,8 @@ class DocCommentSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]['comment_closer']) === false
+        if (
+            isset($tokens[$stackPtr]['comment_closer']) === false
             || ($tokens[$tokens[$stackPtr]['comment_closer']]['content'] === ''
             && $tokens[$stackPtr]['comment_closer'] === ($phpcsFile->numTokens - 1))
         ) {
@@ -186,7 +186,8 @@ class DocCommentSniff implements Sniff
 
         $firstTag = $tokens[$commentStart]['comment_tags'][0];
         $prev     = $phpcsFile->findPrevious($empty, ($firstTag - 1), $stackPtr, true);
-        if ($tokens[$firstTag]['line'] !== ($tokens[$prev]['line'] + 2)
+        if (
+            $tokens[$firstTag]['line'] !== ($tokens[$prev]['line'] + 2)
             && $tokens[$prev]['code'] !== T_DOC_COMMENT_OPEN_TAG
         ) {
             $error = 'There must be exactly one blank line before the tags in a doc comment';
@@ -231,7 +232,8 @@ class DocCommentSniff implements Sniff
             }
 
             if ($tokens[$tag]['content'] === '@param') {
-                if ($paramGroupid !== null
+                if (
+                    $paramGroupid !== null
                     && $paramGroupid !== $groupid
                 ) {
                     $error = 'Parameter tags must be grouped together in a doc comment';
@@ -250,7 +252,8 @@ class DocCommentSniff implements Sniff
             $maxLength = 0;
             $paddings  = [];
             foreach ($group as $pos => $tag) {
-                if ($paramGroupid === $groupid
+                if (
+                    $paramGroupid === $groupid
                     && $tokens[$tag]['content'] !== '@param'
                 ) {
                     $error = 'Tag %s cannot be grouped with parameter tags in a doc comment';
