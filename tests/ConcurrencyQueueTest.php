@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/Support/TestableQueueService.php';
 use Tests\Support\TestableQueueService;
 
 final class ConcurrencyQueueTest extends TestCase
