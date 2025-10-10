@@ -22,6 +22,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - `upgrade.sql` and `upgrade.php` handle all migrations from old schema to new schema with data preservation.
 - Accounts table primary key changed from single column `(account)` to composite key `(username, account)`.
 - All table indexes updated to use consistent naming convention with `idx_` prefix.
+- Accounts dashboard and queue maintenance now reuse fetched account rows, share timestamp calculations, and prune only over-limit status histories to avoid redundant database work.
 
 ### Removed
 - Enqueue DBAL transport usage and the JSON-backed queue schema.
