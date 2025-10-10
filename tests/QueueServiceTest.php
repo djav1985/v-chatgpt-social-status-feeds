@@ -64,6 +64,28 @@ final class QueueServiceTest extends TestCase
         $this->assertSame(strtotime('2024-01-01 18:00:00'), $service->storedJobs[1]['scheduledAt']);
     }
 
+    public function testScheduledTimestampRollsForwardAfterGraceWindow(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 08:30:00');
+        $service->fakeScheduleRollGrace = 600; // 10 minutes
+
+        $scheduled = $service->callScheduledTimestampForHour(8, $service->fakeNow);
+
+        $this->assertSame(strtotime('2024-01-02 08:00:00'), $scheduled);
+    }
+
+    public function testScheduledTimestampStaysSameDayWithinGraceWindow(): void
+    {
+        $service = new TestableQueueService();
+        $service->fakeNow = strtotime('2024-01-01 08:05:00');
+        $service->fakeScheduleRollGrace = 900; // 15 minutes
+
+        $scheduled = $service->callScheduledTimestampForHour(8, $service->fakeNow);
+
+        $this->assertSame(strtotime('2024-01-01 08:00:00'), $scheduled);
+    }
+
     public function testRunQueueDeletesSuccessfulJobs(): void
     {
         $service = new TestableQueueService();

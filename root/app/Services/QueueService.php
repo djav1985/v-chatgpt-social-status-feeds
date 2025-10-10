@@ -620,10 +620,24 @@ class QueueService
         $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);
         $scheduled = $referenceTime->setTime($hour, 0, 0);
 
-        if ((int) $scheduled->format('U') <= $reference) {
+        $rollReference = max(0, $reference - $this->scheduleRollGrace());
+
+        if ((int) $scheduled->format('U') <= $rollReference) {
             $scheduled = $scheduled->add(new DateInterval('P1D'));
         }
 
         return (int) $scheduled->format('U');
+    }
+
+    protected function scheduleRollGrace(): int
+    {
+        if (defined('STATUS_SCHEDULE_ROLL_GRACE_SECONDS')) {
+            $grace = (int) constant('STATUS_SCHEDULE_ROLL_GRACE_SECONDS');
+            if ($grace > 0) {
+                return $grace;
+            }
+        }
+
+        return 0;
     }
 }

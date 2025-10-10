@@ -152,6 +152,7 @@ Install the project using the following steps:
 
    - Open `root/config.php` and update the necessary variables, including MySQL database credentials.
   - Optionally adjust `CRON_MAX_EXECUTION_TIME` and `CRON_MEMORY_LIMIT` to control how long the cron script runs and how much memory it can use.
+  - Set `STATUS_SCHEDULE_ROLL_GRACE_SECONDS` (defaults to `0`) to define how long after a scheduled hour cron should wait before rolling that slot to the next day.
 
 4. **Install Database:**
 
@@ -192,7 +193,7 @@ CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
 CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
 ```
 
-- **fill-queue** runs once daily to append the next 24 hours of work, skipping past hours and leaving existing rows untouched.
+- **fill-queue** runs once daily to append the next 24 hours of work, skipping past hours and leaving existing rows untouched. Hours older than `STATUS_SCHEDULE_ROLL_GRACE_SECONDS` are rolled to the same hour on the following day so early-morning jobs still get queued if the cron runs later.
 - **run-queue** runs frequently to process records where `scheduled_at <= NOW()`. Successful jobs are deleted. A first failure updates the row to `status = 'retry'`; a second failure deletes the job permanently.
 - `status` only tracks whether the job is on its original attempt (`pending`) or retrying (`retry`). There is no long-lived worker loop—cron cadence controls execution.
 

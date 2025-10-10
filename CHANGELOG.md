@@ -10,6 +10,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Separate installation and upgrade paths: `install.php`/`install.sql` for fresh installs and `upgrade.php`/`upgrade.sql` for schema migrations.
 - `MIGRATION.md` documentation file detailing the migration process and schema changes.
 - Regression coverage for next-day scheduling, stale job recovery, quota enforcement, and image purge edge cases.
+- Configurable grace window (`STATUS_SCHEDULE_ROLL_GRACE_SECONDS`) for rolling past-hour schedule slots to the next day.
 
 ### Changed
 - Queue worker now generates multiple statuses per job using a configurable batch size (default 3) to support bulk content creation.
