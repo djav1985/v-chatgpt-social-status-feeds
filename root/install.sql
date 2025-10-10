@@ -1,4 +1,11 @@
--- Create the ip_blacklist table if it doesn't exist
+-- =========================
+-- Database Installation and Migration Script
+-- Handles both fresh installation and migration from old schema
+-- =========================
+
+-- =========================
+-- ip_blacklist
+-- =========================
 CREATE TABLE IF NOT EXISTS ip_blacklist (
     ip_address VARCHAR(255) NOT NULL,
     login_attempts INT DEFAULT 0,
@@ -7,8 +14,7 @@ CREATE TABLE IF NOT EXISTS ip_blacklist (
     PRIMARY KEY (ip_address)
 );
 
--- Ensure the ip_blacklist table has all the required columns (alter only if necessary)
--- Add missing columns to ip_blacklist for older MySQL versions
+-- Ensure all required columns exist in ip_blacklist
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
@@ -47,27 +53,27 @@ SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'ip_blacklist'
-          AND INDEX_NAME = 'blacklisted') > 0,
-    'DROP INDEX blacklisted ON ip_blacklist',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX blacklisted ON ip_blacklist (blacklisted);
+          AND INDEX_NAME = 'idx_blacklisted') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_blacklisted ON ip_blacklist (blacklisted)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'ip_blacklist'
-          AND INDEX_NAME = 'timestamp') > 0,
-    'DROP INDEX timestamp ON ip_blacklist',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX timestamp ON ip_blacklist (timestamp);
+          AND INDEX_NAME = 'idx_timestamp') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_timestamp ON ip_blacklist (timestamp)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
--- Create the status_updates table if it doesn't exist
+-- =========================
+-- status_updates
+-- =========================
 CREATE TABLE IF NOT EXISTS status_updates (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
@@ -77,8 +83,7 @@ CREATE TABLE IF NOT EXISTS status_updates (
     status_image VARCHAR(255)
 );
 
--- Ensure the status_updates table has all the required columns (alter only if necessary)
--- Add missing columns to status_updates table
+-- Ensure all required columns exist in status_updates
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
@@ -139,39 +144,38 @@ SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'status_updates'
-          AND INDEX_NAME = 'username') > 0,
-    'DROP INDEX username ON status_updates',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX username ON status_updates (username);
+          AND INDEX_NAME = 'idx_username') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_username ON status_updates (username)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'status_updates'
-          AND INDEX_NAME = 'account') > 0,
-    'DROP INDEX account ON status_updates',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX account ON status_updates (account);
+          AND INDEX_NAME = 'idx_account') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_account ON status_updates (account)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'status_updates'
-          AND INDEX_NAME = 'created_at') > 0,
-    'DROP INDEX created_at ON status_updates',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX created_at ON status_updates (created_at);
+          AND INDEX_NAME = 'idx_created_at') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_created_at ON status_updates (created_at)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
--- Reset status_jobs to the simplified queue schema
+-- =========================
+-- status_jobs
+-- =========================
 DROP TABLE IF EXISTS status_jobs;
 CREATE TABLE status_jobs (
     id CHAR(36) PRIMARY KEY,
@@ -184,7 +188,9 @@ CREATE TABLE status_jobs (
 CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
 CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
 
--- Create accounts table if it doesn’t exist
+-- =========================
+-- accounts table migration
+-- =========================
 CREATE TABLE IF NOT EXISTS accounts (
     account VARCHAR(255) NOT NULL,
     username VARCHAR(255) NOT NULL,
@@ -197,8 +203,44 @@ CREATE TABLE IF NOT EXISTS accounts (
     PRIMARY KEY (username, account)
 );
 
--- Ensure the accounts table has all the required columns (alter only if necessary)
--- Add missing columns to accounts table
+-- Detect if old schema exists (single column primary key on 'account')
+SET @old_pk_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.KEY_COLUMN_USAGE
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'accounts'
+      AND CONSTRAINT_NAME = 'PRIMARY'
+      AND COLUMN_NAME = 'account'
+      AND ORDINAL_POSITION = 1
+      AND (SELECT COUNT(*) 
+           FROM information_schema.KEY_COLUMN_USAGE 
+           WHERE TABLE_SCHEMA = DATABASE() 
+             AND TABLE_NAME = 'accounts' 
+             AND CONSTRAINT_NAME = 'PRIMARY') = 1
+);
+
+-- Migrate from old primary key to new composite primary key
+SET @stmt := IF(
+    @old_pk_exists > 0,
+    'ALTER TABLE accounts DROP PRIMARY KEY, ADD PRIMARY KEY (username, account)',
+    'SELECT 0'
+);
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
+
+-- Ensure all required columns exist in accounts
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'accounts'
+          AND COLUMN_NAME = 'username') = 0,
+    'ALTER TABLE accounts ADD COLUMN username VARCHAR(255) NOT NULL',
+    'SELECT 0');
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
+
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
@@ -259,7 +301,7 @@ SET @stmt := IF(
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'accounts'
           AND COLUMN_NAME = 'platform') = 0,
-    'ALTER TABLE accounts ADD COLUMN platform VARCHAR(255) NOT NULL',
+    'ALTER TABLE accounts ADD COLUMN platform VARCHAR(255) NOT NULL DEFAULT ""',
     'SELECT 0');
 PREPARE alter_sql FROM @stmt;
 EXECUTE alter_sql;
@@ -270,30 +312,53 @@ SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'accounts'
-          AND INDEX_NAME = 'username_idx') > 0,
-    'DROP INDEX username_idx ON accounts',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX username_idx ON accounts (username);
+          AND INDEX_NAME = 'idx_username') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_username ON accounts (username)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'accounts'
-          AND INDEX_NAME = 'platform_idx') > 0,
-    'DROP INDEX platform_idx ON accounts',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX platform_idx ON accounts (platform);
+          AND INDEX_NAME = 'idx_platform') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_platform ON accounts (platform)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
+-- Remove old unused columns from the accounts table (only if they exist)
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'accounts'
+          AND COLUMN_NAME = 'image_prompt') > 0,
+    'ALTER TABLE accounts DROP COLUMN image_prompt',
+    'SELECT 0');
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
+
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'accounts'
+          AND COLUMN_NAME = 'cta') > 0,
+    'ALTER TABLE accounts DROP COLUMN cta',
+    'SELECT 0');
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
+
+-- =========================
+-- users table migration
+-- =========================
 -- Check if the users table exists before creating it and inserting default data
 SET @users_table_exists = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'users');
 
--- Create users table if it doesn’t exist
 CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -316,14 +381,13 @@ INSERT INTO users (username, password, email, who, `where`, what, goal, total_ac
 SELECT 'admin', '$2y$10$4idUpn/Kgpxx.GHfyLgKWeHVyZq3ugpx1mUMC6Aze9.yj.KWKTaKG', 'admin@example.com', 'Who I am', 'Where I am', 'What I do', 'My goal', 10, 9999999999, 0, 0, 1
 WHERE @users_table_exists = 0;
 
--- Ensure the users table has all the required columns (alter only if necessary)
--- Add missing columns to users table
+-- Ensure all required columns exist in users
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'users'
           AND COLUMN_NAME = 'email') = 0,
-    'ALTER TABLE users ADD COLUMN email VARCHAR(255) NOT NULL AFTER password',
+    'ALTER TABLE users ADD COLUMN email VARCHAR(255) NOT NULL DEFAULT "" AFTER password',
     'SELECT 0');
 PREPARE alter_sql FROM @stmt;
 EXECUTE alter_sql;
@@ -366,8 +430,8 @@ SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'users'
-          AND COLUMN_NAME = 'limit_email_sent') = 0,
-    'ALTER TABLE users ADD COLUMN limit_email_sent BOOLEAN DEFAULT FALSE AFTER used_api_calls',
+          AND COLUMN_NAME = 'goal') = 0,
+    'ALTER TABLE users ADD COLUMN goal TEXT AFTER what',
     'SELECT 0');
 PREPARE alter_sql FROM @stmt;
 EXECUTE alter_sql;
@@ -377,8 +441,8 @@ SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'users'
-          AND COLUMN_NAME = 'goal') = 0,
-    'ALTER TABLE users ADD COLUMN goal TEXT AFTER what',
+          AND COLUMN_NAME = 'limit_email_sent') = 0,
+    'ALTER TABLE users ADD COLUMN limit_email_sent BOOLEAN DEFAULT FALSE AFTER used_api_calls',
     'SELECT 0');
 PREPARE alter_sql FROM @stmt;
 EXECUTE alter_sql;
@@ -395,44 +459,47 @@ PREPARE alter_sql FROM @stmt;
 EXECUTE alter_sql;
 DEALLOCATE PREPARE alter_sql;
 
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'users'
+          AND COLUMN_NAME = 'admin') = 0,
+    'ALTER TABLE users ADD COLUMN admin TINYINT DEFAULT 0 AFTER expires',
+    'SELECT 0');
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
+
 -- Ensure indexes on users table
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'users'
-          AND INDEX_NAME = 'email') > 0,
-    'DROP INDEX email ON users',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX email ON users (email);
+          AND INDEX_NAME = 'idx_email') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_email ON users (email)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'users'
-          AND INDEX_NAME = 'expires') > 0,
-    'DROP INDEX expires ON users',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX expires ON users (expires);
+          AND INDEX_NAME = 'idx_expires') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_expires ON users (expires)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
 SET @stmt := IF(
     (SELECT COUNT(*) FROM information_schema.STATISTICS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'users'
-          AND INDEX_NAME = 'admin') > 0,
-    'DROP INDEX admin ON users',
-    'SELECT 0');
-PREPARE drop_sql FROM @stmt;
-EXECUTE drop_sql;
-DEALLOCATE PREPARE drop_sql;
-CREATE INDEX admin ON users (admin);
-
--- Remove old unused columns from the accounts table (only if they exist)
-ALTER TABLE accounts 
-DROP COLUMN IF EXISTS image_prompt,
-DROP COLUMN IF EXISTS cta;
+          AND INDEX_NAME = 'idx_admin') > 0,
+    'SELECT 0',
+    'CREATE INDEX idx_admin ON users (admin)');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
