@@ -11,7 +11,8 @@ final class CreateResponseUsageCompletionTokensDetails
         public readonly ?int $reasoningTokens,
         public readonly ?int $acceptedPredictionTokens,
         public readonly ?int $rejectedPredictionTokens
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{audio_tokens?:int|null, reasoning_tokens?:int|null, accepted_prediction_tokens?:int|null, rejected_prediction_tokens?:int|null}  $attributes

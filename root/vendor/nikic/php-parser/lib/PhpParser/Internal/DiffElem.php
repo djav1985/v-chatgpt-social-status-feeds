@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Internal;
 
 /**
  * @internal
  */
-class DiffElem {
+class DiffElem
+{
     public const TYPE_KEEP = 0;
     public const TYPE_REMOVE = 1;
     public const TYPE_ADD = 2;
@@ -23,7 +26,8 @@ class DiffElem {
      * @param mixed $old Is null for add operations
      * @param mixed $new Is null for remove operations
      */
-    public function __construct(int $type, $old, $new) {
+    public function __construct(int $type, $old, $new)
+    {
         $this->type = $type;
         $this->old = $old;
         $this->new = $new;

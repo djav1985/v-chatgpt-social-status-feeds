@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -11,9 +14,11 @@
 namespace PharIo\Manifest;
 
 use LibXMLError;
+
 use function sprintf;
 
-class ManifestDocumentLoadingException extends \Exception implements Exception {
+class ManifestDocumentLoadingException extends \Exception implements Exception
+{
     /** @var LibXMLError[] */
     private $libxmlErrors;
 
@@ -22,7 +27,8 @@ class ManifestDocumentLoadingException extends \Exception implements Exception {
      *
      * @param LibXMLError[] $libxmlErrors
      */
-    public function __construct(array $libxmlErrors) {
+    public function __construct(array $libxmlErrors)
+    {
         $this->libxmlErrors = $libxmlErrors;
         $first              = $this->libxmlErrors[0];
 
@@ -41,7 +47,8 @@ class ManifestDocumentLoadingException extends \Exception implements Exception {
     /**
      * @return LibXMLError[]
      */
-    public function getLibxmlErrors(): array {
+    public function getLibxmlErrors(): array
+    {
         return $this->libxmlErrors;
     }
 }

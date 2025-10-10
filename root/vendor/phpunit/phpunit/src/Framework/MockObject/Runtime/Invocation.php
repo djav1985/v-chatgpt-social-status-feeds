@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -16,6 +19,7 @@ use function sprintf;
 use function str_starts_with;
 use function strtolower;
 use function substr;
+
 use PHPUnit\Framework\SelfDescribing;
 use PHPUnit\Util\Cloner;
 use SebastianBergmann\Exporter\Exporter;
@@ -118,7 +122,7 @@ final class Invocation implements SelfDescribing
             return null;
         }
 
-        return (new ReturnValueGenerator)->generate(
+        return (new ReturnValueGenerator())->generate(
             $this->className,
             $this->methodName,
             $this->object::class,
@@ -128,7 +132,7 @@ final class Invocation implements SelfDescribing
 
     public function toString(): string
     {
-        $exporter = new Exporter;
+        $exporter = new Exporter();
 
         return sprintf(
             '%s::%s(%s)%s',

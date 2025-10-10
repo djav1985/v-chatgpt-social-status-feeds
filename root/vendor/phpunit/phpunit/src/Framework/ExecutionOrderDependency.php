@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -15,6 +18,7 @@ use function array_values;
 use function explode;
 use function in_array;
 use function str_contains;
+
 use PHPUnit\Metadata\DependsOnClass;
 use PHPUnit\Metadata\DependsOnMethod;
 use Stringable;

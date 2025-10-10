@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -23,10 +26,12 @@ use const E_USER_ERROR;
 use const E_USER_NOTICE;
 use const E_USER_WARNING;
 use const E_WARNING;
+
 use function defined;
 use function error_reporting;
 use function restore_error_handler;
 use function set_error_handler;
+
 use PHPUnit\Event;
 use PHPUnit\Event\Code\NoTestCaseObjectOnCallStackException;
 use PHPUnit\Runner\Baseline\Baseline;
@@ -49,7 +54,7 @@ final class ErrorHandler
 
     public static function instance(): self
     {
-        return self::$instance ?? self::$instance = new self;
+        return self::$instance ?? self::$instance = new self();
     }
 
     /**
@@ -59,7 +64,7 @@ final class ErrorHandler
     {
         $suppressed = (error_reporting() & ~self::INSUPPRESSIBLE_LEVELS) === 0;
 
-        if ($suppressed && (new ExcludeList)->isExcluded($errorFile)) {
+        if ($suppressed && (new ExcludeList())->isExcluded($errorFile)) {
             return false;
         }
 

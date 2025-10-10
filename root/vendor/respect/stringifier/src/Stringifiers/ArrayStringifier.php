@@ -18,6 +18,7 @@ use function implode;
 use function is_array;
 use function is_int;
 use function sprintf;
+
 use Respect\Stringifier\Quoter;
 use Respect\Stringifier\Stringifier;
 

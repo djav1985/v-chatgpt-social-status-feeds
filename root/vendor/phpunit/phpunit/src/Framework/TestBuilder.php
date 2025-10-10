@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Framework;
 
 use function assert;
+
 use PHPUnit\Metadata\Api\DataProvider;
 use PHPUnit\Metadata\Api\Groups;
 use PHPUnit\Metadata\Api\Requirements;
@@ -41,7 +45,7 @@ final class TestBuilder
         $data = null;
 
         if ($this->requirementsSatisfied($className, $methodName)) {
-            $data = (new DataProvider)->providedData($className, $methodName);
+            $data = (new DataProvider())->providedData($className, $methodName);
         }
 
         if ($data !== null) {
@@ -82,7 +86,7 @@ final class TestBuilder
             $className . '::' . $methodName,
         );
 
-        $groups = (new Groups)->groups($className, $methodName);
+        $groups = (new Groups())->groups($className, $methodName);
 
         foreach ($data as $_dataName => $_data) {
             $_test = new $className($methodName);
@@ -277,6 +281,6 @@ final class TestBuilder
      */
     private function requirementsSatisfied(string $className, string $methodName): bool
     {
-        return (new Requirements)->requirementsNotSatisfiedFor($className, $methodName) === [];
+        return (new Requirements())->requirementsNotSatisfiedFor($className, $methodName) === [];
     }
 }

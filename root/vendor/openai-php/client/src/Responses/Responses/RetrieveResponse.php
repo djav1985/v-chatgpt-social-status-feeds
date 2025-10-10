@@ -106,7 +106,8 @@ final class RetrieveResponse implements ResponseContract, ResponseHasMetaInforma
         public readonly ?string $verbosity,
         public array $metadata,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  RetrieveResponseType  $attributes

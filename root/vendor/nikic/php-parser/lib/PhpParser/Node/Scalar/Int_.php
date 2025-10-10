@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Scalar;
 
 use PhpParser\Error;
 use PhpParser\Node\Scalar;
 
-class Int_ extends Scalar {
+class Int_ extends Scalar
+{
     /* For use in "kind" attribute */
     public const KIND_BIN = 2;
     public const KIND_OCT = 8;
@@ -21,12 +24,14 @@ class Int_ extends Scalar {
      * @param int $value Value of the number
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct(int $value, array $attributes = []) {
+    public function __construct(int $value, array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->value = $value;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['value'];
     }
 
@@ -39,7 +44,8 @@ class Int_ extends Scalar {
      *
      * @return Int_ The constructed LNumber, including kind attribute
      */
-    public static function fromString(string $str, array $attributes = [], bool $allowInvalidOctal = false): Int_ {
+    public static function fromString(string $str, array $attributes = [], bool $allowInvalidOctal = false): Int_
+    {
         $attributes['rawValue'] = $str;
 
         $str = str_replace('_', '', $str);
@@ -73,7 +79,8 @@ class Int_ extends Scalar {
         return new Int_(intval($str, 8), $attributes);
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Scalar_Int';
     }
 }

@@ -7,7 +7,9 @@ final class TestRequest
     /**
      * @param  array<string, mixed>  $args
      */
-    public function __construct(protected string $resource, protected string $method, protected array $args) {}
+    public function __construct(protected string $resource, protected string $method, protected array $args)
+    {
+    }
 
     public function resource(): string
     {

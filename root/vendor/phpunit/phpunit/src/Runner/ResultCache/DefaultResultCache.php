@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\Runner\ResultCache;
 
 use const DIRECTORY_SEPARATOR;
 use const LOCK_EX;
+
 use function array_keys;
 use function assert;
 use function dirname;
@@ -21,6 +25,7 @@ use function is_dir;
 use function is_file;
 use function json_decode;
 use function json_encode;
+
 use PHPUnit\Framework\TestStatus\TestStatus;
 use PHPUnit\Runner\DirectoryDoesNotExistException;
 use PHPUnit\Runner\Exception;

@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -14,23 +17,27 @@ use PharIo\Version\AnyVersionConstraint;
 use PharIo\Version\Version;
 use PharIo\Version\VersionConstraint;
 use XMLWriter;
+
 use function count;
 use function file_put_contents;
 use function str_repeat;
 
 /** @psalm-suppress MissingConstructor */
-class ManifestSerializer {
+class ManifestSerializer
+{
     /** @var XMLWriter */
     private $xmlWriter;
 
-    public function serializeToFile(Manifest $manifest, string $filename): void {
+    public function serializeToFile(Manifest $manifest, string $filename): void
+    {
         file_put_contents(
             $filename,
             $this->serializeToString($manifest)
         );
     }
 
-    public function serializeToString(Manifest $manifest): string {
+    public function serializeToString(Manifest $manifest): string
+    {
         $this->startDocument();
 
         $this->addContains($manifest->getName(), $manifest->getVersion(), $manifest->getType());
@@ -41,7 +48,8 @@ class ManifestSerializer {
         return $this->finishDocument();
     }
 
-    private function startDocument(): void {
+    private function startDocument(): void
+    {
         $xmlWriter = new XMLWriter();
         $xmlWriter->openMemory();
         $xmlWriter->setIndent(true);
@@ -53,14 +61,16 @@ class ManifestSerializer {
         $this->xmlWriter = $xmlWriter;
     }
 
-    private function finishDocument(): string {
+    private function finishDocument(): string
+    {
         $this->xmlWriter->endElement();
         $this->xmlWriter->endDocument();
 
         return $this->xmlWriter->outputMemory();
     }
 
-    private function addContains(ApplicationName $name, Version $version, Type $type): void {
+    private function addContains(ApplicationName $name, Version $version, Type $type): void
+    {
         $this->xmlWriter->startElement('contains');
         $this->xmlWriter->writeAttribute('name', $name->asString());
         $this->xmlWriter->writeAttribute('version', $version->getVersionString());
@@ -97,7 +107,8 @@ class ManifestSerializer {
         $this->xmlWriter->endElement();
     }
 
-    private function addCopyright(CopyrightInformation $copyrightInformation): void {
+    private function addCopyright(CopyrightInformation $copyrightInformation): void
+    {
         $this->xmlWriter->startElement('copyright');
 
         foreach ($copyrightInformation->getAuthors() as $author) {
@@ -117,7 +128,8 @@ class ManifestSerializer {
         $this->xmlWriter->endElement();
     }
 
-    private function addRequirements(RequirementCollection $requirementCollection): void {
+    private function addRequirements(RequirementCollection $requirementCollection): void
+    {
         $phpRequirement = new AnyVersionConstraint();
         $extensions     = [];
 
@@ -147,7 +159,8 @@ class ManifestSerializer {
         $this->xmlWriter->endElement();
     }
 
-    private function addBundles(BundledComponentCollection $bundledComponentCollection): void {
+    private function addBundles(BundledComponentCollection $bundledComponentCollection): void
+    {
         if (count($bundledComponentCollection) === 0) {
             return;
         }
@@ -163,7 +176,8 @@ class ManifestSerializer {
         $this->xmlWriter->endElement();
     }
 
-    private function addExtension(ApplicationName $applicationName, VersionConstraint $versionConstraint): void {
+    private function addExtension(ApplicationName $applicationName, VersionConstraint $versionConstraint): void
+    {
         $this->xmlWriter->startElement('extension');
         $this->xmlWriter->writeAttribute('for', $applicationName->asString());
         $this->xmlWriter->writeAttribute('compatible', $versionConstraint->asString());

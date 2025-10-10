@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -18,6 +21,7 @@ use function in_array;
 use function max;
 use function shuffle;
 use function usort;
+
 use PHPUnit\Framework\DataProviderTestSuite;
 use PHPUnit\Framework\Reorderable;
 use PHPUnit\Framework\Test;
@@ -88,7 +92,7 @@ final class TestSuiteSorter
 
     public function __construct(?ResultCache $cache = null)
     {
-        $this->cache = $cache ?? new NullResultCache;
+        $this->cache = $cache ?? new NullResultCache();
     }
 
     /**
@@ -105,7 +109,7 @@ final class TestSuiteSorter
         ];
 
         if (!in_array($order, $allowedOrders, true)) {
-            throw new InvalidOrderException;
+            throw new InvalidOrderException();
         }
 
         $allowedOrderDefects = [
@@ -114,7 +118,7 @@ final class TestSuiteSorter
         ];
 
         if (!in_array($orderDefects, $allowedOrderDefects, true)) {
-            throw new InvalidOrderException;
+            throw new InvalidOrderException();
         }
 
         if ($isRootTestSuite) {

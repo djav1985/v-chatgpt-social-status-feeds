@@ -30,7 +30,8 @@ final class ComputerUseTool implements ResponseContract
         public readonly int $displayWidth,
         public readonly string $environment,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ComputerUseToolType  $attributes

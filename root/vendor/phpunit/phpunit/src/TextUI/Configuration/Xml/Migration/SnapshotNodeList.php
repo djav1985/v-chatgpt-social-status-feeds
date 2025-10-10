@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\TextUI\XmlConfiguration;
 
 use function count;
+
 use ArrayIterator;
 use Countable;
 use DOMNode;
@@ -32,7 +36,7 @@ final class SnapshotNodeList implements Countable, IteratorAggregate
 
     public static function fromNodeList(DOMNodeList $list): self
     {
-        $snapshot = new self;
+        $snapshot = new self();
 
         foreach ($list as $node) {
             $snapshot->nodes[] = $node;

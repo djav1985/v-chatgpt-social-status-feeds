@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Framework\MockObject;
 
 use function sprintf;
+
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\MockObject\Rule\AnyInvokedCount;
 use PHPUnit\Framework\MockObject\Rule\AnyParameters;
@@ -89,7 +93,7 @@ final class Matcher
     public function invoked(Invocation $invocation): mixed
     {
         if ($this->methodNameRule === null) {
-            throw new MethodNameNotConfiguredException;
+            throw new MethodNameNotConfiguredException();
         }
 
         if ($this->afterMatchBuilderId !== null) {
@@ -148,7 +152,7 @@ final class Matcher
         }
 
         if ($this->methodNameRule === null) {
-            throw new MethodNameNotConfiguredException;
+            throw new MethodNameNotConfiguredException();
         }
 
         if (!$this->invocationRule->matches($invocation)) {
@@ -181,14 +185,14 @@ final class Matcher
     public function verify(): void
     {
         if ($this->methodNameRule === null) {
-            throw new MethodNameNotConfiguredException;
+            throw new MethodNameNotConfiguredException();
         }
 
         try {
             $this->invocationRule->verify();
 
             if ($this->parametersRule === null) {
-                $this->parametersRule = new AnyParameters;
+                $this->parametersRule = new AnyParameters();
             }
 
             $invocationIsAny    = $this->invocationRule instanceof AnyInvokedCount;

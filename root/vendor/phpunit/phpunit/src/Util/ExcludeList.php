@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Util;
 
 use const PHP_OS_FAMILY;
+
 use function class_exists;
 use function defined;
 use function dirname;
@@ -17,6 +21,7 @@ use function is_dir;
 use function realpath;
 use function str_starts_with;
 use function sys_get_temp_dir;
+
 use Composer\Autoload\ClassLoader;
 use DeepCopy\DeepCopy;
 use PharIo\Manifest\Manifest;

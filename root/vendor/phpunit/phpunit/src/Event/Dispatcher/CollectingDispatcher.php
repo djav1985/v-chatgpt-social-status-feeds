@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -20,7 +23,7 @@ final class CollectingDispatcher implements Dispatcher
 
     public function __construct()
     {
-        $this->events = new EventCollection;
+        $this->events = new EventCollection();
     }
 
     public function dispatch(Event $event): void
@@ -32,7 +35,7 @@ final class CollectingDispatcher implements Dispatcher
     {
         $events = $this->events;
 
-        $this->events = new EventCollection;
+        $this->events = new EventCollection();
 
         return $events;
     }

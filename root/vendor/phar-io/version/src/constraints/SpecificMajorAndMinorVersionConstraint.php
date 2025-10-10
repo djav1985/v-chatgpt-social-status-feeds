@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Version.
  *
@@ -9,21 +12,24 @@
  */
 namespace PharIo\Version;
 
-class SpecificMajorAndMinorVersionConstraint extends AbstractVersionConstraint {
+class SpecificMajorAndMinorVersionConstraint extends AbstractVersionConstraint
+{
     /** @var int */
     private $major;
 
     /** @var int */
     private $minor;
 
-    public function __construct(string $originalValue, int $major, int $minor) {
+    public function __construct(string $originalValue, int $major, int $minor)
+    {
         parent::__construct($originalValue);
 
         $this->major = $major;
         $this->minor = $minor;
     }
 
-    public function complies(Version $version): bool {
+    public function complies(Version $version): bool
+    {
         if ($version->getMajor()->getValue() !== $this->major) {
             return false;
         }

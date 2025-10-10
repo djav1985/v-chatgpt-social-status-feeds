@@ -34,7 +34,8 @@ final class OutputLocalShellCallAction implements ResponseContract
         public readonly ?int $timeoutMs,
         public readonly ?string $user,
         public readonly ?string $workingDirectory,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputLocalShellCallActionType  $attributes

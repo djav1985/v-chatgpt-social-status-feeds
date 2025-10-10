@@ -653,9 +653,9 @@ class CurlFactory implements CurlFactoryInterface
             }
         } catch (\RuntimeException $e) {
             $ctx['error'] = 'The connection unexpectedly failed without '
-                .'providing an error. The request would have been retried, '
-                .'but attempting to rewind the request body failed. '
-                .'Exception: '.$e;
+                . 'providing an error. The request would have been retried, '
+                . 'but attempting to rewind the request body failed. '
+                . 'Exception: ' . $e;
 
             return self::createRejection($easy, $ctx);
         }
@@ -665,11 +665,11 @@ class CurlFactory implements CurlFactoryInterface
             $easy->options['_curl_retries'] = 1;
         } elseif ($easy->options['_curl_retries'] == 2) {
             $ctx['error'] = 'The cURL request was retried 3 times '
-                .'and did not succeed. The most likely reason for the failure '
-                .'is that cURL was unable to rewind the body of the request '
-                .'and subsequent retries resulted in the same error. Turn on '
-                .'the debug option to see what went wrong. See '
-                .'https://bugs.php.net/bug.php?id=47204 for more information.';
+                . 'and did not succeed. The most likely reason for the failure '
+                . 'is that cURL was unable to rewind the body of the request '
+                . 'and subsequent retries resulted in the same error. Turn on '
+                . 'the debug option to see what went wrong. See '
+                . 'https://bugs.php.net/bug.php?id=47204 for more information.';
 
             return self::createRejection($easy, $ctx);
         } else {
@@ -691,7 +691,10 @@ class CurlFactory implements CurlFactoryInterface
             $onHeaders = null;
         }
 
-        return static function ($ch, $h) use (
+        return static function (
+            $ch,
+            $h
+        ) use (
             $onHeaders,
             $easy,
             &$startingResponse

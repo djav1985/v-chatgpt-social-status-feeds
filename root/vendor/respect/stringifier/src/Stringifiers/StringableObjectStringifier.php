@@ -15,6 +15,7 @@ namespace Respect\Stringifier\Stringifiers;
 
 use function is_object;
 use function method_exists;
+
 use Respect\Stringifier\Stringifier;
 
 /**

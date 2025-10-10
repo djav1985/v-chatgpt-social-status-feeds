@@ -55,7 +55,8 @@ final class OutputComputerToolCall implements ResponseContract
         public readonly array $pendingSafetyChecks,
         public readonly string $status,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputComputerToolCallType  $attributes

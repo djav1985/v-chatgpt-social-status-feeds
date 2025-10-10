@@ -43,7 +43,8 @@ final class RetrieveJobResponse implements ResponseContract, ResponseHasMetaInfo
         public readonly ?int $trainedTokens,
         public readonly ?RetrieveJobResponseError $error,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

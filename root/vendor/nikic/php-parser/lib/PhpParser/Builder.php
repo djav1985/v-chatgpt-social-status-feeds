@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser;
 
-interface Builder {
+interface Builder
+{
     /**
      * Returns the built node.
      *

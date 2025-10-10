@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -19,6 +22,7 @@ use function fsockopen;
 use function fwrite;
 use function str_replace;
 use function str_starts_with;
+
 use PHPUnit\Runner\DirectoryDoesNotExistException;
 use PHPUnit\TextUI\CannotOpenSocketException;
 use PHPUnit\TextUI\InvalidSocketException;

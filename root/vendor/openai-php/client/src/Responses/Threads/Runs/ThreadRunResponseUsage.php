@@ -10,7 +10,8 @@ final class ThreadRunResponseUsage
         public readonly int $promptTokens,
         public readonly ?int $completionTokens,
         public readonly int $totalTokens,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{prompt_tokens: int, completion_tokens: int|null, total_tokens: int}  $attributes

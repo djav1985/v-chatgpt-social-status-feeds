@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -12,6 +15,7 @@ namespace PHPUnit\Event\Code;
 use function assert;
 use function is_int;
 use function sprintf;
+
 use PHPUnit\Event\TestData\TestDataCollection;
 use PHPUnit\Metadata\MetadataCollection;
 

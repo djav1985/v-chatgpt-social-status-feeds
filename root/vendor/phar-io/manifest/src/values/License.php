@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -10,23 +13,27 @@
  */
 namespace PharIo\Manifest;
 
-class License {
+class License
+{
     /** @var string */
     private $name;
 
     /** @var Url */
     private $url;
 
-    public function __construct(string $name, Url $url) {
+    public function __construct(string $name, Url $url)
+    {
         $this->name = $name;
         $this->url  = $url;
     }
 
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function getUrl(): Url {
+    public function getUrl(): Url
+    {
         return $this->url;
     }
 }

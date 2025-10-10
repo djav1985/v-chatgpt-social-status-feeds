@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,11 +14,13 @@ namespace PHPUnit\TextUI\Command;
 
 use const PHP_EOL;
 use const STDIN;
+
 use function fgets;
 use function file_put_contents;
 use function getcwd;
 use function sprintf;
 use function trim;
+
 use PHPUnit\Runner\Version;
 use PHPUnit\TextUI\XmlConfiguration\Generator;
 
@@ -61,7 +66,7 @@ final class GenerateConfigurationCommand implements Command
             $cacheDirectory = '.phpunit.cache';
         }
 
-        $generator = new Generator;
+        $generator = new Generator();
 
         $result = @file_put_contents(
             'phpunit.xml',

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -14,6 +17,7 @@ use function is_file;
 use function realpath;
 use function str_contains;
 use function str_starts_with;
+
 use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
 
 final class Filter
@@ -33,7 +37,7 @@ final class Filter
      */
     public function includeDirectory(string $directory, string $suffix = '.php', string $prefix = ''): void
     {
-        foreach ((new FileIteratorFacade)->getFilesAsArray($directory, $suffix, $prefix) as $file) {
+        foreach ((new FileIteratorFacade())->getFilesAsArray($directory, $suffix, $prefix) as $file) {
             $this->includeFile($file);
         }
     }
@@ -64,7 +68,7 @@ final class Filter
      */
     public function excludeDirectory(string $directory, string $suffix = '.php', string $prefix = ''): void
     {
-        foreach ((new FileIteratorFacade)->getFilesAsArray($directory, $suffix, $prefix) as $file) {
+        foreach ((new FileIteratorFacade())->getFilesAsArray($directory, $suffix, $prefix) as $file) {
             $this->excludeFile($file);
         }
     }
@@ -89,7 +93,8 @@ final class Filter
             return $this->isFileCache[$filename];
         }
 
-        if ($filename === '-' ||
+        if (
+            $filename === '-' ||
             str_starts_with($filename, 'vfs://') ||
             str_contains($filename, 'xdebug://debug-eval') ||
             str_contains($filename, 'eval()\'d code') ||
@@ -97,7 +102,8 @@ final class Filter
             str_contains($filename, 'runkit created function') ||
             str_contains($filename, 'assert code') ||
             str_contains($filename, 'regexp code') ||
-            str_contains($filename, 'Standard input code')) {
+            str_contains($filename, 'Standard input code')
+        ) {
             $isFile = false;
         } else {
             $isFile = is_file($filename);

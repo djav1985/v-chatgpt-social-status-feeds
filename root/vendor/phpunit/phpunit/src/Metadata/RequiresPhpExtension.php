@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -66,7 +69,7 @@ final class RequiresPhpExtension extends Metadata
     public function versionRequirement(): Requirement
     {
         if ($this->versionRequirement === null) {
-            throw new NoVersionRequirementException;
+            throw new NoVersionRequirementException();
         }
 
         return $this->versionRequirement;

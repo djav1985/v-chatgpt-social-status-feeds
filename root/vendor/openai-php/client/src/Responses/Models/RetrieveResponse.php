@@ -30,7 +30,8 @@ final class RetrieveResponse implements ResponseContract, ResponseHasMetaInforma
         public readonly ?int $created,
         public readonly ?string $ownedBy,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{id: string, object: string, created: ?int, created_at?: ?int, owned_by: ?string}  $attributes

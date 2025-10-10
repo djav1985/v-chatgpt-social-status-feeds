@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -12,29 +15,35 @@ namespace PharIo\Manifest;
 
 use Countable;
 use IteratorAggregate;
+
 use function count;
 
 /** @template-implements IteratorAggregate<int,BundledComponent> */
-class BundledComponentCollection implements Countable, IteratorAggregate {
+class BundledComponentCollection implements Countable, IteratorAggregate
+{
     /** @var BundledComponent[] */
     private $bundledComponents = [];
 
-    public function add(BundledComponent $bundledComponent): void {
+    public function add(BundledComponent $bundledComponent): void
+    {
         $this->bundledComponents[] = $bundledComponent;
     }
 
     /**
      * @return BundledComponent[]
      */
-    public function getBundledComponents(): array {
+    public function getBundledComponents(): array
+    {
         return $this->bundledComponents;
     }
 
-    public function count(): int {
+    public function count(): int
+    {
         return count($this->bundledComponents);
     }
 
-    public function getIterator(): BundledComponentCollectionIterator {
+    public function getIterator(): BundledComponentCollectionIterator
+    {
         return new BundledComponentCollectionIterator($this);
     }
 }

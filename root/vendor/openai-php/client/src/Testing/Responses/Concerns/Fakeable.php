@@ -17,7 +17,7 @@ trait Fakeable
         ?MetaInformation $meta = null,
         OverrideStrategy $strategy = OverrideStrategy::Merge,
     ): static {
-        $class = str_replace('OpenAI\\Responses\\', 'OpenAI\\Testing\\Responses\\Fixtures\\', static::class).'Fixture';
+        $class = str_replace('OpenAI\\Responses\\', 'OpenAI\\Testing\\Responses\\Fixtures\\', static::class) . 'Fixture';
 
         return static::from(
             self::buildAttributes($class::ATTRIBUTES, $override, $strategy),
@@ -45,8 +45,8 @@ trait Fakeable
     private static function buildAttributes(
         array $original,
         array $override,
-        OverrideStrategy $strategy = OverrideStrategy::Merge): array
-    {
+        OverrideStrategy $strategy = OverrideStrategy::Merge
+    ): array {
         return match ($strategy) {
             OverrideStrategy::Replace => array_replace($original, $override),
             OverrideStrategy::Merge => array_replace_recursive($original, $override),

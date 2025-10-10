@@ -26,7 +26,8 @@ final class ThreadMessageResponseContentImageUrlObject implements ResponseContra
     private function __construct(
         public string $type,
         public ThreadMessageResponseContentImageUrl $imageFile,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

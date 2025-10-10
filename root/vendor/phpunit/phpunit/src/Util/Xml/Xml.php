@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Util;
 
 use const ENT_QUOTES;
+
 use function htmlspecialchars;
 use function mb_convert_encoding;
 use function ord;

@@ -39,7 +39,8 @@ final class OutputCodeInterpreterToolCall implements ResponseContract
         public readonly string $status,
         public readonly string $type,
         public readonly string $containerId,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputCodeInterpreterToolCallType  $attributes

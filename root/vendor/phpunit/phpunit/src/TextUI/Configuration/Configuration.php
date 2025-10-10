@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -317,7 +320,7 @@ final class Configuration
     public function cliArgument(): string
     {
         if (!$this->hasCliArguments()) {
-            throw new NoCliArgumentException;
+            throw new NoCliArgumentException();
         }
 
         return $this->cliArguments[0];
@@ -337,7 +340,7 @@ final class Configuration
     public function configurationFile(): string
     {
         if (!$this->hasConfigurationFile()) {
-            throw new NoConfigurationFileException;
+            throw new NoConfigurationFileException();
         }
 
         return $this->configurationFile;
@@ -357,7 +360,7 @@ final class Configuration
     public function bootstrap(): string
     {
         if (!$this->hasBootstrap()) {
-            throw new NoBootstrapException;
+            throw new NoBootstrapException();
         }
 
         return $this->bootstrap;
@@ -382,7 +385,7 @@ final class Configuration
     public function cacheDirectory(): string
     {
         if (!$this->hasCacheDirectory()) {
-            throw new NoCacheDirectoryException;
+            throw new NoCacheDirectoryException();
         }
 
         return $this->cacheDirectory;
@@ -402,7 +405,7 @@ final class Configuration
     public function coverageCacheDirectory(): string
     {
         if (!$this->hasCoverageCacheDirectory()) {
-            throw new NoCoverageCacheDirectoryException;
+            throw new NoCoverageCacheDirectoryException();
         }
 
         return $this->coverageCacheDirectory;
@@ -522,7 +525,7 @@ final class Configuration
     public function coverageClover(): string
     {
         if (!$this->hasCoverageClover()) {
-            throw new CodeCoverageReportNotConfiguredException;
+            throw new CodeCoverageReportNotConfiguredException();
         }
 
         return $this->coverageClover;
@@ -542,7 +545,7 @@ final class Configuration
     public function coverageCobertura(): string
     {
         if (!$this->hasCoverageCobertura()) {
-            throw new CodeCoverageReportNotConfiguredException;
+            throw new CodeCoverageReportNotConfiguredException();
         }
 
         return $this->coverageCobertura;
@@ -562,7 +565,7 @@ final class Configuration
     public function coverageCrap4j(): string
     {
         if (!$this->hasCoverageCrap4j()) {
-            throw new CodeCoverageReportNotConfiguredException;
+            throw new CodeCoverageReportNotConfiguredException();
         }
 
         return $this->coverageCrap4j;
@@ -587,7 +590,7 @@ final class Configuration
     public function coverageHtml(): string
     {
         if (!$this->hasCoverageHtml()) {
-            throw new CodeCoverageReportNotConfiguredException;
+            throw new CodeCoverageReportNotConfiguredException();
         }
 
         return $this->coverageHtml;
@@ -642,7 +645,7 @@ final class Configuration
     public function coverageHtmlCustomCssFile(): string
     {
         if (!$this->hasCoverageHtmlCustomCssFile()) {
-            throw new NoCustomCssFileException;
+            throw new NoCustomCssFileException();
         }
 
         return $this->coverageHtmlCustomCssFile;
@@ -662,7 +665,7 @@ final class Configuration
     public function coveragePhp(): string
     {
         if (!$this->hasCoveragePhp()) {
-            throw new CodeCoverageReportNotConfiguredException;
+            throw new CodeCoverageReportNotConfiguredException();
         }
 
         return $this->coveragePhp;
@@ -682,7 +685,7 @@ final class Configuration
     public function coverageText(): string
     {
         if (!$this->hasCoverageText()) {
-            throw new CodeCoverageReportNotConfiguredException;
+            throw new CodeCoverageReportNotConfiguredException();
         }
 
         return $this->coverageText;
@@ -712,7 +715,7 @@ final class Configuration
     public function coverageXml(): string
     {
         if (!$this->hasCoverageXml()) {
-            throw new CodeCoverageReportNotConfiguredException;
+            throw new CodeCoverageReportNotConfiguredException();
         }
 
         return $this->coverageXml;
@@ -897,7 +900,7 @@ final class Configuration
     public function pharExtensionDirectory(): string
     {
         if (!$this->hasPharExtensionDirectory()) {
-            throw new NoPharExtensionDirectoryException;
+            throw new NoPharExtensionDirectoryException();
         }
 
         return $this->pharExtensionDirectory;
@@ -1078,7 +1081,7 @@ final class Configuration
     public function logfileTeamcity(): string
     {
         if (!$this->hasLogfileTeamcity()) {
-            throw new LoggingNotConfiguredException;
+            throw new LoggingNotConfiguredException();
         }
 
         return $this->logfileTeamcity;
@@ -1098,7 +1101,7 @@ final class Configuration
     public function logfileJunit(): string
     {
         if (!$this->hasLogfileJunit()) {
-            throw new LoggingNotConfiguredException;
+            throw new LoggingNotConfiguredException();
         }
 
         return $this->logfileJunit;
@@ -1118,7 +1121,7 @@ final class Configuration
     public function logfileTestdoxHtml(): string
     {
         if (!$this->hasLogfileTestdoxHtml()) {
-            throw new LoggingNotConfiguredException;
+            throw new LoggingNotConfiguredException();
         }
 
         return $this->logfileTestdoxHtml;
@@ -1138,7 +1141,7 @@ final class Configuration
     public function logfileTestdoxText(): string
     {
         if (!$this->hasLogfileTestdoxText()) {
-            throw new LoggingNotConfiguredException;
+            throw new LoggingNotConfiguredException();
         }
 
         return $this->logfileTestdoxText;
@@ -1158,7 +1161,7 @@ final class Configuration
     public function logEventsText(): string
     {
         if (!$this->hasLogEventsText()) {
-            throw new LoggingNotConfiguredException;
+            throw new LoggingNotConfiguredException();
         }
 
         return $this->logEventsText;
@@ -1178,7 +1181,7 @@ final class Configuration
     public function logEventsVerboseText(): string
     {
         if (!$this->hasLogEventsVerboseText()) {
-            throw new LoggingNotConfiguredException;
+            throw new LoggingNotConfiguredException();
         }
 
         return $this->logEventsVerboseText;
@@ -1210,7 +1213,7 @@ final class Configuration
     public function testsCovering(): array
     {
         if (!$this->hasTestsCovering()) {
-            throw new FilterNotConfiguredException;
+            throw new FilterNotConfiguredException();
         }
 
         return $this->testsCovering;
@@ -1232,7 +1235,7 @@ final class Configuration
     public function testsUsing(): array
     {
         if (!$this->hasTestsUsing()) {
-            throw new FilterNotConfiguredException;
+            throw new FilterNotConfiguredException();
         }
 
         return $this->testsUsing;
@@ -1252,7 +1255,7 @@ final class Configuration
     public function filter(): string
     {
         if (!$this->hasFilter()) {
-            throw new FilterNotConfiguredException;
+            throw new FilterNotConfiguredException();
         }
 
         return $this->filter;
@@ -1272,7 +1275,7 @@ final class Configuration
     public function groups(): array
     {
         if (!$this->hasGroups()) {
-            throw new FilterNotConfiguredException;
+            throw new FilterNotConfiguredException();
         }
 
         return $this->groups;
@@ -1292,7 +1295,7 @@ final class Configuration
     public function excludeGroups(): array
     {
         if (!$this->hasExcludeGroups()) {
-            throw new FilterNotConfiguredException;
+            throw new FilterNotConfiguredException();
         }
 
         return $this->excludeGroups;
@@ -1337,7 +1340,7 @@ final class Configuration
     public function defaultTestSuite(): string
     {
         if (!$this->hasDefaultTestSuite()) {
-            throw new NoDefaultTestSuiteException;
+            throw new NoDefaultTestSuiteException();
         }
 
         return $this->defaultTestSuite;
@@ -1380,7 +1383,7 @@ final class Configuration
     public function generateBaseline(): string
     {
         if (!$this->hasGenerateBaseline()) {
-            throw new NoBaselineException;
+            throw new NoBaselineException();
         }
 
         return $this->generateBaseline;

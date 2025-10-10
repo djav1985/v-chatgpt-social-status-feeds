@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -10,23 +13,27 @@
  */
 namespace PharIo\Manifest;
 
-class CopyrightInformation {
+class CopyrightInformation
+{
     /** @var AuthorCollection */
     private $authors;
 
     /** @var License */
     private $license;
 
-    public function __construct(AuthorCollection $authors, License $license) {
+    public function __construct(AuthorCollection $authors, License $license)
+    {
         $this->authors = $authors;
         $this->license = $license;
     }
 
-    public function getAuthors(): AuthorCollection {
+    public function getAuthors(): AuthorCollection
+    {
         return $this->authors;
     }
 
-    public function getLicense(): License {
+    public function getLicense(): License
+    {
         return $this->license;
     }
 }

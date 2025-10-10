@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Framework\Constraint;
 
 use function str_starts_with;
+
 use PHPUnit\Framework\EmptyStringException;
 
 /**
@@ -25,7 +29,7 @@ final class StringStartsWith extends Constraint
     public function __construct(string $prefix)
     {
         if ($prefix === '') {
-            throw new EmptyStringException;
+            throw new EmptyStringException();
         }
 
         $this->prefix = $prefix;

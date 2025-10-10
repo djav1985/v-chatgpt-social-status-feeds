@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Stmt;
 
 use PhpParser\Modifiers;
 use PhpParser\Node;
 
-class Class_ extends ClassLike {
+class Class_ extends ClassLike
+{
     /** @deprecated Use Modifiers::PUBLIC instead */
     public const MODIFIER_PUBLIC    =  1;
     /** @deprecated Use Modifiers::PROTECTED instead */
@@ -49,7 +52,8 @@ class Class_ extends ClassLike {
      *             'attrGroups'  => array(): PHP attribute groups
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct($name, array $subNodes = [], array $attributes = []) {
+    public function __construct($name, array $subNodes = [], array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->flags = $subNodes['flags'] ?? $subNodes['type'] ?? 0;
         $this->name = \is_string($name) ? new Node\Identifier($name) : $name;
@@ -59,36 +63,42 @@ class Class_ extends ClassLike {
         $this->attrGroups = $subNodes['attrGroups'] ?? [];
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['attrGroups', 'flags', 'name', 'extends', 'implements', 'stmts'];
     }
 
     /**
      * Whether the class is explicitly abstract.
      */
-    public function isAbstract(): bool {
+    public function isAbstract(): bool
+    {
         return (bool) ($this->flags & Modifiers::ABSTRACT);
     }
 
     /**
      * Whether the class is final.
      */
-    public function isFinal(): bool {
+    public function isFinal(): bool
+    {
         return (bool) ($this->flags & Modifiers::FINAL);
     }
 
-    public function isReadonly(): bool {
+    public function isReadonly(): bool
+    {
         return (bool) ($this->flags & Modifiers::READONLY);
     }
 
     /**
      * Whether the class is anonymous.
      */
-    public function isAnonymous(): bool {
+    public function isAnonymous(): bool
+    {
         return null === $this->name;
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Stmt_Class';
     }
 }

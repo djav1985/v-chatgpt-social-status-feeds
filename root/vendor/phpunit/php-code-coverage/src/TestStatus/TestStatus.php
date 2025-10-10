@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -16,17 +19,17 @@ abstract class TestStatus
 {
     public static function unknown(): self
     {
-        return new Unknown;
+        return new Unknown();
     }
 
     public static function success(): self
     {
-        return new Success;
+        return new Success();
     }
 
     public static function failure(): self
     {
-        return new Failure;
+        return new Failure();
     }
 
     /**

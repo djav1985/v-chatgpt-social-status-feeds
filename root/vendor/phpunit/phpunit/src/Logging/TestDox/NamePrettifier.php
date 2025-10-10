@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -38,6 +41,7 @@ use function strtolower;
 use function strtoupper;
 use function substr;
 use function trim;
+
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Metadata\Parser\Registry as MetadataRegistry;
 use PHPUnit\Metadata\TestDox;
@@ -255,7 +259,7 @@ final class NamePrettifier
             }
 
             if (is_bool($value) || is_int($value) || is_float($value)) {
-                $value = (new Exporter)->export($value);
+                $value = (new Exporter())->export($value);
             }
 
             if ($value === '') {

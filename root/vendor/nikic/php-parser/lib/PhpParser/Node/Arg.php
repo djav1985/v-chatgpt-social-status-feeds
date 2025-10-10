@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node;
 
 use PhpParser\NodeAbstract;
 
-class Arg extends NodeAbstract {
+class Arg extends NodeAbstract
+{
     /** @var Identifier|null Parameter name (for named parameters) */
     public ?Identifier $name;
     /** @var Expr Value to pass */
@@ -24,7 +27,10 @@ class Arg extends NodeAbstract {
      * @param Identifier|null $name Parameter name (for named parameters)
      */
     public function __construct(
-        Expr $value, bool $byRef = false, bool $unpack = false, array $attributes = [],
+        Expr $value,
+        bool $byRef = false,
+        bool $unpack = false,
+        array $attributes = [],
         ?Identifier $name = null
     ) {
         $this->attributes = $attributes;
@@ -34,11 +40,13 @@ class Arg extends NodeAbstract {
         $this->unpack = $unpack;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['name', 'value', 'byRef', 'unpack'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Arg';
     }
 }

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,10 +13,12 @@
 namespace PHPUnit\Runner\Baseline;
 
 use const FILE_IGNORE_NEW_LINES;
+
 use function assert;
 use function file;
 use function is_file;
 use function sha1;
+
 use PHPUnit\Runner\FileDoesNotExistException;
 
 /**

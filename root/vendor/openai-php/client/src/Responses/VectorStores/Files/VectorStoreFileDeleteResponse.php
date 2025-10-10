@@ -29,7 +29,8 @@ final class VectorStoreFileDeleteResponse implements ResponseContract, ResponseH
         public readonly string $object,
         public readonly bool $deleted,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

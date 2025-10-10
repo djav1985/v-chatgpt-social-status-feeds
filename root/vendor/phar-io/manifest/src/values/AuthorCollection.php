@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -12,29 +15,35 @@ namespace PharIo\Manifest;
 
 use Countable;
 use IteratorAggregate;
+
 use function count;
 
 /** @template-implements IteratorAggregate<int,Author> */
-class AuthorCollection implements Countable, IteratorAggregate {
+class AuthorCollection implements Countable, IteratorAggregate
+{
     /** @var Author[] */
     private $authors = [];
 
-    public function add(Author $author): void {
+    public function add(Author $author): void
+    {
         $this->authors[] = $author;
     }
 
     /**
      * @return Author[]
      */
-    public function getAuthors(): array {
+    public function getAuthors(): array
+    {
         return $this->authors;
     }
 
-    public function count(): int {
+    public function count(): int
+    {
         return count($this->authors);
     }
 
-    public function getIterator(): AuthorCollectionIterator {
+    public function getIterator(): AuthorCollectionIterator
+    {
         return new AuthorCollectionIterator($this);
     }
 }

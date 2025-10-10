@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,10 +13,12 @@
 namespace PHPUnit\TextUI\Command;
 
 use const PHP_EOL;
+
 use function file_put_contents;
 use function implode;
 use function sprintf;
 use function str_replace;
+
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Runner\PhptTestCase;
@@ -40,7 +45,7 @@ final class ListTestsAsXmlCommand implements Command
     public function execute(): Result
     {
         $buffer = $this->warnAboutConflictingOptions();
-        $writer = new XMLWriter;
+        $writer = new XMLWriter();
 
         $writer->openMemory();
         $writer->setIndent(true);

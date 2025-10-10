@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -10,6 +13,7 @@
 namespace SebastianBergmann\CodeCoverage\Report;
 
 use const PHP_EOL;
+
 use function array_map;
 use function date;
 use function ksort;
@@ -17,6 +21,7 @@ use function max;
 use function sprintf;
 use function str_pad;
 use function strlen;
+
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Node\File;
 use SebastianBergmann\CodeCoverage\Util\Percentage;

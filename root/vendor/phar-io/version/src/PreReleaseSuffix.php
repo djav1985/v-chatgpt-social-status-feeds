@@ -1,7 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 namespace PharIo\Version;
 
-class PreReleaseSuffix {
+class PreReleaseSuffix
+{
     private const valueScoreMap = [
         'dev'   => 0,
         'a'     => 1,
@@ -29,23 +33,28 @@ class PreReleaseSuffix {
     /**
      * @throws InvalidPreReleaseSuffixException
      */
-    public function __construct(string $value) {
+    public function __construct(string $value)
+    {
         $this->parseValue($value);
     }
 
-    public function asString(): string {
+    public function asString(): string
+    {
         return $this->full;
     }
 
-    public function getValue(): string {
+    public function getValue(): string
+    {
         return $this->value;
     }
 
-    public function getNumber(): ?int {
+    public function getNumber(): ?int
+    {
         return $this->number;
     }
 
-    public function isGreaterThan(PreReleaseSuffix $suffix): bool {
+    public function isGreaterThan(PreReleaseSuffix $suffix): bool
+    {
         if ($this->valueScore > $suffix->valueScore) {
             return true;
         }
@@ -57,13 +66,15 @@ class PreReleaseSuffix {
         return $this->getNumber() > $suffix->getNumber();
     }
 
-    private function mapValueToScore(string $value): int {
+    private function mapValueToScore(string $value): int
+    {
         $value = \strtolower($value);
 
         return self::valueScoreMap[$value];
     }
 
-    private function parseValue(string $value): void {
+    private function parseValue(string $value): void
+    {
         $regex = '/-?((dev|beta|b|rc|alpha|a|patch|p|pl)\.?(\d*)).*$/i';
 
         if (\preg_match($regex, $value, $matches) !== 1) {

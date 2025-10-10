@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -21,6 +24,7 @@ use function sprintf;
 use function substr_count;
 use function token_get_all;
 use function trim;
+
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
@@ -139,21 +143,21 @@ final class ParsingFileAnalyser implements FileAnalyser
 
         assert($linesOfCode > 0);
 
-        $parser = (new ParserFactory)->createForHostVersion();
+        $parser = (new ParserFactory())->createForHostVersion();
 
         try {
             $nodes = $parser->parse($source);
 
             assert($nodes !== null);
 
-            $traverser                     = new NodeTraverser;
-            $codeUnitFindingVisitor        = new CodeUnitFindingVisitor;
+            $traverser                     = new NodeTraverser();
+            $codeUnitFindingVisitor        = new CodeUnitFindingVisitor();
             $lineCountingVisitor           = new LineCountingVisitor($linesOfCode);
             $ignoredLinesFindingVisitor    = new IgnoredLinesFindingVisitor($this->useAnnotationsForIgnoringCode, $this->ignoreDeprecatedCode);
             $executableLinesFindingVisitor = new ExecutableLinesFindingVisitor($source);
 
-            $traverser->addVisitor(new NameResolver);
-            $traverser->addVisitor(new ParentConnectingVisitor);
+            $traverser->addVisitor(new NameResolver());
+            $traverser->addVisitor(new ParentConnectingVisitor());
             $traverser->addVisitor($codeUnitFindingVisitor);
             $traverser->addVisitor($lineCountingVisitor);
             $traverser->addVisitor($ignoredLinesFindingVisitor);
@@ -210,29 +214,37 @@ final class ParsingFileAnalyser implements FileAnalyser
         $start = false;
 
         foreach (token_get_all($source) as $token) {
-            if (!is_array($token) ||
-                !(T_COMMENT === $token[0] || T_DOC_COMMENT === $token[0])) {
+            if (
+                !is_array($token) ||
+                !(T_COMMENT === $token[0] || T_DOC_COMMENT === $token[0])
+            ) {
                 continue;
             }
 
             $comment = trim($token[1]);
 
-            if ($comment === '// @codeCoverageIgnore' ||
-                $comment === '//@codeCoverageIgnore') {
+            if (
+                $comment === '// @codeCoverageIgnore' ||
+                $comment === '//@codeCoverageIgnore'
+            ) {
                 $this->ignoredLines[$filename][] = $token[2];
 
                 continue;
             }
 
-            if ($comment === '// @codeCoverageIgnoreStart' ||
-                $comment === '//@codeCoverageIgnoreStart') {
+            if (
+                $comment === '// @codeCoverageIgnoreStart' ||
+                $comment === '//@codeCoverageIgnoreStart'
+            ) {
                 $start = $token[2];
 
                 continue;
             }
 
-            if ($comment === '// @codeCoverageIgnoreEnd' ||
-                $comment === '//@codeCoverageIgnoreEnd') {
+            if (
+                $comment === '// @codeCoverageIgnoreEnd' ||
+                $comment === '//@codeCoverageIgnoreEnd'
+            ) {
                 if (false === $start) {
                     $start = $token[2];
                 }

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,12 +14,14 @@ namespace PHPUnit\TextUI\Command;
 
 use const E_ALL;
 use const PHP_EOL;
+
 use function extension_loaded;
 use function in_array;
 use function ini_get;
 use function max;
 use function sprintf;
 use function strlen;
+
 use PHPUnit\Runner\Version;
 use PHPUnit\Util\Color;
 use SebastianBergmann\Environment\Console;
@@ -32,7 +37,7 @@ final class CheckPhpConfigurationCommand implements Command
 
     public function __construct()
     {
-        $this->colorize = (new Console)->hasColorSupport();
+        $this->colorize = (new Console())->hasColorSupport();
     }
 
     public function execute(): Result

@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -10,8 +13,10 @@
  */
 namespace PharIo\Manifest;
 
-class Library extends Type {
-    public function isLibrary(): bool {
+class Library extends Type
+{
+    public function isLibrary(): bool
+    {
         return true;
     }
 }

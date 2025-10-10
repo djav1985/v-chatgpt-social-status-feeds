@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -10,10 +13,12 @@
 namespace SebastianBergmann\CodeCoverage\Node;
 
 use const DIRECTORY_SEPARATOR;
+
 use function array_merge;
 use function str_ends_with;
 use function str_replace;
 use function substr;
+
 use Countable;
 use SebastianBergmann\CodeCoverage\Util\Percentage;
 

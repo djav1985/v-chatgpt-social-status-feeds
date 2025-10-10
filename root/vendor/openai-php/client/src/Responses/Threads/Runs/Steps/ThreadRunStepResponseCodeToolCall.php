@@ -27,7 +27,8 @@ final class ThreadRunStepResponseCodeToolCall implements ResponseContract
         public ?string $id,
         public string $type,
         public ThreadRunStepResponseCodeInterpreter $codeInterpreter,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,9 +13,11 @@
 namespace PHPUnit\TextUI\Command;
 
 use const PHP_EOL;
+
 use function copy;
 use function file_put_contents;
 use function sprintf;
+
 use PHPUnit\TextUI\XmlConfiguration\Migrator;
 use Throwable;
 
@@ -33,7 +38,7 @@ final class MigrateConfigurationCommand implements Command
     public function execute(): Result
     {
         try {
-            $migrated = (new Migrator)->migrate($this->filename);
+            $migrated = (new Migrator())->migrate($this->filename);
 
             copy($this->filename, $this->filename . '.bak');
 

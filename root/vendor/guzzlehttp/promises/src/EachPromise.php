@@ -148,9 +148,11 @@ class EachPromise implements PromisorInterface
         // not advance the iterator after adding the first promise. This
         // helps work around issues with generators that might not have the
         // next value to yield until promise callbacks are called.
-        while (--$concurrency
+        while (
+            --$concurrency
             && $this->advanceIterator()
-            && $this->addPending()) {
+            && $this->addPending()
+        ) {
         }
     }
 

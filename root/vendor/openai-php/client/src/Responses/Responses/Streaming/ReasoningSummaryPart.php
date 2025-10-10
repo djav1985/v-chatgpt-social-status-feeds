@@ -35,7 +35,8 @@ final class ReasoningSummaryPart implements ResponseContract, ResponseHasMetaInf
         public readonly OutputReasoningSummary $part,
         public readonly int $summaryIndex,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ReasoningSummaryPartType  $attributes

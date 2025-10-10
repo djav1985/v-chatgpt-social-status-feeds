@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -18,6 +21,7 @@ use const LC_TIME;
 use const PATHINFO_FILENAME;
 use const PHP_EOL;
 use const PHP_URL_PATH;
+
 use function array_is_list;
 use function array_keys;
 use function array_map;
@@ -54,6 +58,7 @@ use function setlocale;
 use function sprintf;
 use function str_contains;
 use function trim;
+
 use AssertionError;
 use DeepCopy\DeepCopy;
 use PHPUnit\Event;
@@ -203,7 +208,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     final public static function any(): AnyInvokedCountMatcher
     {
-        return new AnyInvokedCountMatcher;
+        return new AnyInvokedCountMatcher();
     }
 
     /**
@@ -230,7 +235,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     final public static function atLeastOnce(): InvokedAtLeastOnceMatcher
     {
-        return new InvokedAtLeastOnceMatcher;
+        return new InvokedAtLeastOnceMatcher();
     }
 
     /**
@@ -311,7 +316,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     final public static function returnSelf(): ReturnSelfStub
     {
-        return new ReturnSelfStub;
+        return new ReturnSelfStub();
     }
 
     final public static function throwException(Throwable $exception): ExceptionStub
@@ -513,9 +518,9 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
         }
 
         if (!$this->shouldRunInSeparateProcess() || $this->requirementsNotSatisfied()) {
-            (new TestRunner)->run($this);
+            (new TestRunner())->run($this);
         } else {
-            (new TestRunner)->runInSeparateProcess(
+            (new TestRunner())->runInSeparateProcess(
                 $this,
                 $this->runClassInSeparateProcess && !$this->runTestInSeparateProcess,
                 $this->preserveGlobalState,
@@ -576,7 +581,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     final public function size(): TestSize
     {
-        return (new Groups)->size(
+        return (new Groups())->size(
             static::class,
             $this->name,
         );
@@ -655,7 +660,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
         $this->startOutputBuffering();
         clearstatcache();
 
-        $hookMethods                       = (new HookMethods)->hookMethods(static::class);
+        $hookMethods                       = (new HookMethods())->hookMethods(static::class);
         $hasMetRequirements                = false;
         $this->numberOfAssertionsPerformed = 0;
         $currentWorkingDirectory           = getcwd();
@@ -670,8 +675,10 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
                 // @codeCoverageIgnoreEnd
             }
 
-            if (method_exists(static::class, $this->name) &&
-                MetadataRegistry::parser()->forClassAndMethod(static::class, $this->name)->isDoesNotPerformAssertions()->isNotEmpty()) {
+            if (
+                method_exists(static::class, $this->name) &&
+                MetadataRegistry::parser()->forClassAndMethod(static::class, $this->name)->isDoesNotPerformAssertions()->isNotEmpty()
+            ) {
                 $this->doesNotPerformAssertions = true;
             }
 
@@ -703,7 +710,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
                 $this->valueObjectForEvents(),
                 $e->getMessage(),
             );
-        } catch (AssertionError|AssertionFailedError $e) {
+        } catch (AssertionError | AssertionFailedError $e) {
             $this->handleExceptionFromInvokedCountMockObjectRule($e);
 
             if (!$this->wasPrepared) {
@@ -745,9 +752,11 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
 
         $outputBufferingStopped = false;
 
-        if (!isset($e) &&
+        if (
+            !isset($e) &&
             $this->hasExpectationOnOutput() &&
-            $this->stopOutputBuffering()) {
+            $this->stopOutputBuffering()
+        ) {
             $outputBufferingStopped = true;
 
             $this->performAssertionsOnOutput();
@@ -787,7 +796,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
                     // @codeCoverageIgnoreEnd
                 }
             }
-        } catch (AssertionError|AssertionFailedError $e) {
+        } catch (AssertionError | AssertionFailedError $e) {
             $this->status = TestStatus::failure($e->getMessage());
 
             $emitter->testFailed(
@@ -1037,7 +1046,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
 
         return $this->dataSetAsString() . sprintf(
             ' (%s)',
-            (new Exporter)->shortenedRecursiveExport($this->data),
+            (new Exporter())->shortenedRecursiveExport($this->data),
         );
     }
 
@@ -1211,17 +1220,17 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
     protected function setLocale(mixed ...$arguments): void
     {
         if (count($arguments) < 2) {
-            throw new Exception;
+            throw new Exception();
         }
 
         [$category, $locale] = $arguments;
 
         if (!in_array($category, self::LOCALE_CATEGORIES, true)) {
-            throw new Exception;
+            throw new Exception();
         }
 
         if (!is_array($locale) && !is_string($locale)) {
-            throw new Exception;
+            throw new Exception();
         }
 
         $this->locale[$category] = setlocale($category, '0');
@@ -1252,7 +1261,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     protected function createMock(string $originalClassName): MockObject
     {
-        $mock = (new MockGenerator)->testDouble(
+        $mock = (new MockGenerator())->testDouble(
             $originalClassName,
             true,
             callOriginalConstructor: false,
@@ -1278,7 +1287,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     protected function createMockForIntersectionOfInterfaces(array $interfaces): MockObject
     {
-        $mock = (new MockGenerator)->testDoubleForInterfaceIntersection($interfaces, true);
+        $mock = (new MockGenerator())->testDoubleForInterfaceIntersection($interfaces, true);
 
         assert($mock instanceof MockObject);
 
@@ -1392,7 +1401,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     protected function getMockForAbstractClass(string $originalClassName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, array $mockedMethods = [], bool $cloneArguments = false): MockObject
     {
-        $mockObject = (new MockGenerator)->mockObjectForAbstractClass(
+        $mockObject = (new MockGenerator())->mockObjectForAbstractClass(
             $originalClassName,
             $arguments,
             $mockClassName,
@@ -1429,7 +1438,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
 
         if (!class_exists($originalClassName)) {
             eval(
-                (new MockGenerator)->generateClassFromWsdl(
+                (new MockGenerator())->generateClassFromWsdl(
                     $wsdlFile,
                     $originalClassName,
                     $methods,
@@ -1438,7 +1447,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
             );
         }
 
-        $mockObject = (new MockGenerator)->testDouble(
+        $mockObject = (new MockGenerator())->testDouble(
             $originalClassName,
             true,
             $methods,
@@ -1479,7 +1488,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     protected function getMockForTrait(string $traitName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, array $mockedMethods = [], bool $cloneArguments = false): MockObject
     {
-        $mockObject = (new MockGenerator)->mockObjectForTrait(
+        $mockObject = (new MockGenerator())->mockObjectForTrait(
             $traitName,
             $arguments,
             $mockClassName,
@@ -1508,7 +1517,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     protected function getObjectForTrait(string $traitName, array $arguments = [], string $traitClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true): object
     {
-        return (new MockGenerator)->objectForTrait(
+        return (new MockGenerator())->objectForTrait(
             $traitName,
             $traitClassName,
             $callAutoload,
@@ -1586,7 +1595,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
             return;
         }
 
-        $missingRequirements = (new Requirements)->requirementsNotSatisfiedFor(
+        $missingRequirements = (new Requirements())->requirementsNotSatisfiedFor(
             static::class,
             $this->name,
         );
@@ -1653,7 +1662,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
             $returnValue = $passedTests->returnValue($dependencyTarget);
 
             if ($dependency->deepClone()) {
-                $deepCopy = new DeepCopy;
+                $deepCopy = new DeepCopy();
                 $deepCopy->skipUncloneable(false);
 
                 $this->dependencyInput[$dependencyTarget] = $deepCopy->copy($returnValue);
@@ -1757,8 +1766,10 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
 
     private function snapshotGlobalState(): void
     {
-        if ($this->runTestInSeparateProcess || $this->inIsolation ||
-            (!$this->backupGlobals && !$this->backupStaticProperties)) {
+        if (
+            $this->runTestInSeparateProcess || $this->inIsolation ||
+            (!$this->backupGlobals && !$this->backupStaticProperties)
+        ) {
             return;
         }
 
@@ -1783,7 +1794,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
             );
         }
 
-        $restorer = new Restorer;
+        $restorer = new Restorer();
 
         if ($this->backupGlobals) {
             $restorer->restoreGlobalVariables($this->snapshot);
@@ -1798,7 +1809,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
 
     private function createGlobalStateSnapshot(bool $backupGlobals): Snapshot
     {
-        $excludeList = new GlobalStateExcludeList;
+        $excludeList = new GlobalStateExcludeList();
 
         foreach ($this->backupGlobalsExcludeList as $globalVariable) {
             $excludeList->addGlobalVariable($globalVariable);
@@ -1871,7 +1882,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
     {
         if ($before != $after) {
             $differ   = new Differ(new UnifiedDiffOutputBuilder($header));
-            $exporter = new Exporter;
+            $exporter = new Exporter();
 
             Event\Facade::emitter()->testConsideredRisky(
                 $this->valueObjectForEvents(),
@@ -1888,7 +1899,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
 
     private function shouldInvocationMockerBeReset(MockObject $mock): bool
     {
-        $enumerator = new Enumerator;
+        $enumerator = new Enumerator();
 
         if (in_array($mock, $enumerator->enumerate($this->dependencyInput), true)) {
             return false;
@@ -1904,10 +1915,10 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
     /**
      * @deprecated
      */
-    private function registerMockObjectsFromTestArguments(array $testArguments, Context $context = new Context): void
+    private function registerMockObjectsFromTestArguments(array $testArguments, Context $context = new Context()): void
     {
         if ($this->registerMockObjectsFromTestArgumentsRecursively) {
-            foreach ((new Enumerator)->enumerate($testArguments) as $object) {
+            foreach ((new Enumerator())->enumerate($testArguments) as $object) {
                 if ($object instanceof MockObject) {
                     $this->registerMockObject($object);
                 }
@@ -1988,9 +1999,11 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
             }
             // @codeCoverageIgnoreEnd
 
-            if ($this->expectedException === 'PHPUnit\Framework\Exception' ||
+            if (
+                $this->expectedException === 'PHPUnit\Framework\Exception' ||
                 $this->expectedException === '\PHPUnit\Framework\Exception' ||
-                $reflector->isSubclassOf(Exception::class)) {
+                $reflector->isSubclassOf(Exception::class)
+            ) {
                 $result = true;
             }
         }
@@ -2321,7 +2334,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
 
     private function requirementsNotSatisfied(): bool
     {
-        return (new Requirements)->requirementsNotSatisfiedFor(static::class, $this->name) !== [];
+        return (new Requirements())->requirementsNotSatisfiedFor(static::class, $this->name) !== [];
     }
 
     /**
@@ -2355,7 +2368,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     protected static function createStub(string $originalClassName): Stub
     {
-        $stub = (new MockGenerator)->testDouble(
+        $stub = (new MockGenerator())->testDouble(
             $originalClassName,
             true,
             callOriginalConstructor: false,
@@ -2379,7 +2392,7 @@ abstract class TestCase extends Assert implements Reorderable, SelfDescribing, T
      */
     protected static function createStubForIntersectionOfInterfaces(array $interfaces): Stub
     {
-        $stub = (new MockGenerator)->testDoubleForInterfaceIntersection($interfaces, true);
+        $stub = (new MockGenerator())->testDoubleForInterfaceIntersection($interfaces, true);
 
         Event\Facade::emitter()->testCreatedStubForIntersectionOfInterfaces($interfaces);
 

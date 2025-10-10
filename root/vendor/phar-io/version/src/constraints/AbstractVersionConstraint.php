@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Version.
  *
@@ -9,15 +12,18 @@
  */
 namespace PharIo\Version;
 
-abstract class AbstractVersionConstraint implements VersionConstraint {
+abstract class AbstractVersionConstraint implements VersionConstraint
+{
     /** @var string */
     private $originalValue;
 
-    public function __construct(string $originalValue) {
+    public function __construct(string $originalValue)
+    {
         $this->originalValue = $originalValue;
     }
 
-    public function asString(): string {
+    public function asString(): string
+    {
         return $this->originalValue;
     }
 }

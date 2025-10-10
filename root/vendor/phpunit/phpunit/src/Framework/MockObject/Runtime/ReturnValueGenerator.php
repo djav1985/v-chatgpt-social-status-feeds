@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -19,6 +22,7 @@ use function str_contains;
 use function str_ends_with;
 use function str_starts_with;
 use function substr;
+
 use PHPUnit\Framework\MockObject\Generator\Generator;
 use ReflectionClass;
 use stdClass;
@@ -62,10 +66,12 @@ final class ReturnValueGenerator
         if (!$intersection) {
             $lowerTypes = array_map('strtolower', $types);
 
-            if (in_array('', $lowerTypes, true) ||
+            if (
+                in_array('', $lowerTypes, true) ||
                 in_array('null', $lowerTypes, true) ||
                 in_array('mixed', $lowerTypes, true) ||
-                in_array('void', $lowerTypes, true)) {
+                in_array('void', $lowerTypes, true)
+            ) {
                 return null;
             }
 
@@ -73,8 +79,10 @@ final class ReturnValueGenerator
                 return true;
             }
 
-            if (in_array('false', $lowerTypes, true) ||
-                in_array('bool', $lowerTypes, true)) {
+            if (
+                in_array('false', $lowerTypes, true) ||
+                in_array('bool', $lowerTypes, true)
+            ) {
                 return false;
             }
 
@@ -99,21 +107,23 @@ final class ReturnValueGenerator
             }
 
             if (in_array('object', $lowerTypes, true)) {
-                return new stdClass;
+                return new stdClass();
             }
 
-            if (in_array('callable', $lowerTypes, true) ||
-                in_array('closure', $lowerTypes, true)) {
-                return static function (): void
-                {
+            if (
+                in_array('callable', $lowerTypes, true) ||
+                in_array('closure', $lowerTypes, true)
+            ) {
+                return static function (): void {
                 };
             }
 
-            if (in_array('traversable', $lowerTypes, true) ||
+            if (
+                in_array('traversable', $lowerTypes, true) ||
                 in_array('generator', $lowerTypes, true) ||
-                in_array('iterable', $lowerTypes, true)) {
-                $generator = static function (): \Generator
-                {
+                in_array('iterable', $lowerTypes, true)
+            ) {
+                $generator = static function (): \Generator {
                     yield from [];
                 };
 
@@ -208,7 +218,7 @@ final class ReturnValueGenerator
     private function testDoubleFor(string $type, string $className, string $methodName): Stub
     {
         try {
-            return (new Generator)->testDouble($type, false, [], [], '', false);
+            return (new Generator())->testDouble($type, false, [], [], '', false);
             // @codeCoverageIgnoreStart
         } catch (Throwable $t) {
             throw new RuntimeException(
@@ -233,7 +243,7 @@ final class ReturnValueGenerator
     private function testDoubleForIntersectionOfInterfaces(array $types, string $className, string $methodName): Stub
     {
         try {
-            return (new Generator)->testDoubleForInterfaceIntersection($types, false);
+            return (new Generator())->testDoubleForInterfaceIntersection($types, false);
             // @codeCoverageIgnoreStart
         } catch (Throwable $t) {
             throw new RuntimeException(

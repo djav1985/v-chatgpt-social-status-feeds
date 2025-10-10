@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Runner\Baseline;
 
 use const DIRECTORY_SEPARATOR;
+
 use function assert;
 use function dirname;
 use function is_file;
@@ -17,6 +21,7 @@ use function realpath;
 use function sprintf;
 use function str_replace;
 use function trim;
+
 use DOMElement;
 use DOMXPath;
 use PHPUnit\Util\Xml\Loader as XmlLoader;
@@ -46,7 +51,7 @@ final class Reader
         }
 
         try {
-            $document = (new XmlLoader)->loadFile($baselineFile);
+            $document = (new XmlLoader())->loadFile($baselineFile);
         } catch (XmlException $e) {
             throw new CannotLoadBaselineException(
                 sprintf(
@@ -68,7 +73,7 @@ final class Reader
             );
         }
 
-        $baseline          = new Baseline;
+        $baseline          = new Baseline();
         $baselineDirectory = dirname(realpath($baselineFile));
         $xpath             = new DOMXPath($document);
 

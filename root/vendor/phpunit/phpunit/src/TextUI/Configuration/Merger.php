@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\TextUI\Configuration;
 
 use const DIRECTORY_SEPARATOR;
 use const PATH_SEPARATOR;
+
 use function array_diff;
 use function assert;
 use function dirname;
@@ -18,6 +22,7 @@ use function explode;
 use function is_int;
 use function realpath;
 use function time;
+
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TextUI\CliArguments\Configuration as CliConfiguration;
@@ -294,7 +299,7 @@ final class Merger
         }
 
         if ($columns === 'max') {
-            $columns = (new Console)->getNumberOfColumns();
+            $columns = (new Console())->getNumberOfColumns();
         }
 
         if ($columns < 16) {
@@ -470,7 +475,7 @@ final class Merger
             $enforceTimeLimit = $xmlConfiguration->phpunit()->enforceTimeLimit();
         }
 
-        if ($enforceTimeLimit && !(new Invoker)->canInvokeWithTimeout()) {
+        if ($enforceTimeLimit && !(new Invoker())->canInvokeWithTimeout()) {
             EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                 'The pcntl extension is required for enforcing time limits',
             );
@@ -582,7 +587,7 @@ final class Merger
         }
 
         $colors          = false;
-        $colorsSupported = (new Console)->hasColorSupport();
+        $colorsSupported = (new Console())->hasColorSupport();
 
         if ($cliConfiguration->hasColors()) {
             if ($cliConfiguration->colors() === Configuration::COLOR_ALWAYS) {
@@ -711,7 +716,7 @@ final class Merger
         }
 
         if ($xmlConfiguration->wasLoadedFromFile() && $xmlConfiguration->hasValidationErrors()) {
-            if ((new SchemaDetector)->detect($xmlConfiguration->filename())->detected()) {
+            if ((new SchemaDetector())->detect($xmlConfiguration->filename())->detected()) {
                 EventFacade::emitter()->testRunnerTriggeredPhpunitDeprecation(
                     'Your XML configuration validates against a deprecated schema. Migrate your XML configuration using "--migrate-configuration"!',
                 );

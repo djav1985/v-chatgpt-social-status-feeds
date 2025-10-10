@@ -26,7 +26,8 @@ final class OutputComputerPendingSafetyCheck implements ResponseContract
         public readonly string $code,
         public readonly string $id,
         public readonly string $message,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  PendingSafetyCheckType  $attributes

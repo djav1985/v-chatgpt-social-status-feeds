@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -16,6 +19,7 @@ use function count;
 use function interface_exists;
 use function sprintf;
 use function str_starts_with;
+
 use PHPUnit\Framework\CodeCoverageException;
 use PHPUnit\Framework\InvalidCoversTargetException;
 use PHPUnit\Framework\TestSuite;
@@ -79,7 +83,7 @@ final class CodeCoverage
         }
 
         $codeUnits = CodeUnitCollection::fromList();
-        $mapper    = new Mapper;
+        $mapper    = new Mapper();
 
         foreach (Registry::parser()->forClassAndMethod($className, $methodName) as $metadata) {
             if (!$metadata->isCoversClass() && !$metadata->isCoversFunction() && !$metadata->isCovers()) {
@@ -157,7 +161,7 @@ final class CodeCoverage
         }
 
         $codeUnits = CodeUnitCollection::fromList();
-        $mapper    = new Mapper;
+        $mapper    = new Mapper();
 
         foreach (Registry::parser()->forClassAndMethod($className, $methodName) as $metadata) {
             if (!$metadata->isUsesClass() && !$metadata->isUsesFunction() && !$metadata->isUses()) {
@@ -201,7 +205,7 @@ final class CodeCoverage
     public function linesToBeIgnored(TestSuite $testSuite): array
     {
         $codeUnits = CodeUnitCollection::fromList();
-        $mapper    = new Mapper;
+        $mapper    = new Mapper();
 
         foreach ($this->testCaseClassesIn($testSuite) as $testCaseClassName) {
             $codeUnits = $codeUnits->mergeWith(
@@ -225,9 +229,11 @@ final class CodeCoverage
             return false;
         }
 
-        if ($metadataForMethod->isCovers()->isNotEmpty() ||
+        if (
+            $metadataForMethod->isCovers()->isNotEmpty() ||
             $metadataForMethod->isCoversClass()->isNotEmpty() ||
-            $metadataForMethod->isCoversFunction()->isNotEmpty()) {
+            $metadataForMethod->isCoversFunction()->isNotEmpty()
+        ) {
             return true;
         }
 
@@ -258,7 +264,7 @@ final class CodeCoverage
     private function codeUnitsIgnoredBy(string $className): CodeUnitCollection
     {
         $codeUnits = CodeUnitCollection::fromList();
-        $mapper    = new Mapper;
+        $mapper    = new Mapper();
 
         foreach (Registry::parser()->forClass($className) as $metadata) {
             if ($metadata instanceof IgnoreClassForCodeCoverage) {
@@ -288,7 +294,7 @@ final class CodeCoverage
      */
     private function mapToCodeUnits(CoversClass|CoversFunction|UsesClass|UsesFunction $metadata): CodeUnitCollection
     {
-        $mapper = new Mapper;
+        $mapper = new Mapper();
 
         try {
             return $mapper->stringToCodeUnits($metadata->asStringForCodeUnitMapper());

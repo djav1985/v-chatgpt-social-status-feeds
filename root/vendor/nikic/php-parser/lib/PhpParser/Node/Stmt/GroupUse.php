@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Stmt;
 
@@ -6,7 +8,8 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\UseItem;
 
-class GroupUse extends Stmt {
+class GroupUse extends Stmt
+{
     /**
      * @var Use_::TYPE_* Type of group use
      */
@@ -24,18 +27,21 @@ class GroupUse extends Stmt {
      * @param Use_::TYPE_* $type Type of group use
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct(Name $prefix, array $uses, int $type = Use_::TYPE_NORMAL, array $attributes = []) {
+    public function __construct(Name $prefix, array $uses, int $type = Use_::TYPE_NORMAL, array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->type = $type;
         $this->prefix = $prefix;
         $this->uses = $uses;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['type', 'prefix', 'uses'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Stmt_GroupUse';
     }
 }

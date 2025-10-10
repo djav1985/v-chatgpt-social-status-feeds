@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Scalar;
 
 use PhpParser\Node\Scalar;
 
-class Float_ extends Scalar {
+class Float_ extends Scalar
+{
     /** @var float Number value */
     public float $value;
 
@@ -14,19 +17,22 @@ class Float_ extends Scalar {
      * @param float $value Value of the number
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct(float $value, array $attributes = []) {
+    public function __construct(float $value, array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->value = $value;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['value'];
     }
 
     /**
      * @param mixed[] $attributes
      */
-    public static function fromString(string $str, array $attributes = []): Float_ {
+    public static function fromString(string $str, array $attributes = []): Float_
+    {
         $attributes['rawValue'] = $str;
         $float = self::parse($str);
 
@@ -42,7 +48,8 @@ class Float_ extends Scalar {
      *
      * @return float The parsed number
      */
-    public static function parse(string $str): float {
+    public static function parse(string $str): float
+    {
         $str = str_replace('_', '', $str);
 
         // Check whether this is one of the special integer notations.
@@ -69,7 +76,8 @@ class Float_ extends Scalar {
         return (float) $str;
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Scalar_Float';
     }
 }

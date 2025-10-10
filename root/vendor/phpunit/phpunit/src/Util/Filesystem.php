@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Util;
 
 use const DIRECTORY_SEPARATOR;
+
 use function basename;
 use function dirname;
 use function is_dir;

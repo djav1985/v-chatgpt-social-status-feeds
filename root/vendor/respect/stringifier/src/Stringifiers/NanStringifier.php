@@ -15,6 +15,7 @@ namespace Respect\Stringifier\Stringifiers;
 
 use function is_float;
 use function is_nan;
+
 use Respect\Stringifier\Quoter;
 use Respect\Stringifier\Stringifier;
 

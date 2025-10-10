@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -13,6 +16,7 @@ use function count;
 use function gettype;
 use function sprintf;
 use function str_starts_with;
+
 use Countable;
 use EmptyIterator;
 

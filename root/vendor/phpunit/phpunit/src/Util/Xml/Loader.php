@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Util\Xml;
 
 use const PHP_OS_FAMILY;
+
 use function chdir;
 use function dirname;
 use function error_reporting;
@@ -18,6 +22,7 @@ use function getcwd;
 use function libxml_get_errors;
 use function libxml_use_internal_errors;
 use function sprintf;
+
 use DOMDocument;
 
 /**
@@ -67,7 +72,7 @@ final class Loader
             );
         }
 
-        $document                     = new DOMDocument;
+        $document                     = new DOMDocument();
         $document->preserveWhiteSpace = false;
 
         $internal  = libxml_use_internal_errors(true);

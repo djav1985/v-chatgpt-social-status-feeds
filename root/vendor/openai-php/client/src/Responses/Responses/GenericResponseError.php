@@ -25,7 +25,8 @@ final class GenericResponseError implements ResponseContract
     private function __construct(
         public readonly string $code,
         public readonly string $message
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ErrorType  $attributes

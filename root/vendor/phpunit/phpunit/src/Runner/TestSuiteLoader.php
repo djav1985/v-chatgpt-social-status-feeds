@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -18,6 +21,7 @@ use function str_ends_with;
 use function strpos;
 use function strtolower;
 use function substr;
+
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 

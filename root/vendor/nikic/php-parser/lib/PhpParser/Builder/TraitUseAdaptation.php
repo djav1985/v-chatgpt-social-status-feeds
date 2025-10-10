@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Builder;
 
@@ -8,7 +10,8 @@ use PhpParser\Modifiers;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
 
-class TraitUseAdaptation implements Builder {
+class TraitUseAdaptation implements Builder
+{
     private const TYPE_UNDEFINED  = 0;
     private const TYPE_ALIAS      = 1;
     private const TYPE_PRECEDENCE = 2;
@@ -27,7 +30,8 @@ class TraitUseAdaptation implements Builder {
      * @param Node\Name|string|null $trait Name of adapted trait
      * @param Node\Identifier|string $method Name of adapted method
      */
-    public function __construct($trait, $method) {
+    public function __construct($trait, $method)
+    {
         $this->type = self::TYPE_UNDEFINED;
 
         $this->trait = is_null($trait) ? null : BuilderHelpers::normalizeName($trait);
@@ -41,7 +45,8 @@ class TraitUseAdaptation implements Builder {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function as($alias) {
+    public function as($alias)
+    {
         if ($this->type === self::TYPE_UNDEFINED) {
             $this->type = self::TYPE_ALIAS;
         }
@@ -59,7 +64,8 @@ class TraitUseAdaptation implements Builder {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function makePublic() {
+    public function makePublic()
+    {
         $this->setModifier(Modifiers::PUBLIC);
         return $this;
     }
@@ -69,7 +75,8 @@ class TraitUseAdaptation implements Builder {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function makeProtected() {
+    public function makeProtected()
+    {
         $this->setModifier(Modifiers::PROTECTED);
         return $this;
     }
@@ -79,7 +86,8 @@ class TraitUseAdaptation implements Builder {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function makePrivate() {
+    public function makePrivate()
+    {
         $this->setModifier(Modifiers::PRIVATE);
         return $this;
     }
@@ -91,7 +99,8 @@ class TraitUseAdaptation implements Builder {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function insteadof(...$traits) {
+    public function insteadof(...$traits)
+    {
         if ($this->type === self::TYPE_UNDEFINED) {
             if (is_null($this->trait)) {
                 throw new \LogicException('Precedence adaptation must have trait');
@@ -111,7 +120,8 @@ class TraitUseAdaptation implements Builder {
         return $this;
     }
 
-    protected function setModifier(int $modifier): void {
+    protected function setModifier(int $modifier): void
+    {
         if ($this->type === self::TYPE_UNDEFINED) {
             $this->type = self::TYPE_ALIAS;
         }
@@ -132,7 +142,8 @@ class TraitUseAdaptation implements Builder {
      *
      * @return Node The built node
      */
-    public function getNode(): Node {
+    public function getNode(): Node
+    {
         switch ($this->type) {
             case self::TYPE_ALIAS:
                 return new Stmt\TraitUseAdaptation\Alias($this->trait, $this->method, $this->modifier, $this->alias);

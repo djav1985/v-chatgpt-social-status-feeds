@@ -1,4 +1,5 @@
 <?php
+
 return [
   "country" => "Palestine, State of",
   "subdivisions" => [

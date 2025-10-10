@@ -53,7 +53,8 @@ final class CreateStreamedResponse implements ResponseContract
     private function __construct(
         public readonly string $event,
         public readonly CreateResponse|OutputItem|ContentPart|OutputTextDelta|OutputTextAnnotationAdded|OutputTextDone|RefusalDelta|RefusalDone|FunctionCallArgumentsDelta|FunctionCallArgumentsDone|FileSearchCall|WebSearchCall|CodeInterpreterCall|CodeInterpreterCodeDelta|CodeInterpreterCodeDone|ReasoningSummaryPart|ReasoningSummaryTextDelta|ReasoningSummaryTextDone|ReasoningTextDelta|ReasoningTextDone|McpListTools|McpListToolsInProgress|McpCall|McpCallArgumentsDelta|McpCallArgumentsDone|ImageGenerationPart|ImageGenerationPartialImage|Error $response,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $attributes
@@ -114,7 +115,7 @@ final class CreateStreamedResponse implements ResponseContract
             'response.image_generation_call.in_progress' => ImageGenerationPart::from($attributes, $meta), // @phpstan-ignore-line
             'response.image_generation_call.partial_image' => ImageGenerationPartialImage::from($attributes, $meta), // @phpstan-ignore-line
             'error' => Error::from($attributes, $meta), // @phpstan-ignore-line
-            default => throw new UnknownEventException('Unknown Responses streaming event: '.$event),
+            default => throw new UnknownEventException('Unknown Responses streaming event: ' . $event),
         };
 
         return new self(

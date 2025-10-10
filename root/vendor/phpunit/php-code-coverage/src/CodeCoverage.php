@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -21,6 +24,7 @@ use function explode;
 use function is_array;
 use function is_file;
 use function sort;
+
 use ReflectionClass;
 use SebastianBergmann\CodeCoverage\Data\ProcessedCodeCoverageData;
 use SebastianBergmann\CodeCoverage\Data\RawCodeCoverageData;
@@ -78,8 +82,8 @@ final class CodeCoverage
     {
         $this->driver = $driver;
         $this->filter = $filter;
-        $this->data   = new ProcessedCodeCoverageData;
-        $this->wizard = new Wizard;
+        $this->data   = new ProcessedCodeCoverageData();
+        $this->wizard = new Wizard();
     }
 
     /**
@@ -101,7 +105,7 @@ final class CodeCoverage
     {
         $this->currentId    = null;
         $this->currentSize  = null;
-        $this->data         = new ProcessedCodeCoverageData;
+        $this->data         = new ProcessedCodeCoverageData();
         $this->tests        = [];
         $this->cachedReport = null;
     }
@@ -209,7 +213,7 @@ final class CodeCoverage
         }
 
         if ($id === null) {
-            throw new TestIdMissingException;
+            throw new TestIdMissingException();
         }
 
         $this->cachedReport = null;

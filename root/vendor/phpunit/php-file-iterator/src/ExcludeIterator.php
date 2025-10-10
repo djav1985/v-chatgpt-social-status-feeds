@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-file-iterator.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\FileIterator;
 
 use function assert;
 use function str_starts_with;
+
 use RecursiveDirectoryIterator;
 use RecursiveFilterIterator;
 use SplFileInfo;

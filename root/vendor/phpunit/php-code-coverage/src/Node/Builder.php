@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -10,6 +13,7 @@
 namespace SebastianBergmann\CodeCoverage\Node;
 
 use const DIRECTORY_SEPARATOR;
+
 use function array_shift;
 use function basename;
 use function count;
@@ -21,6 +25,7 @@ use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
 use function substr;
+
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Data\ProcessedCodeCoverageData;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
@@ -235,9 +240,11 @@ final class Builder
 
         while (!$done) {
             for ($i = 0; $i < $max - 1; $i++) {
-                if (!isset($paths[$i][0]) ||
+                if (
+                    !isset($paths[$i][0]) ||
                     !isset($paths[$i + 1][0]) ||
-                    $paths[$i][0] !== $paths[$i + 1][0]) {
+                    $paths[$i][0] !== $paths[$i + 1][0]
+                ) {
                     $done = true;
 
                     break;

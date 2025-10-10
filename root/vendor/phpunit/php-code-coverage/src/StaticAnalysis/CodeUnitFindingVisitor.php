@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -13,6 +16,7 @@ use function assert;
 use function implode;
 use function rtrim;
 use function trim;
+
 use PhpParser\Node;
 use PhpParser\Node\ComplexType;
 use PhpParser\Node\Identifier;
@@ -149,9 +153,9 @@ final class CodeUnitFindingVisitor extends NodeVisitorAbstract
             return 0;
         }
 
-        $traverser = new NodeTraverser;
+        $traverser = new NodeTraverser();
 
-        $cyclomaticComplexityCalculatingVisitor = new CyclomaticComplexityCalculatingVisitor;
+        $cyclomaticComplexityCalculatingVisitor = new CyclomaticComplexityCalculatingVisitor();
 
         $traverser->addVisitor($cyclomaticComplexityCalculatingVisitor);
 

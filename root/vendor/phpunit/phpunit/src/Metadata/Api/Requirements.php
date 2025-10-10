@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -12,6 +15,7 @@ namespace PHPUnit\Metadata\Api;
 use const PHP_OS;
 use const PHP_OS_FAMILY;
 use const PHP_VERSION;
+
 use function addcslashes;
 use function assert;
 use function extension_loaded;
@@ -21,6 +25,7 @@ use function method_exists;
 use function phpversion;
 use function preg_match;
 use function sprintf;
+
 use PHPUnit\Metadata\Parser\Registry;
 use PHPUnit\Metadata\RequiresFunction;
 use PHPUnit\Metadata\RequiresMethod;
@@ -64,9 +69,11 @@ final class Requirements
             if ($metadata->isRequiresPhpExtension()) {
                 assert($metadata instanceof RequiresPhpExtension);
 
-                if (!extension_loaded($metadata->extension()) ||
+                if (
+                    !extension_loaded($metadata->extension()) ||
                     ($metadata->hasVersionRequirement() &&
-                        !$metadata->versionRequirement()->isSatisfiedBy(phpversion($metadata->extension())))) {
+                        !$metadata->versionRequirement()->isSatisfiedBy(phpversion($metadata->extension())))
+                ) {
                     $notSatisfied[] = sprintf(
                         'PHP extension %s%s is required.',
                         $metadata->extension(),

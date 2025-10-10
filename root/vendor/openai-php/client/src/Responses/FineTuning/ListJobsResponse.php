@@ -32,7 +32,8 @@ final class ListJobsResponse implements ResponseContract, ResponseHasMetaInforma
         public readonly array $data,
         public readonly bool $hasMore,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -13,11 +16,13 @@ use const FILE_APPEND;
 use const LOCK_EX;
 use const PHP_EOL;
 use const PHP_OS_FAMILY;
+
 use function file_put_contents;
 use function implode;
 use function preg_split;
 use function str_repeat;
 use function strlen;
+
 use PHPUnit\Event\Event;
 use PHPUnit\Event\Tracer\Tracer;
 
@@ -45,8 +50,10 @@ final class EventLogger implements Tracer
 
         $flags = FILE_APPEND;
 
-        if (!(PHP_OS_FAMILY === 'Windows' || PHP_OS_FAMILY === 'Darwin') ||
-            $this->path !== 'php://stdout') {
+        if (
+            !(PHP_OS_FAMILY === 'Windows' || PHP_OS_FAMILY === 'Darwin') ||
+            $this->path !== 'php://stdout'
+        ) {
             $flags |= LOCK_EX;
         }
 

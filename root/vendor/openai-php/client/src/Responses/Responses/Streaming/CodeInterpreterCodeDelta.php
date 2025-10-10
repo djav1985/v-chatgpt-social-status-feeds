@@ -31,7 +31,8 @@ final class CodeInterpreterCodeDelta implements ResponseContract, ResponseHasMet
         public readonly string $itemId,
         public readonly int $outputIndex,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  CodeInterpreterCodeDeltaType  $attributes

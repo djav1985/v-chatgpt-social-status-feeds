@@ -10,7 +10,8 @@ final class MetaInformationOpenAI
         public readonly ?string $project,
         public readonly ?string $version,
         public readonly ?int $processingMs,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{model: ?string, organization: ?string, project: ?string, version: ?string, processingMs: ?int}  $attributes

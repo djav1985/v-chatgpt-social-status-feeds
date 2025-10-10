@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,7 +13,9 @@
 namespace PHPUnit\TextUI\Output;
 
 use const PHP_EOL;
+
 use function sprintf;
+
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\Util\Color;
 
@@ -42,10 +47,12 @@ final class SummaryPrinter
             return;
         }
 
-        if ($result->wasSuccessful() &&
+        if (
+            $result->wasSuccessful() &&
             !$result->hasIssues() &&
             !$result->hasTestSuiteSkippedEvents() &&
-            !$result->hasTestSkippedEvents()) {
+            !$result->hasTestSkippedEvents()
+        ) {
             $this->printWithColor(
                 'fg-black, bg-green',
                 sprintf(

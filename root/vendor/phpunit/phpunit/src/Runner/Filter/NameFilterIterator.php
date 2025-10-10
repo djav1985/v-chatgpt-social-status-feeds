@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -15,6 +18,7 @@ use function preg_match;
 use function sprintf;
 use function str_replace;
 use function substr;
+
 use Exception;
 use PHPUnit\Framework\SelfDescribing;
 use PHPUnit\Framework\Test;

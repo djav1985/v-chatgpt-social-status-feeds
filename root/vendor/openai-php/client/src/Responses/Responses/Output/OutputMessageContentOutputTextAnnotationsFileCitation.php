@@ -30,7 +30,8 @@ final class OutputMessageContentOutputTextAnnotationsFileCitation implements Res
         public readonly string $filename,
         public readonly int $index,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  FileCitationType  $attributes

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-file-iterator.
  *
@@ -12,6 +15,7 @@ namespace SebastianBergmann\FileIterator;
 use function array_unique;
 use function assert;
 use function sort;
+
 use SplFileInfo;
 
 /**
@@ -29,7 +33,7 @@ final class Facade
      */
     public function getFilesAsArray(array|string $paths, array|string $suffixes = '', array|string $prefixes = '', array $exclude = []): array
     {
-        $iterator = (new Factory)->getFileIterator($paths, $suffixes, $prefixes, $exclude);
+        $iterator = (new Factory())->getFileIterator($paths, $suffixes, $prefixes, $exclude);
 
         $files = [];
 

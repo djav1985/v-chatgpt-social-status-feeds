@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Stmt;
 
 use PhpParser\Node;
 
-class Case_ extends Node\Stmt {
+class Case_ extends Node\Stmt
+{
     /** @var null|Node\Expr Condition (null for default) */
     public ?Node\Expr $cond;
     /** @var Node\Stmt[] Statements */
@@ -17,17 +20,20 @@ class Case_ extends Node\Stmt {
      * @param Node\Stmt[] $stmts Statements
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct(?Node\Expr $cond, array $stmts = [], array $attributes = []) {
+    public function __construct(?Node\Expr $cond, array $stmts = [], array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->cond = $cond;
         $this->stmts = $stmts;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['cond', 'stmts'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Stmt_Case';
     }
 }

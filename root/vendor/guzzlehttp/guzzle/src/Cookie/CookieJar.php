@@ -159,7 +159,7 @@ class CookieJar implements CookieJarInterface
         $result = $cookie->validate();
         if ($result !== true) {
             if ($this->strictMode) {
-                throw new \RuntimeException('Invalid cookie: '.$result);
+                throw new \RuntimeException('Invalid cookie: ' . $result);
             }
             $this->removeCookieIfEmpty($cookie);
 
@@ -170,7 +170,8 @@ class CookieJar implements CookieJarInterface
         foreach ($this->cookies as $i => $c) {
             // Two cookies are identical, when their path, and domain are
             // identical.
-            if ($c->getPath() != $cookie->getPath()
+            if (
+                $c->getPath() != $cookie->getPath()
                 || $c->getDomain() != $cookie->getDomain()
                 || $c->getName() != $cookie->getName()
             ) {
@@ -274,13 +275,14 @@ class CookieJar implements CookieJarInterface
         $path = $uri->getPath() ?: '/';
 
         foreach ($this->cookies as $cookie) {
-            if ($cookie->matchesPath($path)
+            if (
+                $cookie->matchesPath($path)
                 && $cookie->matchesDomain($host)
                 && !$cookie->isExpired()
                 && (!$cookie->getSecure() || $scheme === 'https')
             ) {
-                $values[] = $cookie->getName().'='
-                    .$cookie->getValue();
+                $values[] = $cookie->getName() . '='
+                    . $cookie->getValue();
             }
         }
 

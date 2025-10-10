@@ -31,7 +31,8 @@ final class OutputCustomToolCall implements ResponseContract
         public readonly string $name,
         public readonly string $id,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputCustomToolCallType  $attributes

@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node;
 
 use PhpParser\Node;
 
-class NullableType extends ComplexType {
+class NullableType extends ComplexType
+{
     /** @var Identifier|Name Type */
     public Node $type;
 
@@ -14,16 +17,19 @@ class NullableType extends ComplexType {
      * @param Identifier|Name $type Type
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct(Node $type, array $attributes = []) {
+    public function __construct(Node $type, array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->type = $type;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['type'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'NullableType';
     }
 }

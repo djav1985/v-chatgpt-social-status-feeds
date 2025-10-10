@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -21,6 +24,7 @@ use function is_object;
 use function is_scalar;
 use function is_string;
 use function sprintf;
+
 use PHPUnit\Framework\UnknownTypeException;
 
 /**

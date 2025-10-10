@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -79,6 +82,7 @@ use const T_VAR;
 use const T_WHILE;
 use const T_YIELD;
 use const T_YIELD_FROM;
+
 use function array_key_exists;
 use function array_keys;
 use function array_merge;
@@ -97,6 +101,7 @@ use function str_ends_with;
 use function str_replace;
 use function token_get_all;
 use function trim;
+
 use SebastianBergmann\CodeCoverage\FileCouldNotBeWrittenException;
 use SebastianBergmann\CodeCoverage\Node\File as FileNode;
 use SebastianBergmann\CodeCoverage\Util\Percentage;

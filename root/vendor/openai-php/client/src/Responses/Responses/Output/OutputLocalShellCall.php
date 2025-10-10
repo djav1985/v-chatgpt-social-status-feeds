@@ -33,7 +33,8 @@ final class OutputLocalShellCall implements ResponseContract
         public readonly string $id,
         public readonly string $status,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputLocalShellCallType  $attributes

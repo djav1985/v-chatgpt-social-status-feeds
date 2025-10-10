@@ -301,7 +301,7 @@ class Stream implements StreamInterface
     {
         static $wrapper;
 
-        $wrapper ?? \stream_wrapper_register('Nyholm-Psr7-Zval', $wrapper = \get_class(new class() {
+        $wrapper ?? \stream_wrapper_register('Nyholm-Psr7-Zval', $wrapper = \get_class(new class () {
             public $context;
 
             private $data;

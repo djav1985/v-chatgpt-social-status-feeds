@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Builder;
 
@@ -7,7 +9,8 @@ use PhpParser\BuilderHelpers;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
 
-class Function_ extends FunctionLike {
+class Function_ extends FunctionLike
+{
     protected string $name;
     /** @var list<Stmt> */
     protected array $stmts = [];
@@ -20,7 +23,8 @@ class Function_ extends FunctionLike {
      *
      * @param string $name Name of the function
      */
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->name = $name;
     }
 
@@ -31,7 +35,8 @@ class Function_ extends FunctionLike {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function addStmt($stmt) {
+    public function addStmt($stmt)
+    {
         $this->stmts[] = BuilderHelpers::normalizeStmt($stmt);
 
         return $this;
@@ -44,7 +49,8 @@ class Function_ extends FunctionLike {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function addAttribute($attribute) {
+    public function addAttribute($attribute)
+    {
         $this->attributeGroups[] = BuilderHelpers::normalizeAttribute($attribute);
 
         return $this;
@@ -55,7 +61,8 @@ class Function_ extends FunctionLike {
      *
      * @return Stmt\Function_ The built function node
      */
-    public function getNode(): Node {
+    public function getNode(): Node
+    {
         return new Stmt\Function_($this->name, [
             'byRef'      => $this->returnByRef,
             'params'     => $this->params,

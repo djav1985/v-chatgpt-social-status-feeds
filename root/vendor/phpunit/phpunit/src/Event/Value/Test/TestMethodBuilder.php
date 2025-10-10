@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,9 +14,11 @@ namespace PHPUnit\Event\Code;
 
 use const DEBUG_BACKTRACE_IGNORE_ARGS;
 use const DEBUG_BACKTRACE_PROVIDE_OBJECT;
+
 use function assert;
 use function debug_backtrace;
 use function is_numeric;
+
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Event\TestData\DataFromDataProvider;
 use PHPUnit\Event\TestData\DataFromTestDependency;
@@ -64,7 +69,7 @@ final class TestMethodBuilder
             }
         }
 
-        throw new NoTestCaseObjectOnCallStackException;
+        throw new NoTestCaseObjectOnCallStackException();
     }
 
     /**

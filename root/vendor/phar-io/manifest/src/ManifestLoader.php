@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -12,8 +15,10 @@ namespace PharIo\Manifest;
 
 use function sprintf;
 
-class ManifestLoader {
-    public static function fromFile(string $filename): Manifest {
+class ManifestLoader
+{
+    public static function fromFile(string $filename): Manifest
+    {
         try {
             return (new ManifestDocumentMapper())->map(
                 ManifestDocument::fromFile($filename)
@@ -27,11 +32,13 @@ class ManifestLoader {
         }
     }
 
-    public static function fromPhar(string $filename): Manifest {
+    public static function fromPhar(string $filename): Manifest
+    {
         return self::fromFile('phar://' . $filename . '/manifest.xml');
     }
 
-    public static function fromString(string $manifest): Manifest {
+    public static function fromString(string $manifest): Manifest
+    {
         try {
             return (new ManifestDocumentMapper())->map(
                 ManifestDocument::fromString($manifest)

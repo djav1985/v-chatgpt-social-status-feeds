@@ -37,7 +37,8 @@ final class OutputMessage implements ResponseContract
         public readonly string $role,
         public readonly string $status,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputMessageType  $attributes

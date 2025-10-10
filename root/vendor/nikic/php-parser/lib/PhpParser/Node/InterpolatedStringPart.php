@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node;
 
 use PhpParser\NodeAbstract;
 
-class InterpolatedStringPart extends NodeAbstract {
+class InterpolatedStringPart extends NodeAbstract
+{
     /** @var string String value */
     public string $value;
 
@@ -14,16 +17,19 @@ class InterpolatedStringPart extends NodeAbstract {
      * @param string $value String value
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct(string $value, array $attributes = []) {
+    public function __construct(string $value, array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->value = $value;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['value'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'InterpolatedStringPart';
     }
 }

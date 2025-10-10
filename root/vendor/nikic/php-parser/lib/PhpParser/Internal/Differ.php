@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Internal;
 
@@ -11,7 +13,8 @@ namespace PhpParser\Internal;
  * @template T
  * @internal
  */
-class Differ {
+class Differ
+{
     /** @var callable(T, T): bool */
     private $isEqual;
 
@@ -20,7 +23,8 @@ class Differ {
      *
      * @param callable(T, T): bool $isEqual Equality relation
      */
-    public function __construct(callable $isEqual) {
+    public function __construct(callable $isEqual)
+    {
         $this->isEqual = $isEqual;
     }
 
@@ -32,7 +36,8 @@ class Differ {
      *
      * @return DiffElem[] Diff (edit script)
      */
-    public function diff(array $old, array $new): array {
+    public function diff(array $old, array $new): array
+    {
         $old = \array_values($old);
         $new = \array_values($new);
         list($trace, $x, $y) = $this->calculateTrace($old, $new);
@@ -50,7 +55,8 @@ class Differ {
      *
      * @return DiffElem[] Diff (edit script), including replace operations
      */
-    public function diffWithReplacements(array $old, array $new): array {
+    public function diffWithReplacements(array $old, array $new): array
+    {
         return $this->coalesceReplacements($this->diff($old, $new));
     }
 
@@ -59,7 +65,8 @@ class Differ {
      * @param T[] $new
      * @return array{array<int, array<int, int>>, int, int}
      */
-    private function calculateTrace(array $old, array $new): array {
+    private function calculateTrace(array $old, array $new): array
+    {
         $n = \count($old);
         $m = \count($new);
         $max = $n + $m;
@@ -95,7 +102,8 @@ class Differ {
      * @param T[] $new
      * @return DiffElem[]
      */
-    private function extractDiff(array $trace, int $x, int $y, array $old, array $new): array {
+    private function extractDiff(array $trace, int $x, int $y, array $old, array $new): array
+    {
         $result = [];
         for ($d = \count($trace) - 1; $d >= 0; $d--) {
             $v = $trace[$d];
@@ -139,7 +147,8 @@ class Differ {
      * @param DiffElem[] $diff
      * @return DiffElem[]
      */
-    private function coalesceReplacements(array $diff): array {
+    private function coalesceReplacements(array $diff): array
+    {
         $newDiff = [];
         $c = \count($diff);
         for ($i = 0; $i < $c; $i++) {
@@ -163,7 +172,9 @@ class Differ {
                 $len = $j - $i;
                 for ($n = 0; $n < $len; $n++) {
                     $newDiff[] = new DiffElem(
-                        DiffElem::TYPE_REPLACE, $diff[$i + $n]->old, $diff[$j + $n]->new
+                        DiffElem::TYPE_REPLACE,
+                        $diff[$i + $n]->old,
+                        $diff[$j + $n]->new
                     );
                 }
             } else {

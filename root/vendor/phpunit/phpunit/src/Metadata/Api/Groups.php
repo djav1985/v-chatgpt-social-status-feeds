@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -15,6 +18,7 @@ use function array_unique;
 use function assert;
 use function strtolower;
 use function trim;
+
 use PHPUnit\Framework\TestSize\TestSize;
 use PHPUnit\Metadata\Covers;
 use PHPUnit\Metadata\CoversClass;

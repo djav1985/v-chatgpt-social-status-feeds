@@ -22,7 +22,8 @@ final class BatchResponseErrorsData implements ResponseContract
         public string $message,
         public ?string $param,
         public ?int $line,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

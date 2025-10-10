@@ -30,7 +30,8 @@ final class FileSearchCall implements ResponseContract, ResponseHasMetaInformati
         public readonly string $itemId,
         public readonly int $outputIndex,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  FileSearchCallType  $attributes

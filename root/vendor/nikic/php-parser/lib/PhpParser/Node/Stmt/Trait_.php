@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Stmt;
 
 use PhpParser\Node;
 
-class Trait_ extends ClassLike {
+class Trait_ extends ClassLike
+{
     /**
      * Constructs a trait node.
      *
@@ -17,18 +20,21 @@ class Trait_ extends ClassLike {
      *             'attrGroups' => array(): PHP attribute groups
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct($name, array $subNodes = [], array $attributes = []) {
+    public function __construct($name, array $subNodes = [], array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->name = \is_string($name) ? new Node\Identifier($name) : $name;
         $this->stmts = $subNodes['stmts'] ?? [];
         $this->attrGroups = $subNodes['attrGroups'] ?? [];
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['attrGroups', 'name', 'stmts'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Stmt_Trait';
     }
 }

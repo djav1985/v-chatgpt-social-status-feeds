@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node;
 
 use PhpParser\NodeAbstract;
 
-class Const_ extends NodeAbstract {
+class Const_ extends NodeAbstract
+{
     /** @var Identifier Name */
     public Identifier $name;
     /** @var Expr Value */
@@ -20,17 +23,20 @@ class Const_ extends NodeAbstract {
      * @param Expr $value Value
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct($name, Expr $value, array $attributes = []) {
+    public function __construct($name, Expr $value, array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->name = \is_string($name) ? new Identifier($name) : $name;
         $this->value = $value;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['name', 'value'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Const';
     }
 }

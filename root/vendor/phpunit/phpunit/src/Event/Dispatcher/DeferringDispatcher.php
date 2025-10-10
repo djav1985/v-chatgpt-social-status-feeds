@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -23,7 +26,7 @@ final class DeferringDispatcher implements SubscribableDispatcher
     public function __construct(SubscribableDispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
-        $this->events     = new EventCollection;
+        $this->events     = new EventCollection();
     }
 
     public function registerTracer(Tracer\Tracer $tracer): void
@@ -55,6 +58,6 @@ final class DeferringDispatcher implements SubscribableDispatcher
             $this->dispatcher->dispatch($event);
         }
 
-        $this->events = new EventCollection;
+        $this->events = new EventCollection();
     }
 }

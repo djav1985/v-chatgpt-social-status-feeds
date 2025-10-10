@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,9 +13,11 @@
 namespace PHPUnit\TextUI\Command;
 
 use const PHP_EOL;
+
 use function assert;
 use function sprintf;
 use function version_compare;
+
 use PHPUnit\Util\Http\Downloader;
 
 /**

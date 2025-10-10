@@ -153,14 +153,15 @@ class MockHandler implements \Countable
     public function append(...$values): void
     {
         foreach ($values as $value) {
-            if ($value instanceof ResponseInterface
+            if (
+                $value instanceof ResponseInterface
                 || $value instanceof \Throwable
                 || $value instanceof PromiseInterface
                 || \is_callable($value)
             ) {
                 $this->queue[] = $value;
             } else {
-                throw new \TypeError('Expected a Response, Promise, Throwable or callable. Found '.Utils::describeType($value));
+                throw new \TypeError('Expected a Response, Promise, Throwable or callable. Found ' . Utils::describeType($value));
             }
         }
     }

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\TextUI\XmlConfiguration;
 
 use const PHP_VERSION;
+
 use function array_merge;
 use function array_unique;
 use function explode;
@@ -18,6 +22,7 @@ use function is_dir;
 use function is_file;
 use function str_contains;
 use function version_compare;
+
 use PHPUnit\Framework\Exception as FrameworkException;
 use PHPUnit\Framework\TestSuite as TestSuiteObject;
 use PHPUnit\TextUI\Configuration\TestSuiteCollection;
@@ -75,7 +80,7 @@ final class TestSuiteMapper
 
                     $files = array_merge(
                         $files,
-                        (new Facade)->getFilesAsArray(
+                        (new Facade())->getFilesAsArray(
                             $directory->path(),
                             $directory->suffix(),
                             $directory->prefix(),

@@ -21,7 +21,8 @@ final class CreateResponseData implements ResponseContract
         public readonly string $url,
         public readonly string $b64_json,
         public readonly ?string $revisedPrompt,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

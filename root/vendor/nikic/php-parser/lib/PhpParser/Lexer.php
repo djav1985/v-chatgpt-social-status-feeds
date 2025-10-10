@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser;
 
 require __DIR__ . '/compatibility_tokens.php';
 
-class Lexer {
+class Lexer
+{
     /**
      * Tokenize the provided source code.
      *
@@ -21,7 +24,8 @@ class Lexer {
      *                                        ErrorHandler\Throwing.
      * @return Token[] Tokens
      */
-    public function tokenize(string $code, ?ErrorHandler $errorHandler = null): array {
+    public function tokenize(string $code, ?ErrorHandler $errorHandler = null): array
+    {
         if (null === $errorHandler) {
             $errorHandler = new ErrorHandler\Throwing();
         }
@@ -38,14 +42,17 @@ class Lexer {
         return $tokens;
     }
 
-    private function handleInvalidCharacter(Token $token, ErrorHandler $errorHandler): void {
+    private function handleInvalidCharacter(Token $token, ErrorHandler $errorHandler): void
+    {
         $chr = $token->text;
         if ($chr === "\0") {
             // PHP cuts error message after null byte, so need special case
             $errorMsg = 'Unexpected null byte';
         } else {
             $errorMsg = sprintf(
-                'Unexpected character "%s" (ASCII %d)', $chr, ord($chr)
+                'Unexpected character "%s" (ASCII %d)',
+                $chr,
+                ord($chr)
             );
         }
 
@@ -57,7 +64,8 @@ class Lexer {
         ]));
     }
 
-    private function isUnterminatedComment(Token $token): bool {
+    private function isUnterminatedComment(Token $token): bool
+    {
         return $token->is([\T_COMMENT, \T_DOC_COMMENT])
             && substr($token->text, 0, 2) === '/*'
             && substr($token->text, -2) !== '*/';
@@ -66,7 +74,8 @@ class Lexer {
     /**
      * @param list<Token> $tokens
      */
-    protected function postprocessTokens(array &$tokens, ErrorHandler $errorHandler): void {
+    protected function postprocessTokens(array &$tokens, ErrorHandler $errorHandler): void
+    {
         // This function reports errors (bad characters and unterminated comments) in the token
         // array, and performs certain canonicalizations:
         //  * Use PHP 8.1 T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG and

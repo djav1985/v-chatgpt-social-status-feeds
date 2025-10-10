@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -25,7 +28,7 @@ final class TestDoxBuilder
      */
     public static function fromTestCase(TestCase $testCase): TestDox
     {
-        $prettifier = new NamePrettifier;
+        $prettifier = new NamePrettifier();
 
         return new TestDox(
             $prettifier->prettifyTestClassName($testCase::class),
@@ -40,7 +43,7 @@ final class TestDoxBuilder
      */
     public static function fromClassNameAndMethodName(string $className, string $methodName): TestDox
     {
-        $prettifier = new NamePrettifier;
+        $prettifier = new NamePrettifier();
 
         $prettifiedMethodName = $prettifier->prettifyTestMethodName($methodName);
 

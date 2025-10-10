@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -11,37 +14,45 @@
 namespace PharIo\Manifest;
 
 use Iterator;
+
 use function count;
 
 /** @template-implements Iterator<int,Requirement> */
-class RequirementCollectionIterator implements Iterator {
+class RequirementCollectionIterator implements Iterator
+{
     /** @var Requirement[] */
     private $requirements;
 
     /** @var int */
     private $position = 0;
 
-    public function __construct(RequirementCollection $requirements) {
+    public function __construct(RequirementCollection $requirements)
+    {
         $this->requirements = $requirements->getRequirements();
     }
 
-    public function rewind(): void {
+    public function rewind(): void
+    {
         $this->position = 0;
     }
 
-    public function valid(): bool {
+    public function valid(): bool
+    {
         return $this->position < count($this->requirements);
     }
 
-    public function key(): int {
+    public function key(): int
+    {
         return $this->position;
     }
 
-    public function current(): Requirement {
+    public function current(): Requirement
+    {
         return $this->requirements[$this->position];
     }
 
-    public function next(): void {
+    public function next(): void
+    {
         $this->position++;
     }
 }

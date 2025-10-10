@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -12,19 +15,23 @@ namespace PharIo\Manifest;
 
 use DOMElement;
 use DOMNodeList;
+
 use function sprintf;
 
-class ManifestElement {
+class ManifestElement
+{
     public const XMLNS = 'https://phar.io/xml/manifest/1.0';
 
     /** @var DOMElement */
     private $element;
 
-    public function __construct(DOMElement $element) {
+    public function __construct(DOMElement $element)
+    {
         $this->element = $element;
     }
 
-    protected function getAttributeValue(string $name): string {
+    protected function getAttributeValue(string $name): string
+    {
         if (!$this->element->hasAttribute($name)) {
             throw new ManifestElementException(
                 sprintf(
@@ -38,11 +45,13 @@ class ManifestElement {
         return $this->element->getAttribute($name);
     }
 
-    protected function hasAttribute(string $name): bool {
+    protected function hasAttribute(string $name): bool
+    {
         return $this->element->hasAttribute($name);
     }
 
-    protected function getChildByName(string $elementName): DOMElement {
+    protected function getChildByName(string $elementName): DOMElement
+    {
         $element = $this->element->getElementsByTagNameNS(self::XMLNS, $elementName)->item(0);
 
         if (!$element instanceof DOMElement) {
@@ -54,7 +63,8 @@ class ManifestElement {
         return $element;
     }
 
-    protected function getChildrenByName(string $elementName): DOMNodeList {
+    protected function getChildrenByName(string $elementName): DOMNodeList
+    {
         $elementList = $this->element->getElementsByTagNameNS(self::XMLNS, $elementName);
 
         if ($elementList->length === 0) {
@@ -66,7 +76,8 @@ class ManifestElement {
         return $elementList;
     }
 
-    protected function hasChild(string $elementName): bool {
+    protected function hasChild(string $elementName): bool
+    {
         return $this->element->getElementsByTagNameNS(self::XMLNS, $elementName)->length !== 0;
     }
 }

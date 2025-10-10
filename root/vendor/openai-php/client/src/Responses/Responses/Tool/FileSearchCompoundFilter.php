@@ -32,7 +32,8 @@ final class FileSearchCompoundFilter implements ResponseContract
     private function __construct(
         public readonly array $filters,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  CompoundFilterType  $attributes

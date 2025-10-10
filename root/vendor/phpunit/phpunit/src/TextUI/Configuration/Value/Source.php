@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -83,7 +86,7 @@ final class Source
     public function baseline(): string
     {
         if (!$this->hasBaseline()) {
-            throw new NoBaselineException;
+            throw new NoBaselineException();
         }
 
         return $this->baseline;

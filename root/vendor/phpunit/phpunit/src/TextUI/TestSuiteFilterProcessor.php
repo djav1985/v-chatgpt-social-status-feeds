@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\TextUI;
 
 use function array_map;
+
 use PHPUnit\Event;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Runner\Filter\Factory;
@@ -29,13 +33,15 @@ final class TestSuiteFilterProcessor
      */
     public function process(Configuration $configuration, TestSuite $suite): void
     {
-        $factory = new Factory;
+        $factory = new Factory();
 
-        if (!$configuration->hasFilter() &&
+        if (
+            !$configuration->hasFilter() &&
             !$configuration->hasGroups() &&
             !$configuration->hasExcludeGroups() &&
             !$configuration->hasTestsCovering() &&
-            !$configuration->hasTestsUsing()) {
+            !$configuration->hasTestsUsing()
+        ) {
             return;
         }
 

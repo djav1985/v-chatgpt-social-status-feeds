@@ -9,7 +9,8 @@ final class ImageResponseUsageInputTokensDetails
     private function __construct(
         public readonly int $textTokens,
         public readonly int $imageTokens,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{text_tokens: int, image_tokens: int}  $attributes

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\Util;
 
 use function is_array;
 use function is_scalar;
+
 use SebastianBergmann\RecursionContext\Context;
 
 /**
@@ -25,7 +29,7 @@ final class Exporter
     public static function export(mixed $value, bool $exportObjects = false): string
     {
         if (self::isExportable($value) || $exportObjects) {
-            return (new \SebastianBergmann\Exporter\Exporter)->export($value);
+            return (new \SebastianBergmann\Exporter\Exporter())->export($value);
         }
 
         return '{enable export of objects to see this value}';
@@ -42,7 +46,7 @@ final class Exporter
         }
 
         if (!$context) {
-            $context = new Context;
+            $context = new Context();
         }
 
         if ($context->contains($value) !== false) {

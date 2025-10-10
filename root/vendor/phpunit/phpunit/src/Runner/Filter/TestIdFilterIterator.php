@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Runner\Filter;
 
 use function in_array;
+
 use PHPUnit\Event\TestData\MoreThanOneDataSetFromDataProviderException;
 use PHPUnit\Event\TestData\NoDataSetFromDataProviderException;
 use PHPUnit\Framework\Test;
@@ -56,7 +60,7 @@ final class TestIdFilterIterator extends RecursiveFilterIterator
 
         try {
             return in_array($test->valueObjectForEvents()->id(), $this->testIds, true);
-        } catch (MoreThanOneDataSetFromDataProviderException|NoDataSetFromDataProviderException) {
+        } catch (MoreThanOneDataSetFromDataProviderException | NoDataSetFromDataProviderException) {
             return false;
         }
     }

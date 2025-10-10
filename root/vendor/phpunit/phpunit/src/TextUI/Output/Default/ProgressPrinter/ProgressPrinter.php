@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -14,6 +17,7 @@ use function sprintf;
 use function str_contains;
 use function str_repeat;
 use function strlen;
+
 use PHPUnit\Event\EventFacadeIsSealedException;
 use PHPUnit\Event\Facade;
 use PHPUnit\Event\Test\DeprecationTriggered;
@@ -105,8 +109,10 @@ final class ProgressPrinter
             return;
         }
 
-        if ($this->source->restrictNotices() &&
-            !SourceFilter::instance()->includes($event->file())) {
+        if (
+            $this->source->restrictNotices() &&
+            !SourceFilter::instance()->includes($event->file())
+        ) {
             return;
         }
 
@@ -123,8 +129,10 @@ final class ProgressPrinter
             return;
         }
 
-        if ($this->source->restrictNotices() &&
-            !SourceFilter::instance()->includes($event->file())) {
+        if (
+            $this->source->restrictNotices() &&
+            !SourceFilter::instance()->includes($event->file())
+        ) {
             return;
         }
 
@@ -141,8 +149,10 @@ final class ProgressPrinter
             return;
         }
 
-        if ($this->source->restrictDeprecations() &&
-            !SourceFilter::instance()->includes($event->file())) {
+        if (
+            $this->source->restrictDeprecations() &&
+            !SourceFilter::instance()->includes($event->file())
+        ) {
             return;
         }
 
@@ -159,8 +169,10 @@ final class ProgressPrinter
             return;
         }
 
-        if ($this->source->restrictDeprecations() &&
-            !SourceFilter::instance()->includes($event->file())) {
+        if (
+            $this->source->restrictDeprecations() &&
+            !SourceFilter::instance()->includes($event->file())
+        ) {
             return;
         }
 
@@ -187,8 +199,10 @@ final class ProgressPrinter
             return;
         }
 
-        if ($this->source->restrictWarnings() &&
-            !SourceFilter::instance()->includes($event->file())) {
+        if (
+            $this->source->restrictWarnings() &&
+            !SourceFilter::instance()->includes($event->file())
+        ) {
             return;
         }
 
@@ -205,8 +219,10 @@ final class ProgressPrinter
             return;
         }
 
-        if ($this->source->restrictWarnings() &&
-            !SourceFilter::instance()->includes($event->file())) {
+        if (
+            $this->source->restrictWarnings() &&
+            !SourceFilter::instance()->includes($event->file())
+        ) {
             return;
         }
 
@@ -309,8 +325,10 @@ final class ProgressPrinter
 
     private function updateTestStatus(TestStatus $status): void
     {
-        if ($this->status !== null &&
-            $this->status->isMoreImportantThan($status)) {
+        if (
+            $this->status !== null &&
+            $this->status->isMoreImportantThan($status)
+        ) {
             return;
         }
 

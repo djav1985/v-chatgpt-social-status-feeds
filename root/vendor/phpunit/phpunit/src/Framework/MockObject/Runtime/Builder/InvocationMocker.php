@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -19,6 +22,7 @@ use function count;
 use function is_string;
 use function range;
 use function strtolower;
+
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\ConfigurableMethod;
@@ -179,7 +183,7 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
 
     public function willReturnSelf(): self
     {
-        $stub = new ReturnSelf;
+        $stub = new ReturnSelf();
 
         return $this->will($stub);
     }
@@ -234,7 +238,7 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
     {
         $this->ensureParametersCanBeConfigured();
 
-        $this->matcher->setParametersRule(new Rule\AnyParameters);
+        $this->matcher->setParametersRule(new Rule\AnyParameters());
 
         return $this;
     }
@@ -249,7 +253,7 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
     public function method(Constraint|string $constraint): self
     {
         if ($this->matcher->hasMethodNameRule()) {
-            throw new MethodNameAlreadyConfiguredException;
+            throw new MethodNameAlreadyConfiguredException();
         }
 
         if (is_string($constraint)) {
@@ -277,11 +281,11 @@ final class InvocationMocker implements InvocationStubber, MethodNameMatch
     private function ensureParametersCanBeConfigured(): void
     {
         if (!$this->matcher->hasMethodNameRule()) {
-            throw new MethodNameNotConfiguredException;
+            throw new MethodNameNotConfiguredException();
         }
 
         if ($this->matcher->hasParametersRule()) {
-            throw new MethodParametersAlreadyConfiguredException;
+            throw new MethodParametersAlreadyConfiguredException();
         }
     }
 

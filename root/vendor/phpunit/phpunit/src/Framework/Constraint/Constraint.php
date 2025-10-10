@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -12,6 +15,7 @@ namespace PHPUnit\Framework\Constraint;
 use function gettype;
 use function sprintf;
 use function strtolower;
+
 use Countable;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\SelfDescribing;
@@ -67,7 +71,7 @@ abstract class Constraint implements Countable, SelfDescribing
      */
     protected function exporter(): \SebastianBergmann\Exporter\Exporter
     {
-        return new \SebastianBergmann\Exporter\Exporter;
+        return new \SebastianBergmann\Exporter\Exporter();
     }
 
     /**

@@ -29,7 +29,8 @@ final class ThreadMessageResponseContentTextAnnotationFileCitationObject impleme
         public int $startIndex,
         public int $endIndex,
         public ThreadMessageResponseContentTextAnnotationFileCitation $fileCitation,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

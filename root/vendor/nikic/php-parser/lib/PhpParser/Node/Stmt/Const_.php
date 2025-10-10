@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Stmt;
 
 use PhpParser\Node;
 
-class Const_ extends Node\Stmt {
+class Const_ extends Node\Stmt
+{
     /** @var Node\Const_[] Constant declarations */
     public array $consts;
     /** @var Node\AttributeGroup[] PHP attribute groups */
@@ -27,11 +30,13 @@ class Const_ extends Node\Stmt {
         $this->consts = $consts;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['attrGroups', 'consts'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Stmt_Const';
     }
 }

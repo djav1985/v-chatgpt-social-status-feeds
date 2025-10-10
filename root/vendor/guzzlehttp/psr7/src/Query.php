@@ -89,7 +89,11 @@ final class Query
             throw new \InvalidArgumentException('Invalid type');
         }
 
-        $castBool = $treatBoolsAsInts ? static function ($v) { return (int) $v; } : static function ($v) { return $v ? 'true' : 'false'; };
+        $castBool = $treatBoolsAsInts ? static function ($v) {
+            return (int) $v;
+        } : static function ($v) {
+            return $v ? 'true' : 'false';
+        };
 
         $qs = '';
         foreach ($params as $k => $v) {
@@ -98,7 +102,7 @@ final class Query
                 $qs .= $k;
                 $v = is_bool($v) ? $castBool($v) : $v;
                 if ($v !== null) {
-                    $qs .= '='.$encoder((string) $v);
+                    $qs .= '=' . $encoder((string) $v);
                 }
                 $qs .= '&';
             } else {
@@ -106,7 +110,7 @@ final class Query
                     $qs .= $k;
                     $vv = is_bool($vv) ? $castBool($vv) : $vv;
                     if ($vv !== null) {
-                        $qs .= '='.$encoder((string) $vv);
+                        $qs .= '=' . $encoder((string) $vv);
                     }
                     $qs .= '&';
                 }

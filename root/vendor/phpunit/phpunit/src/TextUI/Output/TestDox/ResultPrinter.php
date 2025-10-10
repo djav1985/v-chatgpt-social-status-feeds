@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\TextUI\Output\TestDox;
 
 use const PHP_EOL;
+
 use function array_map;
 use function assert;
 use function explode;
@@ -19,6 +23,7 @@ use function preg_split;
 use function rtrim;
 use function str_starts_with;
 use function trim;
+
 use PHPUnit\Event\Code\Throwable;
 use PHPUnit\Framework\TestStatus\TestStatus;
 use PHPUnit\Logging\TestDox\TestResult as TestDoxTestResult;

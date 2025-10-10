@@ -40,7 +40,8 @@ final class RemoteMcpTool implements ResponseContract
         public readonly ?string $connectorId = null,
         public readonly ?string $authorization = null,
         public readonly ?string $serverDescription = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  RemoteMcpToolType  $attributes

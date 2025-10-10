@@ -25,7 +25,8 @@ final class RetrieveStreamedResponseEvent implements ResponseContract
         public readonly int $createdAt,
         public readonly string $level,
         public readonly string $message,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

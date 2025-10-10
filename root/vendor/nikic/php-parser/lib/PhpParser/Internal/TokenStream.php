@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Internal;
 
@@ -9,7 +11,8 @@ use PhpParser\Token;
  *
  * @internal
  */
-class TokenStream {
+class TokenStream
+{
     /** @var Token[] Tokens (in PhpToken::tokenize() format) */
     private array $tokens;
     /** @var int[] Map from position to indentation */
@@ -20,7 +23,8 @@ class TokenStream {
      *
      * @param Token[] $tokens Tokens in PhpToken::tokenize() format
      */
-    public function __construct(array $tokens, int $tabWidth) {
+    public function __construct(array $tokens, int $tabWidth)
+    {
         $this->tokens = $tokens;
         $this->indentMap = $this->calcIndentMap($tabWidth);
     }
@@ -31,7 +35,8 @@ class TokenStream {
      * @param int $startPos Start position
      * @param int $endPos End position
      */
-    public function haveParens(int $startPos, int $endPos): bool {
+    public function haveParens(int $startPos, int $endPos): bool
+    {
         return $this->haveTokenImmediatelyBefore($startPos, '(')
             && $this->haveTokenImmediatelyAfter($endPos, ')');
     }
@@ -42,7 +47,8 @@ class TokenStream {
      * @param int $startPos Start position
      * @param int $endPos End position
      */
-    public function haveBraces(int $startPos, int $endPos): bool {
+    public function haveBraces(int $startPos, int $endPos): bool
+    {
         return ($this->haveTokenImmediatelyBefore($startPos, '{')
                 || $this->haveTokenImmediatelyBefore($startPos, T_CURLY_OPEN))
             && $this->haveTokenImmediatelyAfter($endPos, '}');
@@ -58,7 +64,8 @@ class TokenStream {
      *
      * @return bool Whether the expected token was found
      */
-    public function haveTokenImmediatelyBefore(int $pos, $expectedTokenType): bool {
+    public function haveTokenImmediatelyBefore(int $pos, $expectedTokenType): bool
+    {
         $tokens = $this->tokens;
         $pos--;
         for (; $pos >= 0; $pos--) {
@@ -83,7 +90,8 @@ class TokenStream {
      *
      * @return bool Whether the expected token was found
      */
-    public function haveTokenImmediatelyAfter(int $pos, $expectedTokenType): bool {
+    public function haveTokenImmediatelyAfter(int $pos, $expectedTokenType): bool
+    {
         $tokens = $this->tokens;
         $pos++;
         for ($c = \count($tokens); $pos < $c; $pos++) {
@@ -99,7 +107,8 @@ class TokenStream {
     }
 
     /** @param int|string|(int|string)[] $skipTokenType */
-    public function skipLeft(int $pos, $skipTokenType): int {
+    public function skipLeft(int $pos, $skipTokenType): int
+    {
         $tokens = $this->tokens;
 
         $pos = $this->skipLeftWhitespace($pos);
@@ -117,7 +126,8 @@ class TokenStream {
     }
 
     /** @param int|string|(int|string)[] $skipTokenType */
-    public function skipRight(int $pos, $skipTokenType): int {
+    public function skipRight(int $pos, $skipTokenType): int
+    {
         $tokens = $this->tokens;
 
         $pos = $this->skipRightWhitespace($pos);
@@ -140,7 +150,8 @@ class TokenStream {
      * @param int $pos Token position
      * @return int Non-whitespace token position
      */
-    public function skipLeftWhitespace(int $pos): int {
+    public function skipLeftWhitespace(int $pos): int
+    {
         $tokens = $this->tokens;
         for (; $pos >= 0; $pos--) {
             if (!$tokens[$pos]->isIgnorable()) {
@@ -156,7 +167,8 @@ class TokenStream {
      * @param int $pos Token position
      * @return int Non-whitespace token position
      */
-    public function skipRightWhitespace(int $pos): int {
+    public function skipRightWhitespace(int $pos): int
+    {
         $tokens = $this->tokens;
         for ($count = \count($tokens); $pos < $count; $pos++) {
             if (!$tokens[$pos]->isIgnorable()) {
@@ -167,7 +179,8 @@ class TokenStream {
     }
 
     /** @param int|string|(int|string)[] $findTokenType */
-    public function findRight(int $pos, $findTokenType): int {
+    public function findRight(int $pos, $findTokenType): int
+    {
         $tokens = $this->tokens;
         for ($count = \count($tokens); $pos < $count; $pos++) {
             if ($tokens[$pos]->is($findTokenType)) {
@@ -185,7 +198,8 @@ class TokenStream {
      * @param int|string $tokenType Token type to look for
      * @return bool Whether the token occurs in the given range
      */
-    public function haveTokenInRange(int $startPos, int $endPos, $tokenType): bool {
+    public function haveTokenInRange(int $startPos, int $endPos, $tokenType): bool
+    {
         $tokens = $this->tokens;
         for ($pos = $startPos; $pos < $endPos; $pos++) {
             if ($tokens[$pos]->is($tokenType)) {
@@ -195,7 +209,8 @@ class TokenStream {
         return false;
     }
 
-    public function haveTagInRange(int $startPos, int $endPos): bool {
+    public function haveTagInRange(int $startPos, int $endPos): bool
+    {
         return $this->haveTokenInRange($startPos, $endPos, \T_OPEN_TAG)
             || $this->haveTokenInRange($startPos, $endPos, \T_CLOSE_TAG);
     }
@@ -207,7 +222,8 @@ class TokenStream {
      *
      * @return int Indentation depth (in spaces)
      */
-    public function getIndentationBefore(int $pos): int {
+    public function getIndentationBefore(int $pos): int
+    {
         return $this->indentMap[$pos];
     }
 
@@ -220,7 +236,8 @@ class TokenStream {
      *
      * @return string Code corresponding to token range, adjusted for indentation
      */
-    public function getTokenCode(int $from, int $to, int $indent): string {
+    public function getTokenCode(int $from, int $to, int $indent): string
+    {
         $tokens = $this->tokens;
         $result = '';
         for ($pos = $from; $pos < $to; $pos++) {
@@ -248,7 +265,8 @@ class TokenStream {
      *
      * @return int[] Token position to indentation map
      */
-    private function calcIndentMap(int $tabWidth): array {
+    private function calcIndentMap(int $tabWidth): array
+    {
         $indentMap = [];
         $indent = 0;
         foreach ($this->tokens as $i => $token) {
@@ -259,8 +277,10 @@ class TokenStream {
                 $newlinePos = \strrpos($content, "\n");
                 if (false !== $newlinePos) {
                     $indent = $this->getIndent(\substr($content, $newlinePos + 1), $tabWidth);
-                } elseif ($i === 1 && $this->tokens[0]->id === \T_OPEN_TAG &&
-                          $this->tokens[0]->text[\strlen($this->tokens[0]->text) - 1] === "\n") {
+                } elseif (
+                    $i === 1 && $this->tokens[0]->id === \T_OPEN_TAG &&
+                          $this->tokens[0]->text[\strlen($this->tokens[0]->text) - 1] === "\n"
+                ) {
                     // Special case: Newline at the end of opening tag followed by whitespace.
                     $indent = $this->getIndent($content, $tabWidth);
                 }
@@ -273,7 +293,8 @@ class TokenStream {
         return $indentMap;
     }
 
-    private function getIndent(string $ws, int $tabWidth): int {
+    private function getIndent(string $ws, int $tabWidth): int
+    {
         $spaces = \substr_count($ws, " ");
         $tabs = \substr_count($ws, "\t");
         assert(\strlen($ws) === $spaces + $tabs);

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Builder;
 
@@ -9,7 +11,8 @@ use PhpParser\Node;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt;
 
-class Class_ extends Declaration {
+class Class_ extends Declaration
+{
     protected string $name;
     protected ?Name $extends = null;
     /** @var list<Name> */
@@ -31,7 +34,8 @@ class Class_ extends Declaration {
      *
      * @param string $name Name of the class
      */
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->name = $name;
     }
 
@@ -42,7 +46,8 @@ class Class_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function extend($class) {
+    public function extend($class)
+    {
         $this->extends = BuilderHelpers::normalizeName($class);
 
         return $this;
@@ -55,7 +60,8 @@ class Class_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function implement(...$interfaces) {
+    public function implement(...$interfaces)
+    {
         foreach ($interfaces as $interface) {
             $this->implements[] = BuilderHelpers::normalizeName($interface);
         }
@@ -68,7 +74,8 @@ class Class_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function makeAbstract() {
+    public function makeAbstract()
+    {
         $this->flags = BuilderHelpers::addClassModifier($this->flags, Modifiers::ABSTRACT);
 
         return $this;
@@ -79,7 +86,8 @@ class Class_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function makeFinal() {
+    public function makeFinal()
+    {
         $this->flags = BuilderHelpers::addClassModifier($this->flags, Modifiers::FINAL);
 
         return $this;
@@ -90,7 +98,8 @@ class Class_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function makeReadonly() {
+    public function makeReadonly()
+    {
         $this->flags = BuilderHelpers::addClassModifier($this->flags, Modifiers::READONLY);
 
         return $this;
@@ -103,7 +112,8 @@ class Class_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function addStmt($stmt) {
+    public function addStmt($stmt)
+    {
         $stmt = BuilderHelpers::normalizeNode($stmt);
 
         if ($stmt instanceof Stmt\Property) {
@@ -128,7 +138,8 @@ class Class_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function addAttribute($attribute) {
+    public function addAttribute($attribute)
+    {
         $this->attributeGroups[] = BuilderHelpers::normalizeAttribute($attribute);
 
         return $this;
@@ -139,7 +150,8 @@ class Class_ extends Declaration {
      *
      * @return Stmt\Class_ The built class node
      */
-    public function getNode(): PhpParser\Node {
+    public function getNode(): PhpParser\Node
+    {
         return new Stmt\Class_($this->name, [
             'flags' => $this->flags,
             'extends' => $this->extends,

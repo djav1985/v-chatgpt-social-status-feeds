@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\Runner;
 
 use const DEBUG_BACKTRACE_IGNORE_ARGS;
 use const DIRECTORY_SEPARATOR;
+
 use function array_merge;
 use function basename;
 use function debug_backtrace;
@@ -40,6 +44,7 @@ use function trim;
 use function unlink;
 use function unserialize;
 use function var_export;
+
 use PHPUnit\Event\Code\Phpt;
 use PHPUnit\Event\Code\ThrowableBuilder;
 use PHPUnit\Event\Facade as EventFacade;
@@ -387,7 +392,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             }
         }
 
-        throw new InvalidPhptFileException;
+        throw new InvalidPhptFileException();
     }
 
     private function shouldTestBeSkipped(array $sections, array $settings): bool
@@ -470,7 +475,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             }
 
             if (empty($section)) {
-                throw new InvalidPhptFileException;
+                throw new InvalidPhptFileException();
             }
 
             $sections[$section] .= $line;
@@ -484,7 +489,7 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
         $this->parseExternal($sections);
 
         if (!$this->validate($sections)) {
-            throw new InvalidPhptFileException;
+            throw new InvalidPhptFileException();
         }
 
         foreach ($unsupportedSections as $section) {
@@ -513,8 +518,10 @@ final class PhptTestCase implements Reorderable, SelfDescribing, Test
             if (isset($sections[$section . '_EXTERNAL'])) {
                 $externalFilename = trim($sections[$section . '_EXTERNAL']);
 
-                if (!is_file($testDirectory . $externalFilename) ||
-                    !is_readable($testDirectory . $externalFilename)) {
+                if (
+                    !is_file($testDirectory . $externalFilename) ||
+                    !is_readable($testDirectory . $externalFilename)
+                ) {
                     throw new PhptExternalFileCannotBeLoadedException(
                         $section,
                         $testDirectory . $externalFilename,

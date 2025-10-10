@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -13,6 +16,7 @@ use function array_map;
 use function array_push;
 use function in_array;
 use function spl_object_id;
+
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestSuite;
 use RecursiveFilterIterator;

@@ -33,7 +33,8 @@ final class OutputFunctionToolCall implements ResponseContract
         public readonly string $type,
         public readonly string $id,
         public readonly string $status,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputFunctionToolCallType  $attributes

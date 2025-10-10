@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -12,6 +15,7 @@ namespace PHPUnit\Framework\MockObject;
 use function array_merge;
 use function assert;
 use function trait_exists;
+
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Generator\CannotUseAddMethodsException;
@@ -71,7 +75,7 @@ final class MockBuilder
     {
         $this->testCase  = $testCase;
         $this->type      = $type;
-        $this->generator = new Generator;
+        $this->generator = new Generator();
     }
 
     /**

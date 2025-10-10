@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -16,6 +19,7 @@ use const PHP_RELEASE_VERSION;
 use const PHP_SAPI;
 use const PHP_VERSION;
 use const PHP_VERSION_ID;
+
 use function array_merge;
 use function get_loaded_extensions;
 use function sort;

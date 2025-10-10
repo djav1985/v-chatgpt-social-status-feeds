@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\Metadata\Api;
 
 use const JSON_ERROR_NONE;
 use const PREG_OFFSET_CAPTURE;
+
 use function array_key_exists;
 use function assert;
 use function explode;
@@ -29,6 +33,7 @@ use function str_replace;
 use function strlen;
 use function substr;
 use function trim;
+
 use PHPUnit\Event;
 use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Event\TestData\MoreThanOneDataSetFromDataProviderException;

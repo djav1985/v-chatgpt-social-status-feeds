@@ -1,19 +1,24 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Lexer\TokenEmulator;
 
 use PhpParser\Token;
 
-abstract class KeywordEmulator extends TokenEmulator {
+abstract class KeywordEmulator extends TokenEmulator
+{
     abstract public function getKeywordString(): string;
     abstract public function getKeywordToken(): int;
 
-    public function isEmulationNeeded(string $code): bool {
+    public function isEmulationNeeded(string $code): bool
+    {
         return strpos(strtolower($code), $this->getKeywordString()) !== false;
     }
 
     /** @param Token[] $tokens */
-    protected function isKeywordContext(array $tokens, int $pos): bool {
+    protected function isKeywordContext(array $tokens, int $pos): bool
+    {
         $prevToken = $this->getPreviousNonSpaceToken($tokens, $pos);
         if ($prevToken === null) {
             return false;
@@ -22,11 +27,14 @@ abstract class KeywordEmulator extends TokenEmulator {
             && $prevToken->id !== \T_NULLSAFE_OBJECT_OPERATOR;
     }
 
-    public function emulate(string $code, array $tokens): array {
+    public function emulate(string $code, array $tokens): array
+    {
         $keywordString = $this->getKeywordString();
         foreach ($tokens as $i => $token) {
-            if ($token->id === T_STRING && strtolower($token->text) === $keywordString
-                    && $this->isKeywordContext($tokens, $i)) {
+            if (
+                $token->id === T_STRING && strtolower($token->text) === $keywordString
+                    && $this->isKeywordContext($tokens, $i)
+            ) {
                 $token->id = $this->getKeywordToken();
             }
         }
@@ -35,7 +43,8 @@ abstract class KeywordEmulator extends TokenEmulator {
     }
 
     /** @param Token[] $tokens */
-    private function getPreviousNonSpaceToken(array $tokens, int $start): ?Token {
+    private function getPreviousNonSpaceToken(array $tokens, int $start): ?Token
+    {
         for ($i = $start - 1; $i >= 0; --$i) {
             if ($tokens[$i]->id === T_WHITESPACE) {
                 continue;
@@ -47,7 +56,8 @@ abstract class KeywordEmulator extends TokenEmulator {
         return null;
     }
 
-    public function reverseEmulate(string $code, array $tokens): array {
+    public function reverseEmulate(string $code, array $tokens): array
+    {
         $keywordToken = $this->getKeywordToken();
         foreach ($tokens as $token) {
             if ($token->id === $keywordToken) {

@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node;
 
 use PhpParser\Node;
 use PhpParser\NodeAbstract;
 
-class StaticVar extends NodeAbstract {
+class StaticVar extends NodeAbstract
+{
     /** @var Expr\Variable Variable */
     public Expr\Variable $var;
     /** @var null|Node\Expr Default value */
@@ -19,18 +22,22 @@ class StaticVar extends NodeAbstract {
      * @param array<string, mixed> $attributes Additional attributes
      */
     public function __construct(
-        Expr\Variable $var, ?Node\Expr $default = null, array $attributes = []
+        Expr\Variable $var,
+        ?Node\Expr $default = null,
+        array $attributes = []
     ) {
         $this->attributes = $attributes;
         $this->var = $var;
         $this->default = $default;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['var', 'default'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'StaticVar';
     }
 }

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Framework;
 
 use function explode;
+
 use PHPUnit\Framework\TestSize\TestSize;
 use PHPUnit\Metadata\Api\Groups;
 
@@ -71,6 +75,6 @@ final class DataProviderTestSuite extends TestSuite
     {
         [$className, $methodName] = explode('::', $this->name());
 
-        return (new Groups)->size($className, $methodName);
+        return (new Groups())->size($className, $methodName);
     }
 }

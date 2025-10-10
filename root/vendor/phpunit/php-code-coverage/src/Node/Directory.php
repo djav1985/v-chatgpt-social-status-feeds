@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\CodeCoverage\Node;
 
 use function array_merge;
 use function count;
+
 use IteratorAggregate;
 use RecursiveIteratorIterator;
 

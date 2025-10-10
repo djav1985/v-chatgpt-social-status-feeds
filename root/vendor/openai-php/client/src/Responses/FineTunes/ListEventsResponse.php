@@ -31,7 +31,8 @@ final class ListEventsResponse implements ResponseContract, ResponseHasMetaInfor
         public readonly string $object,
         public readonly array $data,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

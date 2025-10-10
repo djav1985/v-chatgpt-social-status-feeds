@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -11,37 +14,45 @@
 namespace PharIo\Manifest;
 
 use Iterator;
+
 use function count;
 
 /** @template-implements Iterator<int,BundledComponent> */
-class BundledComponentCollectionIterator implements Iterator {
+class BundledComponentCollectionIterator implements Iterator
+{
     /** @var BundledComponent[] */
     private $bundledComponents;
 
     /** @var int */
     private $position = 0;
 
-    public function __construct(BundledComponentCollection $bundledComponents) {
+    public function __construct(BundledComponentCollection $bundledComponents)
+    {
         $this->bundledComponents = $bundledComponents->getBundledComponents();
     }
 
-    public function rewind(): void {
+    public function rewind(): void
+    {
         $this->position = 0;
     }
 
-    public function valid(): bool {
+    public function valid(): bool
+    {
         return $this->position < count($this->bundledComponents);
     }
 
-    public function key(): int {
+    public function key(): int
+    {
         return $this->position;
     }
 
-    public function current(): BundledComponent {
+    public function current(): BundledComponent
+    {
         return $this->bundledComponents[$this->position];
     }
 
-    public function next(): void {
+    public function next(): void
+    {
         $this->position++;
     }
 }

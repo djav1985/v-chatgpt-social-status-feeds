@@ -31,7 +31,8 @@ final class FunctionCallArgumentsDelta implements ResponseContract, ResponseHasM
         public readonly string $itemId,
         public readonly int $outputIndex,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  FunctionCallArgumentsDeltaType  $attributes

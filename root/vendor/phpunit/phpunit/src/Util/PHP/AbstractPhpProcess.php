@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\Util\PHP;
 
 use const PHP_BINARY;
 use const PHP_SAPI;
+
 use function array_keys;
 use function array_merge;
 use function assert;
@@ -23,6 +27,7 @@ use function set_error_handler;
 use function trim;
 use function unlink;
 use function unserialize;
+
 use ErrorException;
 use PHPUnit\Event\Code\TestMethodBuilder;
 use PHPUnit\Event\Code\ThrowableBuilder;
@@ -55,7 +60,7 @@ abstract class AbstractPhpProcess
 
     public static function factory(): self
     {
-        return new DefaultPhpProcess;
+        return new DefaultPhpProcess();
     }
 
     /**
@@ -160,7 +165,7 @@ abstract class AbstractPhpProcess
      */
     public function getCommand(array $settings, ?string $file = null): array
     {
-        $runtime = new Runtime;
+        $runtime = new Runtime();
 
         $command   = [];
         $command[] = PHP_BINARY;
@@ -254,8 +259,7 @@ abstract class AbstractPhpProcess
             /**
              * @throws ErrorException
              */
-            static function (int $errno, string $errstr, string $errfile, int $errline): never
-            {
+            static function (int $errno, string $errstr, string $errfile, int $errline): never {
                 throw new ErrorException($errstr, $errno, $errno, $errfile, $errline);
             },
         );

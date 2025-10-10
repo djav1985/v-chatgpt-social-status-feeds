@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Version.
  *
@@ -9,5 +12,6 @@
  */
 namespace PharIo\Version;
 
-final class UnsupportedVersionConstraintException extends \RuntimeException implements Exception {
+final class UnsupportedVersionConstraintException extends \RuntimeException implements Exception
+{
 }

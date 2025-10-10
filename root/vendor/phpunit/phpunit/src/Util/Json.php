@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -13,6 +16,7 @@ use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 use const SORT_STRING;
+
 use function is_object;
 use function is_scalar;
 use function json_decode;
@@ -35,7 +39,7 @@ final class Json
         $decodedJson = json_decode($json, false);
 
         if (json_last_error()) {
-            throw new InvalidJsonException;
+            throw new InvalidJsonException();
         }
 
         return json_encode($decodedJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

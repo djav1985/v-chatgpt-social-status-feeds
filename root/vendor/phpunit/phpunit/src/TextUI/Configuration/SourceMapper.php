@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\TextUI\Configuration;
 
 use function realpath;
+
 use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
 use SplObjectStorage;
 
@@ -31,7 +35,7 @@ final class SourceMapper
     public function map(Source $source): array
     {
         if (self::$files === null) {
-            self::$files = new SplObjectStorage;
+            self::$files = new SplObjectStorage();
         }
 
         if (isset(self::$files[$source])) {
@@ -41,7 +45,7 @@ final class SourceMapper
         $files = [];
 
         foreach ($source->includeDirectories() as $directory) {
-            foreach ((new FileIteratorFacade)->getFilesAsArray($directory->path(), $directory->suffix(), $directory->prefix()) as $file) {
+            foreach ((new FileIteratorFacade())->getFilesAsArray($directory->path(), $directory->suffix(), $directory->prefix()) as $file) {
                 $file = realpath($file);
 
                 if (!$file) {
@@ -63,7 +67,7 @@ final class SourceMapper
         }
 
         foreach ($source->excludeDirectories() as $directory) {
-            foreach ((new FileIteratorFacade)->getFilesAsArray($directory->path(), $directory->suffix(), $directory->prefix()) as $file) {
+            foreach ((new FileIteratorFacade())->getFilesAsArray($directory->path(), $directory->suffix(), $directory->prefix()) as $file) {
                 $file = realpath($file);
 
                 if (!$file) {

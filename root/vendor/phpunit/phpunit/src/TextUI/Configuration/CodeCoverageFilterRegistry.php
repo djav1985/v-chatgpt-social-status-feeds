@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\TextUI\Configuration;
 
 use function array_keys;
 use function assert;
+
 use SebastianBergmann\CodeCoverage\Filter;
 
 /**
@@ -30,7 +34,7 @@ final class CodeCoverageFilterRegistry
     public static function instance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self;
+            self::$instance = new self();
         }
 
         return self::$instance;
@@ -59,10 +63,10 @@ final class CodeCoverageFilterRegistry
             return;
         }
 
-        $this->filter = new Filter;
+        $this->filter = new Filter();
 
         if ($configuration->source()->notEmpty()) {
-            $this->filter->includeFiles(array_keys((new SourceMapper)->map($configuration->source())));
+            $this->filter->includeFiles(array_keys((new SourceMapper())->map($configuration->source())));
 
             $this->configured = true;
         }

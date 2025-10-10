@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Expr;
 
 use PhpParser\Node\Expr;
 
-class Variable extends Expr {
+class Variable extends Expr
+{
     /** @var string|Expr Name */
     public $name;
 
@@ -14,16 +17,19 @@ class Variable extends Expr {
      * @param string|Expr $name Name
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct($name, array $attributes = []) {
+    public function __construct($name, array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->name = $name;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['name'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Expr_Variable';
     }
 }

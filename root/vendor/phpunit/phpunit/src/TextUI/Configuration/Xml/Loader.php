@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\TextUI\XmlConfiguration;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_VERSION;
+
 use function assert;
 use function defined;
 use function dirname;
@@ -24,6 +28,7 @@ use function strlen;
 use function strtolower;
 use function substr;
 use function trim;
+
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -87,7 +92,7 @@ final class Loader
     public function load(string $filename): LoadedFromFileConfiguration
     {
         try {
-            $document = (new XmlLoader)->loadFile($filename);
+            $document = (new XmlLoader())->loadFile($filename);
         } catch (XmlException $e) {
             throw new Exception(
                 $e->getMessage(),
@@ -99,7 +104,7 @@ final class Loader
         $xpath = new DOMXPath($document);
 
         try {
-            $xsdFilename = (new SchemaFinder)->find(Version::series());
+            $xsdFilename = (new SchemaFinder())->find(Version::series());
         } catch (CannotFindSchemaException $e) {
             throw new Exception(
                 $e->getMessage(),
@@ -112,7 +117,7 @@ final class Loader
 
         return new LoadedFromFileConfiguration(
             $configurationFileRealpath,
-            (new Validator)->validate($document, $xsdFilename),
+            (new Validator())->validate($document, $xsdFilename),
             $this->extensions($xpath),
             $this->source($configurationFileRealpath, $xpath),
             $this->codeCoverage($configurationFileRealpath, $xpath),
@@ -233,9 +238,11 @@ final class Loader
         //  - C:\windows
         //  - C:/windows
         //  - c:/windows
-        if (defined('PHP_WINDOWS_VERSION_BUILD') &&
+        if (
+            defined('PHP_WINDOWS_VERSION_BUILD') &&
             !empty($path) &&
-            ($path[0] === '\\' || (strlen($path) >= 3 && preg_match('#^[A-Z]:[/\\\]#i', substr($path, 0, 3))))) {
+            ($path[0] === '\\' || (strlen($path) >= 3 && preg_match('#^[A-Z]:[/\\\]#i', substr($path, 0, 3))))
+        ) {
             return $path;
         }
 

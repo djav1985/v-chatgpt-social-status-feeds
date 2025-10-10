@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -24,18 +27,18 @@ final class SchemaDetector
      */
     public function detect(string $filename): SchemaDetectionResult
     {
-        $document = (new Loader)->loadFile($filename);
+        $document = (new Loader())->loadFile($filename);
 
-        $schemaFinder = new SchemaFinder;
+        $schemaFinder = new SchemaFinder();
 
         foreach ($schemaFinder->available() as $candidate) {
-            $schema = (new SchemaFinder)->find($candidate);
+            $schema = (new SchemaFinder())->find($candidate);
 
-            if (!(new Validator)->validate($document, $schema)->hasValidationErrors()) {
+            if (!(new Validator())->validate($document, $schema)->hasValidationErrors()) {
                 return new SuccessfulSchemaDetectionResult($candidate);
             }
         }
 
-        return new FailedSchemaDetectionResult;
+        return new FailedSchemaDetectionResult();
     }
 }

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Metadata\Annotation\Parser;
 
 use function array_key_exists;
+
 use PHPUnit\Metadata\AnnotationsAreNotSupportedForInternalClassesException;
 use PHPUnit\Metadata\ReflectionException;
 use ReflectionClass;
@@ -39,7 +43,7 @@ final class Registry
 
     public static function getInstance(): self
     {
-        return self::$instance ?? self::$instance = new self;
+        return self::$instance ?? self::$instance = new self();
     }
 
     /**

@@ -35,7 +35,8 @@ final class OutputReasoning implements ResponseContract
         public readonly string $type,
         public readonly ?string $encryptedContent,
         public readonly ?string $status,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputReasoningType  $attributes

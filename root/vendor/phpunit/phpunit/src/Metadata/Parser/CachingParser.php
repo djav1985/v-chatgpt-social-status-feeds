@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -12,6 +15,7 @@ namespace PHPUnit\Metadata\Parser;
 use function assert;
 use function class_exists;
 use function method_exists;
+
 use PHPUnit\Metadata\MetadataCollection;
 
 /**

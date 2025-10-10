@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node;
 
@@ -10,7 +12,8 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeAbstract;
 
-class PropertyHook extends NodeAbstract implements FunctionLike {
+class PropertyHook extends NodeAbstract implements FunctionLike
+{
     /** @var AttributeGroup[] PHP attribute groups */
     public array $attrGroups;
     /** @var int Modifiers */
@@ -41,7 +44,8 @@ class PropertyHook extends NodeAbstract implements FunctionLike {
      *             'attrGroups' => array(): PHP attribute groups
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct($name, $body, array $subNodes = [], array $attributes = []) {
+    public function __construct($name, $body, array $subNodes = [], array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->name = \is_string($name) ? new Identifier($name) : $name;
         $this->body = $body;
@@ -51,26 +55,31 @@ class PropertyHook extends NodeAbstract implements FunctionLike {
         $this->attrGroups = $subNodes['attrGroups'] ?? [];
     }
 
-    public function returnsByRef(): bool {
+    public function returnsByRef(): bool
+    {
         return $this->byRef;
     }
 
-    public function getParams(): array {
+    public function getParams(): array
+    {
         return $this->params;
     }
 
-    public function getReturnType() {
+    public function getReturnType()
+    {
         return null;
     }
 
     /**
      * Whether the property hook is final.
      */
-    public function isFinal(): bool {
+    public function isFinal(): bool
+    {
         return (bool) ($this->flags & Modifiers::FINAL);
     }
 
-    public function getStmts(): ?array {
+    public function getStmts(): ?array
+    {
         if ($this->body instanceof Expr) {
             $name = $this->name->toLowerString();
             if ($name === 'get') {
@@ -79,7 +88,8 @@ class PropertyHook extends NodeAbstract implements FunctionLike {
             if ($name === 'set') {
                 if (!$this->hasAttribute('propertyName')) {
                     throw new \LogicException(
-                        'Can only use getStmts() on a "set" hook if the "propertyName" attribute is set');
+                        'Can only use getStmts() on a "set" hook if the "propertyName" attribute is set'
+                    );
                 }
 
                 $propName = $this->getAttribute('propertyName');
@@ -91,15 +101,18 @@ class PropertyHook extends NodeAbstract implements FunctionLike {
         return $this->body;
     }
 
-    public function getAttrGroups(): array {
+    public function getAttrGroups(): array
+    {
         return $this->attrGroups;
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'PropertyHook';
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['attrGroups', 'flags', 'byRef', 'name', 'params', 'body'];
     }
 }

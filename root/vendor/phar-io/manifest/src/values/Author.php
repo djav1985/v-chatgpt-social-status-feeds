@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -12,19 +15,22 @@ namespace PharIo\Manifest;
 
 use function sprintf;
 
-class Author {
+class Author
+{
     /** @var string */
     private $name;
 
     /** @var null|Email */
     private $email;
 
-    public function __construct(string $name, ?Email $email = null) {
+    public function __construct(string $name, ?Email $email = null)
+    {
         $this->name  = $name;
         $this->email = $email;
     }
 
-    public function asString(): string {
+    public function asString(): string
+    {
         if (!$this->hasEmail()) {
             return $this->name;
         }
@@ -36,18 +42,21 @@ class Author {
         );
     }
 
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->name;
     }
 
     /**
      * @psalm-assert-if-true Email $this->email
      */
-    public function hasEmail(): bool {
+    public function hasEmail(): bool
+    {
         return $this->email !== null;
     }
 
-    public function getEmail(): Email {
+    public function getEmail(): Email
+    {
         if (!$this->hasEmail()) {
             throw new NoEmailAddressException();
         }

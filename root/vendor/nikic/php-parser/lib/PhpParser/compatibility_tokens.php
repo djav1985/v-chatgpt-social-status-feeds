@@ -1,9 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser;
 
 if (!\function_exists('PhpParser\defineCompatibilityTokens')) {
-    function defineCompatibilityTokens(): void {
+    function defineCompatibilityTokens(): void
+    {
         $compatTokens = [
             // PHP 8.0
             'T_NAME_QUALIFIED',
@@ -38,7 +41,8 @@ if (!\function_exists('PhpParser\defineCompatibilityTokens')) {
                     throw new \Error(sprintf(
                         'Token %s has ID of type %s, should be int. ' .
                         'You may be using a library with broken token emulation',
-                        $token, \gettype($tokenId)
+                        $token,
+                        \gettype($tokenId)
                     ));
                 }
                 $clashingToken = $usedTokenIds[$tokenId] ?? null;
@@ -46,7 +50,8 @@ if (!\function_exists('PhpParser\defineCompatibilityTokens')) {
                     throw new \Error(sprintf(
                         'Token %s has same ID as token %s, ' .
                         'you may be using a library with broken token emulation',
-                        $token, $clashingToken
+                        $token,
+                        $clashingToken
                     ));
                 }
                 $usedTokenIds[$tokenId] = $token;

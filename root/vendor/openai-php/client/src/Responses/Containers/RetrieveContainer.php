@@ -41,7 +41,8 @@ final class RetrieveContainer implements ResponseContract, ResponseHasMetaInform
         public readonly int $lastActiveAt,
         public readonly string $name,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  RetrieveContainerType  $attributes

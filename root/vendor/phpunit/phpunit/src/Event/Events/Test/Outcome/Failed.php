@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,8 +13,10 @@
 namespace PHPUnit\Event\Test;
 
 use const PHP_EOL;
+
 use function sprintf;
 use function trim;
+
 use PHPUnit\Event\Code;
 use PHPUnit\Event\Code\ComparisonFailure;
 use PHPUnit\Event\Code\Throwable;
@@ -67,7 +72,7 @@ final class Failed implements Event
     public function comparisonFailure(): ComparisonFailure
     {
         if ($this->comparisonFailure === null) {
-            throw new NoComparisonFailureException;
+            throw new NoComparisonFailureException();
         }
 
         return $this->comparisonFailure;

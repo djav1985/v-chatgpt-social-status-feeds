@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -54,10 +57,12 @@ final class PlainTextRenderer
 
             $success = true;
 
-            if ($test->status()->isError() ||
+            if (
+                $test->status()->isError() ||
                 $test->status()->isFailure() ||
                 $test->status()->isIncomplete() ||
-                $test->status()->isSkipped()) {
+                $test->status()->isSkipped()
+            ) {
                 $success = false;
             }
 

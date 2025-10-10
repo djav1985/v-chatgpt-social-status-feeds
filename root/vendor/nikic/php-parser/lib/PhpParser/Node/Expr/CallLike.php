@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Expr;
 
@@ -6,7 +8,8 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\VariadicPlaceholder;
 
-abstract class CallLike extends Expr {
+abstract class CallLike extends Expr
+{
     /**
      * Return raw arguments, which may be actual Args, or VariadicPlaceholders for first-class
      * callables.
@@ -18,7 +21,8 @@ abstract class CallLike extends Expr {
     /**
      * Returns whether this call expression is actually a first class callable.
      */
-    public function isFirstClassCallable(): bool {
+    public function isFirstClassCallable(): bool
+    {
         $rawArgs = $this->getRawArgs();
         return count($rawArgs) === 1 && current($rawArgs) instanceof VariadicPlaceholder;
     }
@@ -28,7 +32,8 @@ abstract class CallLike extends Expr {
      *
      * @return Arg[]
      */
-    public function getArgs(): array {
+    public function getArgs(): array
+    {
         assert(!$this->isFirstClassCallable());
         return $this->getRawArgs();
     }
@@ -40,7 +45,8 @@ abstract class CallLike extends Expr {
      * positional (unnamed) argument that exists at the given `$position`,
      * otherwise, returns `null` for first-class callables or if no match is found.
      */
-    public function getArg(string $name, int $position): ?Arg {
+    public function getArg(string $name, int $position): ?Arg
+    {
         if ($this->isFirstClassCallable()) {
             return null;
         }

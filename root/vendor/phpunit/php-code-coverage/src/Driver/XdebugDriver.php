@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -14,6 +17,7 @@ use const XDEBUG_CC_DEAD_CODE;
 use const XDEBUG_CC_UNUSED;
 use const XDEBUG_FILTER_CODE_COVERAGE;
 use const XDEBUG_PATH_INCLUDE;
+
 use function explode;
 use function extension_loaded;
 use function getenv;
@@ -26,6 +30,7 @@ use function xdebug_info;
 use function xdebug_set_filter;
 use function xdebug_start_code_coverage;
 use function xdebug_stop_code_coverage;
+
 use SebastianBergmann\CodeCoverage\Data\RawCodeCoverageData;
 use SebastianBergmann\CodeCoverage\Filter;
 
@@ -131,7 +136,7 @@ final class XdebugDriver extends Driver
     private function ensureXdebugIsAvailable(): void
     {
         if (!extension_loaded('xdebug')) {
-            throw new XdebugNotAvailableException;
+            throw new XdebugNotAvailableException();
         }
     }
 
@@ -142,7 +147,7 @@ final class XdebugDriver extends Driver
     {
         if (version_compare(phpversion('xdebug'), '3.1', '>=')) {
             if (!in_array('coverage', xdebug_info('mode'), true)) {
-                throw new XdebugNotEnabledException;
+                throw new XdebugNotEnabledException();
             }
 
             return;
@@ -154,9 +159,11 @@ final class XdebugDriver extends Driver
             $mode = ini_get('xdebug.mode');
         }
 
-        if ($mode === false ||
-            !in_array('coverage', explode(',', $mode), true)) {
-            throw new XdebugNotEnabledException;
+        if (
+            $mode === false ||
+            !in_array('coverage', explode(',', $mode), true)
+        ) {
+            throw new XdebugNotEnabledException();
         }
     }
 }

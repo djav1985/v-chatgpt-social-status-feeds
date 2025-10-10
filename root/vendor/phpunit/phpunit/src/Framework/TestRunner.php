@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Framework;
 
 use const PHP_EOL;
+
 use function assert;
 use function defined;
 use function error_clear_last;
@@ -23,6 +27,7 @@ use function tempnam;
 use function unlink;
 use function var_export;
 use function xdebug_is_debugger_active;
+
 use AssertionError;
 use PHPUnit\Event;
 use PHPUnit\Event\NoPreviousThrowableException;
@@ -74,7 +79,7 @@ final class TestRunner
             $test->registerMockObjectsFromTestArgumentsRecursively();
         }
 
-        $shouldCodeCoverageBeCollected = (new CodeCoverageMetadataApi)->shouldCodeCoverageBeCollectedFor(
+        $shouldCodeCoverageBeCollected = (new CodeCoverageMetadataApi())->shouldCodeCoverageBeCollectedFor(
             $test::class,
             $test->name(),
         );
@@ -99,8 +104,10 @@ final class TestRunner
         }
 
         try {
-            if ($this->canTimeLimitBeEnforced() &&
-                $this->shouldTimeLimitBeEnforced($test)) {
+            if (
+                $this->canTimeLimitBeEnforced() &&
+                $this->shouldTimeLimitBeEnforced($test)
+            ) {
                 $risky = $this->runTestWithTimeout($test);
             } else {
                 $test->runBare();
@@ -136,15 +143,19 @@ final class TestRunner
 
         $test->addToAssertionCount(Assert::getCount());
 
-        if ($this->configuration->reportUselessTests() &&
+        if (
+            $this->configuration->reportUselessTests() &&
             !$test->doesNotPerformAssertions() &&
-            $test->numberOfAssertionsPerformed() === 0) {
+            $test->numberOfAssertionsPerformed() === 0
+        ) {
             $risky = true;
         }
 
-        if (!$error && !$failure && !$incomplete && !$skipped && !$risky &&
+        if (
+            !$error && !$failure && !$incomplete && !$skipped && !$risky &&
             $this->configuration->requireCoverageMetadata() &&
-            !$this->hasCoverageMetadata($test::class, $test->name())) {
+            !$this->hasCoverageMetadata($test::class, $test->name())
+        ) {
             Event\Facade::emitter()->testConsideredRisky(
                 $test->valueObjectForEvents(),
                 'This test does not define a code coverage target but is expected to do so',
@@ -160,12 +171,12 @@ final class TestRunner
 
             if ($append) {
                 try {
-                    $linesToBeCovered = (new CodeCoverageMetadataApi)->linesToBeCovered(
+                    $linesToBeCovered = (new CodeCoverageMetadataApi())->linesToBeCovered(
                         $test::class,
                         $test->name(),
                     );
 
-                    $linesToBeUsed = (new CodeCoverageMetadataApi)->linesToBeUsed(
+                    $linesToBeUsed = (new CodeCoverageMetadataApi())->linesToBeUsed(
                         $test::class,
                         $test->name(),
                     );
@@ -201,20 +212,24 @@ final class TestRunner
 
         ErrorHandler::instance()->disable();
 
-        if (!$error &&
+        if (
+            !$error &&
             !$incomplete &&
             !$skipped &&
             $this->configuration->reportUselessTests() &&
             !$test->doesNotPerformAssertions() &&
-            $test->numberOfAssertionsPerformed() === 0) {
+            $test->numberOfAssertionsPerformed() === 0
+        ) {
             Event\Facade::emitter()->testConsideredRisky(
                 $test->valueObjectForEvents(),
                 'This test did not perform any assertions',
             );
         }
 
-        if ($test->doesNotPerformAssertions() &&
-            $test->numberOfAssertionsPerformed() > 0) {
+        if (
+            $test->doesNotPerformAssertions() &&
+            $test->numberOfAssertionsPerformed() > 0
+        ) {
             Event\Facade::emitter()->testConsideredRisky(
                 $test->valueObjectForEvents(),
                 sprintf(
@@ -386,7 +401,7 @@ final class TestRunner
             return $this->timeLimitCanBeEnforced;
         }
 
-        $this->timeLimitCanBeEnforced = (new Invoker)->canInvokeWithTimeout();
+        $this->timeLimitCanBeEnforced = (new Invoker())->canInvokeWithTimeout();
 
         return $this->timeLimitCanBeEnforced;
     }
@@ -425,7 +440,7 @@ final class TestRunner
         }
 
         try {
-            (new Invoker)->invoke([$test, 'runBare'], [], $_timeout);
+            (new Invoker())->invoke([$test, 'runBare'], [], $_timeout);
         } catch (TimeoutException) {
             Event\Facade::emitter()->testConsideredRisky(
                 $test->valueObjectForEvents(),
@@ -450,11 +465,11 @@ final class TestRunner
         $path = tempnam(sys_get_temp_dir(), 'phpunit_');
 
         if ($path === false) {
-            throw new ProcessIsolationException;
+            throw new ProcessIsolationException();
         }
 
         if (!ConfigurationRegistry::saveTo($path)) {
-            throw new ProcessIsolationException;
+            throw new ProcessIsolationException();
         }
 
         return $path;

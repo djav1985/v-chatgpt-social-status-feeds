@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Event\TestData;
 
 use function count;
+
 use Countable;
 use IteratorAggregate;
 
@@ -73,7 +77,7 @@ final class TestDataCollection implements Countable, IteratorAggregate
     public function dataFromDataProvider(): DataFromDataProvider
     {
         if (!$this->hasDataFromDataProvider()) {
-            throw new NoDataSetFromDataProviderException;
+            throw new NoDataSetFromDataProviderException();
         }
 
         return $this->fromDataProvider;
@@ -94,7 +98,7 @@ final class TestDataCollection implements Countable, IteratorAggregate
         foreach ($data as $_data) {
             if ($_data->isFromDataProvider()) {
                 if ($this->fromDataProvider !== null) {
-                    throw new MoreThanOneDataSetFromDataProviderException;
+                    throw new MoreThanOneDataSetFromDataProviderException();
                 }
 
                 $this->fromDataProvider = $_data;

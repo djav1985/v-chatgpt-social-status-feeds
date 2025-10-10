@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -12,6 +15,7 @@ namespace PHPUnit\Framework\MockObject\Stub;
 use function array_pop;
 use function count;
 use function is_array;
+
 use PHPUnit\Framework\MockObject\Invocation;
 
 /**

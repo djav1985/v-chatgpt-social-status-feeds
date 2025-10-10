@@ -36,7 +36,8 @@ final class ConversationResponse implements ResponseContract, ResponseHasMetaInf
         public readonly int $createdAt,
         public readonly array $metadata,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

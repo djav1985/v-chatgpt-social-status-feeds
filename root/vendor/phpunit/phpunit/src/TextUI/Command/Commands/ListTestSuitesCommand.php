@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,7 +13,9 @@
 namespace PHPUnit\TextUI\Command;
 
 use const PHP_EOL;
+
 use function sprintf;
+
 use PHPUnit\TextUI\Configuration\Registry;
 use PHPUnit\TextUI\Configuration\TestSuiteCollection;
 

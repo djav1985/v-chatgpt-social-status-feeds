@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser;
 
 use PhpParser\Node\Expr;
 
-interface PrettyPrinter {
+interface PrettyPrinter
+{
     /**
      * Pretty prints an array of statements.
      *

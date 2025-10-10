@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Version.
  *
@@ -9,17 +12,20 @@
  */
 namespace PharIo\Version;
 
-class SpecificMajorVersionConstraint extends AbstractVersionConstraint {
+class SpecificMajorVersionConstraint extends AbstractVersionConstraint
+{
     /** @var int */
     private $major;
 
-    public function __construct(string $originalValue, int $major) {
+    public function __construct(string $originalValue, int $major)
+    {
         parent::__construct($originalValue);
 
         $this->major = $major;
     }
 
-    public function complies(Version $version): bool {
+    public function complies(Version $version): bool
+    {
         return $version->getMajor()->getValue() === $this->major;
     }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Expr;
 
@@ -7,7 +9,8 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\VariadicPlaceholder;
 
-class New_ extends CallLike {
+class New_ extends CallLike
+{
     /** @var Node\Name|Expr|Node\Stmt\Class_ Class name */
     public Node $class;
     /** @var array<Arg|VariadicPlaceholder> Arguments */
@@ -20,21 +23,25 @@ class New_ extends CallLike {
      * @param array<Arg|VariadicPlaceholder> $args Arguments
      * @param array<string, mixed> $attributes Additional attributes
      */
-    public function __construct(Node $class, array $args = [], array $attributes = []) {
+    public function __construct(Node $class, array $args = [], array $attributes = [])
+    {
         $this->attributes = $attributes;
         $this->class = $class;
         $this->args = $args;
     }
 
-    public function getSubNodeNames(): array {
+    public function getSubNodeNames(): array
+    {
         return ['class', 'args'];
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return 'Expr_New';
     }
 
-    public function getRawArgs(): array {
+    public function getRawArgs(): array
+    {
         return $this->args;
     }
 }

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\Util;
 
 use const PHP_MAJOR_VERSION;
 use const PHP_MINOR_VERSION;
+
 use function array_keys;
 use function array_reverse;
 use function array_shift;
@@ -29,6 +33,7 @@ use function str_ends_with;
 use function str_starts_with;
 use function strtr;
 use function var_export;
+
 use Closure;
 
 /**
@@ -139,7 +144,7 @@ final class GlobalState
      */
     public static function processIncludedFilesAsString(array $files): string
     {
-        $excludeList = new ExcludeList;
+        $excludeList = new ExcludeList();
         $prefix      = false;
         $result      = '';
 
@@ -156,8 +161,10 @@ final class GlobalState
         }
 
         foreach (array_reverse($files) as $file) {
-            if (!empty($GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST']) &&
-                in_array($file, $GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST'], true)) {
+            if (
+                !empty($GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST']) &&
+                in_array($file, $GLOBALS['__PHPUNIT_ISOLATION_EXCLUDE_LIST'], true)
+            ) {
                 continue;
             }
 
@@ -255,8 +262,10 @@ final class GlobalState
 
     private static function exportVariable(mixed $variable): string
     {
-        if (is_scalar($variable) || $variable === null ||
-            (is_array($variable) && self::arrayOnlyContainsScalars($variable))) {
+        if (
+            is_scalar($variable) || $variable === null ||
+            (is_array($variable) && self::arrayOnlyContainsScalars($variable))
+        ) {
             return var_export($variable, true);
         }
 

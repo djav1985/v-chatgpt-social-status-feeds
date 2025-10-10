@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -14,6 +17,7 @@ use function file_get_contents;
 use function file_put_contents;
 use function serialize;
 use function unserialize;
+
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\TextUI\CliArguments\Configuration as CliConfiguration;
 use PHPUnit\TextUI\CliArguments\Exception;
@@ -102,7 +106,7 @@ final class Registry
      */
     public static function init(CliConfiguration $cliConfiguration, XmlConfiguration $xmlConfiguration): Configuration
     {
-        self::$instance = (new Merger)->merge($cliConfiguration, $xmlConfiguration);
+        self::$instance = (new Merger())->merge($cliConfiguration, $xmlConfiguration);
 
         EventFacade::emitter()->testRunnerConfigured(self::$instance);
 

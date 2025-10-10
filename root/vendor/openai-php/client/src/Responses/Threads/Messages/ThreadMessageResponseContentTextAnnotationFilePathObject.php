@@ -29,7 +29,8 @@ final class ThreadMessageResponseContentTextAnnotationFilePathObject implements 
         public int $startIndex,
         public int $endIndex,
         public ThreadMessageResponseContentTextAnnotationFilePath $filePath,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

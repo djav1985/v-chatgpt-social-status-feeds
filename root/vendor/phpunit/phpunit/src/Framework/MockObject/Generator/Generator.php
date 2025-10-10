@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -13,6 +16,7 @@ use const PHP_EOL;
 use const PHP_VERSION;
 use const PREG_OFFSET_CAPTURE;
 use const WSDL_CACHE_NONE;
+
 use function array_merge;
 use function array_pop;
 use function array_unique;
@@ -42,6 +46,7 @@ use function strpos;
 use function substr;
 use function trait_exists;
 use function version_compare;
+
 use Exception;
 use Iterator;
 use IteratorAggregate;
@@ -110,7 +115,7 @@ final class Generator
         $this->ensureNameForTestDoubleClassIsAvailable($mockClassName);
 
         if (!$callOriginalConstructor && $callOriginalMethods) {
-            throw new OriginalConstructorInvocationRequiredException;
+            throw new OriginalConstructorInvocationRequiredException();
         }
 
         $mock = $this->generate(
@@ -229,8 +234,10 @@ final class Generator
      */
     public function mockObjectForAbstractClass(string $originalClassName, array $arguments = [], string $mockClassName = '', bool $callOriginalConstructor = true, bool $callOriginalClone = true, bool $callAutoload = true, ?array $mockedMethods = null, bool $cloneArguments = true): MockObject
     {
-        if (class_exists($originalClassName, $callAutoload) ||
-            interface_exists($originalClassName, $callAutoload)) {
+        if (
+            class_exists($originalClassName, $callAutoload) ||
+            interface_exists($originalClassName, $callAutoload)
+        ) {
             $reflector = $this->reflectClass($originalClassName);
             $methods   = $mockedMethods;
 
@@ -420,7 +427,7 @@ final class Generator
     public function generateClassFromWsdl(string $wsdlFile, string $className, array $methods = [], array $options = []): string
     {
         if (!extension_loaded('soap')) {
-            throw new SoapExtensionNotAvailableException;
+            throw new SoapExtensionNotAvailableException();
         }
 
         $options['cache_wsdl'] = WSDL_CACHE_NONE;
@@ -586,7 +593,7 @@ final class Generator
         $isClass               = false;
         $isInterface           = false;
         $class                 = null;
-        $mockMethods           = new MockMethodSet;
+        $mockMethods           = new MockMethodSet();
         $testDoubleClassPrefix = $mockObject ? 'MockObject_' : 'TestStub_';
 
         $_mockClassName = $this->generateClassName(
@@ -659,9 +666,11 @@ final class Generator
             }
 
             // @see https://github.com/sebastianbergmann/phpunit-mock-objects/issues/103
-            if ($isInterface && $class->implementsInterface(Traversable::class) &&
+            if (
+                $isInterface && $class->implementsInterface(Traversable::class) &&
                 !$class->implementsInterface(Iterator::class) &&
-                !$class->implementsInterface(IteratorAggregate::class)) {
+                !$class->implementsInterface(IteratorAggregate::class)
+            ) {
                 $additionalInterfaces[] = Iterator::class;
 
                 $mockMethods->addMethods(
@@ -944,9 +953,11 @@ final class Generator
             return;
         }
 
-        if (class_exists($className, false) ||
+        if (
+            class_exists($className, false) ||
             interface_exists($className, false) ||
-            trait_exists($className, false)) {
+            trait_exists($className, false)
+        ) {
             throw new NameAlreadyInUseException($className);
         }
     }
@@ -960,7 +971,7 @@ final class Generator
     {
         if ($callOriginalConstructor) {
             if (count($arguments) === 0) {
-                return new $className;
+                return new $className();
             }
 
             try {
@@ -1000,7 +1011,7 @@ final class Generator
             assert(class_exists($type));
 
             if (count($arguments) === 0) {
-                $proxyTarget = new $type;
+                $proxyTarget = new $type();
             } else {
                 $class = new ReflectionClass($type);
 

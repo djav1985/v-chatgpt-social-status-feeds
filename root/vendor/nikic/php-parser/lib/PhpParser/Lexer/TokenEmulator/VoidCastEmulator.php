@@ -1,20 +1,26 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Lexer\TokenEmulator;
 
 use PhpParser\PhpVersion;
 use PhpParser\Token;
 
-class VoidCastEmulator extends TokenEmulator {
-    public function getPhpVersion(): PhpVersion {
+class VoidCastEmulator extends TokenEmulator
+{
+    public function getPhpVersion(): PhpVersion
+    {
         return PhpVersion::fromComponents(8, 5);
     }
 
-    public function isEmulationNeeded(string $code): bool {
+    public function isEmulationNeeded(string $code): bool
+    {
         return (bool)\preg_match('/\([ \t]*void[ \t]*\)/i', $code);
     }
 
-    public function emulate(string $code, array $tokens): array {
+    public function emulate(string $code, array $tokens): array
+    {
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
             if ($token->text !== '(') {
@@ -57,7 +63,8 @@ class VoidCastEmulator extends TokenEmulator {
         return $tokens;
     }
 
-    public function reverseEmulate(string $code, array $tokens): array {
+    public function reverseEmulate(string $code, array $tokens): array
+    {
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
             if ($token->id !== \T_VOID_CAST) {

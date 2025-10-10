@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\TextUI;
 
 use const PHP_EOL;
 use const PHP_VERSION;
+
 use function is_file;
 use function is_readable;
 use function printf;
@@ -18,6 +22,7 @@ use function realpath;
 use function sprintf;
 use function trim;
 use function unlink;
+
 use PHPUnit\Event\EventFacadeIsSealedException;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Event\UnknownSubscriberTypeException;
@@ -92,7 +97,7 @@ final class Application
             EventFacade::emitter()->applicationStarted();
 
             $cliConfiguration           = $this->buildCliConfiguration($argv);
-            $pathToXmlConfigurationFile = (new XmlConfigurationFileFinder)->find($cliConfiguration);
+            $pathToXmlConfigurationFile = (new XmlConfigurationFileFinder())->find($cliConfiguration);
 
             $this->executeCommandsThatOnlyRequireCliConfiguration($cliConfiguration, $pathToXmlConfigurationFile);
 
@@ -103,7 +108,7 @@ final class Application
                 $xmlConfiguration,
             );
 
-            (new PhpHandler)->handle($configuration->php());
+            (new PhpHandler())->handle($configuration->php());
 
             if ($configuration->hasBootstrap()) {
                 $this->loadBootstrapScript($configuration->bootstrap());
@@ -125,7 +130,7 @@ final class Application
 
             if (!$configuration->noExtensions()) {
                 if ($configuration->hasPharExtensionDirectory()) {
-                    $pharExtensions = (new PharLoader)->loadPharExtensionsInDirectory(
+                    $pharExtensions = (new PharLoader())->loadPharExtensionsInDirectory(
                         $configuration->pharExtensionDirectory(),
                     );
                 }
@@ -150,7 +155,7 @@ final class Application
 
             if (CodeCoverage::instance()->isActive()) {
                 CodeCoverage::instance()->ignoreLines(
-                    (new CodeCoverageMetadataApi)->linesToBeIgnored($testSuite),
+                    (new CodeCoverageMetadataApi())->linesToBeIgnored($testSuite),
                 );
             }
 
@@ -196,10 +201,10 @@ final class Application
 
             EventFacade::instance()->seal();
 
-            $timer = new Timer;
+            $timer = new Timer();
             $timer->start();
 
-            $runner = new TestRunner;
+            $runner = new TestRunner();
 
             $runner->run(
                 $configuration,
@@ -215,13 +220,15 @@ final class Application
                 $testDoxResult = $testDoxResultCollector->testMethodsGroupedByClass();
             }
 
-            if ($testDoxResult !== null &&
-                $configuration->hasLogfileTestdoxHtml()) {
+            if (
+                $testDoxResult !== null &&
+                $configuration->hasLogfileTestdoxHtml()
+            ) {
                 try {
                     OutputFacade::printerFor($configuration->logfileTestdoxHtml())->print(
-                        (new TestDoxHtmlRenderer)->render($testDoxResult),
+                        (new TestDoxHtmlRenderer())->render($testDoxResult),
                     );
-                } catch (DirectoryDoesNotExistException|InvalidSocketException $e) {
+                } catch (DirectoryDoesNotExistException | InvalidSocketException $e) {
                     EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                         sprintf(
                             'Cannot log test results in TestDox HTML format to "%s": %s',
@@ -232,13 +239,15 @@ final class Application
                 }
             }
 
-            if ($testDoxResult !== null &&
-                $configuration->hasLogfileTestdoxText()) {
+            if (
+                $testDoxResult !== null &&
+                $configuration->hasLogfileTestdoxText()
+            ) {
                 try {
                     OutputFacade::printerFor($configuration->logfileTestdoxText())->print(
-                        (new TestDoxTextRenderer)->render($testDoxResult),
+                        (new TestDoxTextRenderer())->render($testDoxResult),
                     );
-                } catch (DirectoryDoesNotExistException|InvalidSocketException $e) {
+                } catch (DirectoryDoesNotExistException | InvalidSocketException $e) {
                     EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                         sprintf(
                             'Cannot log test results in TestDox plain text format to "%s": %s',
@@ -258,7 +267,7 @@ final class Application
             CodeCoverage::instance()->generateReports($printer, $configuration);
 
             if (isset($baselineGenerator)) {
-                (new Writer)->write(
+                (new Writer())->write(
                     $configuration->generateBaseline(),
                     $baselineGenerator->baseline(),
                 );
@@ -271,7 +280,7 @@ final class Application
                 );
             }
 
-            $shellExitCode = (new ShellExitCodeCalculator)->calculate(
+            $shellExitCode = (new ShellExitCodeCalculator())->calculate(
                 $configuration,
                 $result,
             );
@@ -294,7 +303,7 @@ final class Application
                 EventFacade::instance()->seal();
 
                 $resultCollectedFromEvents = TestResultFacade::result();
-            } catch (EventFacadeIsSealedException|UnknownSubscriberTypeException) {
+            } catch (EventFacadeIsSealedException | UnknownSubscriberTypeException) {
             }
         }
 
@@ -306,8 +315,10 @@ final class Application
 
         $shellExitCode = $result->shellExitCode();
 
-        if (isset($resultCollectedFromEvents) &&
-            $resultCollectedFromEvents->hasTestTriggeredPhpunitErrorEvents()) {
+        if (
+            isset($resultCollectedFromEvents) &&
+            $resultCollectedFromEvents->hasTestTriggeredPhpunitErrorEvents()
+        ) {
             $shellExitCode = Result::EXCEPTION;
 
             print PHP_EOL . PHP_EOL . 'There were errors:' . PHP_EOL;
@@ -367,7 +378,7 @@ final class Application
     private function buildCliConfiguration(array $argv): CliConfiguration
     {
         try {
-            $cliConfiguration = (new Builder)->fromParameters($argv);
+            $cliConfiguration = (new Builder())->fromParameters($argv);
         } catch (ArgumentsException $e) {
             $this->exitWithErrorMessage($e->getMessage());
         }
@@ -382,7 +393,7 @@ final class Application
         }
 
         try {
-            return (new Loader)->load($configurationFile);
+            return (new Loader())->load($configurationFile);
         } catch (Throwable $e) {
             $this->exitWithErrorMessage($e->getMessage());
         }
@@ -391,7 +402,7 @@ final class Application
     private function buildTestSuite(Configuration $configuration): TestSuite
     {
         try {
-            return (new TestSuiteBuilder)->build($configuration);
+            return (new TestSuiteBuilder())->build($configuration);
         } catch (Exception $e) {
             $this->exitWithErrorMessage($e->getMessage());
         }
@@ -402,7 +413,7 @@ final class Application
      */
     private function bootstrapExtensions(Configuration $configuration): array
     {
-        $facade = new ExtensionFacade;
+        $facade = new ExtensionFacade();
 
         $extensionBootstrapper = new ExtensionBootstrapper(
             $configuration,
@@ -428,7 +439,7 @@ final class Application
     private function executeCommandsThatOnlyRequireCliConfiguration(CliConfiguration $cliConfiguration, false|string $configurationFile): void
     {
         if ($cliConfiguration->generateConfiguration()) {
-            $this->execute(new GenerateConfigurationCommand);
+            $this->execute(new GenerateConfigurationCommand());
         }
 
         if ($cliConfiguration->migrateConfiguration()) {
@@ -444,15 +455,15 @@ final class Application
         }
 
         if ($cliConfiguration->version()) {
-            $this->execute(new ShowVersionCommand);
+            $this->execute(new ShowVersionCommand());
         }
 
         if ($cliConfiguration->checkPhpConfiguration()) {
-            $this->execute(new CheckPhpConfigurationCommand);
+            $this->execute(new CheckPhpConfigurationCommand());
         }
 
         if ($cliConfiguration->checkVersion()) {
-            $this->execute(new VersionCheckCommand(new PhpDownloader, Version::majorVersionNumber(), Version::id()));
+            $this->execute(new VersionCheckCommand(new PhpDownloader(), Version::majorVersionNumber(), Version::id()));
         }
 
         if ($cliConfiguration->help()) {
@@ -600,7 +611,7 @@ final class Application
                     OutputFacade::printerFor($configuration->logfileJunit()),
                     EventFacade::instance(),
                 );
-            } catch (DirectoryDoesNotExistException|InvalidSocketException $e) {
+            } catch (DirectoryDoesNotExistException | InvalidSocketException $e) {
                 EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                     sprintf(
                         'Cannot log test results in JUnit XML format to "%s": %s',
@@ -619,7 +630,7 @@ final class Application
                     ),
                     EventFacade::instance(),
                 );
-            } catch (DirectoryDoesNotExistException|InvalidSocketException $e) {
+            } catch (DirectoryDoesNotExistException | InvalidSocketException $e) {
                 EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                     sprintf(
                         'Cannot log test results in TeamCity format to "%s": %s',
@@ -637,9 +648,11 @@ final class Application
      */
     private function testDoxResultCollector(Configuration $configuration): ?TestDoxResultCollector
     {
-        if ($configuration->hasLogfileTestdoxHtml() ||
+        if (
+            $configuration->hasLogfileTestdoxHtml() ||
             $configuration->hasLogfileTestdoxText() ||
-            $configuration->outputIsTestDox()) {
+            $configuration->outputIsTestDox()
+        ) {
             return new TestDoxResultCollector(
                 EventFacade::instance(),
                 $configuration->source(),
@@ -663,7 +676,7 @@ final class Application
             return $cache;
         }
 
-        return new NullResultCache;
+        return new NullResultCache();
     }
 
     /**
@@ -685,7 +698,7 @@ final class Application
             $baseline     = null;
 
             try {
-                $baseline = (new Reader)->read($baselineFile);
+                $baseline = (new Reader())->read($baselineFile);
             } catch (CannotLoadBaselineException $e) {
                 EventFacade::emitter()->testRunnerTriggeredPhpunitWarning($e->getMessage());
             }

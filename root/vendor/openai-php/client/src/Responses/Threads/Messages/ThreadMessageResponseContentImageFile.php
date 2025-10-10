@@ -23,7 +23,8 @@ final class ThreadMessageResponseContentImageFile implements ResponseContract
     private function __construct(
         public string $fileId,
         public ?string $detail,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

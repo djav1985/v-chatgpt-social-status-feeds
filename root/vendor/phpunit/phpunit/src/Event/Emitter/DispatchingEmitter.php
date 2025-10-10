@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -72,7 +75,7 @@ final class DispatchingEmitter implements Emitter
         $this->dispatcher->dispatch(
             new Application\Started(
                 $this->telemetryInfo(),
-                new Runtime\Runtime,
+                new Runtime\Runtime(),
             ),
         );
     }

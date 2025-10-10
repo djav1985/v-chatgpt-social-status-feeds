@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -16,6 +19,7 @@ use function implode;
 use function is_file;
 use function sprintf;
 use function str_contains;
+
 use PharIo\Manifest\ApplicationName;
 use PharIo\Manifest\Exception as ManifestException;
 use PharIo\Manifest\ManifestLoader;
@@ -42,7 +46,7 @@ final class PharLoader
         $pharExtensionLoaded = extension_loaded('phar');
         $loadedExtensions    = [];
 
-        foreach ((new FileIteratorFacade)->getFilesAsArray($directory, '.phar') as $file) {
+        foreach ((new FileIteratorFacade())->getFilesAsArray($directory, '.phar') as $file) {
             if (!$pharExtensionLoaded) {
                 Event\Facade::emitter()->testRunnerTriggeredPhpunitWarning(
                     sprintf(

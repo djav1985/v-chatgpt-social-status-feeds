@@ -9,7 +9,8 @@ final class CreateResponseUsagePromptTokensDetails
     private function __construct(
         public readonly ?int $audioTokens,
         public readonly int $cachedTokens
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{audio_tokens?:int|null, cached_tokens?:int}  $attributes

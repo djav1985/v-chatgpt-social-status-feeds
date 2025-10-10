@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\Framework\MockObject\Generator;
 
 use function call_user_func;
 use function class_exists;
+
 use PHPUnit\Framework\MockObject\ConfigurableMethod;
 
 /**

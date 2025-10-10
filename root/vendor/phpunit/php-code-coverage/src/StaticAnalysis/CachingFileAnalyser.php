@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -16,6 +19,7 @@ use function is_file;
 use function md5;
 use function serialize;
 use function unserialize;
+
 use SebastianBergmann\CodeCoverage\Util\Filesystem;
 use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
 
@@ -170,7 +174,7 @@ final class CachingFileAnalyser implements FileAnalyser
 
         $buffer = [];
 
-        foreach ((new FileIteratorFacade)->getFilesAsArray(__DIR__, '.php') as $file) {
+        foreach ((new FileIteratorFacade())->getFilesAsArray(__DIR__, '.php') as $file) {
             $buffer[] = $file;
             $buffer[] = file_get_contents($file);
         }

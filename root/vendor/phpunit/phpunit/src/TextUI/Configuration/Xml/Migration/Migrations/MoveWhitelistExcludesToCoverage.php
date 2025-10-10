@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\TextUI\XmlConfiguration;
 
 use function assert;
 use function in_array;
+
 use DOMDocument;
 use DOMElement;
 

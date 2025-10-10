@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\NodeVisitor;
 
@@ -16,7 +18,8 @@ use function count;
  *
  * With <code>$weakReferences=true</code> the attribute name is "weak_parent" instead.
  */
-final class ParentConnectingVisitor extends NodeVisitorAbstract {
+final class ParentConnectingVisitor extends NodeVisitorAbstract
+{
     /**
      * @var Node[]
      */
@@ -24,15 +27,18 @@ final class ParentConnectingVisitor extends NodeVisitorAbstract {
 
     private bool $weakReferences;
 
-    public function __construct(bool $weakReferences = false) {
+    public function __construct(bool $weakReferences = false)
+    {
         $this->weakReferences = $weakReferences;
     }
 
-    public function beforeTraverse(array $nodes) {
+    public function beforeTraverse(array $nodes)
+    {
         $this->stack = [];
     }
 
-    public function enterNode(Node $node) {
+    public function enterNode(Node $node)
+    {
         if (!empty($this->stack)) {
             $parent = $this->stack[count($this->stack) - 1];
             if ($this->weakReferences) {
@@ -45,7 +51,8 @@ final class ParentConnectingVisitor extends NodeVisitorAbstract {
         $this->stack[] = $node;
     }
 
-    public function leaveNode(Node $node) {
+    public function leaveNode(Node $node)
+    {
         array_pop($this->stack);
     }
 }

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -24,7 +27,7 @@ final class Selector
      */
     public function forLineCoverage(Filter $filter): Driver
     {
-        $runtime = new Runtime;
+        $runtime = new Runtime();
 
         if ($runtime->hasPCOV()) {
             return new PcovDriver($filter);
@@ -38,7 +41,7 @@ final class Selector
             return $driver;
         }
 
-        throw new NoCodeCoverageDriverAvailableException;
+        throw new NoCodeCoverageDriverAvailableException();
     }
 
     /**
@@ -48,7 +51,7 @@ final class Selector
      */
     public function forLineAndPathCoverage(Filter $filter): Driver
     {
-        if ((new Runtime)->hasXdebug()) {
+        if ((new Runtime())->hasXdebug()) {
             $driver = new XdebugDriver($filter);
 
             $driver->enableDeadCodeDetection();
@@ -57,6 +60,6 @@ final class Selector
             return $driver;
         }
 
-        throw new NoCodeCoverageDriverWithPathCoverageSupportAvailableException;
+        throw new NoCodeCoverageDriverWithPathCoverageSupportAvailableException();
     }
 }

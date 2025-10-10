@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Version.
  *
@@ -9,20 +12,23 @@
  */
 namespace PharIo\Version;
 
-class BuildMetaData {
-
+class BuildMetaData
+{
     /** @var string */
     private $value;
 
-    public function __construct(string $value) {
+    public function __construct(string $value)
+    {
         $this->value = $value;
     }
 
-    public function asString(): string {
+    public function asString(): string
+    {
         return $this->value;
     }
 
-    public function equals(BuildMetaData $other): bool {
+    public function equals(BuildMetaData $other): bool
+    {
         return $this->asString() === $other->asString();
     }
 }

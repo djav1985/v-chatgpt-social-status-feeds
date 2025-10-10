@@ -29,7 +29,8 @@ final class ComputerScreenshotContent implements ResponseContract
         public readonly ?string $fileId,
         public readonly ?string $imageUrl,
         public readonly string $type
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ComputerScreenshotContentType  $attributes

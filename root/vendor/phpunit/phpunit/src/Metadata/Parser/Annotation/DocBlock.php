@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -21,6 +24,7 @@ use function preg_split;
 use function realpath;
 use function substr;
 use function trim;
+
 use PharIo\Version\Exception as PharIoVersionException;
 use PharIo\Version\VersionConstraintParser;
 use PHPUnit\Metadata\AnnotationsAreNotSupportedForInternalClassesException;
@@ -166,7 +170,7 @@ final class DocBlock
                 }
 
                 try {
-                    $versionConstraintParser = new VersionConstraintParser;
+                    $versionConstraintParser = new VersionConstraintParser();
 
                     $requires[$matches['name'] . '_constraint'] = [
                         'constraint' => $versionConstraintParser->parse(trim($matches['constraint'])),

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,7 +13,9 @@
 namespace PHPUnit\TextUI\Output;
 
 use const PHP_EOL;
+
 use function assert;
+
 use PHPUnit\Event\EventFacadeIsSealedException;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Event\UnknownSubscriberTypeException;
@@ -88,7 +93,7 @@ final class Facade
                 self::$printer->print(PHP_EOL . PHP_EOL);
             }
 
-            self::$printer->print((new ResourceUsageFormatter)->resourceUsage($duration) . PHP_EOL . PHP_EOL);
+            self::$printer->print((new ResourceUsageFormatter())->resourceUsage($duration) . PHP_EOL . PHP_EOL);
         }
 
         if (self::$testDoxResultPrinter !== null && $testDoxResult !== null) {
@@ -158,7 +163,7 @@ final class Facade
             return;
         }
 
-        self::$printer = new NullPrinter;
+        self::$printer = new NullPrinter();
     }
 
     private static function createProgressPrinter(Configuration $configuration): void
@@ -257,8 +262,10 @@ final class Facade
     {
         assert(self::$printer !== null);
 
-        if (($configuration->noOutput() || $configuration->noResults()) &&
-            !($configuration->outputIsTeamCity() || $configuration->outputIsTestDox())) {
+        if (
+            ($configuration->noOutput() || $configuration->noResults()) &&
+            !($configuration->outputIsTeamCity() || $configuration->outputIsTestDox())
+        ) {
             return;
         }
 

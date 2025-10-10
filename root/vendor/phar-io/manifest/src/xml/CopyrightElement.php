@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -10,14 +13,17 @@
  */
 namespace PharIo\Manifest;
 
-class CopyrightElement extends ManifestElement {
-    public function getAuthorElements(): AuthorElementCollection {
+class CopyrightElement extends ManifestElement
+{
+    public function getAuthorElements(): AuthorElementCollection
+    {
         return new AuthorElementCollection(
             $this->getChildrenByName('author')
         );
     }
 
-    public function getLicenseElement(): LicenseElement {
+    public function getLicenseElement(): LicenseElement
+    {
         return new LicenseElement(
             $this->getChildByName('license')
         );

@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -12,5 +15,6 @@ namespace PharIo\Manifest;
 
 use InvalidArgumentException;
 
-class ElementCollectionException extends InvalidArgumentException implements Exception {
+class ElementCollectionException extends InvalidArgumentException implements Exception
+{
 }

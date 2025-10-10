@@ -11,7 +11,8 @@ final class ImageResponseUsage
         public readonly ?int $inputTokens,
         public readonly ?int $outputTokens,
         public readonly ?ImageResponseUsageInputTokensDetails $inputTokensDetails,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{total_tokens: int, input_tokens?: int, output_tokens?: int, input_tokens_details?: array{text_tokens: int, image_tokens: int}}  $attributes

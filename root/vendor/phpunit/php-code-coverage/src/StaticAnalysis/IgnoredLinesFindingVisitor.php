@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\CodeCoverage\StaticAnalysis;
 
 use function assert;
 use function str_contains;
+
 use PhpParser\Node;
 use PhpParser\Node\Attribute;
 use PhpParser\Node\Stmt\Class_;
@@ -41,13 +45,15 @@ final class IgnoredLinesFindingVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): void
     {
-        if (!$node instanceof Class_ &&
+        if (
+            !$node instanceof Class_ &&
             !$node instanceof Trait_ &&
             !$node instanceof Interface_ &&
             !$node instanceof Enum_ &&
             !$node instanceof ClassMethod &&
             !$node instanceof Function_ &&
-            !$node instanceof Attribute) {
+            !$node instanceof Attribute
+        ) {
             return;
         }
 
@@ -55,10 +61,12 @@ final class IgnoredLinesFindingVisitor extends NodeVisitorAbstract
             return;
         }
 
-        if ($node instanceof Class_ ||
+        if (
+            $node instanceof Class_ ||
             $node instanceof Trait_ ||
             $node instanceof Interface_ ||
-            $node instanceof Attribute) {
+            $node instanceof Attribute
+        ) {
             $this->ignoredLines[] = $node->getStartLine();
 
             assert($node->name !== null);
@@ -75,8 +83,10 @@ final class IgnoredLinesFindingVisitor extends NodeVisitorAbstract
             return;
         }
 
-        if ($node instanceof Attribute &&
-            $node->name->toString() === 'PHPUnit\Framework\Attributes\CodeCoverageIgnore') {
+        if (
+            $node instanceof Attribute &&
+            $node->name->toString() === 'PHPUnit\Framework\Attributes\CodeCoverageIgnore'
+        ) {
             $attributeGroup = $node->getAttribute('parent');
             $attributedNode = $attributeGroup->getAttribute('parent');
 

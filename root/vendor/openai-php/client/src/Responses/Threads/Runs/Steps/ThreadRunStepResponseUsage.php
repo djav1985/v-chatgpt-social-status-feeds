@@ -24,7 +24,8 @@ final class ThreadRunStepResponseUsage implements ResponseContract
         public int $completionTokens,
         public int $promptTokens,
         public int $totalTokens,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

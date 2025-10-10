@@ -32,7 +32,8 @@ final class WebSearchTool implements ResponseContract
         public readonly string $type,
         public readonly string $searchContextSize,
         public readonly ?WebSearchUserLocation $userLocation,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  WebSearchToolType  $attributes

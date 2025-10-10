@@ -26,7 +26,8 @@ final class ListJobEventsResponseEvent implements ResponseContract
         public readonly string $message,
         public readonly ?ListJobEventsResponseEventData $data,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

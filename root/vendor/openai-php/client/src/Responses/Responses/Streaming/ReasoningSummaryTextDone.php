@@ -32,7 +32,8 @@ final class ReasoningSummaryTextDone implements ResponseContract, ResponseHasMet
         public readonly int $summaryIndex,
         public readonly string $text,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ReasoningSummaryTextDoneType  $attributes

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser;
 
@@ -16,7 +18,8 @@ use PhpParser\Node\Stmt;
  *
  * @internal
  */
-final class BuilderHelpers {
+final class BuilderHelpers
+{
     /**
      * Normalizes a node: Converts builder objects to nodes.
      *
@@ -24,7 +27,8 @@ final class BuilderHelpers {
      *
      * @return Node The normalized node
      */
-    public static function normalizeNode($node): Node {
+    public static function normalizeNode($node): Node
+    {
         if ($node instanceof Builder) {
             return $node->getNode();
         }
@@ -45,7 +49,8 @@ final class BuilderHelpers {
      *
      * @return Stmt The normalized statement node
      */
-    public static function normalizeStmt($node): Stmt {
+    public static function normalizeStmt($node): Stmt
+    {
         $node = self::normalizeNode($node);
         if ($node instanceof Stmt) {
             return $node;
@@ -65,7 +70,8 @@ final class BuilderHelpers {
      *
      * @return Identifier The normalized identifier
      */
-    public static function normalizeIdentifier($name): Identifier {
+    public static function normalizeIdentifier($name): Identifier
+    {
         if ($name instanceof Identifier) {
             return $name;
         }
@@ -84,7 +90,8 @@ final class BuilderHelpers {
      *
      * @return Identifier|Expr The normalized identifier or expression
      */
-    public static function normalizeIdentifierOrExpr($name) {
+    public static function normalizeIdentifierOrExpr($name)
+    {
         if ($name instanceof Identifier || $name instanceof Expr) {
             return $name;
         }
@@ -103,7 +110,8 @@ final class BuilderHelpers {
      *
      * @return Name The normalized name
      */
-    public static function normalizeName($name): Name {
+    public static function normalizeName($name): Name
+    {
         if ($name instanceof Name) {
             return $name;
         }
@@ -134,7 +142,8 @@ final class BuilderHelpers {
      *
      * @return Name|Expr The normalized name or expression
      */
-    public static function normalizeNameOrExpr($name) {
+    public static function normalizeNameOrExpr($name)
+    {
         if ($name instanceof Expr) {
             return $name;
         }
@@ -158,7 +167,8 @@ final class BuilderHelpers {
      *
      * @return Name|Identifier|ComplexType The normalized type
      */
-    public static function normalizeType($type) {
+    public static function normalizeType($type)
+    {
         if (!is_string($type)) {
             if (
                 !$type instanceof Name && !$type instanceof Identifier &&
@@ -219,7 +229,8 @@ final class BuilderHelpers {
      *
      * @return Expr The normalized value
      */
-    public static function normalizeValue($value): Expr {
+    public static function normalizeValue($value): Expr
+    {
         if ($value instanceof Node\Expr) {
             return $value;
         }
@@ -283,7 +294,8 @@ final class BuilderHelpers {
      *
      * @return Comment\Doc The normalized doc comment
      */
-    public static function normalizeDocComment($docComment): Comment\Doc {
+    public static function normalizeDocComment($docComment): Comment\Doc
+    {
         if ($docComment instanceof Comment\Doc) {
             return $docComment;
         }
@@ -302,7 +314,8 @@ final class BuilderHelpers {
      *
      * @return Node\AttributeGroup The Attribute Group
      */
-    public static function normalizeAttribute($attribute): Node\AttributeGroup {
+    public static function normalizeAttribute($attribute): Node\AttributeGroup
+    {
         if ($attribute instanceof Node\AttributeGroup) {
             return $attribute;
         }
@@ -322,7 +335,8 @@ final class BuilderHelpers {
      *
      * @return int New modifiers
      */
-    public static function addModifier(int $modifiers, int $modifier): int {
+    public static function addModifier(int $modifiers, int $modifier): int
+    {
         Modifiers::verifyModifier($modifiers, $modifier);
         return $modifiers | $modifier;
     }
@@ -331,7 +345,8 @@ final class BuilderHelpers {
      * Adds a modifier and returns new modifier bitmask.
      * @return int New modifiers
      */
-    public static function addClassModifier(int $existingModifiers, int $modifierToSet): int {
+    public static function addClassModifier(int $existingModifiers, int $modifierToSet): int
+    {
         Modifiers::verifyClassModifier($existingModifiers, $modifierToSet);
         return $existingModifiers | $modifierToSet;
     }

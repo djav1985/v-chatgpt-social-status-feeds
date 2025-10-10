@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Event\Test;
 
 use function sprintf;
+
 use PHPUnit\Event\Code;
 use PHPUnit\Event\Event;
 use PHPUnit\Event\Telemetry;
@@ -21,7 +25,7 @@ use PHPUnit\Event\Telemetry;
  */
 final class PreConditionCalled implements Event
 {
-    private readonly Telemetry\Info$telemetryInfo;
+    private readonly Telemetry\Info $telemetryInfo;
 
     /**
      * @psalm-var class-string

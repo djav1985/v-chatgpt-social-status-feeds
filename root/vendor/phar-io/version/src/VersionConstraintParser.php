@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Version.
  *
@@ -9,11 +12,13 @@
  */
 namespace PharIo\Version;
 
-class VersionConstraintParser {
+class VersionConstraintParser
+{
     /**
      * @throws UnsupportedVersionConstraintException
      */
-    public function parse(string $value): VersionConstraint {
+    public function parse(string $value): VersionConstraint
+    {
         if (\strpos($value, '|') !== false) {
             return $this->handleOrGroup($value);
         }
@@ -55,7 +60,8 @@ class VersionConstraintParser {
         return new ExactVersionConstraint($constraint->getVersionString());
     }
 
-    private function handleOrGroup(string $value): OrVersionConstraintGroup {
+    private function handleOrGroup(string $value): OrVersionConstraintGroup
+    {
         $constraints = [];
 
         foreach (\preg_split('{\s*\|\|?\s*}', \trim($value)) as $groupSegment) {
@@ -65,7 +71,8 @@ class VersionConstraintParser {
         return new OrVersionConstraintGroup($value, $constraints);
     }
 
-    private function handleTildeOperator(string $value): AndVersionConstraintGroup {
+    private function handleTildeOperator(string $value): AndVersionConstraintGroup
+    {
         $constraintValue = new VersionConstraintValue(\substr($value, 1));
 
         if ($constraintValue->getPatch()->isAny()) {
@@ -87,7 +94,8 @@ class VersionConstraintParser {
         return new AndVersionConstraintGroup($value, $constraints);
     }
 
-    private function handleCaretOperator(string $value): AndVersionConstraintGroup {
+    private function handleCaretOperator(string $value): AndVersionConstraintGroup
+    {
         $constraintValue = new VersionConstraintValue(\substr($value, 1));
 
         $constraints = [

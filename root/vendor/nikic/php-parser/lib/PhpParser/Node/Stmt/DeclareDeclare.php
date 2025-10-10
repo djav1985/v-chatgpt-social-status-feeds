@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Node\Stmt;
 
@@ -8,6 +10,7 @@ require __DIR__ . '/../DeclareItem.php';
 
 if (false) {
     // For classmap-authoritative support.
-    class DeclareDeclare extends DeclareItem {
+    class DeclareDeclare extends DeclareItem
+    {
     }
 }

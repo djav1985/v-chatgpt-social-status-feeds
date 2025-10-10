@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -72,7 +75,7 @@ final class Project extends Node
 
     private function init(): void
     {
-        $dom = new DOMDocument;
+        $dom = new DOMDocument();
         $dom->loadXML('<?xml version="1.0" ?><phpunit xmlns="https://schema.phpunit.de/coverage/1.0"><build/><project/></phpunit>');
 
         $this->setContextNode(

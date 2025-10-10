@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -16,6 +19,7 @@ use function array_unique;
 use function count;
 use function is_array;
 use function ksort;
+
 use SebastianBergmann\CodeCoverage\Driver\Driver;
 
 /**

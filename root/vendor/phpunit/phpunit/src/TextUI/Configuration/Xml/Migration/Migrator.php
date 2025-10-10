@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -27,7 +30,7 @@ final class Migrator
      */
     public function migrate(string $filename): string
     {
-        $origin = (new SchemaDetector)->detect($filename);
+        $origin = (new SchemaDetector())->detect($filename);
 
         if (!$origin->detected()) {
             throw new Exception('The file does not validate against any known schema');
@@ -37,9 +40,9 @@ final class Migrator
             throw new Exception('The file does not need to be migrated');
         }
 
-        $configurationDocument = (new XmlLoader)->loadFile($filename);
+        $configurationDocument = (new XmlLoader())->loadFile($filename);
 
-        foreach ((new MigrationBuilder)->build($origin->version()) as $migration) {
+        foreach ((new MigrationBuilder())->build($origin->version()) as $migration) {
             $migration->migrate($configurationDocument);
         }
 

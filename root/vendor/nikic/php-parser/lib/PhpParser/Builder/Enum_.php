@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Builder;
 
@@ -9,7 +11,8 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt;
 
-class Enum_ extends Declaration {
+class Enum_ extends Declaration
+{
     protected string $name;
     protected ?Identifier $scalarType = null;
     /** @var list<Name> */
@@ -30,7 +33,8 @@ class Enum_ extends Declaration {
      *
      * @param string $name Name of the enum
      */
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->name = $name;
     }
 
@@ -41,7 +45,8 @@ class Enum_ extends Declaration {
      *
      * @return $this
      */
-    public function setScalarType($scalarType) {
+    public function setScalarType($scalarType)
+    {
         $this->scalarType = BuilderHelpers::normalizeType($scalarType);
 
         return $this;
@@ -54,7 +59,8 @@ class Enum_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function implement(...$interfaces) {
+    public function implement(...$interfaces)
+    {
         foreach ($interfaces as $interface) {
             $this->implements[] = BuilderHelpers::normalizeName($interface);
         }
@@ -69,7 +75,8 @@ class Enum_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function addStmt($stmt) {
+    public function addStmt($stmt)
+    {
         $stmt = BuilderHelpers::normalizeNode($stmt);
 
         if ($stmt instanceof Stmt\EnumCase) {
@@ -94,7 +101,8 @@ class Enum_ extends Declaration {
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function addAttribute($attribute) {
+    public function addAttribute($attribute)
+    {
         $this->attributeGroups[] = BuilderHelpers::normalizeAttribute($attribute);
 
         return $this;
@@ -105,7 +113,8 @@ class Enum_ extends Declaration {
      *
      * @return Stmt\Enum_ The built enum node
      */
-    public function getNode(): PhpParser\Node {
+    public function getNode(): PhpParser\Node
+    {
         return new Stmt\Enum_($this->name, [
             'scalarType' => $this->scalarType,
             'implements' => $this->implements,

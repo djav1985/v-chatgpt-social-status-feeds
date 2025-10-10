@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -71,7 +74,7 @@ final class MigrationBuilder
 
     public function build(string $fromVersion): array
     {
-        $stack = [new UpdateSchemaLocation];
+        $stack = [new UpdateSchemaLocation()];
 
         foreach (self::AVAILABLE_MIGRATIONS as $version => $migrations) {
             if (version_compare($version, $fromVersion, '<')) {
@@ -79,7 +82,7 @@ final class MigrationBuilder
             }
 
             foreach ($migrations as $migration) {
-                $stack[] = new $migration;
+                $stack[] = new $migration();
             }
         }
 

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
+
 use function count;
 use function dirname;
 use function file_get_contents;
@@ -25,6 +29,7 @@ use function libxml_use_internal_errors;
 use function sprintf;
 use function strlen;
 use function substr;
+
 use DateTimeImmutable;
 use DOMDocument;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
@@ -77,8 +82,8 @@ final class Facade
     private function setBuildInformation(): void
     {
         $buildNode = $this->project->buildInformation();
-        $buildNode->setRuntimeInformation(new Runtime);
-        $buildNode->setBuildTime(new DateTimeImmutable);
+        $buildNode->setRuntimeInformation(new Runtime());
+        $buildNode->setBuildTime(new DateTimeImmutable());
         $buildNode->setGeneratorVersions($this->phpUnitVersion, Version::id());
     }
 

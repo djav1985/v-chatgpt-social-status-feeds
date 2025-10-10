@@ -1,9 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser\Internal;
 
 if (\PHP_VERSION_ID >= 80000) {
-    class TokenPolyfill extends \PhpToken {
+    class TokenPolyfill extends \PhpToken
+    {
     }
     return;
 }
@@ -15,7 +18,8 @@ if (\PHP_VERSION_ID >= 80000) {
  *
  * @internal
  */
-class TokenPolyfill {
+class TokenPolyfill
+{
     /** @var int The ID of the token. Either a T_* constant of a character code < 256. */
     public int $id;
     /** @var string The textual content of the token. */
@@ -39,7 +43,8 @@ class TokenPolyfill {
     /**
      * Create a Token with the given ID and text, as well optional line and position information.
      */
-    final public function __construct(int $id, string $text, int $line = -1, int $pos = -1) {
+    final public function __construct(int $id, string $text, int $line = -1, int $pos = -1)
+    {
         $this->id = $id;
         $this->text = $text;
         $this->line = $line;
@@ -50,7 +55,8 @@ class TokenPolyfill {
      * Get the name of the token. For single-char tokens this will be the token character.
      * Otherwise it will be a T_* style name, or null if the token ID is unknown.
      */
-    public function getTokenName(): ?string {
+    public function getTokenName(): ?string
+    {
         if ($this->id < 256) {
             return \chr($this->id);
         }
@@ -66,7 +72,8 @@ class TokenPolyfill {
      *
      * @param int|string|(int|string)[] $kind
      */
-    public function is($kind): bool {
+    public function is($kind): bool
+    {
         if (\is_int($kind)) {
             return $this->id === $kind;
         }
@@ -86,27 +93,31 @@ class TokenPolyfill {
                 } else {
                     throw new \TypeError(
                         'Argument #1 ($kind) must only have elements of type string|int, ' .
-                        gettype($entry) . ' given');
+                        gettype($entry) . ' given'
+                    );
                 }
             }
             return false;
         }
         throw new \TypeError(
-            'Argument #1 ($kind) must be of type string|int|array, ' .gettype($kind) . ' given');
+            'Argument #1 ($kind) must be of type string|int|array, ' . gettype($kind) . ' given'
+        );
     }
 
     /**
      * Check whether this token would be ignored by the PHP parser. Returns true for T_WHITESPACE,
      * T_COMMENT, T_DOC_COMMENT and T_OPEN_TAG, and false for everything else.
      */
-    public function isIgnorable(): bool {
+    public function isIgnorable(): bool
+    {
         return isset(self::IGNORABLE_TOKENS[$this->id]);
     }
 
     /**
      * Return the textual content of the token.
      */
-    public function __toString(): string {
+    public function __toString(): string
+    {
         return $this->text;
     }
 
@@ -121,7 +132,8 @@ class TokenPolyfill {
      *
      * @return static[]
      */
-    public static function tokenize(string $code, int $flags = 0): array {
+    public static function tokenize(string $code, int $flags = 0): array
+    {
         self::init();
 
         $tokens = [];
@@ -146,7 +158,8 @@ class TokenPolyfill {
                 $text = $token[1];
 
                 // Emulate PHP 8.0 comment format, which does not include trailing whitespace anymore.
-                if ($id === \T_COMMENT && \substr($text, 0, 2) !== '/*' &&
+                if (
+                    $id === \T_COMMENT && \substr($text, 0, 2) !== '/*' &&
                     \preg_match('/(\r\n|\n|\r)$/D', $text, $matches)
                 ) {
                     $trailingNewline = $matches[0];
@@ -215,7 +228,8 @@ class TokenPolyfill {
     }
 
     /** Initialize private static state needed by tokenize(). */
-    private static function init(): void {
+    private static function init(): void
+    {
         if (isset(self::$identifierTokens)) {
             return;
         }

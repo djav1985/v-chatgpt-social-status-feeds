@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Framework;
 
 use const PHP_EOL;
+
 use function array_keys;
 use function array_map;
 use function array_pop;
@@ -26,6 +30,7 @@ use function sprintf;
 use function str_ends_with;
 use function str_starts_with;
 use function trim;
+
 use Iterator;
 use IteratorAggregate;
 use PHPUnit\Event;
@@ -248,7 +253,7 @@ class TestSuite implements IteratorAggregate, Reorderable, SelfDescribing, Test
                 $this->addTest(new PhptTestCase($filename));
             } else {
                 $this->addTestSuite(
-                    (new TestSuiteLoader)->load($filename),
+                    (new TestSuiteLoader())->load($filename),
                 );
             }
         } catch (RunnerException $e) {
@@ -508,7 +513,7 @@ class TestSuite implements IteratorAggregate, Reorderable, SelfDescribing, Test
         assert(!empty($methodName));
 
         try {
-            $test = (new TestBuilder)->build($class, $methodName);
+            $test = (new TestBuilder())->build($class, $methodName);
         } catch (InvalidDataProviderException $e) {
             Event\Facade::emitter()->testTriggeredPhpunitError(
                 new TestMethod(
@@ -542,7 +547,7 @@ class TestSuite implements IteratorAggregate, Reorderable, SelfDescribing, Test
 
         $this->addTest(
             $test,
-            (new Groups)->groups($class->getName(), $methodName),
+            (new Groups())->groups($class->getName(), $methodName),
         );
     }
 
@@ -608,7 +613,7 @@ class TestSuite implements IteratorAggregate, Reorderable, SelfDescribing, Test
             return true;
         }
 
-        $methods         = (new HookMethods)->hookMethods($this->name)['beforeClass'];
+        $methods         = (new HookMethods())->hookMethods($this->name)['beforeClass'];
         $calledMethods   = [];
         $emitCalledEvent = true;
         $result          = true;
@@ -624,7 +629,7 @@ class TestSuite implements IteratorAggregate, Reorderable, SelfDescribing, Test
             );
 
             try {
-                $missingRequirements = (new Requirements)->requirementsNotSatisfiedFor($this->name, $method);
+                $missingRequirements = (new Requirements())->requirementsNotSatisfiedFor($this->name, $method);
 
                 if ($missingRequirements !== []) {
                     $emitCalledEvent = false;
@@ -682,7 +687,7 @@ class TestSuite implements IteratorAggregate, Reorderable, SelfDescribing, Test
             return;
         }
 
-        $methods       = (new HookMethods)->hookMethods($this->name)['afterClass'];
+        $methods       = (new HookMethods())->hookMethods($this->name)['afterClass'];
         $calledMethods = [];
 
         foreach ($methods as $method) {

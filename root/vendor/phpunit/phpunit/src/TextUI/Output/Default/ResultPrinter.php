@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\TextUI\Output\Default;
 
 use const PHP_EOL;
+
 use function array_keys;
 use function array_merge;
 use function array_reverse;
@@ -24,6 +28,7 @@ use function str_starts_with;
 use function strlen;
 use function substr;
 use function trim;
+
 use PHPUnit\Event\Code\Test;
 use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Event\Test\AfterLastTestMethodErrored;
@@ -613,13 +618,15 @@ final class ResultPrinter
 
     private function reasonLocation(ConsideredRisky|DeprecationTriggered|ErrorTriggered|NoticeTriggered|PhpDeprecationTriggered|PhpNoticeTriggered|PhpunitDeprecationTriggered|PhpunitErrorTriggered|PhpunitWarningTriggered|PhpWarningTriggered|WarningTriggered $reason, bool $single): string
     {
-        if (!$reason instanceof DeprecationTriggered &&
+        if (
+            !$reason instanceof DeprecationTriggered &&
             !$reason instanceof PhpDeprecationTriggered &&
             !$reason instanceof ErrorTriggered &&
             !$reason instanceof NoticeTriggered &&
             !$reason instanceof PhpNoticeTriggered &&
             !$reason instanceof WarningTriggered &&
-            !$reason instanceof PhpWarningTriggered) {
+            !$reason instanceof PhpWarningTriggered
+        ) {
             return '';
         }
 

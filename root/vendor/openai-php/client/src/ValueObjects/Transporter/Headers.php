@@ -47,7 +47,7 @@ final class Headers
     {
         return new self([
             ...$this->headers,
-            'Content-Type' => $contentType->value.$suffix,
+            'Content-Type' => $contentType->value . $suffix,
         ]);
     }
 

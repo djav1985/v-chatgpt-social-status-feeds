@@ -29,7 +29,8 @@ final class OutputMessageContentOutputTextAnnotationsFilePath implements Respons
         public readonly string $fileId,
         public readonly int $index,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  FilePathType  $attributes

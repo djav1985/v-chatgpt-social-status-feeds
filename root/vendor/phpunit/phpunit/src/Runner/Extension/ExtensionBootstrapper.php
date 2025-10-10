@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,11 +13,13 @@
 namespace PHPUnit\Runner\Extension;
 
 use const PHP_EOL;
+
 use function assert;
 use function class_exists;
 use function class_implements;
 use function in_array;
 use function sprintf;
+
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\TextUI\Configuration\Configuration;
 use ReflectionClass;

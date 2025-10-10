@@ -119,7 +119,7 @@ final class Responses implements ResponsesContract
      */
     public function list(string $id, array $parameters = []): ListInputItems
     {
-        $payload = Payload::list('responses/'.$id.'/input_items', $parameters);
+        $payload = Payload::list('responses/' . $id . '/input_items', $parameters);
 
         /** @var Response<ListInputItemsType> $response */
         $response = $this->transporter->requestObject($payload);

@@ -1,4 +1,5 @@
 <?php
+
 // Repo root directory
 $rootDir = dirname(__DIR__);
 
@@ -13,6 +14,12 @@ foreach ($autoloadFiles as $file) {
 }
 
 // Define constants for PHPStan
-if (!defined('VONTMENT_KEY'))     define('VONTMENT_KEY', '');
-if (!defined('VONTMENT_PLUGINS')) define('VONTMENT_PLUGINS', '');
-if (!defined('VONTMENT_THEMES'))  define('VONTMENT_THEMES', '');
+if (!defined('VONTMENT_KEY')) {
+    define('VONTMENT_KEY', '');
+}
+if (!defined('VONTMENT_PLUGINS')) {
+    define('VONTMENT_PLUGINS', '');
+}
+if (!defined('VONTMENT_THEMES')) {
+    define('VONTMENT_THEMES', '');
+}

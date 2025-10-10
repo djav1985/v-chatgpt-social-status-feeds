@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -11,6 +14,7 @@ namespace SebastianBergmann\CodeCoverage\Report\Xml;
 
 use function basename;
 use function dirname;
+
 use DOMDocument;
 
 /**
@@ -20,7 +24,7 @@ final class Report extends File
 {
     public function __construct(string $name)
     {
-        $dom = new DOMDocument;
+        $dom = new DOMDocument();
         $dom->loadXML('<?xml version="1.0" ?><phpunit xmlns="https://schema.phpunit.de/coverage/1.0"><file /></phpunit>');
 
         $contextNode = $dom->getElementsByTagNameNS(

@@ -24,7 +24,8 @@ final class ThreadMessageDeltaResponse implements ResponseContract
         public string $id,
         public string $object,
         public ThreadMessageDeltaObject $delta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

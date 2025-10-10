@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -26,7 +29,7 @@ final class Coverage
     {
         $this->contextNode = $context;
 
-        $this->writer = new XMLWriter;
+        $this->writer = new XMLWriter();
         $this->writer->openMemory();
         $this->writer->startElementNS(null, $context->nodeName, 'https://schema.phpunit.de/coverage/1.0');
         $this->writer->writeAttribute('nr', $line);
@@ -38,7 +41,7 @@ final class Coverage
     public function addTest(string $test): void
     {
         if ($this->finalized) {
-            throw new ReportAlreadyFinalizedException;
+            throw new ReportAlreadyFinalizedException();
         }
 
         $this->writer->startElement('covered');

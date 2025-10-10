@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-file-iterator.
  *
@@ -15,6 +18,7 @@ use function realpath;
 use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
+
 use AppendIterator;
 use FilterIterator;
 use SplFileInfo;
@@ -103,8 +107,10 @@ final class Iterator extends FilterIterator
         }
 
         foreach ($subStrings as $string) {
-            if (($type === self::PREFIX && str_starts_with($filename, $string)) ||
-                ($type === self::SUFFIX && str_ends_with($filename, $string))) {
+            if (
+                ($type === self::PREFIX && str_starts_with($filename, $string)) ||
+                ($type === self::SUFFIX && str_ends_with($filename, $string))
+            ) {
                 return true;
             }
         }

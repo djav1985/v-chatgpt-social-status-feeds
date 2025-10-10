@@ -35,7 +35,8 @@ final class TranscriptTextDelta implements ResponseContract, ResponseHasMetaInfo
         public readonly ?array $logprobs,
         public readonly string $delta,
         public readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  TranscriptTextDeltaType  $attributes

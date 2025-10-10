@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -12,29 +15,35 @@ namespace PharIo\Manifest;
 
 use Countable;
 use IteratorAggregate;
+
 use function count;
 
 /** @template-implements IteratorAggregate<int,Requirement> */
-class RequirementCollection implements Countable, IteratorAggregate {
+class RequirementCollection implements Countable, IteratorAggregate
+{
     /** @var Requirement[] */
     private $requirements = [];
 
-    public function add(Requirement $requirement): void {
+    public function add(Requirement $requirement): void
+    {
         $this->requirements[] = $requirement;
     }
 
     /**
      * @return Requirement[]
      */
-    public function getRequirements(): array {
+    public function getRequirements(): array
+    {
         return $this->requirements;
     }
 
-    public function count(): int {
+    public function count(): int
+    {
         return count($this->requirements);
     }
 
-    public function getIterator(): RequirementCollectionIterator {
+    public function getIterator(): RequirementCollectionIterator
+    {
         return new RequirementCollectionIterator($this);
     }
 }

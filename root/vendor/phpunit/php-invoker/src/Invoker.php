@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-invoker.
  *
@@ -10,12 +13,14 @@
 namespace SebastianBergmann\Invoker;
 
 use const SIGALRM;
+
 use function call_user_func_array;
 use function function_exists;
 use function pcntl_alarm;
 use function pcntl_async_signals;
 use function pcntl_signal;
 use function sprintf;
+
 use Throwable;
 
 final class Invoker
@@ -35,8 +40,7 @@ final class Invoker
 
         pcntl_signal(
             SIGALRM,
-            function (): void
-            {
+            function (): void {
                 throw new TimeoutException(
                     sprintf(
                         'Execution aborted after %d second%s',

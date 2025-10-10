@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -12,6 +15,7 @@ namespace PHPUnit\Event\Code;
 use function is_bool;
 use function is_scalar;
 use function print_r;
+
 use PHPUnit\Framework\ExpectationFailedException;
 use Throwable;
 

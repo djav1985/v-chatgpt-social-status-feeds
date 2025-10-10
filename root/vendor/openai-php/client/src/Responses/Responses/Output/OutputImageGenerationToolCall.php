@@ -30,7 +30,8 @@ final class OutputImageGenerationToolCall implements ResponseContract
         public readonly ?string $result,
         public readonly string $status,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputImageGenerationToolCallType  $attributes

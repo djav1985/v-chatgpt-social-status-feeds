@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -14,6 +17,7 @@ use function defined;
 use function is_file;
 use function rsort;
 use function sprintf;
+
 use DirectoryIterator;
 use PHPUnit\Runner\Version;
 

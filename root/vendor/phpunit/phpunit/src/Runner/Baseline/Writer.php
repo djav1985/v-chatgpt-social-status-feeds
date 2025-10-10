@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -12,6 +15,7 @@ namespace PHPUnit\Runner\Baseline;
 use function assert;
 use function dirname;
 use function file_put_contents;
+
 use XMLWriter;
 
 /**
@@ -28,7 +32,7 @@ final class Writer
     {
         $pathCalculator = new RelativePathCalculator(dirname($baselineFile));
 
-        $writer = new XMLWriter;
+        $writer = new XMLWriter();
 
         $writer->openMemory();
         $writer->setIndent(true);

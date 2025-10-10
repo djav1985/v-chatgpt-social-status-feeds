@@ -26,7 +26,8 @@ final class CreateResponseReasoning implements ResponseContract
         public readonly ?string $effort,
         public readonly ?string $generateSummary,
         public readonly ?string $summary,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ReasoningType  $attributes

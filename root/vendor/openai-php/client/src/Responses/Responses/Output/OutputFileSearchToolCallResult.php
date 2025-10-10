@@ -31,7 +31,8 @@ final class OutputFileSearchToolCallResult implements ResponseContract
         public readonly string $filename,
         public readonly float $score,
         public readonly string $text,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputFileSearchToolCallResultType  $attributes

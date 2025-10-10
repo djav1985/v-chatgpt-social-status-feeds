@@ -25,7 +25,8 @@ final class ImageGenerationInputImageMask implements ResponseContract
     private function __construct(
         public readonly ?string $fileId,
         public readonly ?string $imageUrl,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  InputImageMaskType  $attributes

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -24,6 +27,7 @@ use function substr;
 use function substr_count;
 use function trim;
 use function var_export;
+
 use ReflectionMethod;
 use ReflectionParameter;
 use SebastianBergmann\Type\ReflectionMapper;
@@ -94,8 +98,10 @@ final class MockMethod
 
         $docComment = $method->getDocComment();
 
-        if (is_string($docComment) &&
-            preg_match('#\*[ \t]*+@deprecated[ \t]*+(.*?)\r?+\n[ \t]*+\*(?:[ \t]*+@|/$)#s', $docComment, $deprecation)) {
+        if (
+            is_string($docComment) &&
+            preg_match('#\*[ \t]*+@deprecated[ \t]*+(.*?)\r?+\n[ \t]*+\*(?:[ \t]*+@|/$)#s', $docComment, $deprecation)
+        ) {
             $deprecation = trim(preg_replace('#[ \t]*\r?\n[ \t]*+\*[ \t]*+#', ' ', $deprecation[1]));
         } else {
             $deprecation = null;
@@ -110,7 +116,7 @@ final class MockMethod
             self::methodParametersForCall($method),
             self::methodParametersDefaultValues($method),
             count($method->getParameters()),
-            (new ReflectionMapper)->fromReturnType($method),
+            (new ReflectionMapper())->fromReturnType($method),
             $reference,
             $callOriginalMethod,
             $method->isStatic(),
@@ -133,7 +139,7 @@ final class MockMethod
             '',
             [],
             0,
-            new UnknownType,
+            new UnknownType(),
             '',
             false,
             false,
@@ -269,7 +275,7 @@ EOT;
     private static function methodParametersForDeclaration(ReflectionMethod $method): string
     {
         $parameters = [];
-        $types      = (new ReflectionMapper)->fromParameterTypes($method);
+        $types      = (new ReflectionMapper())->fromParameterTypes($method);
 
         foreach ($method->getParameters() as $i => $parameter) {
             $name = '$' . $parameter->getName();

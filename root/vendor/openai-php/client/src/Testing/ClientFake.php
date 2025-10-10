@@ -40,7 +40,9 @@ class ClientFake implements ClientContract
     /**
      * @param  array<array-key, ResponseContract|StreamResponse|Throwable|string>  $responses
      */
-    public function __construct(protected array $responses = []) {}
+    public function __construct(protected array $responses = [])
+    {
+    }
 
     /**
      * @param  array<array-key, ResponseContract|StreamResponse|Throwable|string>  $responses
@@ -69,7 +71,8 @@ class ClientFake implements ClientContract
         $count = count($this->sent($resource));
 
         PHPUnit::assertSame(
-            $times, $count,
+            $times,
+            $count,
             "The expected [{$resource}] resource was sent {$count} times instead of {$times} times."
         );
     }
@@ -96,7 +99,8 @@ class ClientFake implements ClientContract
     public function assertNotSent(string $resource, ?callable $callback = null): void
     {
         PHPUnit::assertCount(
-            0, $this->sent($resource, $callback),
+            0,
+            $this->sent($resource, $callback),
             "The unexpected [{$resource}] request was sent."
         );
     }
@@ -108,7 +112,7 @@ class ClientFake implements ClientContract
             array: array_map(fn (TestRequest $request): string => $request->resource(), $this->requests)
         );
 
-        PHPUnit::assertEmpty($this->requests, 'The following requests were sent unexpectedly: '.$resourceNames);
+        PHPUnit::assertEmpty($this->requests, 'The following requests were sent unexpectedly: ' . $resourceNames);
     }
 
     /**

@@ -47,7 +47,9 @@ abstract class DispatcherTest extends TestCase
     {
         $dispatcher = \FastRoute\simpleDispatcher($callback, $this->generateDispatcherOptions());
         $routeInfo = $dispatcher->dispatch($method, $uri);
-        $this->assertArrayNotHasKey(1, $routeInfo,
+        $this->assertArrayNotHasKey(
+            1,
+            $routeInfo,
             'NOT_FOUND result must only contain a single element in the returned info array'
         );
         $this->assertSame($dispatcher::NOT_FOUND, $routeInfo[0]);
@@ -60,7 +62,9 @@ abstract class DispatcherTest extends TestCase
     {
         $dispatcher = \FastRoute\simpleDispatcher($callback, $this->generateDispatcherOptions());
         $routeInfo = $dispatcher->dispatch($method, $uri);
-        $this->assertArrayHasKey(1, $routeInfo,
+        $this->assertArrayHasKey(
+            1,
+            $routeInfo,
             'METHOD_NOT_ALLOWED result must return an array of allowed methods at index 1'
         );
 
@@ -406,7 +410,7 @@ abstract class DispatcherTest extends TestCase
 
         // 26 ----
 
-        $callback = function(RouteCollector $r) {
+        $callback = function (RouteCollector $r) {
             $r->addRoute('GET', '/user', 'handler0');
             $r->addRoute('*', '/{foo:.*}', 'handler1');
         };

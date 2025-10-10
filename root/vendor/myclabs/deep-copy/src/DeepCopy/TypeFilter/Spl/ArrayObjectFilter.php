@@ -1,4 +1,5 @@
 <?php
+
 namespace DeepCopy\TypeFilter\Spl;
 
 use DeepCopy\DeepCopy;
@@ -33,4 +34,3 @@ final class ArrayObjectFilter implements TypeFilter
         return $clone;
     }
 }
-

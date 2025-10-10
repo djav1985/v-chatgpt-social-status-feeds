@@ -23,7 +23,8 @@ final class ThreadRunResponseLastError implements ResponseContract
     private function __construct(
         public string $code,
         public string $message,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

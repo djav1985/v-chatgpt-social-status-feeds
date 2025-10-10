@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Metadata\Version;
 
 use function preg_match;
+
 use PharIo\Version\UnsupportedVersionConstraintException;
 use PharIo\Version\VersionConstraintParser;
 use PHPUnit\Metadata\InvalidVersionRequirementException;
@@ -33,7 +37,7 @@ abstract class Requirement
     {
         try {
             return new ConstraintRequirement(
-                (new VersionConstraintParser)->parse(
+                (new VersionConstraintParser())->parse(
                     $versionRequirement,
                 ),
             );
@@ -48,7 +52,7 @@ abstract class Requirement
             }
         }
 
-        throw new InvalidVersionRequirementException;
+        throw new InvalidVersionRequirementException();
     }
 
     abstract public function isSatisfiedBy(string $version): bool;

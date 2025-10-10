@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\TextUI;
 
 use function mt_srand;
+
 use PHPUnit\Event;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Runner\ResultCache\ResultCache;
@@ -36,9 +40,11 @@ final class TestRunner
                 mt_srand($configuration->randomOrderSeed());
             }
 
-            if ($configuration->executionOrder() !== TestSuiteSorter::ORDER_DEFAULT ||
+            if (
+                $configuration->executionOrder() !== TestSuiteSorter::ORDER_DEFAULT ||
                 $configuration->executionOrderDefects() !== TestSuiteSorter::ORDER_DEFAULT ||
-                $configuration->resolveDependencies()) {
+                $configuration->resolveDependencies()
+            ) {
                 $resultCache->load();
 
                 (new TestSuiteSorter($resultCache))->reorderTestsInSuite(
@@ -55,7 +61,7 @@ final class TestRunner
                 );
             }
 
-            (new TestSuiteFilterProcessor)->process($configuration, $suite);
+            (new TestSuiteFilterProcessor())->process($configuration, $suite);
 
             Event\Facade::emitter()->testRunnerExecutionStarted(
                 Event\TestSuite\TestSuiteBuilder::from($suite),

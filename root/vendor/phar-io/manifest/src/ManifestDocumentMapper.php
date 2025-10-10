@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -14,10 +17,13 @@ use PharIo\Version\Exception as VersionException;
 use PharIo\Version\Version;
 use PharIo\Version\VersionConstraintParser;
 use Throwable;
+
 use function sprintf;
 
-class ManifestDocumentMapper {
-    public function map(ManifestDocument $document): Manifest {
+class ManifestDocumentMapper
+{
+    public function map(ManifestDocument $document): Manifest
+    {
         try {
             $contains          = $document->getContainsElement();
             $type              = $this->mapType($contains);
@@ -38,7 +44,8 @@ class ManifestDocumentMapper {
         }
     }
 
-    private function mapType(ContainsElement $contains): Type {
+    private function mapType(ContainsElement $contains): Type
+    {
         switch ($contains->getType()) {
             case 'application':
                 return Type::application();
@@ -53,7 +60,8 @@ class ManifestDocumentMapper {
         );
     }
 
-    private function mapCopyright(CopyrightElement $copyright): CopyrightInformation {
+    private function mapCopyright(CopyrightElement $copyright): CopyrightInformation
+    {
         $authors = new AuthorCollection();
 
         foreach ($copyright->getAuthorElements() as $authorElement) {
@@ -77,10 +85,11 @@ class ManifestDocumentMapper {
         );
     }
 
-    private function mapRequirements(RequiresElement $requires): RequirementCollection {
+    private function mapRequirements(RequiresElement $requires): RequirementCollection
+    {
         $collection = new RequirementCollection();
         $phpElement = $requires->getPHPElement();
-        $parser     = new VersionConstraintParser;
+        $parser     = new VersionConstraintParser();
 
         try {
             $versionConstraint = $parser->parse($phpElement->getVersion());
@@ -111,7 +120,8 @@ class ManifestDocumentMapper {
         return $collection;
     }
 
-    private function mapBundledComponents(ManifestDocument $document): BundledComponentCollection {
+    private function mapBundledComponents(ManifestDocument $document): BundledComponentCollection
+    {
         $collection = new BundledComponentCollection();
 
         if (!$document->hasBundlesElement()) {
@@ -132,9 +142,10 @@ class ManifestDocumentMapper {
         return $collection;
     }
 
-    private function mapExtension(ExtensionElement $extension): Extension {
+    private function mapExtension(ExtensionElement $extension): Extension
+    {
         try {
-            $versionConstraint = (new VersionConstraintParser)->parse($extension->getCompatible());
+            $versionConstraint = (new VersionConstraintParser())->parse($extension->getCompatible());
 
             return Type::extension(
                 new ApplicationName($extension->getFor()),

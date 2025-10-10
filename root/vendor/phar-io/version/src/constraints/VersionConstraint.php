@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Version.
  *
@@ -9,7 +12,8 @@
  */
 namespace PharIo\Version;
 
-interface VersionConstraint {
+interface VersionConstraint
+{
     public function complies(Version $version): bool;
 
     public function asString(): string;

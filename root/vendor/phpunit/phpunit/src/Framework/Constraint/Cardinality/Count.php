@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -13,6 +16,7 @@ use function count;
 use function is_countable;
 use function iterator_count;
 use function sprintf;
+
 use EmptyIterator;
 use Generator;
 use Iterator;
@@ -81,7 +85,7 @@ class Count extends Constraint
             $iterator = $other;
 
             if ($iterator instanceof Generator) {
-                throw new GeneratorNotSupportedException;
+                throw new GeneratorNotSupportedException();
             }
 
             if (!$iterator instanceof Iterator) {

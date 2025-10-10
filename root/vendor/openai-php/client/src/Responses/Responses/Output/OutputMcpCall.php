@@ -39,7 +39,8 @@ final class OutputMcpCall implements ResponseContract
         public readonly ?string $approvalRequestId = null,
         public readonly McpGenericResponseError|GenericResponseError|null $error = null,
         public readonly ?string $output = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputMcpCallType  $attributes

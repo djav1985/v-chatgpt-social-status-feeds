@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,12 +13,14 @@
 namespace PHPUnit\TextUI\Configuration;
 
 use const PHP_EOL;
+
 use function assert;
 use function count;
 use function is_dir;
 use function is_file;
 use function realpath;
 use function str_ends_with;
+
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Exception;
 use PHPUnit\Framework\TestSuite;
@@ -72,7 +77,7 @@ final class TestSuiteBuilder
 
             assert(!empty($xmlConfigurationFile));
 
-            $testSuite = (new TestSuiteMapper)->map(
+            $testSuite = (new TestSuiteMapper())->map(
                 $xmlConfigurationFile,
                 $configuration->testSuite(),
                 $configuration->includeTestSuite(),
@@ -102,7 +107,7 @@ final class TestSuiteBuilder
         }
 
         if (is_dir($path)) {
-            $files = (new FileIteratorFacade)->getFilesAsArray($path, $suffixes);
+            $files = (new FileIteratorFacade())->getFilesAsArray($path, $suffixes);
 
             $suite = $suite ?: TestSuite::empty('CLI Arguments');
             $suite->addTestFiles($files);
@@ -111,7 +116,7 @@ final class TestSuiteBuilder
         }
 
         try {
-            $testClass = (new TestSuiteLoader)->load($path);
+            $testClass = (new TestSuiteLoader())->load($path);
         } catch (Exception $e) {
             print $e->getMessage() . PHP_EOL;
 

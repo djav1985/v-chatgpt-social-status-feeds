@@ -38,7 +38,8 @@ final class VectorStoreFileResponse implements ResponseContract, ResponseHasMeta
         public readonly ?VectorStoreFileResponseLastError $lastError,
         public readonly VectorStoreFileResponseChunkingStrategyStatic|VectorStoreFileResponseChunkingStrategyOther $chunkingStrategy,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

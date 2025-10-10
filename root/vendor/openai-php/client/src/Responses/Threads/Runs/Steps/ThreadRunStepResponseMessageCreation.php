@@ -22,7 +22,8 @@ final class ThreadRunStepResponseMessageCreation implements ResponseContract
 
     private function __construct(
         public string $messageId,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

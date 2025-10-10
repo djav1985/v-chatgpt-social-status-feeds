@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-file-iterator.
  *
@@ -10,6 +13,7 @@
 namespace SebastianBergmann\FileIterator;
 
 use const GLOB_ONLYDIR;
+
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -18,6 +22,7 @@ use function glob;
 use function is_dir;
 use function is_string;
 use function realpath;
+
 use AppendIterator;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
@@ -59,7 +64,7 @@ final class Factory
             }
         }
 
-        $iterator = new AppendIterator;
+        $iterator = new AppendIterator();
 
         foreach ($paths as $path) {
             if (is_dir($path)) {

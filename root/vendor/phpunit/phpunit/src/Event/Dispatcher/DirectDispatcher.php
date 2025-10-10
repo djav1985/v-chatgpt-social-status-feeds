@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,10 +13,12 @@
 namespace PHPUnit\Event;
 
 use const PHP_EOL;
+
 use function array_key_exists;
 use function dirname;
 use function sprintf;
 use function str_starts_with;
+
 use Throwable;
 
 /**

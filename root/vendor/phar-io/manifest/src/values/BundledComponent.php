@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -12,23 +15,27 @@ namespace PharIo\Manifest;
 
 use PharIo\Version\Version;
 
-class BundledComponent {
+class BundledComponent
+{
     /** @var string */
     private $name;
 
     /** @var Version */
     private $version;
 
-    public function __construct(string $name, Version $version) {
+    public function __construct(string $name, Version $version)
+    {
         $this->name    = $name;
         $this->version = $version;
     }
 
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function getVersion(): Version {
+    public function getVersion(): Version
+    {
         return $this->version;
     }
 }

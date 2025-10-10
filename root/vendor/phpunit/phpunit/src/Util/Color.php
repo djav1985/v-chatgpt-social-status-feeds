@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -11,6 +14,7 @@ namespace PHPUnit\Util;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
+
 use function array_map;
 use function count;
 use function explode;

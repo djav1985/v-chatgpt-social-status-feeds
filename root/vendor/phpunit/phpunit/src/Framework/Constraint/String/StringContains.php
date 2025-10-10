@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -17,6 +20,7 @@ use function sprintf;
 use function str_contains;
 use function strlen;
 use function strtr;
+
 use PHPUnit\Util\Exporter;
 
 /**

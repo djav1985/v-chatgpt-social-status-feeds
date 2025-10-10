@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -10,8 +13,10 @@
  */
 namespace PharIo\Manifest;
 
-class ComponentElementCollection extends ElementCollection {
-    public function current(): ComponentElement {
+class ComponentElementCollection extends ElementCollection
+{
+    public function current(): ComponentElement
+    {
         return new ComponentElement(
             $this->getCurrentElement()
         );

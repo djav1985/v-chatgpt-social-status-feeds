@@ -1,4 +1,7 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -10,8 +13,10 @@
  */
 namespace PharIo\Manifest;
 
-class RequiresElement extends ManifestElement {
-    public function getPHPElement(): PhpElement {
+class RequiresElement extends ManifestElement
+{
+    public function getPHPElement(): PhpElement
+    {
         return new PhpElement(
             $this->getChildByName('php')
         );

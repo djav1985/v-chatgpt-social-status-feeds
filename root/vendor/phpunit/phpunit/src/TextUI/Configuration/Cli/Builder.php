@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\TextUI\CliArguments;
 
 use const DIRECTORY_SEPARATOR;
+
 use function array_map;
 use function basename;
 use function explode;
@@ -17,6 +21,7 @@ use function getcwd;
 use function is_file;
 use function is_numeric;
 use function sprintf;
+
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\Util\Filesystem;
@@ -160,7 +165,7 @@ final class Builder
     public function fromParameters(array $parameters): Configuration
     {
         try {
-            $options = (new CliParser)->parse(
+            $options = (new CliParser())->parse(
                 $parameters,
                 self::SHORT_OPTIONS,
                 self::LONG_OPTIONS,

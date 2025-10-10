@@ -28,7 +28,8 @@ final class ThreadRunStepResponseFileSearchToolCall implements ResponseContract
         public string $id,
         public string $type,
         public array $file_search,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

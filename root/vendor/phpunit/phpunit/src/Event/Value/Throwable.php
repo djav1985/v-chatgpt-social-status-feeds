@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -10,6 +13,7 @@
 namespace PHPUnit\Event\Code;
 
 use const PHP_EOL;
+
 use PHPUnit\Event\NoPreviousThrowableException;
 
 /**
@@ -95,7 +99,7 @@ final class Throwable
     public function previous(): self
     {
         if ($this->previous === null) {
-            throw new NoPreviousThrowableException;
+            throw new NoPreviousThrowableException();
         }
 
         return $this->previous;

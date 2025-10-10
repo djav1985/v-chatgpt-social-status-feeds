@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -10,6 +13,7 @@
 namespace SebastianBergmann\CodeCoverage;
 
 use function dirname;
+
 use SebastianBergmann\Version as VersionId;
 
 final class Version

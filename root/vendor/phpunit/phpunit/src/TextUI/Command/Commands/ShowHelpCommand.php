@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -28,7 +31,7 @@ final class ShowHelpCommand implements Command
     public function execute(): Result
     {
         return Result::from(
-            (new Help)->generate(),
+            (new Help())->generate(),
             $this->shellExitCode,
         );
     }

@@ -47,7 +47,8 @@ class PrepareBodyMiddleware
         }
 
         // Add a default content-length or transfer-encoding header.
-        if (!$request->hasHeader('Content-Length')
+        if (
+            !$request->hasHeader('Content-Length')
             && !$request->hasHeader('Transfer-Encoding')
         ) {
             $size = $request->getBody()->getSize();

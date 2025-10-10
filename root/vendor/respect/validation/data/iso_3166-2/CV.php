@@ -1,4 +1,5 @@
 <?php
+
 return [
   "country" => "Cabo Verde",
   "subdivisions" => [

@@ -33,7 +33,8 @@ final class VectorStoreFileBatchResponse implements ResponseContract, ResponseHa
         public readonly string $status,
         public readonly VectorStoreResponseFileCounts $fileCounts,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

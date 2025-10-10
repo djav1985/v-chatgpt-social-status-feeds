@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of phpunit/php-code-coverage.
  *
@@ -18,6 +21,7 @@ use function floor;
 use function json_encode;
 use function sprintf;
 use function str_replace;
+
 use SebastianBergmann\CodeCoverage\FileCouldNotBeWrittenException;
 use SebastianBergmann\CodeCoverage\Node\AbstractNode;
 use SebastianBergmann\CodeCoverage\Node\Directory as DirectoryNode;
@@ -263,8 +267,10 @@ final class Dashboard extends Renderer
                 }
             }
 
-            if ($class['coverage'] < $this->thresholds->highLowerBound() &&
-                $class['ccn'] > count($class['methods'])) {
+            if (
+                $class['coverage'] < $this->thresholds->highLowerBound() &&
+                $class['ccn'] > count($class['methods'])
+            ) {
                 $classRisks[$className] = $class['crap'];
             }
         }

@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace PhpParser;
 
-class NodeTraverser implements NodeTraverserInterface {
+class NodeTraverser implements NodeTraverserInterface
+{
     /**
      * @deprecated Use NodeVisitor::DONT_TRAVERSE_CHILDREN instead.
      */
@@ -34,7 +37,8 @@ class NodeTraverser implements NodeTraverserInterface {
      *
      * @param NodeVisitor ...$visitors Node visitors
      */
-    public function __construct(NodeVisitor ...$visitors) {
+    public function __construct(NodeVisitor ...$visitors)
+    {
         $this->visitors = $visitors;
     }
 
@@ -43,14 +47,16 @@ class NodeTraverser implements NodeTraverserInterface {
      *
      * @param NodeVisitor $visitor Visitor to add
      */
-    public function addVisitor(NodeVisitor $visitor): void {
+    public function addVisitor(NodeVisitor $visitor): void
+    {
         $this->visitors[] = $visitor;
     }
 
     /**
      * Removes an added visitor.
      */
-    public function removeVisitor(NodeVisitor $visitor): void {
+    public function removeVisitor(NodeVisitor $visitor): void
+    {
         $index = array_search($visitor, $this->visitors);
         if ($index !== false) {
             array_splice($this->visitors, $index, 1, []);
@@ -64,7 +70,8 @@ class NodeTraverser implements NodeTraverserInterface {
      *
      * @return Node[] Traversed array of nodes
      */
-    public function traverse(array $nodes): array {
+    public function traverse(array $nodes): array
+    {
         $this->stopTraversal = false;
 
         foreach ($this->visitors as $visitor) {
@@ -90,7 +97,8 @@ class NodeTraverser implements NodeTraverserInterface {
      *
      * @param Node $node Node to traverse.
      */
-    protected function traverseNode(Node $node): void {
+    protected function traverseNode(Node $node): void
+    {
         foreach ($node->getSubNodeNames() as $name) {
             $subNode = $node->$name;
 
@@ -178,7 +186,8 @@ class NodeTraverser implements NodeTraverserInterface {
      *
      * @return array Result of traversal (may be original array or changed one)
      */
-    protected function traverseArray(array $nodes): array {
+    protected function traverseArray(array $nodes): array
+    {
         $doNodes = [];
 
         foreach ($nodes as $i => $node) {
@@ -214,7 +223,8 @@ class NodeTraverser implements NodeTraverserInterface {
                         break 2;
                     } elseif (NodeVisitor::REPLACE_WITH_NULL === $return) {
                         throw new \LogicException(
-                            'REPLACE_WITH_NULL can not be used if the parent structure is an array');
+                            'REPLACE_WITH_NULL can not be used if the parent structure is an array'
+                        );
                     } else {
                         throw new \LogicException(
                             'enterNode() returned invalid value of type ' . gettype($return)
@@ -249,7 +259,8 @@ class NodeTraverser implements NodeTraverserInterface {
                         break 2;
                     } elseif (NodeVisitor::REPLACE_WITH_NULL === $return) {
                         throw new \LogicException(
-                            'REPLACE_WITH_NULL can not be used if the parent structure is an array');
+                            'REPLACE_WITH_NULL can not be used if the parent structure is an array'
+                        );
                     } else {
                         throw new \LogicException(
                             'leaveNode() returned invalid value of type ' . gettype($return)
@@ -268,7 +279,8 @@ class NodeTraverser implements NodeTraverserInterface {
         return $nodes;
     }
 
-    private function ensureReplacementReasonable(Node $old, Node $new): void {
+    private function ensureReplacementReasonable(Node $old, Node $new): void
+    {
         if ($old instanceof Node\Stmt && $new instanceof Node\Expr) {
             throw new \LogicException(
                 "Trying to replace statement ({$old->getType()}) " .

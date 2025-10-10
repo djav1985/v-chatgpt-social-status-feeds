@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -13,6 +16,7 @@ use function array_keys;
 use function get_object_vars;
 use function is_int;
 use function sprintf;
+
 use RuntimeException;
 use Throwable;
 
