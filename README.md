@@ -171,7 +171,7 @@ Install the project using the following steps:
     0 0 1 * * /usr/bin/php /PATH-TO-APP/cron.php worker monthly
     ```
   - Replace `/PATH-TO-APP/` with the actual path to your installation.
-   - The `worker` prefix acquires a PID-based lock before spawning the underlying task, guaranteeing only one queue runner is active at a time. The spawned process still executes using the single-argument form (for example, `php cron.php run-queue`).
+   - The `worker` prefix acquires a PID-based lock for the specific task being launched. That guarantees only one instance of a given job flag runs at once while still allowing the other workers to execute concurrently. The spawned process (for `run-queue`) still executes using the single-argument form (for example, `php cron.php run-queue`).
    - **daily:** runs cleanup tasks (purge statuses, images, IPs)
    - **fill-queue:** adds future job slots for the current day without truncating existing jobs
    - **run-queue:** executes due jobs (`scheduled_at <= now`) and enforces a single retry before permanent failure

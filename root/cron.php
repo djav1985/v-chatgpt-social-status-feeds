@@ -39,7 +39,7 @@ function printUsage(): void
     exit(1);
 }
 
-function queueWorkerProcessIsRunning(int $pid): bool
+function workerProcessIsRunning(int $pid): bool
 {
     if ($pid <= 0) {
         return false;
@@ -53,32 +53,16 @@ function queueWorkerProcessIsRunning(int $pid): bool
     return @is_dir($procPath);
 }
 
-/**
- * Determine if the queue worker lock indicates an active worker.
- */
-function queueWorkerIsActive(): bool
+function workerLockPath(string $jobType): string
 {
-    $lockPath = queueWorkerLockPath();
-    if (!is_file($lockPath)) {
-        return false;
-    }
-
-    $pidContents = @file_get_contents($lockPath);
-    if ($pidContents === false) {
-        return false;
-    }
-
-    return queueWorkerProcessIsRunning((int) trim($pidContents));
+    return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
+        . DIRECTORY_SEPARATOR
+        . 'socialrss-worker-' . $jobType . '.lock';
 }
 
-function queueWorkerLockPath(): string
+function workerGuardCanLaunch(string $jobType, bool $claimLockForSelf = false): bool
 {
-    return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'socialrss-queue-worker.lock';
-}
-
-function queueWorkerGuardCanLaunch(): bool
-{
-    $lockPath = queueWorkerLockPath();
+    $lockPath = workerLockPath($jobType);
     $handle = @fopen($lockPath, 'c+');
     if ($handle === false) {
         return false;
@@ -93,13 +77,27 @@ function queueWorkerGuardCanLaunch(): bool
     rewind($handle);
     $contents = stream_get_contents($handle);
     $pid = (int) trim((string) $contents);
-    if ($pid > 0 && queueWorkerProcessIsRunning($pid)) {
+    if ($pid > 0 && workerProcessIsRunning($pid)) {
         flock($handle, LOCK_UN);
         fclose($handle);
         return false;
     }
 
     ftruncate($handle, 0);
+
+    if ($claimLockForSelf) {
+        $pid = getmypid();
+        if (!is_int($pid) || $pid <= 0) {
+            try {
+                $pid = random_int(1, PHP_INT_MAX);
+            } catch (\Throwable $exception) {
+                $pid = mt_rand(1, PHP_INT_MAX);
+            }
+        }
+
+        fwrite($handle, (string) $pid);
+    }
+
     fflush($handle);
     flock($handle, LOCK_UN);
     fclose($handle);
@@ -138,12 +136,13 @@ if ($args[0] === 'worker') {
         printUsage();
     }
 
-    if ($jobType === 'run-queue') {
-        if (!queueWorkerGuardCanLaunch()) {
-            echo "Queue worker already running.\n";
-            exit(0);
-        }
+    $claimLockForSelf = $jobType !== 'run-queue';
+    if (!workerGuardCanLaunch($jobType, $claimLockForSelf)) {
+        echo 'Worker "' . $jobType . '" already running.' . PHP_EOL;
+        exit(0);
+    }
 
+    if ($jobType === 'run-queue') {
         launchQueueWorker($jobType);
         exit(0);
     }

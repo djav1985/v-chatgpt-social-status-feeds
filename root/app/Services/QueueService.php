@@ -335,7 +335,9 @@ class QueueService
 
     protected function getWorkerLockPath(): string
     {
-        return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'socialrss-queue-worker.lock';
+        return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
+            . DIRECTORY_SEPARATOR
+            . 'socialrss-worker-run-queue.lock';
     }
 
     protected function isProcessRunning(int $pid): bool

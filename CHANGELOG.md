@@ -13,6 +13,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ### Changed
 - Queue worker invocations now use `php cron.php worker <task>` to acquire a PID lock before spawning the single-argument worker, ensuring only one queue runner is active at a time.
+- Worker locks are now tracked per job flag, preventing duplicate launches of the same task while allowing different cron workers to run in parallel.
 - `QueueService::runQueue()` loops with a fresh timestamp until no retry or pending jobs remain, draining any work that becomes due mid-run while continuing to prioritise retries.
 - Introduced lightweight in-memory caches for frequent account and user lookups to cut duplicate database queries during status generation and dashboard actions.
 - `QueueService::runQueue()` now reads due rows directly from the database, deleting successes, marking the first failure as `retry`, and removing permanently after a second failure.
