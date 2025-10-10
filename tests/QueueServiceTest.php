@@ -7,6 +7,7 @@ namespace Tests;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/Support/TestableQueueService.php';
+
 use Tests\Support\TestableQueueService;
 
 final class QueueServiceTest extends TestCase
@@ -321,15 +322,15 @@ final class QueueServiceTest extends TestCase
         // Should process 2 retry jobs + 2 pending jobs = 4 total jobs
         $this->assertSame(4, $service->statusGenerations);
         $this->assertCount(4, $service->deletedIds);
-        
+
         // Should process retry jobs first (limited to 2)
         $this->assertContains('retry-1', $service->deletedIds);
         $this->assertContains('retry-2', $service->deletedIds);
-        
+
         // Then process pending jobs (limited to 2)
         $this->assertContains('job-1', $service->deletedIds); // Earliest pending job
         $this->assertContains('job-2', $service->deletedIds); // Second earliest pending job
-        
+
         // Remaining jobs should not be processed in this run
         $this->assertNotContains('job-3', $service->deletedIds);
         $this->assertNotContains('job-4', $service->deletedIds);

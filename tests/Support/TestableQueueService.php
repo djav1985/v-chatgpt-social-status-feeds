@@ -66,7 +66,7 @@ final class TestableQueueService extends QueueService
         $claimedJobs = [];
         $batchSize = $this->fakeBatchSize ?? $this->getJobBatchSize();
         $count = 0;
-        
+
         foreach ($this->dueJobs as $job) {
             if (($job['status'] ?? 'pending') === $status && $count < $batchSize) {
                 $claimedJob = $job;
