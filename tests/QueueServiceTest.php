@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/Support/TestableQueueService.php';
 use Tests\Support\TestableQueueService;
 
 final class QueueServiceTest extends TestCase
@@ -93,7 +95,7 @@ final class QueueServiceTest extends TestCase
         $this->assertSame(['job-4'], $service->deletedIds);
     }
 
-    public function testRunQueueMarksFirstFailureAsRetry(): void
+    public function testRunQueueMarksJobForRetryWhenGenerateStatusReturnsError(): void
     {
         $service = new TestableQueueService();
         $service->dueJobs = [
@@ -112,6 +114,7 @@ final class QueueServiceTest extends TestCase
         $this->assertArrayHasKey('job-2', $service->markedStatuses);
         $this->assertSame('retry', $service->markedStatuses['job-2']);
         $this->assertNotContains('job-2', $service->deletedIds, 'First failure should not delete the job.');
+        $this->assertSame(1, $service->statusGenerations, 'Status generation should stop after the first error.');
     }
 
     public function testRunQueueDeletesAfterSecondFailure(): void
