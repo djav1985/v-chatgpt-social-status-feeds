@@ -163,14 +163,15 @@ Install the project using the following steps:
    - Use the default login credentials: `admin` for both username and password.
 
 6. **Set Up Cron Jobs:**
-  - Configure cron to call the explicit entry points:
+  - Configure cron to call the guarded worker entry points:
     ```sh
-    0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php daily
-    5 0 * * * /usr/bin/php /PATH-TO-APP/cron.php fill-queue  
-    */10 * * * * /usr/bin/php /PATH-TO-APP/cron.php run-queue
-    0 0 1 * * /usr/bin/php /PATH-TO-APP/cron.php monthly
+    0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php worker daily
+    5 0 * * * /usr/bin/php /PATH-TO-APP/cron.php worker fill-queue
+    */10 * * * * /usr/bin/php /PATH-TO-APP/cron.php worker run-queue
+    0 0 1 * * /usr/bin/php /PATH-TO-APP/cron.php worker monthly
     ```
   - Replace `/PATH-TO-APP/` with the actual path to your installation.
+   - The `worker` prefix acquires a PID-based lock before spawning the underlying task, guaranteeing only one queue runner is active at a time. The spawned process still executes using the single-argument form (for example, `php cron.php run-queue`).
    - **daily:** runs cleanup tasks (purge statuses, images, IPs)
    - **fill-queue:** adds future job slots for the current day without truncating existing jobs
    - **run-queue:** executes due jobs (`scheduled_at <= now`) and enforces a single retry before permanent failure
@@ -193,7 +194,7 @@ CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_
 ```
 
 - **fill-queue** runs once daily to append the next 24 hours of work, including hours earlier in the day so `run-queue` can catch up after delays, while leaving existing rows untouched.
-- **run-queue** runs frequently to process records where `scheduled_at <= NOW()`. Successful jobs are deleted. A first failure updates the row to `status = 'retry'`; a second failure deletes the job permanently.
+- **run-queue** runs frequently to process records where `scheduled_at <= NOW()`. Each invocation drains all due retry jobs before moving to pending jobs and repeats until neither queue has work remaining. Successful jobs are deleted. A first failure updates the row to `status = 'retry'`; a second failure deletes the job permanently.
 - `status` only tracks whether the job is on its original attempt (`pending`) or retrying (`retry`). There is no long-lived worker loop—cron cadence controls execution.
 
 ### 🤖 Usage

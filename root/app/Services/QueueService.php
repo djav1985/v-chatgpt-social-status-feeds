@@ -21,6 +21,11 @@ use RuntimeException;
  */
 class QueueService
 {
+    /** @var resource|null */
+    private $workerLockHandle = null;
+
+    private ?string $workerLockPath = null;
+
     public function __construct()
     {
     }
@@ -173,14 +178,178 @@ class QueueService
 
     public function runQueue(): void
     {
-        // First process retry jobs (jobs that have already failed once)
-        $now = $this->now();
-        $retryJobs = $this->claimDueJobsByStatus($now, 'retry');
-        $this->processJobBatch($retryJobs, true);
+        if (!$this->claimWorkerLock()) {
+            error_log('[QueueService] Queue worker already running; skipping runQueue invocation.');
+            return;
+        }
 
-        // Then process pending jobs (new jobs that haven't been tried yet)
-        $pendingJobs = $this->claimDueJobsByStatus($now, 'pending');
-        $this->processJobBatch($pendingJobs, false);
+        $attemptedJobIds = [];
+
+        try {
+            do {
+                $processedAny = false;
+
+                $retryJobs = $this->filterUnattemptedJobs(
+                    $this->claimDueJobsByStatus($this->now(), 'retry'),
+                    $attemptedJobIds
+                );
+                if (!empty($retryJobs)) {
+                    $this->processJobBatch($retryJobs, true);
+                    $attemptedJobIds = array_merge($attemptedJobIds, $this->extractJobIds($retryJobs));
+                    $processedAny = true;
+                }
+
+                $pendingJobs = $this->filterUnattemptedJobs(
+                    $this->claimDueJobsByStatus($this->now(), 'pending'),
+                    $attemptedJobIds
+                );
+                if (!empty($pendingJobs)) {
+                    $this->processJobBatch($pendingJobs, false);
+                    $attemptedJobIds = array_merge($attemptedJobIds, $this->extractJobIds($pendingJobs));
+                    $processedAny = true;
+                }
+            } while ($processedAny);
+        } finally {
+            $this->releaseWorkerLock();
+        }
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $jobs
+     * @param array<int, string> $attemptedIds
+     * @return array<int, array<string, mixed>>
+     */
+    protected function filterUnattemptedJobs(array $jobs, array $attemptedIds): array
+    {
+        if ($attemptedIds === []) {
+            return $jobs;
+        }
+
+        $seen = array_fill_keys($attemptedIds, true);
+        $filtered = [];
+
+        foreach ($jobs as $job) {
+            $id = (string) ($job['id'] ?? '');
+            if ($id === '' || isset($seen[$id])) {
+                continue;
+            }
+
+            $filtered[] = $job;
+        }
+
+        return $filtered;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $jobs
+     * @return array<int, string>
+     */
+    protected function extractJobIds(array $jobs): array
+    {
+        $ids = [];
+
+        foreach ($jobs as $job) {
+            $id = (string) ($job['id'] ?? '');
+            if ($id === '') {
+                continue;
+            }
+
+            $ids[] = $id;
+        }
+
+        return $ids;
+    }
+
+    protected function claimWorkerLock(): bool
+    {
+        $lockPath = $this->getWorkerLockPath();
+        $handle = @fopen($lockPath, 'c+');
+        if ($handle === false) {
+            return false;
+        }
+
+        if (!flock($handle, LOCK_EX | LOCK_NB)) {
+            fclose($handle);
+            return false;
+        }
+
+        rewind($handle);
+        $contents = stream_get_contents($handle);
+        $existingPid = (int) trim((string) $contents);
+
+        if ($existingPid > 0 && $this->isProcessRunning($existingPid)) {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+            return false;
+        }
+
+        ftruncate($handle, 0);
+        rewind($handle);
+
+        $pid = getmypid();
+        if (!is_int($pid) || $pid <= 0) {
+            try {
+                $pid = random_int(1, PHP_INT_MAX);
+            } catch (\Throwable $exception) {
+                $pid = mt_rand(1, PHP_INT_MAX);
+            }
+        }
+
+        fwrite($handle, (string) $pid);
+        fflush($handle);
+
+        $this->workerLockHandle = $handle;
+        $this->workerLockPath = $lockPath;
+
+        register_shutdown_function(function (): void {
+            $this->releaseWorkerLock();
+        });
+
+        return true;
+    }
+
+    protected function releaseWorkerLock(): void
+    {
+        if ($this->workerLockHandle === null) {
+            return;
+        }
+
+        $handle = $this->workerLockHandle;
+        $lockPath = $this->workerLockPath;
+
+        $this->workerLockHandle = null;
+        $this->workerLockPath = null;
+
+        if (is_resource($handle)) {
+            ftruncate($handle, 0);
+            fflush($handle);
+            if ($lockPath !== null) {
+                @unlink($lockPath);
+            }
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        } elseif ($lockPath !== null) {
+            @unlink($lockPath);
+        }
+    }
+
+    protected function getWorkerLockPath(): string
+    {
+        return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'socialrss-queue-worker.lock';
+    }
+
+    protected function isProcessRunning(int $pid): bool
+    {
+        if ($pid <= 0) {
+            return false;
+        }
+
+        if (function_exists('posix_kill')) {
+            return @posix_kill($pid, 0);
+        }
+
+        $procPath = '/proc/' . $pid;
+        return @is_dir($procPath);
     }
 
     protected function processJobBatch(array $jobs, bool $isRetryBatch): void
@@ -328,17 +497,15 @@ class QueueService
     {
         $db = DatabaseManager::getInstance();
         $claimedJobs = [];
-        $batchSize = $this->getJobBatchSize(); // Use STATUS_JOB_BATCH_SIZE to limit concurrent jobs
 
         $this->releaseStaleProcessingJobs($now);
 
-        // First, get candidate job IDs for specific status, limited by batch size
-        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status = :status AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC LIMIT :limit');
+        // First, get candidate job IDs for specific status
+        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status = :status AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
         $db->bind(':status', $status);
         $db->bind(':now', $now);
-        $db->bind(':limit', $batchSize, \PDO::PARAM_INT);
         $candidates = $db->resultSet();
-        
+
         // Atomically claim each job individually by setting processing = TRUE
         foreach ($candidates as $candidate) {
             // Try to atomically claim this specific job
@@ -556,26 +723,7 @@ class QueueService
 
     protected function statusesPerJob(): int
     {
-        if (defined('STATUS_JOB_BATCH_SIZE')) {
-            $batchSize = (int) constant('STATUS_JOB_BATCH_SIZE');
-            if ($batchSize > 0) {
-                return $batchSize;
-            }
-        }
-
         return 1;
-    }
-
-    protected function getJobBatchSize(): int
-    {
-        if (defined('STATUS_JOB_BATCH_SIZE')) {
-            $batchSize = (int) constant('STATUS_JOB_BATCH_SIZE');
-            if ($batchSize > 0) {
-                return $batchSize;
-            }
-        }
-
-        return 3; // Default batch size for concurrent job processing
     }
 
     protected function generateJobId(): string

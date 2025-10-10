@@ -12,7 +12,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Regression coverage for next-day scheduling, stale job recovery, quota enforcement, and image purge edge cases.
 
 ### Changed
-- Queue worker now generates multiple statuses per job using a configurable batch size (default 3) to support bulk content creation.
+- Queue worker invocations now use `php cron.php worker <task>` to acquire a PID lock before spawning the single-argument worker, ensuring only one queue runner is active at a time.
+- `QueueService::runQueue()` loops with a fresh timestamp until no retry or pending jobs remain, draining any work that becomes due mid-run while continuing to prioritise retries.
 - Introduced lightweight in-memory caches for frequent account and user lookups to cut duplicate database queries during status generation and dashboard actions.
 - `QueueService::runQueue()` now reads due rows directly from the database, deleting successes, marking the first failure as `retry`, and removing permanently after a second failure.
 - `fillQueue()` appends a full day of slots without truncation, including past hours so catch-up runs can process missed jobs, and relies on unique `(account, username, scheduled_at)` rows instead of Enqueue payloads.
@@ -27,6 +28,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ### Removed
 - Enqueue DBAL transport usage and the JSON-backed queue schema.
+- `STATUS_JOB_BATCH_SIZE` configuration option and the batch-size helper methods.
 
 ### Fixed
 - Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.

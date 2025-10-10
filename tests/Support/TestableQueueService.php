@@ -26,7 +26,6 @@ final class TestableQueueService extends QueueService
     /** @var array<string, string> */
     public array $jobOutcomes = [];
     public int $statusGenerations = 0;
-    public ?int $fakeBatchSize = null;
     public int $releaseCallCount = 0;
     /** @var array<int, int> */
     public array $releaseTimestamps = [];
@@ -40,6 +39,9 @@ final class TestableQueueService extends QueueService
     public array $limitEmailUpdates = [];
     /** @var array<int, string> */
     public array $sentLimitEmails = [];
+
+    public bool $lockAvailable = true;
+    public bool $lockReleased = false;
 
     private ?string $currentJobId = null;
 
@@ -67,11 +69,17 @@ final class TestableQueueService extends QueueService
 
         // For testing, simulate atomic claiming by setting processing flag
         $claimedJobs = [];
-        foreach ($this->dueJobs as $job) {
-            $claimedJob = $job;
-            $claimedJob['processing'] = true;
-            $claimedJobs[] = $claimedJob;
+        foreach ($this->dueJobs as &$job) {
+            $processing = (bool) ($job['processing'] ?? false);
+            if ($processing) {
+                continue;
+            }
+
+            $job['processing'] = true;
+            $claimedJobs[] = $job;
         }
+        unset($job);
+
         return $claimedJobs;
     }
 
@@ -81,23 +89,17 @@ final class TestableQueueService extends QueueService
 
         // For testing, simulate atomic claiming by filtering and setting processing flag
         $claimedJobs = [];
-        $batchSize = $this->fakeBatchSize ?? $this->getJobBatchSize();
-        $count = 0;
+        foreach ($this->dueJobs as &$job) {
+            $jobStatus = (string) ($job['status'] ?? 'pending');
+            $processing = (bool) ($job['processing'] ?? false);
 
-        foreach ($this->dueJobs as $job) {
-            if (($job['status'] ?? 'pending') === $status && $count < $batchSize) {
-                $claimedJob = $job;
-                $claimedJob['processing'] = true;
-                $claimedJobs[] = $claimedJob;
-                $count++;
+            if ($jobStatus === $status && !$processing) {
+                $job['processing'] = true;
+                $claimedJobs[] = $job;
             }
         }
+        unset($job);
         return $claimedJobs;
-    }
-
-    protected function getJobBatchSize(): int
-    {
-        return $this->fakeBatchSize ?? 3; // Default for testing
     }
 
     protected function insertJobInStorage(
@@ -125,17 +127,37 @@ final class TestableQueueService extends QueueService
     protected function deleteJobById(string $id): void
     {
         $this->deletedIds[] = $id;
+
+        foreach ($this->dueJobs as $index => $job) {
+            if (($job['id'] ?? '') === $id) {
+                unset($this->dueJobs[$index]);
+            }
+        }
+
+        $this->dueJobs = array_values($this->dueJobs);
     }
 
     protected function markJobStatus(string $id, string $status): void
     {
         $this->markedStatuses[$id] = $status;
+        foreach ($this->dueJobs as &$job) {
+            if (($job['id'] ?? '') === $id) {
+                $job['status'] = $status;
+            }
+        }
+        unset($job);
     }
 
     protected function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
     {
         $this->markedStatuses[$id] = $status;
-        // In testing, we don't need to track the processing flag separately
+        foreach ($this->dueJobs as &$job) {
+            if (($job['id'] ?? '') === $id) {
+                $job['status'] = $status;
+                $job['processing'] = $processing;
+            }
+        }
+        unset($job);
     }
 
     protected function deleteFutureJobs(string $username, string $account, int $fromTimestamp): void
@@ -192,15 +214,6 @@ final class TestableQueueService extends QueueService
         }
 
         return ['success' => true];
-    }
-
-    protected function statusesPerJob(): int
-    {
-        if ($this->fakeBatchSize !== null) {
-            return max(1, $this->fakeBatchSize);
-        }
-
-        return parent::statusesPerJob();
     }
 
     public function seedExistingJob(string $username, string $account, int $scheduledAt): void
@@ -289,5 +302,15 @@ final class TestableQueueService extends QueueService
     private function key(string $username, string $account, int $scheduledAt): string
     {
         return $username . '|' . $account . '|' . $scheduledAt;
+    }
+
+    protected function claimWorkerLock(): bool
+    {
+        return $this->lockAvailable;
+    }
+
+    protected function releaseWorkerLock(): void
+    {
+        $this->lockReleased = true;
     }
 }
