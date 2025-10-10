@@ -53,7 +53,6 @@ require 'partials/header.php';
                 >
                     <i class="icon <?php
  echo $buttonIcon ?>"></i>
-                    <span class="visually-hidden">Toggle status campaign #<?php echo htmlspecialchars($accountName); ?></span>
                 </button>
                 <h3 class="status-campaign card-title">Status Campaign: #<?php
  echo htmlspecialchars($accountName) ?></h3>

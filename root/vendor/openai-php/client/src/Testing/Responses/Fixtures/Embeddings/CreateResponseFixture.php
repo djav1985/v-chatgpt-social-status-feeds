@@ -6,7 +6,6 @@ final class CreateResponseFixture
 {
     public const ATTRIBUTES = [
         'object' => 'list',
-        'model' => 'text-embedding-3-small',
         'data' => [
             [
                 'object' => 'embedding',

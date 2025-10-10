@@ -9,7 +9,6 @@
 
 # Ignore vendor only in the root directory
 /vendor
-!/root/vendor
 /root/php_app.log
 
 # Ignore dev dependencies and their binaries in root/vendor

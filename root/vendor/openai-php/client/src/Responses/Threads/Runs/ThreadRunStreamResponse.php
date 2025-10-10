@@ -10,7 +10,6 @@ use OpenAI\Responses\Threads\Messages\ThreadMessageResponse;
 use OpenAI\Responses\Threads\Runs\Steps\Delta\ThreadRunStepDeltaResponse;
 use OpenAI\Responses\Threads\Runs\Steps\ThreadRunStepResponse;
 use OpenAI\Responses\Threads\ThreadResponse;
-use OpenAI\Testing\Responses\Concerns\FakeableForStreamedResponse;
 
 /**
  * @implements ResponseContract<array{event: string, data: array<string, mixed>}>
@@ -21,8 +20,6 @@ class ThreadRunStreamResponse implements ResponseContract
      * @use ArrayAccessible<array{event: string, data: array<string, mixed>}>
      */
     use ArrayAccessible;
-
-    use FakeableForStreamedResponse;
 
     private function __construct(
         public readonly string $event,

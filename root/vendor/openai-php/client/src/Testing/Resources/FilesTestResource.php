@@ -19,9 +19,9 @@ final class FilesTestResource implements FilesContract
         return Files::class;
     }
 
-    public function list(array $parameters = []): ListResponse
+    public function list(): ListResponse
     {
-        return $this->record(__FUNCTION__, func_get_args());
+        return $this->record(__FUNCTION__);
     }
 
     public function retrieve(string $file): RetrieveResponse

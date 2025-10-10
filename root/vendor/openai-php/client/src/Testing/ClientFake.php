@@ -13,8 +13,6 @@ use OpenAI\Testing\Resources\AudioTestResource;
 use OpenAI\Testing\Resources\BatchesTestResource;
 use OpenAI\Testing\Resources\ChatTestResource;
 use OpenAI\Testing\Resources\CompletionsTestResource;
-use OpenAI\Testing\Resources\ContainersTestResource;
-use OpenAI\Testing\Resources\ConversationsTestResource;
 use OpenAI\Testing\Resources\EditsTestResource;
 use OpenAI\Testing\Resources\EmbeddingsTestResource;
 use OpenAI\Testing\Resources\FilesTestResource;
@@ -23,8 +21,6 @@ use OpenAI\Testing\Resources\FineTuningTestResource;
 use OpenAI\Testing\Resources\ImagesTestResource;
 use OpenAI\Testing\Resources\ModelsTestResource;
 use OpenAI\Testing\Resources\ModerationsTestResource;
-use OpenAI\Testing\Resources\RealtimeTestResource;
-use OpenAI\Testing\Resources\ResponsesTestResource;
 use OpenAI\Testing\Resources\ThreadsTestResource;
 use OpenAI\Testing\Resources\VectorStoresTestResource;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -38,12 +34,12 @@ class ClientFake implements ClientContract
     private array $requests = [];
 
     /**
-     * @param  array<array-key, ResponseContract|StreamResponse|Throwable|string>  $responses
+     * @param  array<array-key, ResponseContract|StreamResponse|string>  $responses
      */
     public function __construct(protected array $responses = []) {}
 
     /**
-     * @param  array<array-key, ResponseContract|StreamResponse|Throwable|string>  $responses
+     * @param  array<array-key, Response>  $responses
      */
     public function addResponses(array $responses): void
     {
@@ -136,21 +132,6 @@ class ClientFake implements ClientContract
         return $response;
     }
 
-    public function responses(): ResponsesTestResource
-    {
-        return new ResponsesTestResource($this);
-    }
-
-    public function conversations(): ConversationsTestResource
-    {
-        return new ConversationsTestResource($this);
-    }
-
-    public function realtime(): RealtimeTestResource
-    {
-        return new RealtimeTestResource($this);
-    }
-
     public function completions(): CompletionsTestResource
     {
         return new CompletionsTestResource($this);
@@ -159,11 +140,6 @@ class ClientFake implements ClientContract
     public function chat(): ChatTestResource
     {
         return new ChatTestResource($this);
-    }
-
-    public function containers(): ContainersTestResource
-    {
-        return new ContainersTestResource($this);
     }
 
     public function embeddings(): EmbeddingsTestResource

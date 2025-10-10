@@ -10,18 +10,16 @@ final class CreateResponseResult
 {
     /**
      * @param  array<string, CreateResponseCategory>  $categories
-     * @param  array<string, array<string>>  $categoryAppliedInputTypes
      */
     private function __construct(
         public readonly array $categories,
         public readonly bool $flagged,
-        public readonly ?array $categoryAppliedInputTypes,
     ) {
         // ..
     }
 
     /**
-     * @param  array{categories: array<string, bool>, category_scores: array<string, float>, flagged: bool, category_applied_input_types?: array<string, array<int, string>>}  $attributes
+     * @param  array{categories: array<string, bool>, category_scores: array<string, float>, flagged: bool}  $attributes
      */
     public static function from(array $attributes): self
     {
@@ -42,13 +40,12 @@ final class CreateResponseResult
 
         return new CreateResponseResult(
             $categories,
-            $attributes['flagged'],
-            $attributes['category_applied_input_types'] ?? null,
+            $attributes['flagged']
         );
     }
 
     /**
-     * @return array{ categories: array<string, bool>, category_scores: array<string, float>, flagged: bool, category_applied_input_types?: array<string, array<int, string>>}
+     * @return array{categories: array<string, bool>, category_scores: array<string, float>, flagged: bool}
      */
     public function toArray(): array
     {
@@ -59,16 +56,10 @@ final class CreateResponseResult
             $categoryScores[$category->category->value] = $category->score;
         }
 
-        $result = [
+        return [
             'categories' => $categories,
             'category_scores' => $categoryScores,
             'flagged' => $this->flagged,
         ];
-
-        if ($this->categoryAppliedInputTypes !== null) {
-            $result['category_applied_input_types'] = $this->categoryAppliedInputTypes;
-        }
-
-        return $result;
     }
 }

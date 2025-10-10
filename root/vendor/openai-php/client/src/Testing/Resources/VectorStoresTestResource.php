@@ -6,7 +6,6 @@ use OpenAI\Contracts\Resources\VectorStoresContract;
 use OpenAI\Contracts\Resources\VectorStoresFileBatchesContract;
 use OpenAI\Contracts\Resources\VectorStoresFilesContract;
 use OpenAI\Resources\VectorStores;
-use OpenAI\Responses\VectorStores\Search\VectorStoreSearchResponse;
 use OpenAI\Responses\VectorStores\VectorStoreDeleteResponse;
 use OpenAI\Responses\VectorStores\VectorStoreListResponse;
 use OpenAI\Responses\VectorStores\VectorStoreResponse;
@@ -42,14 +41,6 @@ final class VectorStoresTestResource implements VectorStoresContract
     }
 
     public function list(array $parameters = []): VectorStoreListResponse
-    {
-        return $this->record(__FUNCTION__, func_get_args());
-    }
-
-    /**
-     * @param  array<string, mixed>  $parameters
-     */
-    public function search(string $vectorStoreId, array $parameters = []): VectorStoreSearchResponse
     {
         return $this->record(__FUNCTION__, func_get_args());
     }

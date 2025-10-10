@@ -19,7 +19,6 @@ final class CreateResponseFixture
                     'function_call' => null,
                     'tool_calls' => [],
                 ],
-                'logprobs' => null,
                 'finish_reason' => 'stop',
             ],
         ],

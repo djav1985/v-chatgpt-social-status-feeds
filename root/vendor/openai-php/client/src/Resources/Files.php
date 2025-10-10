@@ -21,11 +21,11 @@ final class Files implements FilesContract
      *
      * @see https://platform.openai.com/docs/api-reference/files/list
      */
-    public function list(array $parameters = []): ListResponse
+    public function list(): ListResponse
     {
-        $payload = Payload::list('files', $parameters);
+        $payload = Payload::list('files');
 
-        /** @var Response<array{object: string, data: array<int, array{id: string, object: string, created_at: int, bytes: ?int, filename: string, purpose: string, status: string, status_details: array<array-key, mixed>|string|null}>, first_id: ?string, last_id: ?string, has_more: ?bool}> $response */
+        /** @var Response<array{object: string, data: array<int, array{id: string, object: string, created_at: int, bytes: ?int, filename: string, purpose: string, status: string, status_details: array<array-key, mixed>|string|null}>}> $response */
         $response = $this->transporter->requestObject($payload);
 
         return ListResponse::from($response->data(), $response->meta());

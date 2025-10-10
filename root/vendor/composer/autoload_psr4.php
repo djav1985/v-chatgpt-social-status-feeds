@@ -7,17 +7,12 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Tests\\' => array($baseDir . '/tests'),
-    'Symfony\\Polyfill\\Php83\\' => array($vendorDir . '/symfony/polyfill-php83'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
-    'Symfony\\Contracts\\Service\\' => array($vendorDir . '/symfony/service-contracts'),
-    'Symfony\\Contracts\\HttpClient\\' => array($vendorDir . '/symfony/http-client-contracts'),
-    'Symfony\\Component\\HttpClient\\' => array($vendorDir . '/symfony/http-client'),
     'Respect\\Validation\\' => array($vendorDir . '/respect/validation/library'),
     'Respect\\Stringifier\\' => array($vendorDir . '/respect/stringifier/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-factory/src', $vendorDir . '/psr/http-message/src'),
     'Psr\\Http\\Client\\' => array($vendorDir . '/psr/http-client/src'),
-    'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Psr\\Cache\\' => array($vendorDir . '/psr/cache/src'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),

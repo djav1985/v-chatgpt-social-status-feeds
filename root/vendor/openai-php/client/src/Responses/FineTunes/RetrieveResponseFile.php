@@ -46,7 +46,7 @@ final class RetrieveResponseFile implements ResponseContract
             $attributes['filename'],
             $attributes['purpose'],
             $attributes['status'],
-            $attributes['status_details'] ?? null,
+            $attributes['status_details'],
         );
     }
 

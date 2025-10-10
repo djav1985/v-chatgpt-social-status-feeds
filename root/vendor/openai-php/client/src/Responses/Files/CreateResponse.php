@@ -54,7 +54,7 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
             $attributes['filename'],
             $attributes['purpose'],
             $attributes['status'],
-            $attributes['status_details'] ?? null,
+            $attributes['status_details'],
             $meta,
         );
     }
