@@ -2,7 +2,9 @@
 
 ## Overview
 
-The `install.sql` script now supports both fresh installation and migration from older schema versions. It automatically detects the existing schema and performs necessary migrations while preserving all data.
+The project now has separate installation and upgrade paths:
+- **install.sql / install.php**: For fresh installations only
+- **upgrade.sql / upgrade.php**: For migrating from old schema to new schema while preserving data
 
 ## Migration Features
 
@@ -51,17 +53,23 @@ The `status_jobs` table is always recreated with the new schema to ensure compat
 2. Navigate to `/install.php` in your browser or run via command line
 3. The script will create all tables with the new schema
 4. Default admin user (username: `admin`, password: `admin`) will be created
+5. The script will automatically delete itself after successful installation
 
 ### Migration from Old Schema
-1. Backup your database before migration
-2. Ensure all database configuration is correct
-3. Navigate to `/install.php` or run via command line
-4. The script will:
+1. **IMPORTANT: Backup your database before migration!**
+   ```bash
+   mysqldump -u username -p database_name > backup_$(date +%Y%m%d).sql
+   ```
+2. Ensure all database configuration is correct in `config.php`
+3. Navigate to `/upgrade.php` in your browser or run via command line
+4. Confirm you have backed up your database
+5. The script will:
    - Detect old schema structure
    - Migrate primary keys and indexes
-   - Add missing columns
+   - Add missing columns (including `limit_email_sent`)
    - Preserve all existing data
-   - Remove deprecated columns
+   - Remove deprecated columns (`image_prompt`, `cta`)
+6. The script will automatically delete itself after successful upgrade
 
 ## Database Schema After Migration
 
