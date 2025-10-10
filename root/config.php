@@ -39,7 +39,7 @@ define('MAX_WIDTH', 720);
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', 50);
 
-// Number of statuses generated each time a queue job runs
+// Number of jobs processed simultaneously per queue run
 define('STATUS_JOB_BATCH_SIZE', 3);
 
 // Maximum days to keep images. Default is 360 and it should be kept at

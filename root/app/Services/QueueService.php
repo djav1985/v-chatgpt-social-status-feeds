@@ -144,8 +144,17 @@ class QueueService
 
     public function runQueue(): void
     {
-        $jobs = $this->claimDueJobs($this->now());
+        // First process retry jobs (jobs that have already failed once)
+        $retryJobs = $this->claimDueJobsByStatus($this->now(), 'retry');
+        $this->processJobBatch($retryJobs, true);
 
+        // Then process pending jobs (new jobs that haven't been tried yet)
+        $pendingJobs = $this->claimDueJobsByStatus($this->now(), 'pending');
+        $this->processJobBatch($pendingJobs, false);
+    }
+
+    protected function processJobBatch(array $jobs, bool $isRetryBatch): void
+    {
         foreach ($jobs as $job) {
             if (!isset($job['id'], $job['account'], $job['username'])) {
                 continue;
@@ -170,10 +179,13 @@ class QueueService
                     $status,
                     $e->getMessage()
                 ));
-                if ($status === 'pending') {
-                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
-                } else {
+                
+                if ($isRetryBatch || $status === 'retry') {
+                    // Retry jobs that fail should be deleted
                     $this->deleteJobById($job['id']);
+                } else {
+                    // Pending jobs that fail should be marked for retry
+                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
                 }
             }
         }
@@ -259,6 +271,40 @@ class QueueService
         // First, get candidate job IDs 
         $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status IN (\'pending\', \'retry\') AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
         $db->bind(':now', $now);
+        $candidates = $db->resultSet();
+        
+        // Atomically claim each job individually by setting processing = TRUE
+        foreach ($candidates as $candidate) {
+            // Try to atomically claim this specific job
+            $db->query('UPDATE status_jobs SET processing = TRUE WHERE id = :id AND processing = FALSE');
+            $db->bind(':id', $candidate['id']);
+            $db->execute();
+            
+            // If we successfully claimed it (rowCount = 1), add to our list
+            if ($db->rowCount() === 1) {
+                $candidate['processing'] = true;
+                $claimedJobs[] = $candidate;
+            }
+        }
+        
+        return $claimedJobs;
+    }
+
+    /**
+     * Atomically claim jobs with specific status for processing to prevent concurrent execution.
+     * @return array<int, array<string, mixed>>
+     */
+    protected function claimDueJobsByStatus(int $now, string $status): array
+    {
+        $db = DatabaseManager::getInstance();
+        $claimedJobs = [];
+        $batchSize = $this->getJobBatchSize(); // Use STATUS_JOB_BATCH_SIZE to limit concurrent jobs
+        
+        // First, get candidate job IDs for specific status, limited by batch size
+        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status = :status AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC LIMIT :limit');
+        $db->bind(':status', $status);
+        $db->bind(':now', $now);
+        $db->bind(':limit', $batchSize, \PDO::PARAM_INT);
         $candidates = $db->resultSet();
         
         // Atomically claim each job individually by setting processing = TRUE
@@ -369,7 +415,7 @@ class QueueService
      */
     protected function processJobPayload(array $job): void
     {
-        $this->generateStatusesForJob($job, $this->statusesPerJob());
+        $this->generateStatusesForJob($job, 1); // Generate 1 status per job
     }
 
     protected function generateStatusesForJob(array $job, int $count): void
@@ -408,6 +454,18 @@ class QueueService
         }
 
         return 1;
+    }
+
+    protected function getJobBatchSize(): int
+    {
+        if (defined('STATUS_JOB_BATCH_SIZE')) {
+            $batchSize = (int) constant('STATUS_JOB_BATCH_SIZE');
+            if ($batchSize > 0) {
+                return $batchSize;
+            }
+        }
+
+        return 3; // Default batch size for concurrent job processing
     }
 
     protected function generateJobId(): string

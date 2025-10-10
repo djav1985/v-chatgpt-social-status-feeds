@@ -60,6 +60,29 @@ final class TestableQueueService extends QueueService
         return $claimedJobs;
     }
 
+    public function claimDueJobsByStatus(int $now, string $status): array
+    {
+        // For testing, simulate atomic claiming by filtering and setting processing flag
+        $claimedJobs = [];
+        $batchSize = $this->fakeBatchSize ?? $this->getJobBatchSize();
+        $count = 0;
+        
+        foreach ($this->dueJobs as $job) {
+            if (($job['status'] ?? 'pending') === $status && $count < $batchSize) {
+                $claimedJob = $job;
+                $claimedJob['processing'] = true;
+                $claimedJobs[] = $claimedJob;
+                $count++;
+            }
+        }
+        return $claimedJobs;
+    }
+
+    protected function getJobBatchSize(): int
+    {
+        return $this->fakeBatchSize ?? 3; // Default for testing
+    }
+
     protected function insertJobInStorage(
         string $id,
         string $username,
