@@ -45,9 +45,6 @@ define('STATUS_JOB_BATCH_SIZE', 3);
 // Seconds before an in-progress queue job is considered stale and released
 define('STATUS_JOB_STALE_AFTER', 900);
 
-// Grace period (in seconds) before rolling past-hour schedules to the next day
-define('STATUS_SCHEDULE_ROLL_GRACE_SECONDS', 0);
-
 // Maximum days to keep images. Default is 360 and it should be kept at
 // least this value in production.
 define('IMG_AGE', 360);

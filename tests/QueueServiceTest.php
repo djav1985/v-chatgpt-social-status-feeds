@@ -18,7 +18,7 @@ final class QueueServiceTest extends TestCase
         date_default_timezone_set('UTC');
     }
 
-    public function testFillQueueSchedulesFutureSlotsWithoutDuplicates(): void
+    public function testFillQueueSchedulesAllSameDaySlotsWithoutDuplicates(): void
     {
         $service = new TestableQueueService();
         $service->fakeNow = strtotime('2024-01-01 12:00:00');
@@ -34,13 +34,13 @@ final class QueueServiceTest extends TestCase
 
         $service->fillQueue();
 
-        $this->assertCount(2, $service->storedJobs, 'Future hours should roll forward to the next day while avoiding duplicates.');
+        $this->assertCount(2, $service->storedJobs, 'Fill queue should schedule same-day hours while avoiding duplicates.');
 
         $firstStored = $service->storedJobs[0];
         $this->assertSame('job-1', $firstStored['id']);
         $this->assertSame('owner', $firstStored['username']);
         $this->assertSame('acct', $firstStored['account']);
-        $this->assertSame(strtotime('2024-01-02 08:00:00'), $firstStored['scheduledAt']);
+        $this->assertSame(strtotime('2024-01-01 08:00:00'), $firstStored['scheduledAt']);
         $this->assertSame('pending', $firstStored['status']);
 
         $secondStored = $service->storedJobs[1];
@@ -51,7 +51,7 @@ final class QueueServiceTest extends TestCase
         $this->assertSame('pending', $secondStored['status']);
     }
 
-    public function testEnqueueRemainingJobsRespectsDayAndFutureHours(): void
+    public function testEnqueueRemainingJobsRespectsDayAndSchedulesPastHours(): void
     {
         $service = new TestableQueueService();
         $service->fakeNow = strtotime('2024-01-01 12:00:00'); // Monday in UTC
@@ -59,27 +59,15 @@ final class QueueServiceTest extends TestCase
 
         $service->enqueueRemainingJobs('owner', 'acct', '08,14,18', 'monday');
 
-        $this->assertCount(2, $service->storedJobs, 'Future hours should include next-day slots when earlier hours have passed.');
-        $this->assertSame(strtotime('2024-01-02 08:00:00'), $service->storedJobs[0]['scheduledAt']);
+        $this->assertCount(2, $service->storedJobs, 'Remaining jobs should include past hours for catch-up and future hours.');
+        $this->assertSame(strtotime('2024-01-01 08:00:00'), $service->storedJobs[0]['scheduledAt']);
         $this->assertSame(strtotime('2024-01-01 18:00:00'), $service->storedJobs[1]['scheduledAt']);
     }
 
-    public function testScheduledTimestampRollsForwardAfterGraceWindow(): void
+    public function testScheduledTimestampReturnsSameDaySlotEvenIfHourHasPassed(): void
     {
         $service = new TestableQueueService();
         $service->fakeNow = strtotime('2024-01-01 08:30:00');
-        $service->fakeScheduleRollGrace = 600; // 10 minutes
-
-        $scheduled = $service->callScheduledTimestampForHour(8, $service->fakeNow);
-
-        $this->assertSame(strtotime('2024-01-02 08:00:00'), $scheduled);
-    }
-
-    public function testScheduledTimestampStaysSameDayWithinGraceWindow(): void
-    {
-        $service = new TestableQueueService();
-        $service->fakeNow = strtotime('2024-01-01 08:05:00');
-        $service->fakeScheduleRollGrace = 900; // 15 minutes
 
         $scheduled = $service->callScheduledTimestampForHour(8, $service->fakeNow);
 
@@ -368,13 +356,13 @@ final class QueueServiceTest extends TestCase
         $this->assertNotContains('job-5', $service->deletedIds);
     }
 
-    public function testScheduledTimestampRollsForwardForPastHours(): void
+    public function testScheduledTimestampKeepsPastHoursOnSameDay(): void
     {
         $service = new TestableQueueService();
         $reference = strtotime('2024-01-01 12:00:00');
 
         $this->assertSame(
-            strtotime('2024-01-02 08:00:00'),
+            strtotime('2024-01-01 08:00:00'),
             $service->callScheduledTimestampForHour(8, $reference)
         );
     }

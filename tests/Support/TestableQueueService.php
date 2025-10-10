@@ -32,7 +32,6 @@ final class TestableQueueService extends QueueService
     public array $releaseTimestamps = [];
     public int $fakeReleasedCount = 0;
     public ?string $imageDirectoryOverride = null;
-    public ?int $fakeScheduleRollGrace = null;
     /** @var array<string, object> */
     public array $userInfoMap = [];
     /** @var array<string, int> */
@@ -249,15 +248,6 @@ final class TestableQueueService extends QueueService
             $user->used_api_calls = $usedApiCalls;
             $this->userInfoMap[$username] = $user;
         }
-    }
-
-    protected function scheduleRollGrace(): int
-    {
-        if ($this->fakeScheduleRollGrace !== null) {
-            return max(0, $this->fakeScheduleRollGrace);
-        }
-
-        return parent::scheduleRollGrace();
     }
 
     protected function setLimitEmailSent(string $username, bool $sent): void

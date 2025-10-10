@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Models\Status;
 use App\Core\Mailer;
 use App\Models\Blacklist;
-use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
 use RecursiveDirectoryIterator;
@@ -37,9 +36,6 @@ class QueueService
 
         foreach ($this->normalizeHours($cron) as $hour) {
             $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
-            if ($scheduledAt <= $now) {
-                continue;
-            }
 
             if ($this->jobExistsInStorage($username, $account, $scheduledAt)) {
                 continue;
@@ -240,9 +236,6 @@ class QueueService
 
             foreach ($this->normalizeHours((string) ($account->cron ?? '')) as $hour) {
                 $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
-                if ($scheduledAt <= $now) {
-                    continue;
-                }
 
                 $username = (string) ($account->username ?? '');
                 $acct = (string) ($account->account ?? '');
@@ -620,24 +613,6 @@ class QueueService
         $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);
         $scheduled = $referenceTime->setTime($hour, 0, 0);
 
-        $rollReference = max(0, $reference - $this->scheduleRollGrace());
-
-        if ((int) $scheduled->format('U') <= $rollReference) {
-            $scheduled = $scheduled->add(new DateInterval('P1D'));
-        }
-
         return (int) $scheduled->format('U');
-    }
-
-    protected function scheduleRollGrace(): int
-    {
-        if (defined('STATUS_SCHEDULE_ROLL_GRACE_SECONDS')) {
-            $grace = (int) constant('STATUS_SCHEDULE_ROLL_GRACE_SECONDS');
-            if ($grace > 0) {
-                return $grace;
-            }
-        }
-
-        return 0;
     }
 }
