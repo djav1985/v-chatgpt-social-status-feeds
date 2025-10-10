@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that import statements are defined correctly.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ImportStatementSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -53,7 +52,8 @@ class ImportStatementSniff implements Sniff
         }
 
         $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
-        if ($tokens[$next]['code'] === T_STRING
+        if (
+            $tokens[$next]['code'] === T_STRING
             && (strtolower($tokens[$next]['content']) === 'function'
             || strtolower($tokens[$next]['content']) === 'const')
         ) {

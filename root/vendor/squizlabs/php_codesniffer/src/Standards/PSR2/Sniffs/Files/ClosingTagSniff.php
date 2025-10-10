@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the file does not end with a closing tag.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ClosingTagSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -44,7 +43,8 @@ class ClosingTagSniff implements Sniff
 
         // Make sure this file only contains PHP code.
         for ($i = 0; $i < $phpcsFile->numTokens; $i++) {
-            if ($tokens[$i]['code'] === T_INLINE_HTML
+            if (
+                $tokens[$i]['code'] === T_INLINE_HTML
                 && trim($tokens[$i]['content']) !== ''
             ) {
                 return $phpcsFile->numTokens;
@@ -65,7 +65,8 @@ class ClosingTagSniff implements Sniff
                 $phpcsFile->fixer->beginChangeset();
                 $phpcsFile->fixer->replaceToken($last, $phpcsFile->eolChar);
                 $prev = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($last - 1), null, true);
-                if ($tokens[$prev]['code'] !== T_SEMICOLON
+                if (
+                    $tokens[$prev]['code'] !== T_SEMICOLON
                     && $tokens[$prev]['code'] !== T_CLOSE_CURLY_BRACKET
                     && $tokens[$prev]['code'] !== T_OPEN_TAG
                 ) {

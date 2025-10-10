@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that the short form of type keywords is used (e.g., int, bool).
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ShortFormTypeKeywordsSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -48,7 +47,8 @@ class ShortFormTypeKeywordsSniff implements Sniff
         $typecast   = trim($typecast, '()');
         $typecastLc = strtolower($typecast);
 
-        if (($tokens[$stackPtr]['code'] === T_BOOL_CAST
+        if (
+            ($tokens[$stackPtr]['code'] === T_BOOL_CAST
             && $typecastLc === 'bool')
             || ($tokens[$stackPtr]['code'] === T_INT_CAST
             && $typecastLc === 'int')

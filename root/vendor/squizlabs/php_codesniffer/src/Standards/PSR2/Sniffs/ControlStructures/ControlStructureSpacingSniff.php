@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that control structures have the correct spacing around brackets.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ControlStructureSpacingSniff implements Sniff
 {
-
     /**
      * How many spaces should follow the opening bracket.
      *
@@ -67,7 +67,8 @@ class ControlStructureSpacingSniff implements Sniff
         $this->requiredSpacesBeforeClose = (int) $this->requiredSpacesBeforeClose;
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]['parenthesis_opener']) === false
+        if (
+            isset($tokens[$stackPtr]['parenthesis_opener']) === false
             || isset($tokens[$stackPtr]['parenthesis_closer']) === false
         ) {
             return;

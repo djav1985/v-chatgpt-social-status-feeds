@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures classes are in camel caps, and the first letter is capitalised.
  *
@@ -17,8 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ValidClassNameSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

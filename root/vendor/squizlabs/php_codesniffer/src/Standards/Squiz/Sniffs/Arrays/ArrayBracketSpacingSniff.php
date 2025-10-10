@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure that there are no spaces around square brackets.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ArrayBracketSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -44,7 +43,8 @@ class ArrayBracketSpacingSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (($tokens[$stackPtr]['code'] === T_OPEN_SQUARE_BRACKET
+        if (
+            ($tokens[$stackPtr]['code'] === T_OPEN_SQUARE_BRACKET
             && isset($tokens[$stackPtr]['bracket_closer']) === false)
             || ($tokens[$stackPtr]['code'] === T_CLOSE_SQUARE_BRACKET
             && isset($tokens[$stackPtr]['bracket_opener']) === false)

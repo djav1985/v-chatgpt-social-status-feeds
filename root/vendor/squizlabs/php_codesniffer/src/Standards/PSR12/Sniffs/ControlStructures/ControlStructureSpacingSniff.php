@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that control structures have the correct spacing.
  *
@@ -17,7 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ControlStructureSpacingSniff implements Sniff
 {
-
     /**
      * The number of spaces code should be indented.
      *
@@ -75,7 +75,8 @@ class ControlStructureSpacingSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]['parenthesis_opener']) === false
+        if (
+            isset($tokens[$stackPtr]['parenthesis_opener']) === false
             || isset($tokens[$stackPtr]['parenthesis_closer']) === false
         ) {
             return;
@@ -121,7 +122,8 @@ class ControlStructureSpacingSniff implements Sniff
         $first          = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
         $requiredIndent = ($tokens[$first]['column'] + $this->indent - 1);
         for ($i = $parenOpener; $i < $parenCloser; $i++) {
-            if ($tokens[$i]['column'] !== 1
+            if (
+                $tokens[$i]['column'] !== 1
                 || $tokens[($i + 1)]['line'] > $tokens[$i]['line']
                 || isset(Tokens::COMMENT_TOKENS[$tokens[$i]['code']]) === true
             ) {
@@ -133,7 +135,8 @@ class ControlStructureSpacingSniff implements Sniff
             }
 
             // Leave indentation inside multi-line strings.
-            if (isset(Tokens::TEXT_STRING_TOKENS[$tokens[$i]['code']]) === true
+            if (
+                isset(Tokens::TEXT_STRING_TOKENS[$tokens[$i]['code']]) === true
                 || isset(Tokens::HEREDOC_TOKENS[$tokens[$i]['code']]) === true
             ) {
                 continue;

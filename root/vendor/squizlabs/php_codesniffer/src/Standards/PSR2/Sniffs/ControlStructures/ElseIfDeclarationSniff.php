@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that there are no else if statements (elseif should be used instead).
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ElseIfDeclarationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

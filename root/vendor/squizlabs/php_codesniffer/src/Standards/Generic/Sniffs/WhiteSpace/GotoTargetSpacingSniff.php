@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures there is no space between the label for a goto target and the colon following it.
  *
@@ -14,8 +15,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class GotoTargetSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

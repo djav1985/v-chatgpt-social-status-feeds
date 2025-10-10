@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the //end ... comments on classes, enums, functions, interfaces and traits.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ClosingDeclarationCommentSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures heredoc/nowdoc identifiers do not have any whitespace before them.
  *
@@ -14,8 +15,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class HereNowdocIdentifierSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -43,7 +42,8 @@ class HereNowdocIdentifierSpacingSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (strpos($tokens[$stackPtr]['content'], ' ') === false
+        if (
+            strpos($tokens[$stackPtr]['content'], ' ') === false
             && strpos($tokens[$stackPtr]['content'], "\t") === false
         ) {
             // Nothing to do.

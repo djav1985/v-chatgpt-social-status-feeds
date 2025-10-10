@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures method names are defined using camel case.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Common;
 
 class CamelCapsMethodNameSniff extends GenericCamelCapsFunctionNameSniff
 {
-
-
     /**
      * Processes the tokens within the scope.
      *
@@ -49,7 +48,8 @@ class CamelCapsMethodNameSniff extends GenericCamelCapsFunctionNameSniff
         // Ignore magic methods.
         if (preg_match('|^__[^_]|', $methodName) !== 0) {
             $magicPart = strtolower(substr($methodName, 2));
-            if (isset(static::MAGIC_METHODS[$magicPart]) === true
+            if (
+                isset(static::MAGIC_METHODS[$magicPart]) === true
                 || isset(static::DOUBLE_UNDERSCORE_METHODS[$magicPart]) === true
             ) {
                 return;

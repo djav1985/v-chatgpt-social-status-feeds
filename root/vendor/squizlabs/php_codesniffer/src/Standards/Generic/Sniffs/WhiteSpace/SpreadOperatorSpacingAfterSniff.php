@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies spacing between the spread operator and the variable/function call it applies to.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SpreadOperatorSpacingAfterSniff implements Sniff
 {
-
     /**
      * The number of spaces desired after a spread token.
      *
@@ -71,7 +71,8 @@ class SpreadOperatorSpacingAfterSniff implements Sniff
             return;
         }
 
-        if ($this->ignoreNewlines === true
+        if (
+            $this->ignoreNewlines === true
             && $tokens[$stackPtr]['line'] !== $tokens[$nextNonEmpty]['line']
         ) {
             $phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', 'newline');

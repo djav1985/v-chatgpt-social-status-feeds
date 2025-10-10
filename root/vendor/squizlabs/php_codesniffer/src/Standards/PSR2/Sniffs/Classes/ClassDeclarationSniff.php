@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the declaration of the class and its inheritance is correct.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ClassDeclarationSniff extends PEARClassDeclarationSniff
 {
-
     /**
      * Modifier keywords which can be used in class declarations.
      *
@@ -142,7 +142,8 @@ class ClassDeclarationSniff extends PEARClassDeclarationSniff
         } else {
             // Ignore the spacing check if this is a simple anon class.
             $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-            if ($next === $tokens[$stackPtr]['scope_opener']
+            if (
+                $next === $tokens[$stackPtr]['scope_opener']
                 && $tokens[$next]['line'] > $tokens[$stackPtr]['line']
             ) {
                 $checkSpacing = false;
@@ -178,7 +179,8 @@ class ClassDeclarationSniff extends PEARClassDeclarationSniff
         }
 
         // Check after the class/interface name.
-        if ($className !== null
+        if (
+            $className !== null
             && $tokens[($className + 2)]['line'] === $tokens[$className]['line']
         ) {
             $gap = $tokens[($className + 1)]['content'];
@@ -227,7 +229,8 @@ class ClassDeclarationSniff extends PEARClassDeclarationSniff
                                 $comments[] = trim($tokens[$i]['content']);
                             }
 
-                            if ($tokens[$i]['code'] === T_WHITESPACE
+                            if (
+                                $tokens[$i]['code'] === T_WHITESPACE
                                 || $tokens[$i]['code'] === T_COMMENT
                             ) {
                                 $phpcsFile->fixer->replaceToken($i, ' ');
@@ -344,7 +347,8 @@ class ClassDeclarationSniff extends PEARClassDeclarationSniff
                         $phpcsFile->fixer->addNewline($prev);
                         $phpcsFile->fixer->endChangeset();
                     }
-                } elseif ((isset(Tokens::COMMENT_TOKENS[$tokens[$prev]['code']]) === false
+                } elseif (
+                    (isset(Tokens::COMMENT_TOKENS[$tokens[$prev]['code']]) === false
                     && $tokens[$prev]['line'] !== ($tokens[$className]['line'] - 1))
                     || $tokens[$prev]['line'] === $tokens[$className]['line']
                 ) {
@@ -435,7 +439,8 @@ class ClassDeclarationSniff extends PEARClassDeclarationSniff
                 }
             }
 
-            if ($checkingImplements === true
+            if (
+                $checkingImplements === true
                 && $tokens[($className + 1)]['code'] !== T_COMMA
             ) {
                 if ($n !== ($classCount - 1)) {
@@ -479,7 +484,8 @@ class ClassDeclarationSniff extends PEARClassDeclarationSniff
         // Check that the closing brace comes right after the code body.
         $closeBrace  = $tokens[$stackPtr]['scope_closer'];
         $prevContent = $phpcsFile->findPrevious(T_WHITESPACE, ($closeBrace - 1), null, true);
-        if ($prevContent !== $tokens[$stackPtr]['scope_opener']
+        if (
+            $prevContent !== $tokens[$stackPtr]['scope_opener']
             && $tokens[$prevContent]['line'] !== ($tokens[$closeBrace]['line'] - 1)
         ) {
             $error = 'The closing brace for the %s must go on the next line after the body';

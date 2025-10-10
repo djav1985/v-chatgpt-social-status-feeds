@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the method declaration is correct.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class MethodDeclarationSniff extends AbstractScopeSniff
 {
-
-
     /**
      * Constructs a Squiz_Sniffs_Scope_MethodScopeSniff.
      */

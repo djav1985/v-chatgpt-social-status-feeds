@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that object operators are indented correctly.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ObjectOperatorIndentSniff implements Sniff
 {
-
     /**
      * Tokens to listen for.
      *
@@ -131,7 +131,8 @@ class ObjectOperatorIndentSniff implements Sniff
                 // Make sure it starts a line, otherwise don't check indent.
                 $prev   = $phpcsFile->findPrevious(T_WHITESPACE, ($next - 1), $stackPtr, true);
                 $indent = $tokens[($next - 1)];
-                if ($tokens[$prev]['line'] !== $tokens[$next]['line']
+                if (
+                    $tokens[$prev]['line'] !== $tokens[$next]['line']
                     && $indent['code'] === T_WHITESPACE
                 ) {
                     if ($indent['line'] === $tokens[$next]['line']) {

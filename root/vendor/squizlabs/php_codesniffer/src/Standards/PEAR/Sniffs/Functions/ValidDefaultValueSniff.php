@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures function params with default values are at the end of the declaration.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ValidDefaultValueSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -59,7 +58,8 @@ class ValidDefaultValueSniff implements Sniff
                 // Check if the arg is type hinted and using NULL for the default.
                 // This does not make the argument optional - it just allows NULL
                 // to be passed in.
-                if ($param['type_hint'] !== ''
+                if (
+                    $param['type_hint'] !== ''
                     && ($defaultValueLc === 'null' || $defaultValueLc === '\null')
                 ) {
                     $defaultFound = false;

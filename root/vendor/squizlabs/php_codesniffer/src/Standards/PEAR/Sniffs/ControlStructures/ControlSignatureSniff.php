@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that control statements conform to their coding standards.
  *
@@ -14,7 +15,6 @@ use PHP_CodeSniffer\Sniffs\AbstractPatternSniff;
 
 class ControlSignatureSniff extends AbstractPatternSniff
 {
-
     /**
      * If true, comments will be ignored if they are found in the code.
      *

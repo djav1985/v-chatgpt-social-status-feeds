@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures the file ends with a newline character.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class EndFileNewlineSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -69,7 +68,8 @@ class EndFileNewlineSniff implements Sniff
 
         // Go looking for the last non-empty line.
         $lastLine = $tokens[$lastToken]['line'];
-        if ($tokens[$lastToken]['code'] === T_WHITESPACE
+        if (
+            $tokens[$lastToken]['code'] === T_WHITESPACE
             || $tokens[$lastToken]['code'] === T_DOC_COMMENT_WHITESPACE
         ) {
             $lastCode = $phpcsFile->findPrevious([T_WHITESPACE, T_DOC_COMMENT_WHITESPACE], ($lastToken - 1), null, true);

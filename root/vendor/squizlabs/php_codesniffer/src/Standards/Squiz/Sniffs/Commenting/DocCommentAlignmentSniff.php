@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests that the stars in a doc comment align correctly.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DocCommentAlignmentSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -72,7 +71,8 @@ class DocCommentAlignmentSniff implements Sniff
         $requiredColumn = ($tokens[$stackPtr]['column'] + 1);
         $endComment     = $tokens[$stackPtr]['comment_closer'];
         for ($i = ($stackPtr + 1); $i <= $endComment; $i++) {
-            if ($tokens[$i]['code'] !== T_DOC_COMMENT_STAR
+            if (
+                $tokens[$i]['code'] !== T_DOC_COMMENT_STAR
                 && $tokens[$i]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             ) {
                 continue;
@@ -129,7 +129,8 @@ class DocCommentAlignmentSniff implements Sniff
                 if ($fix === true) {
                     $phpcsFile->fixer->addContent($i, ' ');
                 }
-            } elseif ($tokens[($i + 2)]['code'] === T_DOC_COMMENT_TAG
+            } elseif (
+                $tokens[($i + 2)]['code'] === T_DOC_COMMENT_TAG
                 && $tokens[($i + 1)]['content'] !== ' '
             ) {
                 $error = 'Expected 1 space after asterisk; %s found';

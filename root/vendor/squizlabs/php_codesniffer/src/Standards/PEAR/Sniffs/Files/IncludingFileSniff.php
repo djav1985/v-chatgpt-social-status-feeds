@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure include_once is used in conditional situations and require_once is used elsewhere.
  *
@@ -18,8 +19,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class IncludingFileSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

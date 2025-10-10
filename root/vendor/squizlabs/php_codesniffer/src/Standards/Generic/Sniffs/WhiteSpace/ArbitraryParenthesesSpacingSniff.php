@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Check & fix whitespace on the inside of arbitrary parentheses.
  *
@@ -19,7 +20,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ArbitraryParenthesesSpacingSniff implements Sniff
 {
-
     /**
      * Tokens which when they precede an open parenthesis indicate
      * that this is a type of structure this sniff should ignore.
@@ -97,7 +97,8 @@ class ArbitraryParenthesesSpacingSniff implements Sniff
         }
 
         $preOpener = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
-        if ($preOpener !== false
+        if (
+            $preOpener !== false
             && isset(self::IGNORE_TOKENS[$tokens[$preOpener]['code']]) === true
             && ($tokens[$preOpener]['code'] !== T_CLOSE_CURLY_BRACKET
             || isset($tokens[$preOpener]['scope_condition']) === false )
@@ -107,7 +108,8 @@ class ArbitraryParenthesesSpacingSniff implements Sniff
         }
 
         // Check for empty parentheses.
-        if ($tokens[$stackPtr]['code'] === T_OPEN_PARENTHESIS
+        if (
+            $tokens[$stackPtr]['code'] === T_OPEN_PARENTHESIS
             && isset($tokens[$stackPtr]['parenthesis_closer']) === true
         ) {
             $nextNonEmpty = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
@@ -121,7 +123,8 @@ class ArbitraryParenthesesSpacingSniff implements Sniff
         // Check the spacing on the inside of the parentheses.
         $this->spacing = (int) $this->spacing;
 
-        if ($tokens[$stackPtr]['code'] === T_OPEN_PARENTHESIS
+        if (
+            $tokens[$stackPtr]['code'] === T_OPEN_PARENTHESIS
             && isset($tokens[($stackPtr + 1)], $tokens[($stackPtr + 2)]) === true
         ) {
             $nextToken = $tokens[($stackPtr + 1)];
@@ -136,7 +139,8 @@ class ArbitraryParenthesesSpacingSniff implements Sniff
                 }
             }
 
-            if ($this->spacing !== $inside
+            if (
+                $this->spacing !== $inside
                 && ($inside !== 'newline' || $this->ignoreNewlines === false)
             ) {
                 $error = 'Expected %s space after open parenthesis; %s found';
@@ -175,7 +179,8 @@ class ArbitraryParenthesesSpacingSniff implements Sniff
             }
         }
 
-        if ($tokens[$stackPtr]['code'] === T_CLOSE_PARENTHESIS
+        if (
+            $tokens[$stackPtr]['code'] === T_CLOSE_PARENTHESIS
             && isset($tokens[($stackPtr - 1)], $tokens[($stackPtr - 2)]) === true
         ) {
             $prevToken = $tokens[($stackPtr - 1)];
@@ -190,7 +195,8 @@ class ArbitraryParenthesesSpacingSniff implements Sniff
                 }
             }
 
-            if ($this->spacing !== $inside
+            if (
+                $this->spacing !== $inside
                 && ($inside !== 'newline' || $this->ignoreNewlines === false)
             ) {
                 $error = 'Expected %s space before close parenthesis; %s found';

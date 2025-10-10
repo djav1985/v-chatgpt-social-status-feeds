@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures method and function names are correct.
  *
@@ -17,7 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ValidFunctionNameSniff extends AbstractScopeSniff
 {
-
     /**
      * A list of all PHP magic methods.
      *

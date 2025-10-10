@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parses and verifies the doc comments for classes.
  *
@@ -14,8 +15,6 @@ use PHP_CodeSniffer\Files\File;
 
 class ClassCommentSniff extends FileCommentSniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -59,7 +58,8 @@ class ClassCommentSniff extends FileCommentSniff
                 continue;
             }
 
-            if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
+            if (
+                $tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
                 && isset($tokens[$commentEnd]['attribute_opener']) === true
             ) {
                 $commentEnd = $tokens[$commentEnd]['attribute_opener'];
@@ -69,7 +69,8 @@ class ClassCommentSniff extends FileCommentSniff
             break;
         }
 
-        if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
+        if (
+            $tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {
             $errorData[] = $phpcsFile->getDeclarationName($stackPtr);

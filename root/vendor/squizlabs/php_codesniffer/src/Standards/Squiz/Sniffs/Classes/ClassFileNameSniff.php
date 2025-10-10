@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests that the file name and the name of the class contained within the file match.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ClassFileNameSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

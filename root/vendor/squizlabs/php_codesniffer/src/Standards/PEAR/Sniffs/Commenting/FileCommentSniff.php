@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parses and verifies the doc comments for files.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Common;
 
 class FileCommentSniff implements Sniff
 {
-
     /**
      * Tags in correct order and related info.
      *
@@ -137,7 +137,8 @@ class FileCommentSniff implements Sniff
             $phpcsFile->addError($error, $errorToken, 'WrongStyle');
             $phpcsFile->recordMetric($stackPtr, 'File has doc comment', 'yes');
             return $phpcsFile->numTokens;
-        } elseif ($commentStart === false
+        } elseif (
+            $commentStart === false
             || $tokens[$commentStart]['code'] !== T_DOC_COMMENT_OPEN_TAG
         ) {
             $phpcsFile->addError('Missing file doc comment', $errorToken, 'Missing');
@@ -152,7 +153,8 @@ class FileCommentSniff implements Sniff
                 continue;
             }
 
-            if ($tokens[$nextToken]['code'] === T_ATTRIBUTE
+            if (
+                $tokens[$nextToken]['code'] === T_ATTRIBUTE
                 && isset($tokens[$nextToken]['attribute_closer']) === true
             ) {
                 $nextToken = $tokens[$nextToken]['attribute_closer'];
@@ -196,7 +198,8 @@ class FileCommentSniff implements Sniff
         for ($i = ($commentStart + 1); $i < $commentEnd; $i++) {
             if ($tokens[$i]['code'] === T_DOC_COMMENT_TAG) {
                 break;
-            } elseif ($tokens[$i]['code'] === T_DOC_COMMENT_STRING
+            } elseif (
+                $tokens[$i]['code'] === T_DOC_COMMENT_STRING
                 && strstr(strtolower($tokens[$i]['content']), 'php version') !== false
             ) {
                 $found = true;
@@ -566,7 +569,8 @@ class FileCommentSniff implements Sniff
             }
 
             $content = $tokens[($tag + 2)]['content'];
-            if (strstr($content, 'CVS:') === false
+            if (
+                strstr($content, 'CVS:') === false
                 && strstr($content, 'SVN:') === false
                 && strstr($content, 'GIT:') === false
                 && strstr($content, 'HG:') === false

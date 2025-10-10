@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests self member references.
  *
@@ -21,8 +22,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SelfMemberReferenceSniff extends AbstractScopeSniff
 {
-
-
     /**
      * Constructs a Squiz_Sniffs_Classes_SelfMemberReferenceSniff.
      */
@@ -186,7 +185,8 @@ class SelfMemberReferenceSniff extends AbstractScopeSniff
         if ($namespaceDeclaration !== false) {
             $tokens       = $phpcsFile->getTokens();
             $nextNonEmpty = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($namespaceDeclaration + 1), null, true);
-            if ($nextNonEmpty !== false
+            if (
+                $nextNonEmpty !== false
                 && ($tokens[$nextNonEmpty]['code'] === T_NAME_QUALIFIED
                 || $tokens[$nextNonEmpty]['code'] === T_STRING)
             ) {

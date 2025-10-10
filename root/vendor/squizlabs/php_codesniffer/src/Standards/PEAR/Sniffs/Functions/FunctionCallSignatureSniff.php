@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures function calls are formatted correctly.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionCallSignatureSniff implements Sniff
 {
-
     /**
      * The number of spaces code should be indented.
      *
@@ -79,7 +79,8 @@ class FunctionCallSignatureSniff implements Sniff
         $this->requiredSpacesBeforeClose = (int) $this->requiredSpacesBeforeClose;
         $tokens = $phpcsFile->getTokens();
 
-        if ($tokens[$stackPtr]['code'] === T_CLOSE_CURLY_BRACKET
+        if (
+            $tokens[$stackPtr]['code'] === T_CLOSE_CURLY_BRACKET
             && isset($tokens[$stackPtr]['scope_condition']) === true
         ) {
             // Not a function call.
@@ -110,7 +111,8 @@ class FunctionCallSignatureSniff implements Sniff
 
         $closeBracket = $tokens[$openBracket]['parenthesis_closer'];
 
-        if ($tokens[$stackPtr]['code'] !== T_ANON_CLASS
+        if (
+            $tokens[$stackPtr]['code'] !== T_ANON_CLASS
             && ($stackPtr + 1) !== $openBracket
         ) {
             // Checking this: $value = my_function[*](...).
@@ -285,7 +287,8 @@ class FunctionCallSignatureSniff implements Sniff
                     // move the closing parenthesis after any other token.
                     $prev = ($closer - 1);
                     while (isset(Tokens::EMPTY_TOKENS[$tokens[$prev]['code']]) === true) {
-                        if (($tokens[$prev]['code'] === T_COMMENT)
+                        if (
+                            ($tokens[$prev]['code'] === T_COMMENT)
                             && (strpos($tokens[$prev]['content'], '*/') !== false)
                         ) {
                             break;
@@ -329,7 +332,8 @@ class FunctionCallSignatureSniff implements Sniff
         // call itself is, so we can work out how far to
         // indent the arguments.
         $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
-        if ($first !== false
+        if (
+            $first !== false
             && $tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
             && $tokens[($first - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
         ) {
@@ -344,7 +348,8 @@ class FunctionCallSignatureSniff implements Sniff
 
         $foundFunctionIndent = 0;
         if ($first !== false) {
-            if ($tokens[$first]['code'] === T_INLINE_HTML
+            if (
+                $tokens[$first]['code'] === T_INLINE_HTML
                 || ($tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
                 && $tokens[($first - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING)
             ) {
@@ -447,7 +452,8 @@ class FunctionCallSignatureSniff implements Sniff
 
         $i = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($openBracket + 1), null, true);
 
-        if ($tokens[($i - 1)]['code'] === T_WHITESPACE
+        if (
+            $tokens[($i - 1)]['code'] === T_WHITESPACE
             && $tokens[($i - 1)]['line'] === $tokens[$i]['line']
         ) {
             // Make sure we check the indent.
@@ -470,7 +476,8 @@ class FunctionCallSignatureSniff implements Sniff
                 }
 
                 // Ignore multi-line string indentation.
-                if (isset(Tokens::STRING_TOKENS[$tokens[$i]['code']]) === true
+                if (
+                    isset(Tokens::STRING_TOKENS[$tokens[$i]['code']]) === true
                     && $tokens[$i]['code'] === $tokens[($i - 1)]['code']
                 ) {
                     continue;
@@ -511,12 +518,14 @@ class FunctionCallSignatureSniff implements Sniff
                         $expectedIndent = ($foundFunctionIndent + $this->indent + $adjustment);
                     }
 
-                    if ($tokens[$i]['code'] !== T_WHITESPACE
+                    if (
+                        $tokens[$i]['code'] !== T_WHITESPACE
                         && $tokens[$i]['code'] !== T_DOC_COMMENT_WHITESPACE
                     ) {
                         // Just check if it is a multi-line block comment. If so, we can
                         // calculate the indent from the whitespace before the content.
-                        if ($tokens[$i]['code'] === T_COMMENT
+                        if (
+                            $tokens[$i]['code'] === T_COMMENT
                             && $tokens[($i - 1)]['code'] === T_COMMENT
                         ) {
                             $trimmedLength = strlen(ltrim($tokens[$i]['content']));
@@ -534,7 +543,8 @@ class FunctionCallSignatureSniff implements Sniff
                         $foundIndent = $tokens[$i]['length'];
                     }
 
-                    if ($foundIndent < $expectedIndent
+                    if (
+                        $foundIndent < $expectedIndent
                         || ($inArg === false
                         && $expectedIndent !== $foundIndent)
                     ) {

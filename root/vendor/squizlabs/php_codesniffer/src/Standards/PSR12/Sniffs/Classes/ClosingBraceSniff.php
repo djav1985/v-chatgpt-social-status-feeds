@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that closing braces are the last content on a line.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ClosingBraceSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -52,7 +51,8 @@ class ClosingBraceSniff implements Sniff
 
         $closer = $tokens[$stackPtr]['scope_closer'];
         $next   = $phpcsFile->findNext(T_WHITESPACE, ($closer + 1), null, true);
-        if ($next === false
+        if (
+            $next === false
             || $tokens[$next]['line'] !== $tokens[$closer]['line']
         ) {
             return;

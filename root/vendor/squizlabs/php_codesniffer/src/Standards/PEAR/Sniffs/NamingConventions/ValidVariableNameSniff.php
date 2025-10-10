@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the naming of member variables.
  *
@@ -18,8 +19,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ValidVariableNameSniff extends AbstractVariableSniff
 {
-
-
     /**
      * Only listen to variables within OO scopes.
      */

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parses and verifies the file doc comment.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class FileCommentSniff implements Sniff
 {
-
     /**
      * Required tags in correct order.
      *
@@ -64,7 +64,8 @@ class FileCommentSniff implements Sniff
             return $phpcsFile->numTokens;
         }
 
-        if (isset($tokens[$commentStart]['comment_closer']) === false
+        if (
+            isset($tokens[$commentStart]['comment_closer']) === false
             || ($tokens[$tokens[$commentStart]['comment_closer']]['content'] === ''
             && $tokens[$commentStart]['comment_closer'] === ($phpcsFile->numTokens - 1))
         ) {
@@ -79,7 +80,8 @@ class FileCommentSniff implements Sniff
                 continue;
             }
 
-            if ($tokens[$nextToken]['code'] === T_ATTRIBUTE
+            if (
+                $tokens[$nextToken]['code'] === T_ATTRIBUTE
                 && isset($tokens[$nextToken]['attribute_closer']) === true
             ) {
                 $nextToken = $tokens[$nextToken]['attribute_closer'];

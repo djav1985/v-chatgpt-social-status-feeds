@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure multi-line IF conditions are defined correctly.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class MultiLineConditionSniff implements Sniff
 {
-
     /**
      * The number of spaces code should be indented.
      *
@@ -107,7 +107,8 @@ class MultiLineConditionSniff implements Sniff
                     if ($fix === true) {
                         // Account for a comment at the end of the line.
                         $next = $phpcsFile->findNext(T_WHITESPACE, ($closeBracket + 1), null, true);
-                        if ($tokens[$next]['code'] !== T_COMMENT
+                        if (
+                            $tokens[$next]['code'] !== T_COMMENT
                             && isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$next]['code']]) === false
                         ) {
                             $phpcsFile->fixer->addNewlineBefore($closeBracket);
@@ -136,7 +137,8 @@ class MultiLineConditionSniff implements Sniff
                     $expectedIndent = ($statementIndent + $this->indent);
                 }
 
-                if ($tokens[$i]['code'] === T_COMMENT
+                if (
+                    $tokens[$i]['code'] === T_COMMENT
                     || isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$i]['code']]) === true
                 ) {
                     $prevLine = $tokens[$i]['line'];
@@ -173,7 +175,8 @@ class MultiLineConditionSniff implements Sniff
                     if (isset(Tokens::BOOLEAN_OPERATORS[$tokens[$next]['code']]) === false) {
                         $prev    = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), $openBracket, true);
                         $fixable = true;
-                        if (isset(Tokens::BOOLEAN_OPERATORS[$tokens[$prev]['code']]) === false
+                        if (
+                            isset(Tokens::BOOLEAN_OPERATORS[$tokens[$prev]['code']]) === false
                             && $phpcsFile->findNext(T_WHITESPACE, ($prev + 1), $next, true) !== false
                         ) {
                             // Condition spread over multi-lines interspersed with comments.
@@ -234,7 +237,8 @@ class MultiLineConditionSniff implements Sniff
             $length = -1;
         } elseif ($openBrace === ($closeBracket + 1)) {
             $length = 0;
-        } elseif ($openBrace === ($closeBracket + 2)
+        } elseif (
+            $openBrace === ($closeBracket + 2)
             && $tokens[($closeBracket + 1)]['code'] === T_WHITESPACE
         ) {
             $length = $tokens[($closeBracket + 1)]['length'];

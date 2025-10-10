@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that trait import statements are defined correctly.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UseDeclarationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -74,7 +73,8 @@ class UseDeclarationSniff implements Sniff
                 // The first non-comment line must be the use line.
                 $lastValidContent = $useToken;
                 for ($i = ($useToken - 1); $i > $opener; $i--) {
-                    if ($tokens[$i]['code'] === T_WHITESPACE
+                    if (
+                        $tokens[$i]['code'] === T_WHITESPACE
                         && ($tokens[($i - 1)]['line'] === $tokens[$i]['line']
                         || $tokens[($i + 1)]['line'] === $tokens[$i]['line'])
                     ) {
@@ -116,7 +116,8 @@ class UseDeclarationSniff implements Sniff
                                     continue;
                                 }
 
-                                if ($tokens[$i]['code'] === T_WHITESPACE
+                                if (
+                                    $tokens[$i]['code'] === T_WHITESPACE
                                     && $tokens[($i - 1)]['line'] !== $tokens[$i]['line']
                                     && $tokens[($i + 1)]['line'] !== $tokens[$i]['line']
                                 ) {
@@ -152,7 +153,8 @@ class UseDeclarationSniff implements Sniff
                         if ($fix === true) {
                             $phpcsFile->fixer->beginChangeset();
                             for ($x = ($useToken - 1); $x > $prev; $x--) {
-                                if ($tokens[$x]['line'] === $tokens[$useToken]['line']
+                                if (
+                                    $tokens[$x]['line'] === $tokens[$useToken]['line']
                                 ) {
                                     // Preserve indent.
                                     continue;
@@ -261,7 +263,8 @@ class UseDeclarationSniff implements Sniff
                             continue;
                         }
 
-                        if (isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']]) === true
+                        if (
+                            isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']]) === true
                             && $tokens[$next]['line'] === $tokens[$end]['line']
                         ) {
                             continue;
@@ -323,7 +326,8 @@ class UseDeclarationSniff implements Sniff
             // Figure out if we can fix this error.
             $canFix = true;
             for ($i = ($stackPtr + 1); $i < $opener; $i++) {
-                if ($tokens[$i]['line'] !== $tokens[($i + 1)]['line']
+                if (
+                    $tokens[$i]['line'] !== $tokens[($i + 1)]['line']
                     && $tokens[$i]['code'] !== T_WHITESPACE
                 ) {
                     $canFix = false;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure single and multi-line function declarations are defined correctly.
  *
@@ -18,7 +19,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionDeclarationSniff implements Sniff
 {
-
     /**
      * The number of spaces code should be indented.
      *
@@ -54,7 +54,8 @@ class FunctionDeclarationSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]['parenthesis_opener']) === false
+        if (
+            isset($tokens[$stackPtr]['parenthesis_opener']) === false
             || isset($tokens[$stackPtr]['parenthesis_closer']) === false
         ) {
             return;
@@ -306,7 +307,8 @@ class FunctionDeclarationSniff implements Sniff
                     $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($opener - 1), $closeBracket, true);
                     $next = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), null, true);
 
-                    if ($tokens[$prev]['line'] < $tokens[$opener]['line']
+                    if (
+                        $tokens[$prev]['line'] < $tokens[$opener]['line']
                         && $tokens[$next]['line'] > $tokens[$opener]['line']
                     ) {
                         // Clear the whole line.
@@ -318,7 +320,8 @@ class FunctionDeclarationSniff implements Sniff
                     } else {
                         // Just remove the opener.
                         $phpcsFile->fixer->replaceToken($opener, '');
-                        if ($tokens[$next]['line'] === $tokens[$opener]['line']
+                        if (
+                            $tokens[$next]['line'] === $tokens[$opener]['line']
                             && ($opener + 1) !== $next
                         ) {
                             $phpcsFile->fixer->replaceToken(($opener + 1), '');
@@ -396,7 +399,8 @@ class FunctionDeclarationSniff implements Sniff
             true
         );
 
-        if ($tokens[$closeBracket]['line'] !== $tokens[$tokens[$closeBracket]['parenthesis_opener']]['line']
+        if (
+            $tokens[$closeBracket]['line'] !== $tokens[$tokens[$closeBracket]['parenthesis_opener']]['line']
             && $tokens[$prev]['line'] === $tokens[$closeBracket]['line']
         ) {
             $error = 'The closing parenthesis of a multi-line ' . $type . ' declaration must be on a new line';
@@ -421,7 +425,8 @@ class FunctionDeclarationSniff implements Sniff
                     true
                 );
 
-                if ($tokens[$closeBracket]['line'] !== $tokens[$tokens[$closeBracket]['parenthesis_opener']]['line']
+                if (
+                    $tokens[$closeBracket]['line'] !== $tokens[$tokens[$closeBracket]['parenthesis_opener']]['line']
                     && $tokens[$prev]['line'] === $tokens[$closeBracket]['line']
                 ) {
                     $error = 'The closing parenthesis of a multi-line use declaration must be on a new line';
@@ -438,7 +443,8 @@ class FunctionDeclarationSniff implements Sniff
         $lastLine    = $tokens[$openBracket]['line'];
         for ($i = ($openBracket + 1); $i < $closeBracket; $i++) {
             if ($tokens[$i]['line'] !== $lastLine) {
-                if ($i === $tokens[$stackPtr]['parenthesis_closer']
+                if (
+                    $i === $tokens[$stackPtr]['parenthesis_closer']
                     || ($tokens[$i]['code'] === T_WHITESPACE
                     && (($i + 1) === $closeBracket
                     || ($i + 1) === $tokens[$stackPtr]['parenthesis_closer']))
@@ -452,7 +458,8 @@ class FunctionDeclarationSniff implements Sniff
 
                 // We changed lines, so this should be a whitespace indent token.
                 $foundIndent = 0;
-                if ($tokens[$i]['code'] === T_WHITESPACE
+                if (
+                    $tokens[$i]['code'] === T_WHITESPACE
                     && $tokens[$i]['line'] !== $tokens[($i + 1)]['line']
                 ) {
                     $error = 'Blank lines are not allowed in a multi-line ' . $type . ' declaration';
@@ -491,7 +498,8 @@ class FunctionDeclarationSniff implements Sniff
                 $lastLine = $tokens[$i]['line'];
             }
 
-            if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS
+            if (
+                $tokens[$i]['code'] === T_OPEN_PARENTHESIS
                 && isset($tokens[$i]['parenthesis_closer']) === true
             ) {
                 $prevNonEmpty = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), null, true);

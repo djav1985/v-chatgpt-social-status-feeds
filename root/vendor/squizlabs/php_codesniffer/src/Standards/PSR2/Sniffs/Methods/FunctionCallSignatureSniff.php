@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the function call format is correct.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionCallSignatureSniff extends PEARFunctionCallSignatureSniff
 {
-
     /**
      * If TRUE, multiple arguments can be defined per line in a multi-line call.
      *

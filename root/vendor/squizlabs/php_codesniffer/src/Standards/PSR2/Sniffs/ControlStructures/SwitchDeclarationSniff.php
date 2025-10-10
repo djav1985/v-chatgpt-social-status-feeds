@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures all switch statements are defined correctly.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SwitchDeclarationSniff implements Sniff
 {
-
     /**
      * Tokens which can terminate a "case".
      *
@@ -64,7 +64,8 @@ class SwitchDeclarationSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         // We can't process SWITCH statements unless we know where they start and end.
-        if (isset($tokens[$stackPtr]['scope_opener']) === false
+        if (
+            isset($tokens[$stackPtr]['scope_opener']) === false
             || isset($tokens[$stackPtr]['scope_closer']) === false
         ) {
             return;
@@ -95,7 +96,8 @@ class SwitchDeclarationSniff implements Sniff
                 }
             }
 
-            if ($type === 'case'
+            if (
+                $type === 'case'
                 && ($tokens[($nextCase + 1)]['code'] !== T_WHITESPACE
                 || $tokens[($nextCase + 1)]['content'] !== ' ')
             ) {
@@ -122,7 +124,8 @@ class SwitchDeclarationSniff implements Sniff
                 }
 
                 for ($next = ($opener + 1); $next < $nextCloser; $next++) {
-                    if (isset(Tokens::EMPTY_TOKENS[$tokens[$next]['code']]) === false
+                    if (
+                        isset(Tokens::EMPTY_TOKENS[$tokens[$next]['code']]) === false
                         || (isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']]) === true
                         && $tokens[$next]['line'] !== $tokens[$opener]['line'])
                     ) {
@@ -212,7 +215,8 @@ class SwitchDeclarationSniff implements Sniff
                 $nextCode = $this->findNextCase($phpcsFile, ($opener + 1), $nextCloser);
                 if ($nextCode !== false) {
                     $prevCode = $phpcsFile->findPrevious(T_WHITESPACE, ($nextCode - 1), $nextCase, true);
-                    if (isset(Tokens::COMMENT_TOKENS[$tokens[$prevCode]['code']]) === false
+                    if (
+                        isset(Tokens::COMMENT_TOKENS[$tokens[$prevCode]['code']]) === false
                         && $this->findNestedTerminator($phpcsFile, ($opener + 1), $nextCode) === false
                     ) {
                         $error = 'There must be a comment when fall-through is intentional in a non-empty case body';
@@ -305,7 +309,8 @@ class SwitchDeclarationSniff implements Sniff
                     }
 
                     return $this->findNestedTerminator($phpcsFile, ($scopeOpener + 1), $scopeCloser);
-                } elseif ($tokens[$prevToken]['code'] === T_ELSEIF
+                } elseif (
+                    $tokens[$prevToken]['code'] === T_ELSEIF
                     || $tokens[$prevToken]['code'] === T_ELSE
                 ) {
                     // If we find a terminating statement within this block,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Throws errors if tabs are used for indentation.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DisallowTabIndentSniff implements Sniff
 {
-
     /**
      * Tokens which can include indentation.
      *
@@ -96,7 +96,8 @@ class DisallowTabIndentSniff implements Sniff
             // If this is an inline HTML token or a subsequent line of a multi-line comment,
             // split off the indentation as that is the only part to take into account for the metrics.
             $indentation = $content;
-            if (($tokens[$i]['code'] === T_INLINE_HTML
+            if (
+                ($tokens[$i]['code'] === T_INLINE_HTML
                 || $tokens[$i]['code'] === T_COMMENT)
                 && preg_match('`^(\s*)\S.*`s', $content, $matches) > 0
             ) {
@@ -105,7 +106,8 @@ class DisallowTabIndentSniff implements Sniff
                 }
             }
 
-            if (($tokens[$i]['code'] === T_DOC_COMMENT_WHITESPACE
+            if (
+                ($tokens[$i]['code'] === T_DOC_COMMENT_WHITESPACE
                 || $tokens[$i]['code'] === T_COMMENT)
                 && $indentation === ' '
             ) {
@@ -114,7 +116,8 @@ class DisallowTabIndentSniff implements Sniff
             }
 
             $recordMetrics = true;
-            if ($content === $indentation
+            if (
+                $content === $indentation
                 && isset($tokens[($i + 1)]) === true
                 && $tokens[$i]['line'] < $tokens[($i + 1)]['line']
             ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures USE blocks are declared correctly.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UseDeclarationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -57,7 +56,8 @@ class UseDeclarationSniff implements Sniff
 
         // Only one USE declaration allowed per statement.
         $next = $phpcsFile->findNext([T_COMMA, T_SEMICOLON, T_OPEN_USE_GROUP, T_CLOSE_TAG], ($stackPtr + 1));
-        if ($next !== false
+        if (
+            $next !== false
             && $tokens[$next]['code'] !== T_SEMICOLON
             && $tokens[$next]['code'] !== T_CLOSE_TAG
         ) {
@@ -219,7 +219,8 @@ class UseDeclarationSniff implements Sniff
 
         --$end;
 
-        if (($tokens[$end]['code'] === T_COMMENT
+        if (
+            ($tokens[$end]['code'] === T_COMMENT
             || isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$end]['code']]) === true)
             && substr($tokens[$end]['content'], 0, 2) === '/*'
             && substr($tokens[$end]['content'], -2) !== '*/'

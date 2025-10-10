@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the format of the file header.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FileHeaderSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -171,7 +170,8 @@ class FileHeaderSniff implements Sniff
                             continue;
                         }
 
-                        if ($tokens[$docToken]['code'] === T_ATTRIBUTE
+                        if (
+                            $tokens[$docToken]['code'] === T_ATTRIBUTE
                             && isset($tokens[$docToken]['attribute_closer']) === true
                         ) {
                             $docToken = $tokens[$docToken]['attribute_closer'];
@@ -185,14 +185,16 @@ class FileHeaderSniff implements Sniff
                         $docToken--;
                     }
 
-                    if (isset($commentOpeners[$tokens[$docToken]['code']]) === false
+                    if (
+                        isset($commentOpeners[$tokens[$docToken]['code']]) === false
                         && isset(Tokens::METHOD_MODIFIERS[$tokens[$docToken]['code']]) === false
                         && $tokens[$docToken]['code'] !== T_READONLY
                     ) {
                         // Check for an @var annotation.
                         $annotation = false;
                         for ($i = $next; $i < $end; $i++) {
-                            if ($tokens[$i]['code'] === T_DOC_COMMENT_TAG
+                            if (
+                                $tokens[$i]['code'] === T_DOC_COMMENT_TAG
                                 && strtolower($tokens[$i]['content']) === '@var'
                             ) {
                                 $annotation = true;
@@ -291,7 +293,8 @@ class FileHeaderSniff implements Sniff
         $found = [];
 
         foreach ($headerLines as $i => $line) {
-            if (isset($headerLines[($i + 1)]) === false
+            if (
+                isset($headerLines[($i + 1)]) === false
                 || $headerLines[($i + 1)]['type'] !== $line['type']
             ) {
                 // We're at the end of the current header block.
@@ -323,7 +326,8 @@ class FileHeaderSniff implements Sniff
                 }
 
                 // Make sure we haven't seen this next block before.
-                if (isset($headerLines[($i + 1)]) === true
+                if (
+                    isset($headerLines[($i + 1)]) === true
                     && isset($found[$headerLines[($i + 1)]['type']]) === true
                 ) {
                     $error  = 'Similar statements must be grouped together inside header blocks; ';
@@ -407,7 +411,8 @@ class FileHeaderSniff implements Sniff
                 $prevValidType = 'tag';
                 do {
                     $orderedType = next($blockOrder);
-                    if (isset($found[key($blockOrder)]) === true
+                    if (
+                        isset($found[key($blockOrder)]) === true
                         && key($blockOrder) !== $type
                     ) {
                         $prevValidType = key($blockOrder);

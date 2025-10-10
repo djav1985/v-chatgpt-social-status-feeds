@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that control structures are defined and indented correctly.
  *
@@ -18,7 +19,6 @@ use PHP_CodeSniffer\Util\Writers\StatusWriter;
 
 class ScopeIndentSniff implements Sniff
 {
-
     /**
      * The number of spaces code should be indented.
      *
@@ -178,7 +178,8 @@ class ScopeIndentSniff implements Sniff
                 break;
             }
 
-            if ($checkAnnotations === true
+            if (
+                $checkAnnotations === true
                 && $tokens[$i]['code'] === T_PHPCS_SET
                 && isset($tokens[$i]['sniffCode']) === true
                 && $tokens[$i]['sniffCode'] === 'Generic.WhiteSpace.ScopeIndent'
@@ -218,7 +219,8 @@ class ScopeIndentSniff implements Sniff
 
             $exact = $this->exact;
 
-            if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS
+            if (
+                $tokens[$i]['code'] === T_OPEN_PARENTHESIS
                 && isset($tokens[$i]['parenthesis_closer']) === true
             ) {
                 $disableExactStack[$tokens[$i]['parenthesis_closer']] = $tokens[$i]['parenthesis_closer'];
@@ -239,7 +241,8 @@ class ScopeIndentSniff implements Sniff
             if ($tokens[$i]['column'] === 1) {
                 $trimmed = ltrim($tokens[$i]['content']);
                 if ($trimmed === '') {
-                    if (isset($tokens[($i + 1)]) === true
+                    if (
+                        isset($tokens[($i + 1)]) === true
                         && $tokens[$i]['line'] === $tokens[($i + 1)]['line']
                     ) {
                         $checkToken  = ($i + 1);
@@ -253,7 +256,8 @@ class ScopeIndentSniff implements Sniff
 
             // Closing parenthesis should just be indented to at least
             // the same level as where they were opened (but can be more).
-            if (($checkToken !== null
+            if (
+                ($checkToken !== null
                 && $tokens[$checkToken]['code'] === T_CLOSE_PARENTHESIS
                 && isset($tokens[$checkToken]['parenthesis_opener']) === true)
                 || ($tokens[$i]['code'] === T_CLOSE_PARENTHESIS
@@ -273,7 +277,8 @@ class ScopeIndentSniff implements Sniff
                 $parenOpener = $tokens[$parenCloser]['parenthesis_opener'];
                 if ($tokens[$parenCloser]['line'] !== $tokens[$parenOpener]['line']) {
                     $parens = 0;
-                    if (isset($tokens[$parenCloser]['nested_parenthesis']) === true
+                    if (
+                        isset($tokens[$parenCloser]['nested_parenthesis']) === true
                         && empty($tokens[$parenCloser]['nested_parenthesis']) === false
                     ) {
                         $parens = $tokens[$parenCloser]['nested_parenthesis'];
@@ -286,7 +291,8 @@ class ScopeIndentSniff implements Sniff
                     }
 
                     $condition = 0;
-                    if (isset($tokens[$parenCloser]['conditions']) === true
+                    if (
+                        isset($tokens[$parenCloser]['conditions']) === true
                         && empty($tokens[$parenCloser]['conditions']) === false
                         && (isset($tokens[$parenCloser]['parenthesis_owner']) === false
                         || $parens > 0)
@@ -345,7 +351,8 @@ class ScopeIndentSniff implements Sniff
                             $type = $tokens[$lastOpenTag]['type'];
                             StatusWriter::write("=> checking indent of $checkIndent; main indent set to $currentIndent by token $lastOpenTag ($type)", 1);
                         }
-                    } elseif ($condition > 0
+                    } elseif (
+                        $condition > 0
                         && isset($tokens[$condition]['scope_opener']) === true
                         && isset($setIndents[$tokens[$condition]['scope_opener']]) === true
                     ) {
@@ -374,7 +381,8 @@ class ScopeIndentSniff implements Sniff
                             StatusWriter::write("* first token on line $line is $first ($type) *", 1);
                         }
 
-                        if ($first === $tokens[$parenCloser]['parenthesis_opener']
+                        if (
+                            $first === $tokens[$parenCloser]['parenthesis_opener']
                             && $tokens[($first - 1)]['line'] === $tokens[$first]['line']
                         ) {
                             // This is unlikely to be the start of the statement, so look
@@ -412,7 +420,8 @@ class ScopeIndentSniff implements Sniff
                             }
                         }
 
-                        if (isset($tokens[$first]['scope_closer']) === true
+                        if (
+                            isset($tokens[$first]['scope_closer']) === true
                             && $tokens[$first]['scope_closer'] === $first
                         ) {
                             if ($this->debug === true) {
@@ -463,7 +472,8 @@ class ScopeIndentSniff implements Sniff
 
             // Closing short array bracket should just be indented to at least
             // the same level as where it was opened (but can be more).
-            if ($tokens[$i]['code'] === T_CLOSE_SHORT_ARRAY
+            if (
+                $tokens[$i]['code'] === T_CLOSE_SHORT_ARRAY
                 || ($checkToken !== null
                 && $tokens[$checkToken]['code'] === T_CLOSE_SHORT_ARRAY)
             ) {
@@ -521,7 +531,8 @@ class ScopeIndentSniff implements Sniff
                         $checkIndent += $adjustments[$first];
                     }
 
-                    if (isset($tokens[$first]['scope_closer']) === true
+                    if (
+                        isset($tokens[$first]['scope_closer']) === true
                         && $tokens[$first]['scope_closer'] === $first
                     ) {
                         // The first token is a scope closer and would have already
@@ -558,7 +569,8 @@ class ScopeIndentSniff implements Sniff
             }
 
             // Adjust lines within scopes while auto-fixing.
-            if ($checkToken !== null
+            if (
+                $checkToken !== null
                 && $exact === false
                 && (empty($tokens[$checkToken]['conditions']) === false
                 || (isset($tokens[$checkToken]['scope_opener']) === true
@@ -574,7 +586,8 @@ class ScopeIndentSniff implements Sniff
 
                 $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, $condition, true);
 
-                if (isset($adjustments[$first]) === true
+                if (
+                    isset($adjustments[$first]) === true
                     && (($adjustments[$first] < 0 && $tokenIndent > $currentIndent)
                     || ($adjustments[$first] > 0 && $tokenIndent < $currentIndent))
                 ) {
@@ -605,7 +618,8 @@ class ScopeIndentSniff implements Sniff
             }
 
             // Scope closers reset the required indent to the same level as the opening condition.
-            if (($checkToken !== null
+            if (
+                ($checkToken !== null
                 && (isset($openScopes[$checkToken]) === true
                 || (isset($tokens[$checkToken]['scope_condition']) === true
                 && isset($tokens[$checkToken]['scope_closer']) === true
@@ -646,7 +660,8 @@ class ScopeIndentSniff implements Sniff
                         StatusWriter::write("* first token is $first ($type) on line $line *", 1);
                     }
 
-                    while ($tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
+                    while (
+                        $tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
                         && $tokens[($first - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                     ) {
                         $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, ($first - 1), true);
@@ -679,7 +694,8 @@ class ScopeIndentSniff implements Sniff
                 }
             }
 
-            if ($checkToken !== null
+            if (
+                $checkToken !== null
                 && isset(Tokens::SCOPE_OPENERS[$tokens[$checkToken]['code']]) === true
                 && in_array($tokens[$checkToken]['code'], $this->nonIndentingScopes, true) === false
                 && isset($tokens[$checkToken]['scope_opener']) === true
@@ -709,7 +725,8 @@ class ScopeIndentSniff implements Sniff
                 // CASEs using the same BREAK) needs to reduce the indent level so its
                 // indent is checked correctly. It will then increase the indent again
                 // (as all openers do) after being checked.
-                if ($lastOpener !== null
+                if (
+                    $lastOpener !== null
                     && isset($tokens[$lastOpener]['scope_closer']) === true
                     && $tokens[$lastOpener]['level'] === $tokens[$checkToken]['level']
                     && $tokens[$lastOpener]['scope_closer'] === $tokens[$checkToken]['scope_closer']
@@ -724,7 +741,8 @@ class ScopeIndentSniff implements Sniff
                     }
                 }
 
-                if ($tokens[$checkToken]['code'] === T_CLOSURE
+                if (
+                    $tokens[$checkToken]['code'] === T_CLOSURE
                     && $tokenIndent > $currentIndent
                 ) {
                     // The opener is indented more than needed, which is fine.
@@ -742,12 +760,14 @@ class ScopeIndentSniff implements Sniff
 
             // Method prefix indentation has to be exact or else it will break
             // the rest of the function declaration, and potentially future ones.
-            if ($checkToken !== null
+            if (
+                $checkToken !== null
                 && isset(Tokens::METHOD_MODIFIERS[$tokens[$checkToken]['code']]) === true
                 && $tokens[($checkToken + 1)]['code'] !== T_DOUBLE_COLON
             ) {
                 $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($checkToken + 1), null, true);
-                if ($next === false
+                if (
+                    $next === false
                     || ($tokens[$next]['code'] !== T_CLOSURE
                     && $tokens[$next]['code'] !== T_VARIABLE
                     && $tokens[$next]['code'] !== T_FN)
@@ -756,7 +776,8 @@ class ScopeIndentSniff implements Sniff
                     if (isset($tokens[$checkToken]['nested_parenthesis']) === true) {
                         $parenthesis = array_keys($tokens[$checkToken]['nested_parenthesis']);
                         $deepestOpen = array_pop($parenthesis);
-                        if (isset($tokens[$deepestOpen]['parenthesis_owner']) === true
+                        if (
+                            isset($tokens[$deepestOpen]['parenthesis_owner']) === true
                             && $tokens[$tokens[$deepestOpen]['parenthesis_owner']]['code'] === T_FUNCTION
                         ) {
                             // This is constructor property promotion and not a method prefix.
@@ -780,7 +801,8 @@ class ScopeIndentSniff implements Sniff
             // so they don't cause problems with indent checks for the code
             // within them, but they don't need to line up with the current indent
             // in most cases.
-            if ($checkToken !== null
+            if (
+                $checkToken !== null
                 && ($tokens[$checkToken]['code'] === T_OPEN_TAG
                 || $tokens[$checkToken]['code'] === T_OPEN_TAG_WITH_ECHO)
             ) {
@@ -791,14 +813,16 @@ class ScopeIndentSniff implements Sniff
                 // set instead of using whatever indent this open tag has set.
                 if (empty($tokens[$checkToken]['conditions']) === false) {
                     $close = $phpcsFile->findPrevious(T_CLOSE_TAG, ($checkToken - 1));
-                    if ($close !== false
+                    if (
+                        $close !== false
                         && $tokens[$checkToken]['conditions'] === $tokens[$close]['conditions']
                     ) {
                         $conditions    = array_keys($tokens[$checkToken]['conditions']);
                         $lastCondition = array_pop($conditions);
                         $lastOpener    = $tokens[$lastCondition]['scope_opener'];
                         $lastCloser    = $tokens[$lastCondition]['scope_closer'];
-                        if ($tokens[$lastCloser]['line'] !== $tokens[$checkToken]['line']
+                        if (
+                            $tokens[$lastCloser]['line'] !== $tokens[$checkToken]['line']
                             && isset($setIndents[$lastOpener]) === true
                         ) {
                             $checkIndent = $setIndents[$lastOpener];
@@ -823,7 +847,8 @@ class ScopeIndentSniff implements Sniff
 
             // Don't perform strict checking on chained method calls since they
             // are often covered by custom rules.
-            if ($checkToken !== null
+            if (
+                $checkToken !== null
                 && ($tokens[$checkToken]['code'] === T_OBJECT_OPERATOR
                 || $tokens[$checkToken]['code'] === T_NULLSAFE_OBJECT_OPERATOR)
                 && $exact === true
@@ -845,7 +870,8 @@ class ScopeIndentSniff implements Sniff
                 the checking of future lines
             */
 
-            if ($checkToken !== null
+            if (
+                $checkToken !== null
                 && isset($this->ignoreIndentation[$tokens[$checkToken]['code']]) === false
                 && (($tokenIndent !== $checkIndent && $exact === true)
                 || ($tokenIndent < $checkIndent && $exact === false))
@@ -937,7 +963,8 @@ class ScopeIndentSniff implements Sniff
 
             // Completely skip here/now docs as the indent is a part of the
             // content itself.
-            if ($tokens[$i]['code'] === T_START_HEREDOC
+            if (
+                $tokens[$i]['code'] === T_START_HEREDOC
                 || $tokens[$i]['code'] === T_START_NOWDOC
             ) {
                 if ($this->debug === true) {
@@ -962,7 +989,8 @@ class ScopeIndentSniff implements Sniff
 
             // Completely skip multi-line strings as the indent is a part of the
             // content itself.
-            if ($tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING
+            if (
+                $tokens[$i]['code'] === T_CONSTANT_ENCAPSED_STRING
                 || $tokens[$i]['code'] === T_DOUBLE_QUOTED_STRING
             ) {
                 $nextNonTextString = $phpcsFile->findNext($tokens[$i]['code'], ($i + 1), null, true);
@@ -981,7 +1009,8 @@ class ScopeIndentSniff implements Sniff
             }
 
             // Open tags reset the indent level.
-            if ($tokens[$i]['code'] === T_OPEN_TAG
+            if (
+                $tokens[$i]['code'] === T_OPEN_TAG
                 || $tokens[$i]['code'] === T_OPEN_TAG_WITH_ECHO
             ) {
                 if ($this->debug === true) {
@@ -1076,7 +1105,8 @@ class ScopeIndentSniff implements Sniff
                     StatusWriter::write("* first token is $first ($type) on line $line *", 1);
                 }
 
-                while ($tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
+                while (
+                    $tokens[$first]['code'] === T_CONSTANT_ENCAPSED_STRING
                     && $tokens[($first - 1)]['code'] === T_CONSTANT_ENCAPSED_STRING
                 ) {
                     $first = $phpcsFile->findFirstOnLine(T_WHITESPACE, ($first - 1), true);
@@ -1117,7 +1147,8 @@ class ScopeIndentSniff implements Sniff
             }
 
             // Scope openers increase the indent level.
-            if (isset($tokens[$i]['scope_condition']) === true
+            if (
+                isset($tokens[$i]['scope_condition']) === true
                 && isset($tokens[$i]['scope_opener']) === true
                 && $tokens[$i]['scope_opener'] === $i
             ) {
@@ -1144,7 +1175,8 @@ class ScopeIndentSniff implements Sniff
                     continue;
                 }
 
-                if (isset(Tokens::SCOPE_OPENERS[$condition]) === true
+                if (
+                    isset(Tokens::SCOPE_OPENERS[$condition]) === true
                     && in_array($condition, $this->nonIndentingScopes, true) === false
                 ) {
                     if ($this->debug === true) {
@@ -1178,7 +1210,8 @@ class ScopeIndentSniff implements Sniff
             // Closing an anon class, closure, or match.
             // Each may be returned, which can confuse control structures that
             // use return as a closer, like CASE statements.
-            if (isset($tokens[$i]['scope_condition']) === true
+            if (
+                isset($tokens[$i]['scope_condition']) === true
                 && $tokens[$i]['scope_closer'] === $i
                 && ($tokens[$tokens[$i]['scope_condition']]['code'] === T_CLOSURE
                 || $tokens[$tokens[$i]['scope_condition']]['code'] === T_ANON_CLASS
@@ -1193,7 +1226,8 @@ class ScopeIndentSniff implements Sniff
                 $prev = false;
 
                 $parens = 0;
-                if (isset($tokens[$i]['nested_parenthesis']) === true
+                if (
+                    isset($tokens[$i]['nested_parenthesis']) === true
                     && empty($tokens[$i]['nested_parenthesis']) === false
                 ) {
                     $parens = $tokens[$i]['nested_parenthesis'];
@@ -1206,7 +1240,8 @@ class ScopeIndentSniff implements Sniff
                 }
 
                 $condition = 0;
-                if (isset($tokens[$i]['conditions']) === true
+                if (
+                    isset($tokens[$i]['conditions']) === true
                     && empty($tokens[$i]['conditions']) === false
                 ) {
                     $condition = $tokens[$i]['conditions'];
@@ -1280,7 +1315,8 @@ class ScopeIndentSniff implements Sniff
                     $currentIndent += $this->indent;
                 }
 
-                if (isset($tokens[$first]['scope_closer']) === true
+                if (
+                    isset($tokens[$first]['scope_closer']) === true
                     && $tokens[$first]['scope_closer'] === $first
                 ) {
                     if ($this->debug === true) {

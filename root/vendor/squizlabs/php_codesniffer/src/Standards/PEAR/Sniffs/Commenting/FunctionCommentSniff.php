@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parses and verifies the doc comments for functions.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionCommentSniff implements Sniff
 {
-
     /**
      * Disable the check for functions with a lower visibility than the value given.
      *
@@ -60,7 +60,8 @@ class FunctionCommentSniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr)
     {
         $scopeModifier = $phpcsFile->getMethodProperties($stackPtr)['scope'];
-        if (($scopeModifier === 'protected'
+        if (
+            ($scopeModifier === 'protected'
             && $this->minimumVisibility === 'public')
             || ($scopeModifier === 'private'
             && ($this->minimumVisibility === 'public' || $this->minimumVisibility === 'protected'))
@@ -77,7 +78,8 @@ class FunctionCommentSniff implements Sniff
                 continue;
             }
 
-            if ($tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
+            if (
+                $tokens[$commentEnd]['code'] === T_ATTRIBUTE_END
                 && isset($tokens[$commentEnd]['attribute_opener']) === true
             ) {
                 $commentEnd = $tokens[$commentEnd]['attribute_opener'];
@@ -98,7 +100,8 @@ class FunctionCommentSniff implements Sniff
             }
         }
 
-        if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
+        if (
+            $tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
             && $tokens[$commentEnd]['code'] !== T_COMMENT
         ) {
             $function = $phpcsFile->getDeclarationName($stackPtr);
@@ -129,7 +132,8 @@ class FunctionCommentSniff implements Sniff
                     continue;
                 }
 
-                if ($tokens[$i]['column'] !== 1
+                if (
+                    $tokens[$i]['column'] !== 1
                     || $tokens[$i]['code'] !== T_WHITESPACE
                     || $tokens[$i]['line'] === $tokens[($i + 1)]['line']
                     // Do not report blank lines after a PHPCS annotation as removing the blank lines could change the meaning.

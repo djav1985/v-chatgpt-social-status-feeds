@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that control structures have boolean operators in the correct place.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class BooleanOperatorPlacementSniff implements Sniff
 {
-
     /**
      * Boolean operator tokens.
      *
@@ -66,7 +66,8 @@ class BooleanOperatorPlacementSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]['parenthesis_opener']) === false
+        if (
+            isset($tokens[$stackPtr]['parenthesis_opener']) === false
             || isset($tokens[$stackPtr]['parenthesis_closer']) === false
         ) {
             return;

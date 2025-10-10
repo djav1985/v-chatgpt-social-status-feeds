@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures namespaces are declared correctly.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class NamespaceDeclarationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

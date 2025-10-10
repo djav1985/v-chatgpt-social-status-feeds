@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the declaration of the class and its inheritance is correct.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
 {
-
-
     /**
      * Processes this test, when one of its tokens is encountered.
      *
@@ -63,7 +62,8 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
                 $blankSpace = substr($prevContent, strpos($prevContent, $phpcsFile->eolChar));
                 $spaces     = strlen($blankSpace);
 
-                if ($tokens[($stackPtr - 2)]['code'] !== T_ABSTRACT
+                if (
+                    $tokens[($stackPtr - 2)]['code'] !== T_ABSTRACT
                     && $tokens[($stackPtr - 2)]['code'] !== T_FINAL
                     && $tokens[($stackPtr - 2)]['code'] !== T_READONLY
                 ) {
@@ -107,7 +107,8 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
         // Check that the closing brace has one blank line after it.
         for ($nextContent = ($closeBrace + 1); $nextContent < $phpcsFile->numTokens; $nextContent++) {
             // Ignore comments on the same line as the brace.
-            if ($tokens[$nextContent]['line'] === $tokens[$closeBrace]['line']
+            if (
+                $tokens[$nextContent]['line'] === $tokens[$closeBrace]['line']
                 && ($tokens[$nextContent]['code'] === T_WHITESPACE
                 || $tokens[$nextContent]['code'] === T_COMMENT
                 || isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$nextContent]['code']]) === true)
@@ -129,7 +130,8 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
 
         $lastContent = $phpcsFile->findPrevious(T_WHITESPACE, ($closeBrace - 1), $stackPtr, true);
 
-        if ($difference === -1
+        if (
+            $difference === -1
             || $tokens[$lastContent]['line'] === $tokens[$closeBrace]['line']
         ) {
             $error = 'Closing %s brace must be on a line by itself';
@@ -176,7 +178,8 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
                     continue;
                 }
 
-                if ($tokens[$nextSignificant]['code'] === T_ATTRIBUTE
+                if (
+                    $tokens[$nextSignificant]['code'] === T_ATTRIBUTE
                     && isset($tokens[$nextSignificant]['attribute_closer']) === true
                 ) {
                     $nextSignificant = $tokens[$nextSignificant]['attribute_closer'];

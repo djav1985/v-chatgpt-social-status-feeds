@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that block comments are used appropriately.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class BlockCommentSniff implements Sniff
 {
-
     /**
      * The --tab-width CLI value that is being used.
      *
@@ -128,7 +128,8 @@ class BlockCommentSniff implements Sniff
 
         // Construct the comment into an array.
         while (($nextComment = $phpcsFile->findNext(T_WHITESPACE, ($nextComment + 1), null, true)) !== false) {
-            if ($tokens[$nextComment]['code'] !== $tokens[$stackPtr]['code']
+            if (
+                $tokens[$nextComment]['code'] !== $tokens[$stackPtr]['code']
                 && isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$nextComment]['code']]) === false
             ) {
                 // Found the next bit of code.
@@ -143,7 +144,8 @@ class BlockCommentSniff implements Sniff
             $lastLine       = $tokens[$nextComment]['line'];
             $commentLines[] = $nextComment;
             $commentString .= $tokens[$nextComment]['content'];
-            if ($tokens[$nextComment]['code'] === T_DOC_COMMENT_CLOSE_TAG
+            if (
+                $tokens[$nextComment]['code'] === T_DOC_COMMENT_CLOSE_TAG
                 || substr($tokens[$nextComment]['content'], -2) === '*/'
             ) {
                 break;
@@ -249,7 +251,8 @@ class BlockCommentSniff implements Sniff
                 $error = 'First line of comment not aligned correctly; expected %s but found %s';
                 $fix   = $phpcsFile->addFixableError($error, $commentLines[1], 'FirstLineIndent', $data);
                 if ($fix === true) {
-                    if (isset($tokens[$commentLines[1]]['orig_content']) === true
+                    if (
+                        isset($tokens[$commentLines[1]]['orig_content']) === true
                         && $tokens[$commentLines[1]]['orig_content'][0] === "\t"
                     ) {
                         // Line is indented using tabs.
@@ -309,7 +312,8 @@ class BlockCommentSniff implements Sniff
                 $error = 'Comment line indented incorrectly; expected at least %s but found %s';
                 $fix   = $phpcsFile->addFixableError($error, $line, 'LineIndent', $data);
                 if ($fix === true) {
-                    if (isset($tokens[$line]['orig_content']) === true
+                    if (
+                        isset($tokens[$line]['orig_content']) === true
                         && $tokens[$line]['orig_content'][0] === "\t"
                     ) {
                         // Line is indented using tabs.
@@ -353,7 +357,8 @@ class BlockCommentSniff implements Sniff
                 $error = 'Last line of comment aligned incorrectly; expected %s but found %s';
                 $fix   = $phpcsFile->addFixableError($error, $commentLines[$lastIndex], 'LastLineIndent', $data);
                 if ($fix === true) {
-                    if (isset($tokens[$line]['orig_content']) === true
+                    if (
+                        isset($tokens[$line]['orig_content']) === true
                         && $tokens[$line]['orig_content'][0] === "\t"
                     ) {
                         // Line is indented using tabs.
@@ -370,7 +375,8 @@ class BlockCommentSniff implements Sniff
 
         // Check that the lines before and after this comment are blank.
         $contentBefore = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        if ((isset($tokens[$contentBefore]['scope_closer']) === true
+        if (
+            (isset($tokens[$contentBefore]['scope_closer']) === true
             && $tokens[$contentBefore]['scope_opener'] === $contentBefore)
             || $tokens[$contentBefore]['code'] === T_OPEN_TAG
             || $tokens[$contentBefore]['code'] === T_OPEN_TAG_WITH_ECHO

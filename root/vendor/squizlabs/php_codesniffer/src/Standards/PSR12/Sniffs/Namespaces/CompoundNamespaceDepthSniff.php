@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that compound namespaces are not defined too deep.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class CompoundNamespaceDepthSniff implements Sniff
 {
-
     /**
      * The max depth for compound namespaces.
      *

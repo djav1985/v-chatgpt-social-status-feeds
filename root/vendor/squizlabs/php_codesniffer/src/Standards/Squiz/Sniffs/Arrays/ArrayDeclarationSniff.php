@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures that arrays conform to the array coding standard.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ArrayDeclarationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -47,14 +46,16 @@ class ArrayDeclarationSniff implements Sniff
 
         // Prevent acting on short lists inside a foreach (see
         // https://github.com/PHPCSStandards/PHP_CodeSniffer/issues/527).
-        if ($tokens[$stackPtr]['code'] === T_OPEN_SHORT_ARRAY
+        if (
+            $tokens[$stackPtr]['code'] === T_OPEN_SHORT_ARRAY
             && isset($tokens[$stackPtr]['nested_parenthesis']) === true
         ) {
             $nestedParens          = $tokens[$stackPtr]['nested_parenthesis'];
             $lastParenthesisCloser = end($nestedParens);
             $lastParenthesisOpener = key($nestedParens);
 
-            if (isset($tokens[$lastParenthesisCloser]['parenthesis_owner']) === true
+            if (
+                isset($tokens[$lastParenthesisCloser]['parenthesis_owner']) === true
                 && $tokens[$tokens[$lastParenthesisCloser]['parenthesis_owner']]['code'] === T_FOREACH
             ) {
                 $asKeyword = $phpcsFile->findNext(T_AS, ($lastParenthesisOpener + 1), $lastParenthesisCloser);
@@ -254,7 +255,8 @@ class ArrayDeclarationSniff implements Sniff
                 $nestedParenthesis = array_pop($nested);
             }
 
-            if ($nestedParenthesis === false
+            if (
+                $nestedParenthesis === false
                 || $tokens[$nestedParenthesis]['line'] !== $tokens[$stackPtr]['line']
             ) {
                 $error = 'Array with multiple values cannot be declared on a single line';
@@ -386,7 +388,8 @@ class ArrayDeclarationSniff implements Sniff
         // Find all the double arrows that reside in this scope.
         for ($nextToken = ($stackPtr + 1); $nextToken < $arrayEnd; $nextToken++) {
             // Skip bracketed statements, like function calls.
-            if ($tokens[$nextToken]['code'] === T_OPEN_PARENTHESIS
+            if (
+                $tokens[$nextToken]['code'] === T_OPEN_PARENTHESIS
                 && (isset($tokens[$nextToken]['parenthesis_owner']) === false
                 || $tokens[$nextToken]['parenthesis_owner'] !== $stackPtr)
             ) {
@@ -394,7 +397,8 @@ class ArrayDeclarationSniff implements Sniff
                 continue;
             }
 
-            if ($tokens[$nextToken]['code'] === T_ARRAY
+            if (
+                $tokens[$nextToken]['code'] === T_ARRAY
                 || $tokens[$nextToken]['code'] === T_OPEN_SHORT_ARRAY
                 || $tokens[$nextToken]['code'] === T_CLOSURE
                 || $tokens[$nextToken]['code'] === T_FN
@@ -466,7 +470,8 @@ class ArrayDeclarationSniff implements Sniff
                 if ($keyUsed === false) {
                     if ($tokens[($nextToken - 1)]['code'] === T_WHITESPACE) {
                         $prev = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($nextToken - 1), null, true);
-                        if (($tokens[$prev]['code'] !== T_END_HEREDOC
+                        if (
+                            ($tokens[$prev]['code'] !== T_END_HEREDOC
                             && $tokens[$prev]['code'] !== T_END_NOWDOC)
                             || $tokens[($nextToken - 1)]['line'] === $tokens[$nextToken]['line']
                         ) {
@@ -669,7 +674,8 @@ class ArrayDeclarationSniff implements Sniff
                 ];
                 $ignoreTokens += Tokens::CAST_TOKENS;
 
-                if ($tokens[$valuePointer]['code'] === T_CLOSURE
+                if (
+                    $tokens[$valuePointer]['code'] === T_CLOSURE
                     || $tokens[$valuePointer]['code'] === T_FN
                 ) {
                     // Check if the closure is static, if it is, override the value pointer as indices before skip static.

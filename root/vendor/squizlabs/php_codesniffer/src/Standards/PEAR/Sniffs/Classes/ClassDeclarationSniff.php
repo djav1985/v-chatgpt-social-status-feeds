@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the declaration of the class is correct.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ClassDeclarationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

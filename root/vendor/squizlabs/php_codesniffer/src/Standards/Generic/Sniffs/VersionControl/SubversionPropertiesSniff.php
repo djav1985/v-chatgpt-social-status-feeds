@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests that the correct Subversion properties are set.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class SubversionPropertiesSniff implements Sniff
 {
-
     /**
      * The Subversion properties that should be set.
      *
@@ -72,7 +72,8 @@ class SubversionPropertiesSniff implements Sniff
 
         $allProperties = ($properties + static::REQUIRED_PROPERTIES);
         foreach ($allProperties as $key => $value) {
-            if (isset($properties[$key]) === true
+            if (
+                isset($properties[$key]) === true
                 && isset(static::REQUIRED_PROPERTIES[$key]) === false
             ) {
                 $error = 'Unexpected Subversion property "%s" = "%s"';
@@ -84,7 +85,8 @@ class SubversionPropertiesSniff implements Sniff
                 continue;
             }
 
-            if (isset($properties[$key]) === false
+            if (
+                isset($properties[$key]) === false
                 && isset(static::REQUIRED_PROPERTIES[$key]) === true
             ) {
                 $error = 'Missing Subversion property "%s" = "%s"';
@@ -96,7 +98,8 @@ class SubversionPropertiesSniff implements Sniff
                 continue;
             }
 
-            if ($properties[$key] !== null
+            if (
+                $properties[$key] !== null
                 && $properties[$key] !== static::REQUIRED_PROPERTIES[$key]
             ) {
                 $error = 'Subversion property "%s" = "%s" does not match "%s"';

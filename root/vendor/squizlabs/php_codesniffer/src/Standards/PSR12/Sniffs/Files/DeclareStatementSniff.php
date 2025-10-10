@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks the format of the declare statements.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DeclareStatementSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

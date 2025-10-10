@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensure return types are defined correctly for functions and closures.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ReturnTypeDeclarationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -45,7 +44,8 @@ class ReturnTypeDeclarationSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]['parenthesis_opener']) === false
+        if (
+            isset($tokens[$stackPtr]['parenthesis_opener']) === false
             || isset($tokens[$stackPtr]['parenthesis_closer']) === false
         ) {
             return;
@@ -61,12 +61,14 @@ class ReturnTypeDeclarationSniff implements Sniff
             $returnType = $phpcsFile->findPrevious(T_NULLABLE, ($returnType - 1));
         }
 
-        if ($tokens[($returnType - 1)]['code'] !== T_WHITESPACE
+        if (
+            $tokens[($returnType - 1)]['code'] !== T_WHITESPACE
             || $tokens[($returnType - 1)]['content'] !== ' '
             || $tokens[($returnType - 2)]['code'] !== T_COLON
         ) {
             $error = 'There must be a single space between the colon and type in a return type declaration';
-            if ($tokens[($returnType - 1)]['code'] === T_WHITESPACE
+            if (
+                $tokens[($returnType - 1)]['code'] === T_WHITESPACE
                 && $tokens[($returnType - 2)]['code'] === T_COLON
             ) {
                 $fix = $phpcsFile->addFixableError($error, $returnType, 'SpaceBeforeReturnType');

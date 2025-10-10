@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that properties are declared correctly.
  *
@@ -18,8 +19,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class PropertyDeclarationSniff extends AbstractVariableSniff
 {
-
-
     /**
      * Only listen to variables within OO scopes.
      */

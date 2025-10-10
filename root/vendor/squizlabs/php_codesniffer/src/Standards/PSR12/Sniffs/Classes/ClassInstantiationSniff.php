@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that classes are instantiated with parentheses.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ClassInstantiationSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -66,14 +65,16 @@ class ClassInstantiationSniff implements Sniff
             // Bow out when this is an anonymous class.
             // Anonymous classes are the only situation which would allow for an attribute
             // or for the readonly keyword between "new" and the class "name".
-            if ($tokens[$i]['code'] === T_ATTRIBUTE
+            if (
+                $tokens[$i]['code'] === T_ATTRIBUTE
                 || $tokens[$i]['code'] === T_READONLY
                 || $tokens[$i]['code'] === T_ANON_CLASS
             ) {
                 return;
             }
 
-            if ($tokens[$i]['code'] === T_OPEN_SQUARE_BRACKET
+            if (
+                $tokens[$i]['code'] === T_OPEN_SQUARE_BRACKET
                 || $tokens[$i]['code'] === T_OPEN_CURLY_BRACKET
             ) {
                 $i = $tokens[$i]['bracket_closer'];

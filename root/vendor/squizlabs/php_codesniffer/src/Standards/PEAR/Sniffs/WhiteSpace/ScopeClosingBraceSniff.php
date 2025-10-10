@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the closing braces of scopes are aligned correctly.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ScopeClosingBraceSniff implements Sniff
 {
-
     /**
      * The number of spaces code should be indented.
      *
@@ -61,7 +61,8 @@ class ScopeClosingBraceSniff implements Sniff
         // If the scope closer doesn't think it belongs to this scope opener
         // then the opener is sharing its closer with other tokens. We only
         // want to process the closer once, so skip this one.
-        if (isset($tokens[$scopeEnd]['scope_condition']) === false
+        if (
+            isset($tokens[$scopeEnd]['scope_condition']) === false
             || $tokens[$scopeEnd]['scope_condition'] !== $stackPtr
         ) {
             return;
@@ -98,7 +99,8 @@ class ScopeClosingBraceSniff implements Sniff
                 continue;
             }
 
-            if ($tokens[$lastContent]['code'] === T_INLINE_HTML
+            if (
+                $tokens[$lastContent]['code'] === T_INLINE_HTML
                 && ltrim($tokens[$lastContent]['content']) === ''
             ) {
                 continue;
@@ -140,7 +142,8 @@ class ScopeClosingBraceSniff implements Sniff
         }
 
         $fix = false;
-        if ($tokens[$stackPtr]['code'] === T_CASE
+        if (
+            $tokens[$stackPtr]['code'] === T_CASE
             || $tokens[$stackPtr]['code'] === T_DEFAULT
         ) {
             // BREAK statements should be indented n spaces from the

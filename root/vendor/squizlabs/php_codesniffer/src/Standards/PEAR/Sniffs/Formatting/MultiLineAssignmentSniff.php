@@ -1,4 +1,5 @@
 <?php
+
 /**
  * If an assignment goes over two lines, ensure the equal sign is indented.
  *
@@ -15,7 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class MultiLineAssignmentSniff implements Sniff
 {
-
     /**
      * The number of spaces code should be indented.
      *

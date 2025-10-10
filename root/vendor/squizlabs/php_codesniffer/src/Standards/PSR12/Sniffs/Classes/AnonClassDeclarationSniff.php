@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks that the declaration of an anon class is correct.
  *
@@ -18,7 +19,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class AnonClassDeclarationSniff extends ClassDeclarationSniff
 {
-
     /**
      * The PSR2 MultiLineFunctionDeclarations sniff.
      *
@@ -86,7 +86,8 @@ class AnonClassDeclarationSniff extends ClassDeclarationSniff
         $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($opener - 1), $stackPtr, true);
 
         $implements = $phpcsFile->findPrevious(T_IMPLEMENTS, ($opener - 1), $stackPtr);
-        if ($implements !== false
+        if (
+            $implements !== false
             && $tokens[$opener]['line'] !== $tokens[$implements]['line']
             && $tokens[$opener]['line'] === $tokens[$prev]['line']
         ) {
@@ -195,7 +196,8 @@ class AnonClassDeclarationSniff extends ClassDeclarationSniff
                     // move the closing parenthesis after any other token.
                     $prev = ($closeBracket - 1);
                     while (isset(Tokens::EMPTY_TOKENS[$tokens[$prev]['code']]) === true) {
-                        if (($tokens[$prev]['code'] === T_COMMENT)
+                        if (
+                            ($tokens[$prev]['code'] === T_COMMENT)
                             && (strpos($tokens[$prev]['content'], '*/') !== false)
                         ) {
                             break;

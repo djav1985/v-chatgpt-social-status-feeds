@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checks for empty catch clause without a comment.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class EmptyCatchCommentSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

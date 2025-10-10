@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures class and interface names start with a capital letter and use _ separators.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ValidClassNameSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *

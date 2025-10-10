@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Check for merge conflict artefacts.
  *
@@ -15,8 +16,6 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class GitMergeConflictSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -65,7 +64,8 @@ class GitMergeConflictSniff implements Sniff
             switch ($tokens[$i]['code']) {
                 // Check for first non-comment, non-heredoc/nowdoc, non-inline HTML merge conflict opener.
                 case T_SL:
-                    if (isset($tokens[($i + 1)], $tokens[($i + 2)]) !== false
+                    if (
+                        isset($tokens[($i + 1)], $tokens[($i + 2)]) !== false
                         && $tokens[($i + 1)]['code'] === T_SL
                         && $tokens[($i + 2)]['code'] === T_STRING
                         && trim($tokens[($i + 2)]['content']) === '<<< HEAD'
@@ -77,7 +77,8 @@ class GitMergeConflictSniff implements Sniff
 
                 // Check for merge conflict closer which was opened in a heredoc/nowdoc.
                 case T_SR:
-                    if (isset($tokens[($i + 1)], $tokens[($i + 2)], $tokens[($i + 3)], $tokens[($i + 4)]) !== false
+                    if (
+                        isset($tokens[($i + 1)], $tokens[($i + 2)], $tokens[($i + 3)], $tokens[($i + 4)]) !== false
                         && $tokens[($i + 1)]['code'] === T_SR
                         && $tokens[($i + 2)]['code'] === T_SR
                         && $tokens[($i + 3)]['code'] === T_GREATER_THAN
@@ -107,7 +108,8 @@ class GitMergeConflictSniff implements Sniff
                     }
 
                     if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                        if ($tokens[$i]['content'] === '======='
+                        if (
+                            $tokens[$i]['content'] === '======='
                             && $tokens[($i + 1)]['code'] === T_DOC_COMMENT_WHITESPACE
                         ) {
                             $phpcsFile->addError($error, $i, 'DelimiterFound', ['delimiter']);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ensures all language constructs contain a single space between themselves and their content.
  *
@@ -17,8 +18,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class LanguageConstructSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -80,7 +79,8 @@ class LanguageConstructSpacingSniff implements Sniff
             }
         }
 
-        if ($tokens[$stackPtr]['code'] === T_YIELD_FROM
+        if (
+            $tokens[$stackPtr]['code'] === T_YIELD_FROM
             && strtolower($content) !== 'yield from'
         ) {
             $found        = $content;
@@ -90,7 +90,8 @@ class LanguageConstructSpacingSniff implements Sniff
             // Handle potentially multi-line/multi-token "yield from" expressions.
             if (preg_match('`yield\s+from`i', $content) !== 1) {
                 for ($i = ($stackPtr + 1); $i < $phpcsFile->numTokens; $i++) {
-                    if (isset(Tokens::EMPTY_TOKENS[$tokens[$i]['code']]) === false
+                    if (
+                        isset(Tokens::EMPTY_TOKENS[$tokens[$i]['code']]) === false
                         && $tokens[$i]['code'] !== T_YIELD_FROM
                     ) {
                         break;
@@ -102,7 +103,8 @@ class LanguageConstructSpacingSniff implements Sniff
 
                     $found .= $tokens[$i]['content'];
 
-                    if ($tokens[$i]['code'] === T_YIELD_FROM
+                    if (
+                        $tokens[$i]['code'] === T_YIELD_FROM
                         && strtolower(trim($tokens[$i]['content'])) === 'from'
                     ) {
                         break;

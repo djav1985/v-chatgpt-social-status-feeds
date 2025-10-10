@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that all class constants have their visibility set.
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ConstantVisibilitySniff implements Sniff
 {
-
     /**
      * Visibility tokens which are valid for class constants.
      *

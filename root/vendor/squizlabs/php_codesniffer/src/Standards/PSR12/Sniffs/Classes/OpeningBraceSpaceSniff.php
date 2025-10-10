@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that opening braces are not followed by blank lines.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class OpeningBraceSpaceSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -47,7 +46,8 @@ class OpeningBraceSpaceSniff implements Sniff
 
         $opener = $tokens[$stackPtr]['scope_opener'];
         $next   = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), null, true);
-        if ($next === false
+        if (
+            $next === false
             || $tokens[$next]['line'] <= ($tokens[$opener]['line'] + 1)
         ) {
             return;

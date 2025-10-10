@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies spacing between variables and increment/decrement operators.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class IncrementDecrementSpacingSniff implements Sniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -52,7 +51,8 @@ class IncrementDecrementSpacingSniff implements Sniff
 
         // Is this a pre-increment/decrement ?
         $nextNonEmpty = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
-        if ($nextNonEmpty !== false
+        if (
+            $nextNonEmpty !== false
             && ($tokens[$nextNonEmpty]['code'] === T_VARIABLE
             || isset(Tokens::NAME_TOKENS[$tokens[$nextNonEmpty]['code']]) === true)
         ) {
@@ -105,7 +105,8 @@ class IncrementDecrementSpacingSniff implements Sniff
 
         // Is this a post-increment/decrement ?
         $prevNonEmpty = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        if ($prevNonEmpty !== false
+        if (
+            $prevNonEmpty !== false
             && ($tokens[$prevNonEmpty]['code'] === T_VARIABLE
             || isset(Tokens::NAME_TOKENS[$tokens[$prevNonEmpty]['code']]) === true
             || $tokens[$prevNonEmpty]['code'] === T_CLOSE_SQUARE_BRACKET)

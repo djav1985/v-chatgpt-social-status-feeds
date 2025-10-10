@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that operators have valid spacing surrounding them.
  *
@@ -16,8 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class OperatorSpacingSniff extends SquizOperatorSpacingSniff
 {
-
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -79,14 +78,16 @@ class OperatorSpacingSniff extends SquizOperatorSpacingSniff
         $checkAfter  = true;
 
         // Skip short ternary.
-        if ($tokens[($stackPtr)]['code'] === T_INLINE_ELSE
+        if (
+            $tokens[($stackPtr)]['code'] === T_INLINE_ELSE
             && $tokens[($stackPtr - 1)]['code'] === T_INLINE_THEN
         ) {
             $checkBefore = false;
         }
 
         // Skip operator with comment on previous line.
-        if ($tokens[($stackPtr - 1)]['code'] === T_COMMENT
+        if (
+            $tokens[($stackPtr - 1)]['code'] === T_COMMENT
             && $tokens[($stackPtr - 1)]['line'] < $tokens[$stackPtr]['line']
         ) {
             $checkBefore = false;
@@ -94,7 +95,8 @@ class OperatorSpacingSniff extends SquizOperatorSpacingSniff
 
         if (isset($tokens[($stackPtr + 1)]) === true) {
             // Skip short ternary.
-            if ($tokens[$stackPtr]['code'] === T_INLINE_THEN
+            if (
+                $tokens[$stackPtr]['code'] === T_INLINE_THEN
                 && $tokens[($stackPtr + 1)]['code'] === T_INLINE_ELSE
             ) {
                 $checkAfter = false;

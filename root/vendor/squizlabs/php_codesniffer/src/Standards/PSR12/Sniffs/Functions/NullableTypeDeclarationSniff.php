@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verifies that nullable typehints are lacking superfluous whitespace, e.g. ?int
  *
@@ -16,7 +17,6 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class NullableTypeDeclarationSniff implements Sniff
 {
-
     /**
      * An array of valid tokens after `T_NULLABLE` occurrences.
      *
