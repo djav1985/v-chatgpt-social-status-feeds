@@ -68,9 +68,6 @@ class StatusService
         $systemMessage = SYSTEM_MSG;
         $accountInfo = Account::getAcctInfo($accountOwner, $accountName);
         $userInfo = User::getUserInfo($accountOwner);
-        if (is_array($userInfo)) {
-            $userInfo = (object)$userInfo;
-        }
 
         if (!$accountInfo || !$userInfo) {
             $error = sprintf(
