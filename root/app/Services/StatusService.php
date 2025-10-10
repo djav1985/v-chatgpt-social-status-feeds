@@ -293,6 +293,13 @@ class StatusService
             return $json;
         }
 
+        // Try to decode first - if it's already valid JSON, don't modify it
+        json_decode($json);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $json;
+        }
+
+        // Only attempt repair if JSON is invalid
         $openCount = substr_count($json, '{');
         $closeCount = substr_count($json, '}');
 
