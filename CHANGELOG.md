@@ -9,12 +9,13 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Queue tests covering the new retry lifecycle and fill-queue scheduling rules.
 - Separate installation and upgrade paths: `install.php`/`install.sql` for fresh installs and `upgrade.php`/`upgrade.sql` for schema migrations.
 - `MIGRATION.md` documentation file detailing the migration process and schema changes.
+- Regression coverage for next-day scheduling, stale job recovery, quota enforcement, and image purge edge cases.
 
 ### Changed
 - Queue worker now generates multiple statuses per job using a configurable batch size (default 3) to support bulk content creation.
 - Introduced lightweight in-memory caches for frequent account and user lookups to cut duplicate database queries during status generation and dashboard actions.
 - `QueueService::runQueue()` now reads due rows directly from the database, deleting successes, marking the first failure as `retry`, and removing permanently after a second failure.
-- `fillQueue()` appends future slots without truncation, skips past hours, and relies on unique `(account, username, scheduled_at)` rows instead of Enqueue payloads.
+- `fillQueue()` appends a full day of slots without truncation, including past hours so catch-up runs can process missed jobs, and relies on unique `(account, username, scheduled_at)` rows instead of Enqueue payloads.
 - Cron documentation updated to describe the simplified worker behaviour and retry policy.
 - Dashboard collapse controls now provide deterministic IDs, synchronized ARIA attributes, and visually hidden copy to improve assistive technology support.
 - Footer spacing and layout styles updated so primary content remains visible on compact screens.
@@ -34,3 +35,5 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Deferred RSS escaping in `FeedController` so feed generation keeps special characters intact for account lookups while still outputting safe XML.
 - Adjusted truncated JSON repair for generated statuses to append only the missing closing braces, eliminating stray quote characters that broke decoding.
 - Returned raw account links while escaping them at render time and tightened feed/dashboard metadata escaping, including GUIDs now built from status identifiers.
+- Dashboard share/copy buttons now emit URL-encoded paths so clipboard and share APIs work with names containing spaces or reserved characters.
+- Queue scheduling enqueues same-day hours (even if already in the past), releases stale `processing` jobs, enforces API quotas for background runs, and guards image purging when the directory is missing.

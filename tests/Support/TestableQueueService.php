@@ -27,6 +27,19 @@ final class TestableQueueService extends QueueService
     public array $jobOutcomes = [];
     public int $statusGenerations = 0;
     public ?int $fakeBatchSize = null;
+    public int $releaseCallCount = 0;
+    /** @var array<int, int> */
+    public array $releaseTimestamps = [];
+    public int $fakeReleasedCount = 0;
+    public ?string $imageDirectoryOverride = null;
+    /** @var array<string, object> */
+    public array $userInfoMap = [];
+    /** @var array<string, int> */
+    public array $updatedUsedApiCalls = [];
+    /** @var array<string, bool> */
+    public array $limitEmailUpdates = [];
+    /** @var array<int, string> */
+    public array $sentLimitEmails = [];
 
     private ?string $currentJobId = null;
 
@@ -50,6 +63,8 @@ final class TestableQueueService extends QueueService
 
     public function claimDueJobs(int $now): array
     {
+        $this->releaseStaleProcessingJobs($now);
+
         // For testing, simulate atomic claiming by setting processing flag
         $claimedJobs = [];
         foreach ($this->dueJobs as $job) {
@@ -62,6 +77,8 @@ final class TestableQueueService extends QueueService
 
     public function claimDueJobsByStatus(int $now, string $status): array
     {
+        $this->releaseStaleProcessingJobs($now);
+
         // For testing, simulate atomic claiming by filtering and setting processing flag
         $claimedJobs = [];
         $batchSize = $this->fakeBatchSize ?? $this->getJobBatchSize();
@@ -189,6 +206,79 @@ final class TestableQueueService extends QueueService
     public function seedExistingJob(string $username, string $account, int $scheduledAt): void
     {
         $this->addExistingJob($username, $account, $scheduledAt);
+    }
+
+    protected function releaseStaleProcessingJobs(int $now): int
+    {
+        $this->releaseCallCount++;
+        $this->releaseTimestamps[] = $now;
+
+        return $this->fakeReleasedCount;
+    }
+
+    protected function getImageDirectory(): string
+    {
+        if ($this->imageDirectoryOverride !== null) {
+            return $this->imageDirectoryOverride;
+        }
+
+        return parent::getImageDirectory();
+    }
+
+    protected function getUserInfo(string $username): ?object
+    {
+        if (!array_key_exists($username, $this->userInfoMap)) {
+            $this->userInfoMap[$username] = (object) [
+                'username' => $username,
+                'email' => $username . '@example.test',
+                'max_api_calls' => 999,
+                'used_api_calls' => 0,
+                'limit_email_sent' => false,
+            ];
+        }
+
+        return $this->userInfoMap[$username];
+    }
+
+    protected function updateUsedApiCalls(string $username, int $usedApiCalls): void
+    {
+        $this->updatedUsedApiCalls[$username] = $usedApiCalls;
+        $user = $this->getUserInfo($username);
+        if ($user !== null) {
+            $user->used_api_calls = $usedApiCalls;
+            $this->userInfoMap[$username] = $user;
+        }
+    }
+
+    protected function setLimitEmailSent(string $username, bool $sent): void
+    {
+        $this->limitEmailUpdates[$username] = $sent;
+        $user = $this->getUserInfo($username);
+        if ($user !== null) {
+            $user->limit_email_sent = $sent;
+            $this->userInfoMap[$username] = $user;
+        }
+    }
+
+    protected function sendLimitEmail(object $user): void
+    {
+        $this->sentLimitEmails[] = (string) ($user->username ?? '');
+    }
+
+    public function setUserQuota(string $username, int $used, int $max, bool $limitEmailSent = false, string $email = 'user@example.test'): void
+    {
+        $this->userInfoMap[$username] = (object) [
+            'username' => $username,
+            'email' => $email,
+            'max_api_calls' => $max,
+            'used_api_calls' => $used,
+            'limit_email_sent' => $limitEmailSent,
+        ];
+    }
+
+    public function callScheduledTimestampForHour(int $hour, int $reference): int
+    {
+        return parent::scheduledTimestampForHour($hour, $reference);
     }
 
     protected function addExistingJob(string $username, string $account, int $scheduledAt): void

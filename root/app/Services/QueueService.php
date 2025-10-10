@@ -36,9 +36,6 @@ class QueueService
 
         foreach ($this->normalizeHours($cron) as $hour) {
             $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
-            if ($scheduledAt <= $now) {
-                continue;
-            }
 
             if ($this->jobExistsInStorage($username, $account, $scheduledAt)) {
                 continue;
@@ -104,7 +101,18 @@ class QueueService
      */
     public function purgeImages(): bool
     {
-        $imageDir = __DIR__ . '/../../public/images/';
+        $imageDir = rtrim($this->getImageDirectory(), DIRECTORY_SEPARATOR);
+        if ($imageDir === '') {
+            return true;
+        }
+
+        if (!is_dir($imageDir)) {
+            $dirMode = defined('DIR_MODE') ? (int) constant('DIR_MODE') : 0755;
+            if (!@mkdir($imageDir, $dirMode, true) && !is_dir($imageDir)) {
+                return true;
+            }
+        }
+
         $files = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($imageDir, RecursiveDirectoryIterator::SKIP_DOTS),
             RecursiveIteratorIterator::CHILD_FIRST
@@ -146,6 +154,11 @@ class QueueService
             );
         }
         return true;
+    }
+
+    protected function getImageDirectory(): string
+    {
+        return __DIR__ . '/../../public/images/';
     }
 
     /**
@@ -223,9 +236,6 @@ class QueueService
 
             foreach ($this->normalizeHours((string) ($account->cron ?? '')) as $hour) {
                 $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
-                if ($scheduledAt <= $now) {
-                    continue;
-                }
 
                 $username = (string) ($account->username ?? '');
                 $acct = (string) ($account->account ?? '');
@@ -285,8 +295,10 @@ class QueueService
     {
         $db = DatabaseManager::getInstance();
         $claimedJobs = [];
-        
-        // First, get candidate job IDs 
+
+        $this->releaseStaleProcessingJobs($now);
+
+        // First, get candidate job IDs
         $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status IN (\'pending\', \'retry\') AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
         $db->bind(':now', $now);
         $candidates = $db->resultSet();
@@ -317,7 +329,9 @@ class QueueService
         $db = DatabaseManager::getInstance();
         $claimedJobs = [];
         $batchSize = $this->getJobBatchSize(); // Use STATUS_JOB_BATCH_SIZE to limit concurrent jobs
-        
+
+        $this->releaseStaleProcessingJobs($now);
+
         // First, get candidate job IDs for specific status, limited by batch size
         $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status = :status AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC LIMIT :limit');
         $db->bind(':status', $status);
@@ -340,6 +354,23 @@ class QueueService
         }
         
         return $claimedJobs;
+    }
+
+    protected function releaseStaleProcessingJobs(int $now): int
+    {
+        $timeout = defined('STATUS_JOB_STALE_AFTER') ? (int) constant('STATUS_JOB_STALE_AFTER') : 3600;
+        if ($timeout <= 0) {
+            return 0;
+        }
+
+        $threshold = max(0, $now - $timeout);
+
+        $db = DatabaseManager::getInstance();
+        $db->query('UPDATE status_jobs SET processing = FALSE WHERE processing = TRUE AND scheduled_at <= :threshold');
+        $db->bind(':threshold', $threshold);
+        $db->execute();
+
+        return $db->rowCount();
     }
 
     protected function deleteJobById(string $id): void
@@ -445,11 +476,37 @@ class QueueService
             return;
         }
 
+        $user = $this->getUserInfo($username);
+        if ($user === null) {
+            throw new RuntimeException(sprintf('User %s not found for queued job.', $username));
+        }
+
+        $maxApiCalls = (int) ($user->max_api_calls ?? 0);
+        $usedApiCalls = (int) ($user->used_api_calls ?? 0);
+        $limitEmailSent = (bool) ($user->limit_email_sent ?? false);
+
         $attempts = max(1, $count);
         for ($i = 0; $i < $attempts; $i++) {
+            if ($maxApiCalls > 0 && $usedApiCalls >= $maxApiCalls) {
+                if (!$limitEmailSent) {
+                    $this->sendLimitEmail($user);
+                    $this->setLimitEmailSent($username, true);
+                    $limitEmailSent = true;
+                }
+
+                throw new RuntimeException(sprintf('API limit reached for %s.', $username));
+            }
+
             $result = $this->callStatusServiceGenerateStatus($account, $username);
             if (isset($result['error'])) {
                 throw new RuntimeException((string) $result['error']);
+            }
+
+            $usedApiCalls++;
+            $this->updateUsedApiCalls($username, $usedApiCalls);
+
+            if (property_exists($user, 'used_api_calls')) {
+                $user->used_api_calls = $usedApiCalls;
             }
         }
     }
@@ -460,6 +517,41 @@ class QueueService
     protected function callStatusServiceGenerateStatus(string $account, string $username): ?array
     {
         return StatusService::generateStatus($account, $username);
+    }
+
+    protected function getUserInfo(string $username): ?object
+    {
+        $info = User::getUserInfo($username);
+
+        if ($info === null) {
+            return null;
+        }
+
+        return is_object($info) ? $info : (object) $info;
+    }
+
+    protected function updateUsedApiCalls(string $username, int $usedApiCalls): void
+    {
+        User::updateUsedApiCalls($username, $usedApiCalls);
+    }
+
+    protected function setLimitEmailSent(string $username, bool $sent): void
+    {
+        User::setLimitEmailSent($username, $sent);
+    }
+
+    protected function sendLimitEmail(object $user): void
+    {
+        if (!isset($user->email, $user->username)) {
+            return;
+        }
+
+        Mailer::sendTemplate(
+            (string) $user->email,
+            'API Limit Reached',
+            'api_limit_reached',
+            ['username' => (string) $user->username]
+        );
     }
 
     protected function statusesPerJob(): int
@@ -519,6 +611,8 @@ class QueueService
     {
         $tz = new DateTimeZone(date_default_timezone_get());
         $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);
-        return (int) $referenceTime->setTime($hour, 0, 0)->format('U');
+        $scheduled = $referenceTime->setTime($hour, 0, 0);
+
+        return (int) $scheduled->format('U');
     }
 }
