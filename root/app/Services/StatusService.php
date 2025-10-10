@@ -257,10 +257,7 @@ class StatusService
                         $cleaned = preg_replace('/[\x00-\x1F\x7F]/u', '', $raw);
 
                         // 2. Auto-close broken JSON if truncated
-                        $fixed = rtrim($cleaned);
-                        if (str_starts_with($fixed, '{') && !str_ends_with($fixed, '}')) {
-                            $fixed .= '"}';
-                        }
+                        $fixed = self::repairTruncatedJson(rtrim($cleaned));
 
                         // 3. Decode
                         $decodedContent = json_decode($fixed, true);
@@ -281,6 +278,29 @@ class StatusService
         $error = "Error generating status for $accountName owned by $accountOwner: API response did not contain expected structured content. Full response: " . var_export($response, true);
         ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
+    }
+
+    /**
+     * Attempt to repair truncated JSON payloads by appending missing closing braces.
+     */
+    private static function repairTruncatedJson(string $json): string
+    {
+        if ($json === '') {
+            return $json;
+        }
+
+        if (!str_starts_with($json, '{')) {
+            return $json;
+        }
+
+        $openCount = substr_count($json, '{');
+        $closeCount = substr_count($json, '}');
+
+        if ($openCount > $closeCount) {
+            $json .= str_repeat('}', $openCount - $closeCount);
+        }
+
+        return $json;
     }
 
     /**

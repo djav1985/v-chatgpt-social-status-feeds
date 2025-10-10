@@ -46,4 +46,20 @@ final class StatusServiceTest extends TestCase
 
         $this->assertMatchesRegularExpression('/^[a-f0-9]{32}\\.png$/', $result);
     }
+
+    public function testRepairTruncatedJsonAppendsOnlyClosingBrace(): void
+    {
+        $input = '{"status":"Great day"';
+        $result = $this->invokePrivateMethod('repairTruncatedJson', $input);
+
+        $this->assertSame('{"status":"Great day"}', $result);
+    }
+
+    public function testRepairTruncatedJsonLeavesBalancedJsonUntouched(): void
+    {
+        $input = '{"status":"Great day"}';
+        $result = $this->invokePrivateMethod('repairTruncatedJson', $input);
+
+        $this->assertSame($input, $result);
+    }
 }

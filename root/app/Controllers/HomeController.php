@@ -63,7 +63,7 @@ class HomeController extends Controller
             $accountsData[] = [
                 'name' => $name,
                 'info' => $acctInfo,
-                'feedUrl' => "/feeds/{$accountOwner}/{$name}",
+                'feedUrl' => '/feeds/' . rawurlencode((string) $accountOwner) . '/' . rawurlencode((string) $name),
                 'statuses' => $statusList,
             ];
         }
@@ -206,7 +206,8 @@ class HomeController extends Controller
         $deleteSvg = '<svg width="24" height="24" fill="currentColor" xmlns="https://www.w3.org/2000/svg"><path d="M7.5 20l4.5-4.5 4.5 4.5 1.5-1.5-4.5-4.5 4.5-4.5-1.5-1.5-4.5 4.5-4.5-4.5-1.5 1.5 4.5 4.5-4.5 4.5 1.5 1.5z"/></svg>';
 
         $content = "<div class='status-actions'>";
-        $content .= "<button class='btn btn-primary square-button copy-button' data-text='{$encodedStatusText}' data-url='{$imageUrl}' data-filename='{$filename}' title='Copy Text and Download Image'>{$combinedSvg}</button>";
+        $escapedFilename = htmlspecialchars($filename, ENT_QUOTES, 'UTF-8');
+        $content .= "<button class='btn btn-primary square-button copy-button' data-text='{$encodedStatusText}' data-url='{$imageUrl}' data-filename='{$escapedFilename}' title='Copy Text and Download Image'>{$combinedSvg}</button>";
         $content .= "<button class='btn btn-success square-button share-button' data-text='{$encodedStatusText}' data-url='{$imageUrl}' title='Share'>{$shareSvg}</button>";
         $content .= "<form action='/home' method='POST' class='delete-form'>";
         $content .= "<input type='hidden' name='account' value='" . htmlspecialchars($accountName, ENT_QUOTES) . "'>";

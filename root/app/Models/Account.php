@@ -164,7 +164,7 @@ class Account
         $acctInfo = self::getAcctInfo($username, $account);
 
         if (is_array($acctInfo) && isset($acctInfo['link'])) {
-            return htmlspecialchars((string) $acctInfo['link']);
+            return (string) $acctInfo['link'];
         }
 
         return '';
