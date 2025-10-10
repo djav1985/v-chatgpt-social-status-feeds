@@ -98,10 +98,10 @@ class StatusService
         );
 
         $statusTokens = match ($platform) {
-            'facebook', 'google-business' => 1024,
+            'facebook', 'google-business' => 512,
             'twitter' => 256,
             'instagram' => 512,
-            default => 1024,
+            default => 512,
         };
 
         $totalTags = match ($platform) {
@@ -165,8 +165,8 @@ class StatusService
     {
         $client = self::getClient();
         try {
-              $response = $client->responses()->create($data);
-              return $response->toArray();
+            $response = $client->responses()->create($data);
+            return $response->toArray();
         } catch (\Throwable $e) {
             $error = "Failed to make API request to responses endpoint: " . $e->getMessage();
             ErrorManager::getInstance()->log($error, 'error');
@@ -219,11 +219,12 @@ class StatusService
 
         $data = [
             "model" => MODEL,
-            "input" => [
-                ["role" => "system", "content" => $systemMessage],
-                ["role" => "user", "content" => $prompt],
+            "instructions" => $systemMessage,
+            "input" => $prompt,
+            "max_output_tokens" => $statusTokens,
+            "reasoning" => [
+                "effort" => "low"
             ],
-            //"max_output_tokens" => $statusTokens,
             "text" => [
                 "format" => [
                     "type" => "json_schema",
@@ -238,9 +239,7 @@ class StatusService
         $response = self::openaiResponsesRequest($data);
 
         if (isset($response['error'])) {
-            // Error already logged by openaiApiRequest if it originated there
             $errorMsg = is_array($response['error']) ? json_encode($response['error']) : $response['error'];
-            // If the error isn't already specific, make it more specific here
             if (strpos($errorMsg, "Error generating status for") === false) {
                 $errorMsg = "Error generating status for $accountName owned by $accountOwner: " . $errorMsg;
                 ErrorManager::getInstance()->log($errorMsg, 'error');
@@ -248,19 +247,32 @@ class StatusService
             return ["error" => $errorMsg];
         }
 
-        // Parse OpenAI Responses endpoint output
-        // Find output_text type and decode JSON
+        // Parse OpenAI Responses endpoint output (emoji-friendly & auto-repair)
         $outputArr = $response['output'] ?? [];
         foreach ($outputArr as $outputItem) {
             if (isset($outputItem['content']) && is_array($outputItem['content'])) {
                 foreach ($outputItem['content'] as $contentBlock) {
                     if (isset($contentBlock['type']) && $contentBlock['type'] === 'output_text' && isset($contentBlock['text'])) {
-                        $decodedContent = json_decode($contentBlock['text'], true);
+
+                        $raw = $contentBlock['text'];
+
+                        // 1. Remove illegal control characters (but KEEP emojis)
+                        $cleaned = preg_replace('/[\x00-\x1F\x7F]/u', '', $raw);
+
+                        // 2. Auto-close broken JSON if truncated
+                        $fixed = rtrim($cleaned);
+                        if (str_starts_with($fixed, '{') && !str_ends_with($fixed, '}')) {
+                            $fixed .= '"}';
+                        }
+
+                        // 3. Decode
+                        $decodedContent = json_decode($fixed, true);
+
                         if (json_last_error() === JSON_ERROR_NONE) {
                             return $decodedContent;
                         } else {
                             $jsonError = json_last_error_msg();
-                            $error = "Error generating status for $accountName owned by $accountOwner: Invalid structured output from API (JSON decode error: $jsonError). Original content: " . var_export($contentBlock['text'], true);
+                            $error = "Error generating status for $accountName owned by $accountOwner: Invalid structured output from API (JSON decode error after clean-up: $jsonError). Original content: " . var_export($raw, true);
                             ErrorManager::getInstance()->log($error, 'error');
                             return ["error" => $error];
                         }
@@ -268,6 +280,7 @@ class StatusService
                 }
             }
         }
+
         $error = "Error generating status for $accountName owned by $accountOwner: API response did not contain expected structured content. Full response: " . var_export($response, true);
         ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
