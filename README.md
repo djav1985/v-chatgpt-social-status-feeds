@@ -156,6 +156,8 @@ Install the project using the following steps:
 4. **Install Database:**
 
    - Load the application in your web browser. Go to /install.php and the application will automatically install the database.
+   - **For fresh installations:** The script creates all tables with the latest schema and a default admin user.
+   - **For upgrades:** The script detects your existing schema and automatically migrates to the new structure while preserving all data. See [MIGRATION.md](MIGRATION.md) for details.
 
 5. **Default Login:**
 
