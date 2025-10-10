@@ -7,7 +7,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 ### Added
 - Simplified `status_jobs` schema with `scheduled_at`, `account`, `username`, and a lightweight `status` enum for retry tracking.
 - Queue tests covering the new retry lifecycle and fill-queue scheduling rules.
-- Database migration support in `install.sql` for upgrading from old schema to new schema while preserving data.
+- Separate installation and upgrade paths: `install.php`/`install.sql` for fresh installs and `upgrade.php`/`upgrade.sql` for schema migrations.
 - `MIGRATION.md` documentation file detailing the migration process and schema changes.
 
 ### Changed
@@ -16,7 +16,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Cron documentation updated to describe the simplified worker behaviour and retry policy.
 - Dashboard collapse controls now provide deterministic IDs, synchronized ARIA attributes, and visually hidden copy to improve assistive technology support.
 - Footer spacing and layout styles updated so primary content remains visible on compact screens.
-- `install.sql` now detects old schema structures and automatically migrates to new schema with data preservation.
+- `install.sql` and `install.php` now perform fresh installations only without migration logic.
+- `upgrade.sql` and `upgrade.php` handle all migrations from old schema to new schema with data preservation.
 - Accounts table primary key changed from single column `(account)` to composite key `(username, account)`.
 - All table indexes updated to use consistent naming convention with `idx_` prefix.
 
