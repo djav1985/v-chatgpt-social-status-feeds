@@ -11,21 +11,30 @@ final class CronCliTest extends TestCase
 {
     private function runCronScript(array $args): array
     {
-        $cmd = 'php ' . __DIR__ . '/../cron.php ' . implode(' ', array_map('escapeshellarg', $args));
+        $scriptPath = __DIR__ . '/../root/cron.php';
+        $cmd = 'php ' . escapeshellarg($scriptPath) . ' ' . implode(' ', array_map('escapeshellarg', $args));
 
         // Set minimal required env vars to avoid config errors
         $env = [
-            'DB_HOST=localhost',
-            'DB_USER=test',
-            'DB_NAME=test',
-            'API_KEY=test-key'
+            'DB_HOST' => 'localhost',
+            'DB_USER' => 'test',
+            'DB_NAME' => 'test',
+            'API_KEY' => 'test-key'
         ];
 
-        $fullCmd = implode(' ', $env) . ' ' . $cmd . ' 2>&1';
+        // Set environment variables for the current process
+        foreach ($env as $key => $value) {
+            putenv("$key=$value");
+        }
 
         $output = [];
         $exitCode = 0;
-        exec($fullCmd, $output, $exitCode);
+        exec($cmd . ' 2>&1', $output, $exitCode);
+
+        // Clean up environment variables
+        foreach ($env as $key => $value) {
+            putenv($key);
+        }
 
         return [
             'output' => implode("\n", $output),
