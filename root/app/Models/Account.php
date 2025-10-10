@@ -188,14 +188,6 @@ class Account
         $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
-            $db->query("SELECT cron, days FROM accounts WHERE username = :accountOwner AND account = :accountName FOR UPDATE");
-            $db->bind(':accountOwner', $accountOwner);
-            $db->bind(':accountName', $accountName);
-            $current = $db->single();
-            $current = $current ? (object)$current : (object)['cron' => '', 'days' => ''];
-            $oldCron = $current->cron ?? '';
-            $oldDays = $current->days ?? '';
-
             $db->query("UPDATE accounts SET prompt = :prompt, platform = :platform, hashtags = :hashtags, link = :link, cron = :cron, days = :days WHERE username = :accountOwner AND account = :accountName");
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);

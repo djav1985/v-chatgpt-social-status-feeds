@@ -27,15 +27,16 @@ class QueueService
 
     public function enqueueRemainingJobs(string $username, string $account, string $cron, string $days): void
     {
-        $dayName = strtolower(date('l', $this->now()));
+        $now = $this->now();
+        $dayName = strtolower(date('l', $now));
         $daysArr = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) $days))), fn($v) => strlen($v) > 0);
         if (!empty($daysArr) && !in_array('everyday', $daysArr, true) && !in_array($dayName, $daysArr, true)) {
             return;
         }
 
         foreach ($this->normalizeHours($cron) as $hour) {
-            $scheduledAt = $this->scheduledTimestampForHour($hour, $this->now());
-            if ($scheduledAt <= $this->now()) {
+            $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
+            if ($scheduledAt <= $now) {
                 continue;
             }
 
@@ -62,22 +63,37 @@ class QueueService
      */
     public function purgeStatuses(): bool
     {
-        $accounts = Account::getAllAccounts();
-        if (empty($accounts)) {
+        $db = DatabaseManager::getInstance();
+        $db->query(
+            'SELECT username, account, COUNT(*) AS status_count '
+            . 'FROM status_updates '
+            . 'GROUP BY username, account '
+            . 'HAVING COUNT(*) > :max_statuses'
+        );
+        $db->bind(':max_statuses', MAX_STATUSES);
+        $overLimitAccounts = $db->resultSet();
+
+        if (empty($overLimitAccounts)) {
             return true;
         }
 
-        foreach ($accounts as $account) {
-            $account = (object)$account;
-            $accountName = $account->account;
-            $accountOwner = $account->username;
-            $statusCount = Status::countStatuses($accountName, $accountOwner);
+        foreach ($overLimitAccounts as $account) {
+            $account = (object) $account;
+            $accountName = (string) ($account->account ?? '');
+            $accountOwner = (string) ($account->username ?? '');
+            $statusCount = (int) ($account->status_count ?? 0);
 
-            if ($statusCount > MAX_STATUSES) {
-                $deleteCount = $statusCount - MAX_STATUSES;
-                if (!Status::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
-                    return false;
-                }
+            if ($accountName === '' || $accountOwner === '') {
+                continue;
+            }
+
+            $deleteCount = $statusCount - MAX_STATUSES;
+            if ($deleteCount <= 0) {
+                continue;
+            }
+
+            if (!Status::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
+                return false;
             }
         }
         return true;
@@ -145,11 +161,12 @@ class QueueService
     public function runQueue(): void
     {
         // First process retry jobs (jobs that have already failed once)
-        $retryJobs = $this->claimDueJobsByStatus($this->now(), 'retry');
+        $now = $this->now();
+        $retryJobs = $this->claimDueJobsByStatus($now, 'retry');
         $this->processJobBatch($retryJobs, true);
 
         // Then process pending jobs (new jobs that haven't been tried yet)
-        $pendingJobs = $this->claimDueJobsByStatus($this->now(), 'pending');
+        $pendingJobs = $this->claimDueJobsByStatus($now, 'pending');
         $this->processJobBatch($pendingJobs, false);
     }
 
@@ -194,7 +211,8 @@ class QueueService
     public function fillQueue(): void
     {
         $accounts = $this->getAccounts();
-        $dayName = strtolower(date('l', $this->now()));
+        $now = $this->now();
+        $dayName = strtolower(date('l', $now));
 
         foreach ($accounts as $account) {
             $account = (object)$account;
@@ -204,8 +222,8 @@ class QueueService
             }
 
             foreach ($this->normalizeHours((string) ($account->cron ?? '')) as $hour) {
-                $scheduledAt = $this->scheduledTimestampForHour($hour, $this->now());
-                if ($scheduledAt <= $this->now()) {
+                $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
+                if ($scheduledAt <= $now) {
                     continue;
                 }
 
