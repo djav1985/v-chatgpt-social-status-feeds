@@ -39,9 +39,6 @@ define('MAX_WIDTH', 720);
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', 50);
 
-// Number of jobs processed simultaneously per queue run
-define('STATUS_JOB_BATCH_SIZE', 3);
-
 // Seconds before an in-progress queue job is considered stale and released
 define('STATUS_JOB_STALE_AFTER', 900);
 

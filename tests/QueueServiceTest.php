@@ -92,9 +92,11 @@ final class QueueServiceTest extends TestCase
 
         $this->assertSame(['job-1'], $service->deletedIds);
         $this->assertSame([], $service->markedStatuses);
+        $this->assertSame([], $service->dueJobs);
+        $this->assertTrue($service->lockReleased);
     }
 
-    public function testRunQueueGeneratesConfiguredBatchSize(): void
+    public function testRunQueueProcessesAllPendingJobsInSingleInvocation(): void
     {
         $service = new TestableQueueService();
         $service->fakeNow = strtotime('2024-01-01 13:00:00');
@@ -135,19 +137,29 @@ final class QueueServiceTest extends TestCase
                 'status' => 'pending',
             ],
         ];
-        $service->fakeBatchSize = 3;
 
         $service->runQueue();
 
-        // Should only process 3 jobs (limited by batch size)
-        $this->assertSame(3, $service->statusGenerations);
-        $this->assertCount(3, $service->deletedIds);
+        $this->assertSame(5, $service->statusGenerations);
+        $this->assertCount(5, $service->deletedIds);
         $this->assertContains('job-1', $service->deletedIds);
         $this->assertContains('job-2', $service->deletedIds);
         $this->assertContains('job-3', $service->deletedIds);
-        // job-4 and job-5 should not be processed
-        $this->assertNotContains('job-4', $service->deletedIds);
-        $this->assertNotContains('job-5', $service->deletedIds);
+        $this->assertContains('job-4', $service->deletedIds);
+        $this->assertContains('job-5', $service->deletedIds);
+        $this->assertSame([], $service->dueJobs);
+        $this->assertTrue($service->lockReleased);
+    }
+
+    public function testRunQueueSkipsWhenLockUnavailable(): void
+    {
+        $service = new TestableQueueService();
+        $service->lockAvailable = false;
+
+        $service->runQueue();
+
+        $this->assertFalse($service->lockReleased);
+        $this->assertSame(0, $service->statusGenerations);
     }
 
     public function testRunQueueMarksJobForRetryWhenGenerateStatusReturnsError(): void
@@ -170,6 +182,8 @@ final class QueueServiceTest extends TestCase
         $this->assertSame('retry', $service->markedStatuses['job-2']);
         $this->assertNotContains('job-2', $service->deletedIds, 'First failure should not delete the job.');
         $this->assertSame(1, $service->statusGenerations, 'Status generation should stop after the first error.');
+        $this->assertSame('retry', $service->dueJobs[0]['status'] ?? null);
+        $this->assertTrue($service->lockReleased);
     }
 
     public function testRunQueueDeletesAfterSecondFailure(): void
@@ -190,6 +204,8 @@ final class QueueServiceTest extends TestCase
 
         $this->assertSame(['job-3'], $service->deletedIds);
         $this->assertArrayNotHasKey('job-3', $service->markedStatuses);
+        $this->assertSame([], $service->dueJobs);
+        $this->assertTrue($service->lockReleased);
     }
 
     public function testRemoveHelpersUseCurrentTimestamp(): void
@@ -243,6 +259,8 @@ final class QueueServiceTest extends TestCase
         $this->assertContains('retry-job', $service->deletedIds);
         $this->assertCount(2, $service->deletedIds);
         $this->assertSame(2, $service->statusGenerations); // Both jobs should generate statuses
+        $this->assertSame([], $service->dueJobs);
+        $this->assertTrue($service->lockReleased);
     }
 
     public function testRunQueueProcessesRetryJobsBeforePendingJobs(): void
@@ -277,83 +295,7 @@ final class QueueServiceTest extends TestCase
         $this->assertArrayHasKey('pending-job', $service->markedStatuses);
         $this->assertSame('retry', $service->markedStatuses['pending-job']);
         $this->assertNotContains('pending-job', $service->deletedIds);
-    }
-
-    public function testJobBatchSizeLimitsSimultaneousProcessing(): void
-    {
-        $service = new TestableQueueService();
-        $service->fakeNow = strtotime('2024-01-01 13:00:00');
-        $service->dueJobs = [
-            [
-                'id' => 'job-1',
-                'account' => 'acct',
-                'username' => 'owner',
-                'scheduled_at' => strtotime('2024-01-01 08:00:00'),
-                'status' => 'pending'
-            ],
-            [
-                'id' => 'job-2',
-                'account' => 'acct',
-                'username' => 'owner',
-                'scheduled_at' => strtotime('2024-01-01 09:00:00'),
-                'status' => 'pending'
-            ],
-            [
-                'id' => 'job-3',
-                'account' => 'acct',
-                'username' => 'owner',
-                'scheduled_at' => strtotime('2024-01-01 10:00:00'),
-                'status' => 'pending'
-            ],
-            [
-                'id' => 'job-4',
-                'account' => 'acct',
-                'username' => 'owner',
-                'scheduled_at' => strtotime('2024-01-01 11:00:00'),
-                'status' => 'pending'
-            ],
-            [
-                'id' => 'job-5',
-                'account' => 'acct',
-                'username' => 'owner',
-                'scheduled_at' => strtotime('2024-01-01 12:00:00'),
-                'status' => 'pending'
-            ],
-            [
-                'id' => 'retry-1',
-                'account' => 'acct',
-                'username' => 'owner',
-                'scheduled_at' => strtotime('2024-01-01 07:00:00'),
-                'status' => 'retry'
-            ],
-            [
-                'id' => 'retry-2',
-                'account' => 'acct',
-                'username' => 'owner',
-                'scheduled_at' => strtotime('2024-01-01 06:00:00'),
-                'status' => 'retry'
-            ],
-        ];
-        $service->fakeBatchSize = 2; // Limit to 2 jobs per batch
-
-        $service->runQueue();
-
-        // Should process 2 retry jobs + 2 pending jobs = 4 total jobs
-        $this->assertSame(4, $service->statusGenerations);
-        $this->assertCount(4, $service->deletedIds);
-
-        // Should process retry jobs first (limited to 2)
-        $this->assertContains('retry-1', $service->deletedIds);
-        $this->assertContains('retry-2', $service->deletedIds);
-
-        // Then process pending jobs (limited to 2)
-        $this->assertContains('job-1', $service->deletedIds); // Earliest pending job
-        $this->assertContains('job-2', $service->deletedIds); // Second earliest pending job
-
-        // Remaining jobs should not be processed in this run
-        $this->assertNotContains('job-3', $service->deletedIds);
-        $this->assertNotContains('job-4', $service->deletedIds);
-        $this->assertNotContains('job-5', $service->deletedIds);
+        $this->assertTrue($service->lockReleased);
     }
 
     public function testScheduledTimestampKeepsPastHoursOnSameDay(): void
@@ -380,6 +322,7 @@ final class QueueServiceTest extends TestCase
             $service->fakeNow,
             $service->fakeNow,
         ], $service->releaseTimestamps);
+        $this->assertTrue($service->lockReleased);
     }
 
     public function testRunQueueIncrementsApiUsageOnSuccess(): void
@@ -403,6 +346,8 @@ final class QueueServiceTest extends TestCase
         $this->assertSame(['job-1'], $service->deletedIds);
         $this->assertSame(2, $service->updatedUsedApiCalls['owner'] ?? 0);
         $this->assertSame(2, $service->userInfoMap['owner']->used_api_calls);
+        $this->assertSame([], $service->dueJobs);
+        $this->assertTrue($service->lockReleased);
     }
 
     public function testRunQueueRespectsApiQuotaAndMarksForRetry(): void
@@ -430,6 +375,8 @@ final class QueueServiceTest extends TestCase
         $this->assertSame(['owner'], $service->sentLimitEmails);
         $this->assertArrayNotHasKey('owner', $service->updatedUsedApiCalls, 'Usage should not increase when over the limit.');
         $this->assertNotContains('job-1', $service->deletedIds);
+        $this->assertSame('retry', $service->dueJobs[0]['status'] ?? null);
+        $this->assertTrue($service->lockReleased);
     }
 
     public function testPurgeImagesHandlesMissingDirectory(): void
