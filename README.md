@@ -163,7 +163,7 @@ Install the project using the following steps:
    - Use the default login credentials: `admin` for both username and password.
 
 6. **Set Up Cron Jobs:**
-  - Configure cron to call the guarded worker entry points:
+  - Configure cron to call the guarded worker entry points (all four tasks also support the single-argument form if you prefer direct execution):
     ```sh
     0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php worker daily
     5 0 * * * /usr/bin/php /PATH-TO-APP/cron.php worker fill-queue
@@ -171,7 +171,8 @@ Install the project using the following steps:
     0 0 1 * * /usr/bin/php /PATH-TO-APP/cron.php worker monthly
     ```
   - Replace `/PATH-TO-APP/` with the actual path to your installation.
-   - The `worker` prefix acquires a PID-based lock for the specific task being launched. That guarantees only one instance of a given job flag runs at once while still allowing the other workers to execute concurrently. The spawned process (for `run-queue`) still executes using the single-argument form (for example, `php cron.php run-queue`).
+   - The `worker` prefix acquires a PID-based lock for the specific task being launched. That guarantees only one instance of a given job flag runs at once while still allowing the other workers to execute concurrently. When the guard succeeds, `run-queue` is spawned as a background process so the cron entry returns immediately.
+   - On hosts that cannot spawn background processes, call the single-argument form directly (for example, `php cron.php run-queue`). `run-queue` still respects its per-flag lock when invoked inline and drains all due jobs before exiting.
    - **daily:** runs cleanup tasks (purge statuses, images, IPs)
    - **fill-queue:** adds future job slots for the current day without truncating existing jobs
    - **run-queue:** executes due jobs (`scheduled_at <= now`) and enforces a single retry before permanent failure

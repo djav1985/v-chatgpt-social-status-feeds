@@ -18,7 +18,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Introduced lightweight in-memory caches for frequent account and user lookups to cut duplicate database queries during status generation and dashboard actions.
 - `QueueService::runQueue()` now reads due rows directly from the database, deleting successes, marking the first failure as `retry`, and removing permanently after a second failure.
 - `fillQueue()` appends a full day of slots without truncation, including past hours so catch-up runs can process missed jobs, and relies on unique `(account, username, scheduled_at)` rows instead of Enqueue payloads.
-- Cron documentation updated to describe the simplified worker behaviour and retry policy.
+- Cron documentation updated to describe the simplified worker behaviour, optional guarded worker prefix, and retry policy.
 - Dashboard collapse controls now provide deterministic IDs, synchronized ARIA attributes, and visually hidden copy to improve assistive technology support.
 - Footer spacing and layout styles updated so primary content remains visible on compact screens.
 - `install.sql` and `install.php` now perform fresh installations only without migration logic.
