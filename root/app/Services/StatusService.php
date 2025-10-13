@@ -110,7 +110,7 @@ class StatusService
 
         $platformDescription = match ($platform) {
             'facebook', 'google-business' => 'Must stay under 150 characters',
-            'twitter' => 'ONE SENTENCE ONLY. NO EXCEPTIONS. Do NOT write more than one sentence or it will be discarded.',
+            'twitter' => 'CRITICAL: Maximum 100 characters total. Write ONE SHORT SENTENCE ONLY. Keep it brief and concise. NO EXCEPTIONS.',
             'instagram' => 'Must stay under 150 characters',
             default => 'Must stay under 150 characters',
         };
@@ -147,6 +147,21 @@ class StatusService
         $cta = trim($statusResponse['cta'] ?? '');
         $imagePrompt = trim($statusResponse['image_prompt'] ?? '');
         $hashtagsText = trim($statusResponse['hashtags'] ?? '');
+
+        // Validate status text length against platform constraints
+        $statusLength = mb_strlen($statusText, 'UTF-8');
+        if ($statusLength > $totalCharacters) {
+            $error = sprintf(
+                'Generated status for %s (platform: %s) exceeds character limit: %d characters (limit: %d). Status: "%s"',
+                $accountName,
+                $platform,
+                $statusLength,
+                $totalCharacters,
+                $statusText
+            );
+            ErrorManager::getInstance()->log($error, 'error');
+            return ['error' => $error];
+        }
 
         $finalStatus = $statusText;
 
@@ -229,7 +244,8 @@ class StatusService
             "properties" => [
                 "status" => [
                     "type" => "string",
-                    "description" => "Post text for $platform. Must be under $totalCharacters characters. Do NOT exceed this limit. $platformDescription."
+                    "description" => "Post text for $platform. Must be under $totalCharacters characters. Do NOT exceed this limit. $platformDescription.",
+                    "maxLength" => $totalCharacters
                 ],
                 "image_prompt" => [
                     "type" => "string",

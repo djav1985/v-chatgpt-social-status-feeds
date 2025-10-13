@@ -32,6 +32,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - `STATUS_JOB_BATCH_SIZE` configuration option and the batch-size helper methods.
 
 ### Fixed
+- Enforced Twitter character limit by adding `maxLength` constraint to JSON schema and post-generation validation to reject statuses exceeding 100 characters.
+- Strengthened Twitter platform instructions to emphasize the strict 100 character limit with more explicit language.
 - Added detection and handling for incomplete OpenAI API responses with `status: 'incomplete'` to provide clear error messages instead of failing silently when responses are truncated.
 - Increased `max_output_tokens` for status generation (512→1024 for most platforms, 256→512 for Twitter) to reduce likelihood of truncation errors.
 - Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.
