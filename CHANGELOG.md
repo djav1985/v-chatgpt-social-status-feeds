@@ -32,6 +32,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - `STATUS_JOB_BATCH_SIZE` configuration option and the batch-size helper methods.
 
 ### Fixed
+- Added detection and handling for incomplete OpenAI API responses with `status: 'incomplete'` to provide clear error messages instead of failing silently when responses are truncated.
+- Increased `max_output_tokens` for status generation (512→1024 for most platforms, 256→512 for Twitter) to reduce likelihood of truncation errors.
 - Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.
 - Scoped full-width form button styling to avoid stretching logout actions in the header.
 - Sanitized Semgrep SARIF output in the CI workflow to keep GitHub Code Scanning from rejecting the uploaded report.
