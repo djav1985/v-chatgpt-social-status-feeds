@@ -108,12 +108,20 @@ class StatusService
             default => '5 to 10',
         };
 
+        $totalCharacters = match ($platform) {
+            'facebook', 'google-business' => '150 to 300',
+            'twitter' => '70 to 100',
+            'instagram' => '125 to 150',
+            default => '150 to 300',
+        };
+
         $statusResponse = self::generateSocialStatus(
             $systemMessage,
             $prompt,
             $link,
             $includeHashtags,
             $totalTags,
+            $totalCharacters,
             $statusTokens,
             $accountName,
             $accountOwner
@@ -184,7 +192,7 @@ class StatusService
      * @param string $accountOwner The owner of the account.
      * @return array<string, mixed> Returns the API response containing structured data or an error array.
      */
-    private static function generateSocialStatus(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array
+    private static function generateSocialStatus(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, string $totalCharacters, int $statusTokens, string $accountName, string $accountOwner): array
     {
         // Build JSON schema for responses endpoint
         $jsonSchema = [
@@ -192,7 +200,7 @@ class StatusService
             "properties" => [
                 "status" => [
                     "type" => "string",
-                    "description" => "A catchy and engaging text for the social media post, ideally between 100-150 characters."
+                    "description" => "A catchy and engaging text for the social media post, ideally between $totalCharacters characters."
                 ],
                 "cta" => [
                     "type" => "string",
@@ -205,6 +213,7 @@ class StatusService
             ],
             "required" => ["status", "cta", "image_prompt"],
             "additionalProperties" => false,
+            "unevaluatedProperties" => false
         ];
         if ($includeHashtags) {
             $jsonSchema["properties"]["hashtags"] = [
@@ -220,7 +229,7 @@ class StatusService
             "input" => $prompt,
             "max_output_tokens" => $statusTokens,
             "reasoning" => [
-                "effort" => "low"
+                "effort" => "minimal"
             ],
             "text" => [
                 "format" => [
