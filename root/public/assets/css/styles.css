@@ -533,3 +533,15 @@ footer p {
     padding-left: unset;
   }
 }
+
+/* Desktop: ensure exactly 7 columns for week overview */
+@media (min-width: 769px) {
+  .calendar-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+  }
+
+  .calendar-day {
+    min-height: 160px;
+  }
+}
