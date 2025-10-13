@@ -355,7 +355,26 @@ class QueueService
         }
 
         $procPath = '/proc/' . $pid;
-        return @is_dir($procPath);
+        if (!@is_dir($procPath)) {
+            return false;
+        }
+
+        // When /proc is available, double-check the process command line to reduce
+        // false positives caused by PID reuse. We expect cron.php (or the PHP
+        // binary invocation) to appear in the cmdline for a legitimate worker.
+        $cmdlineFile = $procPath . '/cmdline';
+        if (is_readable($cmdlineFile)) {
+            $cmd = @file_get_contents($cmdlineFile);
+            if ($cmd !== false) {
+                $cmd = str_replace("\0", ' ', $cmd);
+                if (stripos($cmd, 'cron.php') !== false || stripos($cmd, 'run-queue') !== false) {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected function processJobBatch(array $jobs, bool $isRetryBatch): void

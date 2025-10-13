@@ -53,6 +53,7 @@ function workerProcessIsRunning(int $pid): bool
     return @is_dir($procPath);
 }
 
+
 function workerLockPath(string $jobType): string
 {
     return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
