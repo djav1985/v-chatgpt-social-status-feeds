@@ -359,17 +359,17 @@ class InstalledVersions
                 $vendorDir = strtr($vendorDir, '\\', '/');
                 if (isset(self::$installedByVendor[$vendorDir])) {
                     $installed[] = self::$installedByVendor[$vendorDir];
-                } elseif (is_file($vendorDir . '/composer/installed.php')) {
+                } elseif (is_file($vendorDir.'/composer/installed.php')) {
                     /** @var array{root: array{name: string, pretty_version: string, version: string, reference: string|null, type: string, install_path: string, aliases: string[], dev: bool}, versions: array<string, array{pretty_version?: string, version?: string, reference?: string|null, type?: string, install_path?: string, aliases?: string[], dev_requirement: bool, replaced?: string[], provided?: string[]}>} $required */
-                    $required = require $vendorDir . '/composer/installed.php';
+                    $required = require $vendorDir.'/composer/installed.php';
                     self::$installedByVendor[$vendorDir] = $required;
                     $installed[] = $required;
-                    if (self::$installed === null && $vendorDir . '/composer' === $selfDir) {
+                    if (self::$installed === null && $vendorDir.'/composer' === $selfDir) {
                         self::$installed = $required;
                         self::$installedIsLocalDir = true;
                     }
                 }
-                if (self::$installedIsLocalDir && $vendorDir . '/composer' === $selfDir) {
+                if (self::$installedIsLocalDir && $vendorDir.'/composer' === $selfDir) {
                     $copiedLocalDir = true;
                 }
             }
