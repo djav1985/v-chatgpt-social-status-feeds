@@ -186,6 +186,10 @@ class QueueService
         $attemptedJobIds = [];
 
         try {
+            // Since we have the worker lock, no other worker can be running.
+            // Reset all processing flags from any previously crashed/interrupted workers.
+            $this->resetAllProcessingFlags();
+
             do {
                 $processedAny = false;
 
@@ -500,8 +504,6 @@ class QueueService
         $db = DatabaseManager::getInstance();
         $claimedJobs = [];
 
-        $this->releaseStaleProcessingJobs($now);
-
         // First, get candidate job IDs for specific status
         $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status = :status AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
         $db->bind(':status', $status);
@@ -540,6 +542,24 @@ class QueueService
         $db->execute();
 
         return $db->rowCount();
+    }
+
+    /**
+     * Reset all processing flags.
+     * This is safe to call when holding the worker lock since no other worker can be running.
+     */
+    protected function resetAllProcessingFlags(): int
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query('UPDATE status_jobs SET processing = FALSE WHERE processing = TRUE');
+        $db->execute();
+
+        $count = $db->rowCount();
+        if ($count > 0) {
+            error_log(sprintf('[QueueService] Reset %d stuck processing flag(s) from previous worker run.', $count));
+        }
+
+        return $count;
     }
 
     protected function deleteJobById(string $id): void

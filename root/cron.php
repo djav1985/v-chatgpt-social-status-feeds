@@ -83,7 +83,9 @@ function workerGuardCanLaunch(string $jobType, bool $claimLockForSelf = false): 
         return false;
     }
 
+    // Clear any stale PID from the lock file
     ftruncate($handle, 0);
+    rewind($handle);
 
     if ($claimLockForSelf) {
         $pid = getmypid();
@@ -96,11 +98,16 @@ function workerGuardCanLaunch(string $jobType, bool $claimLockForSelf = false): 
         }
 
         fwrite($handle, (string) $pid);
+        fflush($handle);
     }
 
-    fflush($handle);
     flock($handle, LOCK_UN);
     fclose($handle);
+
+    // If not claiming lock for self, delete the lock file since it was stale
+    if (!$claimLockForSelf && $pid > 0) {
+        @unlink($lockPath);
+    }
 
     return true;
 }

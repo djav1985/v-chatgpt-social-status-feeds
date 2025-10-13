@@ -102,4 +102,43 @@ final class ConcurrencyQueueTest extends TestCase
         $this->assertContains('job-retry', $service->deletedIds);
         $this->assertArrayNotHasKey('job-retry', $service->markedStatuses);
     }
+
+    public function testRunQueueResetsStuckProcessingFlags(): void
+    {
+        $service = new TestableQueueService();
+        $now = strtotime('2024-01-01 12:00:00');
+        $service->fakeNow = $now;
+
+        // Simulate stuck jobs from a previous crashed worker
+        $service->dueJobs = [
+            [
+                'id' => 'stuck-job-1',
+                'account' => 'acct',
+                'username' => 'owner',
+                'scheduled_at' => strtotime('2024-01-01 11:00:00'),
+                'status' => 'pending',
+                'processing' => true,  // Stuck from previous run
+            ],
+            [
+                'id' => 'stuck-job-2',
+                'account' => 'acct2',
+                'username' => 'owner2',
+                'scheduled_at' => strtotime('2024-01-01 10:00:00'),
+                'status' => 'retry',
+                'processing' => true,  // Stuck from previous run
+            ],
+        ];
+
+        $service->runQueue();
+
+        // Verify resetAllProcessingFlags was called
+        $this->assertSame(1, $service->resetAllProcessingCount, 'resetAllProcessingFlags should be called once');
+
+        // Verify both jobs were processed (not blocked by stuck processing flag)
+        $this->assertContains('stuck-job-1', $service->deletedIds, 'Stuck pending job should be processed and deleted');
+        $this->assertContains('stuck-job-2', $service->deletedIds, 'Stuck retry job should be processed and deleted');
+
+        // Verify worker lock was released
+        $this->assertTrue($service->lockReleased, 'Worker lock should be released after runQueue');
+    }
 }
