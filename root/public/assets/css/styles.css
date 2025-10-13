@@ -21,6 +21,28 @@ main {
   padding: 0;
 }
 
+/* Normalize columns gutter to avoid negative margins causing page overflow */
+.columns {
+  box-sizing: border-box;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+.columns > .column {
+  box-sizing: border-box;
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+footer.columns {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
 .visually-hidden {
   position: absolute;
   margin: -1px;
@@ -531,6 +553,20 @@ footer p {
   .account-left .form-group .column {
     padding-right: unset;
     padding-left: unset;
+  }
+  header .logo img {
+    max-width: 200px;
+    height: auto;
+  }
+
+  /* Mobile: make calendar a single column so each day stacks full-width */
+  .calendar-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+
+  .calendar-day {
+    min-height: auto;
   }
 }
 

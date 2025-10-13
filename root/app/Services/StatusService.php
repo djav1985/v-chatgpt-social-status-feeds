@@ -95,10 +95,10 @@ class StatusService
         );
 
         $statusTokens = match ($platform) {
-            'facebook', 'google-business' => 1024,
-            'twitter' => 512,
-            'instagram' => 1024,
-            default => 1024,
+            'facebook', 'google-business' => 512,
+            'twitter' => 256,
+            'instagram' => 512,
+            default => 512,
         };
 
         $totalTags = match ($platform) {
@@ -108,18 +108,26 @@ class StatusService
             default => '5 to 10',
         };
 
+        $platformDescription = match ($platform) {
+            'facebook', 'google-business' => 'Must stay under 150 characters',
+            'twitter' => 'ONE SENTENCE ONLY. NO EXCEPTIONS. Do NOT write more than one sentence or it will be discarded.',
+            'instagram' => 'Must stay under 150 characters',
+            default => 'Must stay under 150 characters',
+        };
+
         $totalCharacters = match ($platform) {
-            'facebook', 'google-business' => '150 to 300',
-            'twitter' => '70 to 100',
-            'instagram' => '125 to 150',
-            default => '150 to 300',
+            'facebook', 'google-business' => 250,
+            'twitter' => 100,
+            'instagram' => 150,
+            default => 250,
         };
 
         $statusResponse = self::generateSocialStatus(
             $systemMessage,
             $prompt,
-            $link,
             $includeHashtags,
+            $platform,
+            $platformDescription,
             $totalTags,
             $totalCharacters,
             $statusTokens,
@@ -141,9 +149,27 @@ class StatusService
         $hashtagsText = trim($statusResponse['hashtags'] ?? '');
 
         $finalStatus = $statusText;
-        if ($platform !== 'google-business' && $cta !== '') {
-            $finalStatus .= ' ' . $cta;
+
+        // Platform-specific assembly:
+        // - Twitter: omit CTA, order -> status [link] [hashtags]
+        // - Google Business: omit CTA but include link -> status [link] [hashtags]
+        // - Others: include CTA (if present), then link, then hashtags
+        if ($platform === 'twitter') {
+            if (!empty($link)) {
+                $finalStatus .= ' ' . $link;
+            }
+        } elseif ($platform === 'google-business') {
+            // intentionally left blank here
+        } else {
+            // Other platforms: include CTA (if provided) then the link
+            if ($cta !== '') {
+                $finalStatus .= ' ' . $cta;
+            }
+            if (!empty($link)) {
+                $finalStatus .= ' ' . $link;
+            }
         }
+
         if ($includeHashtags && $hashtagsText !== '') {
             $finalStatus .= ' ' . $hashtagsText;
         }
@@ -171,7 +197,11 @@ class StatusService
         $client = self::getClient();
         try {
             $response = $client->responses()->create($data);
-            return $response->toArray();
+            // Simpler conversion: always JSON round-trip the SDK response to
+            // produce an associative array. This is robust across SDK return
+            // types and keeps downstream code working with arrays.
+            $arr = json_decode(json_encode($response), true);
+            return is_array($arr) ? $arr : [];
         } catch (\Throwable $e) {
             $error = "Failed to make API request to responses endpoint: " . $e->getMessage();
             ErrorManager::getInstance()->log($error, 'error');
@@ -184,7 +214,6 @@ class StatusService
      *
      * @param string $systemMessage The system message for generating content.
      * @param string $prompt The user prompt for generating content.
-     * @param string $link The link to be included in the post.
      * @param bool $includeHashtags Whether to include hashtags in the post.
      * @param string $totalTags The total number of hashtags to include.
      * @param int $statusTokens The number of tokens for the status.
@@ -192,7 +221,7 @@ class StatusService
      * @param string $accountOwner The owner of the account.
      * @return array<string, mixed> Returns the API response containing structured data or an error array.
      */
-    private static function generateSocialStatus(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, string $totalCharacters, int $statusTokens, string $accountName, string $accountOwner): array
+    private static function generateSocialStatus(string $systemMessage, string $prompt, bool $includeHashtags, string $platform, string $platformDescription, string $totalTags, int $totalCharacters, int $statusTokens, string $accountName, string $accountOwner): array
     {
         // Build JSON schema for responses endpoint
         $jsonSchema = [
@@ -200,24 +229,35 @@ class StatusService
             "properties" => [
                 "status" => [
                     "type" => "string",
-                    "description" => "A catchy and engaging text for the social media post, ideally between $totalCharacters characters."
-                ],
-                "cta" => [
-                    "type" => "string",
-                    "description" => "A clear and concise call to action, encouraging users to engage at $link."
+                    "description" => "Post text for $platform. Must be under $totalCharacters characters. Do NOT exceed this limit. $platformDescription."
                 ],
                 "image_prompt" => [
                     "type" => "string",
-                    "description" => "Write a prompt to generate an image to go with this status."
+                    "description" => "Describe an image idea that matches the status."
                 ],
             ],
-            "required" => ["status", "cta", "image_prompt"],
+            // CTA is intentionally not added here for twitter. It will be
+            // included in the schema and required list for non-Twitter
+            // platforms further below.
+            "required" => ["status", "image_prompt"],
             "additionalProperties" => false
         ];
+
+        // Conditionally include CTA for platforms that support it
+        // (exclude Twitter and Google Business)
+        if ($platform !== 'twitter' && $platform !== 'google-business') {
+            $jsonSchema["properties"]["cta"] = [
+                "type" => "string",
+                "description" => "Short call to action. The link will be added separately."
+            ];
+            // Ensure CTA is required for platforms that support it
+            $jsonSchema["required"][] = "cta";
+        }
+
         if ($includeHashtags) {
             $jsonSchema["properties"]["hashtags"] = [
                 "type" => "string",
-                "description" => "A space-separated string of relevant hashtags for social media, ideally $totalTags trending tags."
+                "description" => "Space-separated #hashtags, ideally $totalTags."
             ];
             $jsonSchema["required"][] = "hashtags";
         }
