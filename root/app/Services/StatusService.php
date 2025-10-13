@@ -212,8 +212,7 @@ class StatusService
                 ],
             ],
             "required" => ["status", "cta", "image_prompt"],
-            "additionalProperties" => false,
-            "unevaluatedProperties" => false
+            "additionalProperties" => false
         ];
         if ($includeHashtags) {
             $jsonSchema["properties"]["hashtags"] = [
