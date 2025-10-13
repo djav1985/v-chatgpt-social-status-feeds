@@ -30,6 +30,7 @@ final class TestableQueueService extends QueueService
     /** @var array<int, int> */
     public array $releaseTimestamps = [];
     public int $fakeReleasedCount = 0;
+    public int $resetAllProcessingCount = 0;
     public ?string $imageDirectoryOverride = null;
     /** @var array<string, object> */
     public array $userInfoMap = [];
@@ -227,6 +228,23 @@ final class TestableQueueService extends QueueService
         $this->releaseTimestamps[] = $now;
 
         return $this->fakeReleasedCount;
+    }
+
+    protected function resetAllProcessingFlags(): int
+    {
+        $this->resetAllProcessingCount++;
+        
+        // Reset all processing flags in the test jobs
+        $count = 0;
+        foreach ($this->dueJobs as &$job) {
+            if (isset($job['processing']) && $job['processing']) {
+                $job['processing'] = false;
+                $count++;
+            }
+        }
+        unset($job);
+        
+        return $count;
     }
 
     protected function getImageDirectory(): string
