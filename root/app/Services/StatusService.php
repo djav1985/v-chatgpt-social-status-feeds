@@ -95,10 +95,10 @@ class StatusService
         );
 
         $statusTokens = match ($platform) {
-            'facebook', 'google-business' => 512,
-            'twitter' => 256,
-            'instagram' => 512,
-            default => 512,
+            'facebook', 'google-business' => 1024,
+            'twitter' => 512,
+            'instagram' => 1024,
+            default => 1024,
         };
 
         $totalTags = match ($platform) {
@@ -242,6 +242,15 @@ class StatusService
                 ErrorManager::getInstance()->log($errorMsg, 'error');
             }
             return ["error" => $errorMsg];
+        }
+
+        // Check if the response is incomplete
+        $responseStatus = $response['status'] ?? '';
+        if ($responseStatus === 'incomplete') {
+            $reason = $response['incomplete_details']['reason'] ?? 'unknown';
+            $error = "Error generating status for $accountName owned by $accountOwner: API response incomplete (reason: $reason). This usually means the response was truncated. Please try again.";
+            ErrorManager::getInstance()->log($error, 'error');
+            return ["error" => $error];
         }
 
         // Parse OpenAI Responses endpoint output (emoji-friendly & auto-repair)
