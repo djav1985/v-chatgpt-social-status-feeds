@@ -229,7 +229,7 @@ class StatusService
             "properties" => [
                 "status" => [
                     "type" => "string",
-                    "description" => "Post text for $platform. Must be under $totalCharacters characters. Do NOT exceed this limit. $platformDescription."
+                    "description" => "Post text for $platform status update."
                 ],
                 "image_prompt" => [
                     "type" => "string",
