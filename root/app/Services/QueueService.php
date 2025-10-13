@@ -504,8 +504,6 @@ class QueueService
         $db = DatabaseManager::getInstance();
         $claimedJobs = [];
 
-        $this->releaseStaleProcessingJobs($now);
-
         // First, get candidate job IDs for specific status
         $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status = :status AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
         $db->bind(':status', $status);
