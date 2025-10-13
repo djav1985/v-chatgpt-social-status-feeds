@@ -109,10 +109,10 @@ class StatusService
         };
 
         $platformDescription = match ($platform) {
-            'facebook', 'google-business' => 'Must stay under 150 characters',
+            'facebook', 'google-business' => 'Must stay under 250 characters. Include lots of emojis.',
             'twitter' => 'ONE SENTENCE ONLY. NO EXCEPTIONS. Do NOT write more than one sentence or it will be discarded.',
-            'instagram' => 'Must stay under 150 characters',
-            default => 'Must stay under 150 characters',
+            'instagram' => 'Must stay under 150 characters. Include lots of emojis.',
+            default => 'Must stay under 150 characters. Include lots of emojis.',
         };
 
         $totalCharacters = match ($platform) {
@@ -265,7 +265,7 @@ class StatusService
         $data = [
             "model" => MODEL,
             "instructions" => $systemMessage,
-            "input" => $prompt,
+            "input" => "Create a status: $prompt (Must be under $totalCharacters characters. Do NOT exceed this limit. $platformDescription.)",
             "max_output_tokens" => $statusTokens,
             "reasoning" => [
                 "effort" => "minimal"
