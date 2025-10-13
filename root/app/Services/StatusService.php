@@ -229,7 +229,7 @@ class StatusService
             "properties" => [
                 "status" => [
                     "type" => "string",
-                    "description" => "Post text for $platform status update."
+                    "description" => "Post text for $platform status update. No hashtags or links."
                 ],
                 "image_prompt" => [
                     "type" => "string",
@@ -248,7 +248,7 @@ class StatusService
         if ($platform !== 'twitter' && $platform !== 'google-business') {
             $jsonSchema["properties"]["cta"] = [
                 "type" => "string",
-                "description" => "Short call to action. The link will be added separately."
+                "description" => "Short call to action. No hashtags or links, as they will be added separately."
             ];
             // Ensure CTA is required for platforms that support it
             $jsonSchema["required"][] = "cta";
