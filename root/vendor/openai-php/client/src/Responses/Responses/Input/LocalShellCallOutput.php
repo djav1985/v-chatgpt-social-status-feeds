@@ -31,8 +31,7 @@ final class LocalShellCallOutput implements ResponseContract
         public readonly string $output,
         public readonly string $type,
         public readonly ?string $status,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  LocalShellCallOutputType  $attributes

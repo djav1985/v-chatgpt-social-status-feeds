@@ -39,8 +39,7 @@ final class ListContainers implements ResponseContract, ResponseHasMetaInformati
         public readonly ?string $lastId,
         public readonly bool $hasMore,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ListContainersType  $attributes

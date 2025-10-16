@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Bonaire, Sint Eustatius and Saba",
   "subdivisions" => [

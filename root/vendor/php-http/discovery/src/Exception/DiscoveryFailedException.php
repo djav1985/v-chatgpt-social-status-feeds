@@ -34,7 +34,7 @@ final class DiscoveryFailedException extends \Exception implements Exception
     {
         $message = 'Could not find resource using any discovery strategy. Find more information at http://docs.php-http.org/en/latest/discovery.html#common-errors';
         foreach ($exceptions as $e) {
-            $message .= "\n - " . $e->getMessage();
+            $message .= "\n - ".$e->getMessage();
         }
         $message .= "\n\n";
 

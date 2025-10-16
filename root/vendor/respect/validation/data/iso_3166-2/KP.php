@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Korea, Democratic People's Republic of",
   "subdivisions" => [

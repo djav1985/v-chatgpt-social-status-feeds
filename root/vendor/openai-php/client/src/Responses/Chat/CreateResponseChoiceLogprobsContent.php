@@ -13,8 +13,7 @@ final class CreateResponseChoiceLogprobsContent
         public readonly string $token,
         public readonly float $logprob,
         public readonly ?array $bytes,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array{

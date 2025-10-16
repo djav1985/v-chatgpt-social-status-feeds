@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Tanzania, United Republic of",
   "subdivisions" => [

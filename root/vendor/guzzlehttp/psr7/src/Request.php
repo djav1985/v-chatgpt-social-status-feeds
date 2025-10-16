@@ -69,7 +69,7 @@ class Request implements RequestInterface
             $target = '/';
         }
         if ($this->uri->getQuery() != '') {
-            $target .= '?' . $this->uri->getQuery();
+            $target .= '?'.$this->uri->getQuery();
         }
 
         return $target;
@@ -133,7 +133,7 @@ class Request implements RequestInterface
         }
 
         if (($port = $this->uri->getPort()) !== null) {
-            $host .= ':' . $port;
+            $host .= ':'.$port;
         }
 
         if (isset($this->headerNames['host'])) {

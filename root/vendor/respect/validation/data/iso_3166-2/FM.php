@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Micronesia, Federated States of",
   "subdivisions" => [

@@ -53,8 +53,7 @@ final class SessionResponse implements ResponseContract
         public readonly array $tools,
         public readonly ?TurnDetection $turnDetection,
         public readonly string $voice,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  SessionType  $attributes

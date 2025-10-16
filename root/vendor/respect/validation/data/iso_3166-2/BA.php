@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Bosnia and Herzegovina",
   "subdivisions" => [

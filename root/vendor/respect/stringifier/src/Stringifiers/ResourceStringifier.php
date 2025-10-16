@@ -16,7 +16,6 @@ namespace Respect\Stringifier\Stringifiers;
 use function get_resource_type;
 use function is_resource;
 use function sprintf;
-
 use Respect\Stringifier\Quoter;
 use Respect\Stringifier\Stringifier;
 

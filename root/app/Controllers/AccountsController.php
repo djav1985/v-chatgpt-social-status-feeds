@@ -199,10 +199,7 @@ class AccountsController extends Controller
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
-        $accounts = array_map(
-            fn($account) => self::hydrateAccountRow($account),
-            User::getAllUserAccts($username)
-        );
+        $accounts = User::getAllUserAccts($username);
 
         $daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         $overview = [];
@@ -215,16 +212,19 @@ class AccountsController extends Controller
         }
 
         foreach ($accounts as $acct) {
-            if ($acct->account === '') {
+            $acct = (object)$acct;
+            $acctInfo = Account::getAcctInfo($username, $acct->account);
+            $acctInfo = is_array($acctInfo) ? (object)$acctInfo : $acctInfo;
+            if (!$acctInfo) {
                 continue;
             }
-            $acctDays = array_map('trim', explode(',', (string) $acct->days));
+            $acctDays = array_map('trim', explode(',', (string) $acctInfo->days));
             if (in_array('everyday', $acctDays, true)) {
                 $acctDays = $daysOfWeek;
             }
 
             $cronTimes = array_filter(
-                array_map('trim', explode(',', (string) $acct->cron)),
+                array_map('trim', explode(',', (string) $acctInfo->cron)),
                 fn($v) => $v !== '' && is_numeric($v)
             );
 
@@ -336,21 +336,21 @@ class AccountsController extends Controller
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
-        $accounts = array_map(
-            fn($account) => self::hydrateAccountRow($account),
-            User::getAllUserAccts($username)
-        );
+        $accounts = User::getAllUserAccts($username);
         $output = '';
         foreach ($accounts as $account) {
-            if ($account->account === '') {
+            $account = (object)$account;
+            $accountName = $account->account;
+            $accountData = Account::getAcctInfo($username, $accountName);
+            $accountData = is_array($accountData) ? (object)$accountData : $accountData;
+            if (!$accountData) {
                 continue;
             }
-            $accountName = $account->account;
 
-            $daysArr = array_map('ucfirst', array_map('trim', explode(',', $account->days)));
+            $daysArr = array_map('ucfirst', array_map('trim', explode(',', $accountData->days)));
             $daysStr = implode(', ', $daysArr);
             $cronArr = array_filter(
-                array_map('trim', explode(',', $account->cron)),
+                array_map('trim', explode(',', $accountData->cron)),
                 function (string $hour): bool {
                     return $hour !== '' && is_numeric($hour);
                 }
@@ -376,17 +376,17 @@ class AccountsController extends Controller
             }
 
             $dataAttributes  = "data-account-name=\"{$accountName}\" ";
-            $dataAttributes .= "data-prompt=\"" . htmlspecialchars($account->prompt) . "\" ";
-            $dataAttributes .= "data-link=\"" . htmlspecialchars($account->link) . "\" ";
-            $dataAttributes .= "data-hashtags=\"" . ($account->hashtags ? '1' : '0') . "\" ";
-            $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $account->cron))) . "\" ";
-            $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $account->days))) . "\" ";
-            $dataAttributes .= "data-platform=\"" . htmlspecialchars($account->platform) . "\"";
+            $dataAttributes .= "data-prompt=\"" . htmlspecialchars($accountData->prompt) . "\" ";
+            $dataAttributes .= "data-link=\"" . htmlspecialchars($accountData->link) . "\" ";
+            $dataAttributes .= "data-hashtags=\"" . ($accountData->hashtags ? '1' : '0') . "\" ";
+            $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $accountData->cron))) . "\" ";
+            $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $accountData->days))) . "\" ";
+            $dataAttributes .= "data-platform=\"" . htmlspecialchars($accountData->platform) . "\"";
 
             ob_start();
             $viewData = [
                 'accountName' => $accountName,
-                'accountData' => $account,
+                'accountData' => $accountData,
                 'daysStr' => $daysStr,
                 'timesStr' => $timesStr,
                 'dataAttributes' => $dataAttributes,
@@ -396,28 +396,5 @@ class AccountsController extends Controller
             $output .= ob_get_clean();
         }
         return $output;
-    }
-
-    /**
-     * Ensure account rows from the database provide consistent property access.
-     *
-     * @param array<string, mixed>|object $accountRow
-     */
-    private static function hydrateAccountRow(array|object $accountRow): object
-    {
-        if (is_array($accountRow)) {
-            $accountRow = (object) $accountRow;
-        }
-
-        $accountRow->account = (string) ($accountRow->account ?? '');
-        $accountRow->username = (string) ($accountRow->username ?? '');
-        $accountRow->prompt = (string) ($accountRow->prompt ?? '');
-        $accountRow->platform = (string) ($accountRow->platform ?? '');
-        $accountRow->link = (string) ($accountRow->link ?? '');
-        $accountRow->cron = (string) ($accountRow->cron ?? '');
-        $accountRow->days = (string) ($accountRow->days ?? '');
-        $accountRow->hashtags = isset($accountRow->hashtags) ? (int) $accountRow->hashtags : 0;
-
-        return $accountRow;
     }
 }

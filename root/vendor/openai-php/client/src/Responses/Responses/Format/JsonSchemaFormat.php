@@ -32,8 +32,7 @@ final class JsonSchemaFormat implements ResponseContract
         public readonly string $type,
         public readonly ?string $description,
         public readonly ?bool $strict = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  JsonSchemaFormatType  $attributes

@@ -33,8 +33,7 @@ final class ImageGenerationPartialImage implements ResponseContract, ResponseHas
         public readonly int $partialImageIndex,
         public readonly string $partialImageB64,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ImageGenerationPartialImageType  $attributes

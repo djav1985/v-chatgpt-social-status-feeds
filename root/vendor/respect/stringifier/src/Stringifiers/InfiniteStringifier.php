@@ -15,7 +15,6 @@ namespace Respect\Stringifier\Stringifiers;
 
 use function is_float;
 use function is_infinite;
-
 use Respect\Stringifier\Quoter;
 use Respect\Stringifier\Stringifier;
 
@@ -54,6 +53,6 @@ final class InfiniteStringifier implements Stringifier
             return null;
         }
 
-        return $this->quoter->quote(($raw > 0 ? '' : '-') . 'INF', $depth);
+        return $this->quoter->quote(($raw > 0 ? '' : '-').'INF', $depth);
     }
 }

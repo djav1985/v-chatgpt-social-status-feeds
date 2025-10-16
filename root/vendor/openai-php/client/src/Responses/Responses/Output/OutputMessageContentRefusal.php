@@ -28,8 +28,7 @@ final class OutputMessageContentRefusal implements ResponseContract
     private function __construct(
         public readonly string $refusal,
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ContentRefusalType  $attributes

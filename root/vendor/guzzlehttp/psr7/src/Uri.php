@@ -122,7 +122,7 @@ class Uri implements UriInterface, \JsonSerializable
             $url
         );
 
-        $result = parse_url($prefix . $encodedUrl);
+        $result = parse_url($prefix.$encodedUrl);
 
         if ($result === false) {
             return false;
@@ -170,25 +170,25 @@ class Uri implements UriInterface, \JsonSerializable
 
         // weak type checks to also accept null until we can add scalar type hints
         if ($scheme != '') {
-            $uri .= $scheme . ':';
+            $uri .= $scheme.':';
         }
 
         if ($authority != '' || $scheme === 'file') {
-            $uri .= '//' . $authority;
+            $uri .= '//'.$authority;
         }
 
         if ($authority != '' && $path != '' && $path[0] != '/') {
-            $path = '/' . $path;
+            $path = '/'.$path;
         }
 
         $uri .= $path;
 
         if ($query != '') {
-            $uri .= '?' . $query;
+            $uri .= '?'.$query;
         }
 
         if ($fragment != '') {
-            $uri .= '#' . $fragment;
+            $uri .= '#'.$fragment;
         }
 
         return $uri;
@@ -375,11 +375,11 @@ class Uri implements UriInterface, \JsonSerializable
     {
         $authority = $this->host;
         if ($this->userInfo !== '') {
-            $authority = $this->userInfo . '@' . $authority;
+            $authority = $this->userInfo.'@'.$authority;
         }
 
         if ($this->port !== null) {
-            $authority .= ':' . $this->port;
+            $authority .= ':'.$this->port;
         }
 
         return $authority;
@@ -436,7 +436,7 @@ class Uri implements UriInterface, \JsonSerializable
     {
         $info = $this->filterUserInfoComponent($user);
         if ($password !== null) {
-            $info .= ':' . $this->filterUserInfoComponent($password);
+            $info .= ':'.$this->filterUserInfoComponent($password);
         }
 
         if ($this->userInfo === $info) {
@@ -564,7 +564,7 @@ class Uri implements UriInterface, \JsonSerializable
             ? $this->filterQueryAndFragment($parts['fragment'])
             : '';
         if (isset($parts['pass'])) {
-            $this->userInfo .= ':' . $this->filterUserInfoComponent($parts['pass']);
+            $this->userInfo .= ':'.$this->filterUserInfoComponent($parts['pass']);
         }
 
         $this->removeDefaultPort();
@@ -596,7 +596,7 @@ class Uri implements UriInterface, \JsonSerializable
         }
 
         return preg_replace_callback(
-            '/(?:[^%' . self::CHAR_UNRESERVED . self::CHAR_SUB_DELIMS . ']+|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^%'.self::CHAR_UNRESERVED.self::CHAR_SUB_DELIMS.']+|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $component
         );
@@ -667,7 +667,7 @@ class Uri implements UriInterface, \JsonSerializable
         $queryString = strtr($key, self::QUERY_SEPARATORS_REPLACEMENT);
 
         if ($value !== null) {
-            $queryString .= '=' . strtr($value, self::QUERY_SEPARATORS_REPLACEMENT);
+            $queryString .= '='.strtr($value, self::QUERY_SEPARATORS_REPLACEMENT);
         }
 
         return $queryString;
@@ -694,7 +694,7 @@ class Uri implements UriInterface, \JsonSerializable
         }
 
         return preg_replace_callback(
-            '/(?:[^' . self::CHAR_UNRESERVED . self::CHAR_SUB_DELIMS . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^'.self::CHAR_UNRESERVED.self::CHAR_SUB_DELIMS.'%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $path
         );
@@ -714,7 +714,7 @@ class Uri implements UriInterface, \JsonSerializable
         }
 
         return preg_replace_callback(
-            '/(?:[^' . self::CHAR_UNRESERVED . self::CHAR_SUB_DELIMS . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^'.self::CHAR_UNRESERVED.self::CHAR_SUB_DELIMS.'%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $str
         );

@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Brunei Darussalam",
   "subdivisions" => [

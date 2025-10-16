@@ -19,16 +19,13 @@ define('API_KEY', '');
 define('API_ENDPOINT', 'https://api.openai.com/v1/');
 
 // Model identifier for the AI (e.g., GPT-3.5 or GPT-4)
-define('MODEL', 'gpt-4o-mini');
+define('MODEL', 'gpt-5-nano');
 
 // Temperature setting for the AI's creativity
 define('TEMPERATURE', 1);
 
-// Maximum number of tokens to generate
-define('TOKENS', 256);
-
 // Domain where the status service is hosted
-define('DOMAIN', 'https://ai-status.servicesbyv.com');
+define('DOMAIN', 'http://localhost3');
 
 // System prompt that guides the AI's output
 define('SYSTEM_MSG', 'You are a social media marketer. You will respond with professional but fun social status update and nothing else.');
@@ -38,9 +35,6 @@ define('MAX_WIDTH', 720);
 
 // Maximum number of statuses allowed in each feed
 define('MAX_STATUSES', 50);
-
-// Seconds before an in-progress queue job is considered stale and released
-define('STATUS_JOB_STALE_AFTER', 900);
 
 // Maximum days to keep images. Default is 360 and it should be kept at
 // least this value in production.
@@ -58,9 +52,9 @@ define('CRON_MEMORY_LIMIT', getenv('CRON_MEMORY_LIMIT') !== false ? getenv('CRON
 
 // MySQL Database Connection Constants
 define('DB_HOST', 'localhost'); // Database host or server
-define('DB_USER', ''); // Database username
+define('DB_USER', 'root'); // Database username
 define('DB_PASSWORD', ''); // Database password
-define('DB_NAME', ''); // Database schema name
+define('DB_NAME', 'localhost3'); // Database schema name
 
 // SMTP settings for sending emails
 define('SMTP_HOST', 'smtp.example.com');

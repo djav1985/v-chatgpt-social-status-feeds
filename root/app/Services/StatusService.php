@@ -68,6 +68,9 @@ class StatusService
         $systemMessage = SYSTEM_MSG;
         $accountInfo = Account::getAcctInfo($accountOwner, $accountName);
         $userInfo = User::getUserInfo($accountOwner);
+        if (is_array($userInfo)) {
+            $userInfo = (object)$userInfo;
+        }
 
         if (!$accountInfo || !$userInfo) {
             $error = sprintf(
@@ -95,10 +98,10 @@ class StatusService
         );
 
         $statusTokens = match ($platform) {
-            'facebook', 'google-business' => 512,
+            'facebook', 'google-business' => 1024,
             'twitter' => 256,
             'instagram' => 512,
-            default => 512,
+            default => 1024,
         };
 
         $totalTags = match ($platform) {
@@ -108,28 +111,12 @@ class StatusService
             default => '5 to 10',
         };
 
-        $platformDescription = match ($platform) {
-            'facebook', 'google-business' => 'Must stay under 250 characters. Include lots of emojis.',
-            'twitter' => 'ONE SENTENCE ONLY. NO EXCEPTIONS. Do NOT write more than one sentence or it will be discarded.',
-            'instagram' => 'Must stay under 150 characters. Include lots of emojis.',
-            default => 'Must stay under 150 characters. Include lots of emojis.',
-        };
-
-        $totalCharacters = match ($platform) {
-            'facebook', 'google-business' => 250,
-            'twitter' => 100,
-            'instagram' => 150,
-            default => 250,
-        };
-
         $statusResponse = self::generateSocialStatus(
             $systemMessage,
             $prompt,
+            $link,
             $includeHashtags,
-            $platform,
-            $platformDescription,
             $totalTags,
-            $totalCharacters,
             $statusTokens,
             $accountName,
             $accountOwner
@@ -149,27 +136,9 @@ class StatusService
         $hashtagsText = trim($statusResponse['hashtags'] ?? '');
 
         $finalStatus = $statusText;
-
-        // Platform-specific assembly:
-        // - Twitter: omit CTA, order -> status [link] [hashtags]
-        // - Google Business: omit CTA but include link -> status [link] [hashtags]
-        // - Others: include CTA (if present), then link, then hashtags
-        if ($platform === 'twitter') {
-            if (!empty($link)) {
-                $finalStatus .= ' ' . $link;
-            }
-        } elseif ($platform === 'google-business') {
-            // intentionally left blank here
-        } else {
-            // Other platforms: include CTA (if provided) then the link
-            if ($cta !== '') {
-                $finalStatus .= ' ' . $cta;
-            }
-            if (!empty($link)) {
-                $finalStatus .= ' ' . $link;
-            }
+        if ($platform !== 'google-business' && $cta !== '') {
+            $finalStatus .= ' ' . $cta;
         }
-
         if ($includeHashtags && $hashtagsText !== '') {
             $finalStatus .= ' ' . $hashtagsText;
         }
@@ -196,12 +165,8 @@ class StatusService
     {
         $client = self::getClient();
         try {
-            $response = $client->responses()->create($data);
-            // Simpler conversion: always JSON round-trip the SDK response to
-            // produce an associative array. This is robust across SDK return
-            // types and keeps downstream code working with arrays.
-            $arr = json_decode(json_encode($response), true);
-            return is_array($arr) ? $arr : [];
+              $response = $client->responses()->create($data);
+              return $response->toArray();
         } catch (\Throwable $e) {
             $error = "Failed to make API request to responses endpoint: " . $e->getMessage();
             ErrorManager::getInstance()->log($error, 'error');
@@ -214,6 +179,7 @@ class StatusService
      *
      * @param string $systemMessage The system message for generating content.
      * @param string $prompt The user prompt for generating content.
+     * @param string $link The link to be included in the post.
      * @param bool $includeHashtags Whether to include hashtags in the post.
      * @param string $totalTags The total number of hashtags to include.
      * @param int $statusTokens The number of tokens for the status.
@@ -221,7 +187,7 @@ class StatusService
      * @param string $accountOwner The owner of the account.
      * @return array<string, mixed> Returns the API response containing structured data or an error array.
      */
-    private static function generateSocialStatus(string $systemMessage, string $prompt, bool $includeHashtags, string $platform, string $platformDescription, string $totalTags, int $totalCharacters, int $statusTokens, string $accountName, string $accountOwner): array
+    private static function generateSocialStatus(string $systemMessage, string $prompt, string $link, bool $includeHashtags, string $totalTags, int $statusTokens, string $accountName, string $accountOwner): array
     {
         // Build JSON schema for responses endpoint
         $jsonSchema = [
@@ -229,47 +195,35 @@ class StatusService
             "properties" => [
                 "status" => [
                     "type" => "string",
-                    "description" => "Post text for $platform status update. No hashtags or links."
+                    "description" => "A catchy and engaging text for the social media post, ideally between 100-150 characters."
+                ],
+                "cta" => [
+                    "type" => "string",
+                    "description" => "A clear and concise call to action, encouraging users to engage at $link."
                 ],
                 "image_prompt" => [
                     "type" => "string",
-                    "description" => "Describe an image idea that matches the status."
+                    "description" => "Write a prompt to generate an image to go with this status."
                 ],
             ],
-            // CTA is intentionally not added here for twitter. It will be
-            // included in the schema and required list for non-Twitter
-            // platforms further below.
-            "required" => ["status", "image_prompt"],
-            "additionalProperties" => false
+            "required" => ["status", "cta", "image_prompt"],
+            "additionalProperties" => false,
         ];
-
-        // Conditionally include CTA for platforms that support it
-        // (exclude Twitter and Google Business)
-        if ($platform !== 'twitter' && $platform !== 'google-business') {
-            $jsonSchema["properties"]["cta"] = [
-                "type" => "string",
-                "description" => "Short call to action. No hashtags or links, as they will be added separately."
-            ];
-            // Ensure CTA is required for platforms that support it
-            $jsonSchema["required"][] = "cta";
-        }
-
         if ($includeHashtags) {
             $jsonSchema["properties"]["hashtags"] = [
                 "type" => "string",
-                "description" => "Space-separated #hashtags, ideally $totalTags."
+                "description" => "A space-separated string of relevant hashtags for social media, ideally $totalTags trending tags."
             ];
             $jsonSchema["required"][] = "hashtags";
         }
 
         $data = [
             "model" => MODEL,
-            "instructions" => $systemMessage,
-            "input" => "Create a status: $prompt (Must be under $totalCharacters characters. Do NOT exceed this limit. $platformDescription.)",
-            "max_output_tokens" => $statusTokens,
-            "reasoning" => [
-                "effort" => "minimal"
+            "input" => [
+                ["role" => "system", "content" => $systemMessage],
+                ["role" => "user", "content" => $prompt],
             ],
+            //"max_output_tokens" => $statusTokens,
             "text" => [
                 "format" => [
                     "type" => "json_schema",
@@ -284,7 +238,9 @@ class StatusService
         $response = self::openaiResponsesRequest($data);
 
         if (isset($response['error'])) {
+            // Error already logged by openaiApiRequest if it originated there
             $errorMsg = is_array($response['error']) ? json_encode($response['error']) : $response['error'];
+            // If the error isn't already specific, make it more specific here
             if (strpos($errorMsg, "Error generating status for") === false) {
                 $errorMsg = "Error generating status for $accountName owned by $accountOwner: " . $errorMsg;
                 ErrorManager::getInstance()->log($errorMsg, 'error');
@@ -292,38 +248,19 @@ class StatusService
             return ["error" => $errorMsg];
         }
 
-        // Check if the response is incomplete
-        $responseStatus = $response['status'] ?? '';
-        if ($responseStatus === 'incomplete') {
-            $reason = $response['incomplete_details']['reason'] ?? 'unknown';
-            $error = "Error generating status for $accountName owned by $accountOwner: API response incomplete (reason: $reason). This usually means the response was truncated. Please try again.";
-            ErrorManager::getInstance()->log($error, 'error');
-            return ["error" => $error];
-        }
-
-        // Parse OpenAI Responses endpoint output (emoji-friendly & auto-repair)
+        // Parse OpenAI Responses endpoint output
+        // Find output_text type and decode JSON
         $outputArr = $response['output'] ?? [];
         foreach ($outputArr as $outputItem) {
             if (isset($outputItem['content']) && is_array($outputItem['content'])) {
                 foreach ($outputItem['content'] as $contentBlock) {
                     if (isset($contentBlock['type']) && $contentBlock['type'] === 'output_text' && isset($contentBlock['text'])) {
-
-                        $raw = $contentBlock['text'];
-
-                        // 1. Remove illegal control characters (but KEEP emojis)
-                        $cleaned = preg_replace('/[\x00-\x1F\x7F]/u', '', $raw);
-
-                        // 2. Auto-close broken JSON if truncated
-                        $fixed = self::repairTruncatedJson(rtrim($cleaned));
-
-                        // 3. Decode
-                        $decodedContent = json_decode($fixed, true);
-
+                        $decodedContent = json_decode($contentBlock['text'], true);
                         if (json_last_error() === JSON_ERROR_NONE) {
                             return $decodedContent;
                         } else {
                             $jsonError = json_last_error_msg();
-                            $error = "Error generating status for $accountName owned by $accountOwner: Invalid structured output from API (JSON decode error after clean-up: $jsonError). Original content: " . var_export($raw, true);
+                            $error = "Error generating status for $accountName owned by $accountOwner: Invalid structured output from API (JSON decode error: $jsonError). Original content: " . var_export($contentBlock['text'], true);
                             ErrorManager::getInstance()->log($error, 'error');
                             return ["error" => $error];
                         }
@@ -331,40 +268,9 @@ class StatusService
                 }
             }
         }
-
         $error = "Error generating status for $accountName owned by $accountOwner: API response did not contain expected structured content. Full response: " . var_export($response, true);
         ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
-    }
-
-    /**
-     * Attempt to repair truncated JSON payloads by appending missing closing braces.
-     */
-    private static function repairTruncatedJson(string $json): string
-    {
-        if ($json === '') {
-            return $json;
-        }
-
-        if (!str_starts_with($json, '{')) {
-            return $json;
-        }
-
-        // Try to decode first - if it's already valid JSON, don't modify it
-        json_decode($json);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return $json;
-        }
-
-        // Only attempt repair if JSON is invalid
-        $openCount = substr_count($json, '{');
-        $closeCount = substr_count($json, '}');
-
-        if ($openCount > $closeCount) {
-            $json .= str_repeat('}', $openCount - $closeCount);
-        }
-
-        return $json;
     }
 
     /**

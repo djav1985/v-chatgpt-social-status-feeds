@@ -25,8 +25,7 @@ final class FileSearchRankingOption implements ResponseContract
     private function __construct(
         public readonly string $ranker,
         public readonly float $scoreThreshold,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  RankingOptionType  $attributes

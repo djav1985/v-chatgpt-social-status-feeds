@@ -31,8 +31,7 @@ final class DeleteResponse implements ResponseContract, ResponseHasMetaInformati
         public readonly string $object,
         public readonly bool $deleted,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  DeleteResponseType  $attributes

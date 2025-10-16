@@ -371,7 +371,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $filesystem = new Filesystem();
         // Double realpath() on purpose, see https://bugs.php.net/72738
         $vendorDir = $filesystem->normalizePath(realpath(realpath($event->getComposer()->getConfig()->get('vendor-dir'))));
-        $filesystem->ensureDirectoryExists($vendorDir . '/composer');
+        $filesystem->ensureDirectoryExists($vendorDir.'/composer');
         $pinned = $event->getComposer()->getPackage()->getExtra()['discovery'] ?? [];
         $candidates = [];
 
@@ -390,7 +390,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-        $file = $vendorDir . '/composer/GeneratedDiscoveryStrategy.php';
+        $file = $vendorDir.'/composer/GeneratedDiscoveryStrategy.php';
 
         if (!$candidates) {
             if (file_exists($file)) {
@@ -426,7 +426,7 @@ EOPHP
 
         $rootPackage = $event->getComposer()->getPackage();
         $autoload = $rootPackage->getAutoload();
-        $autoload['classmap'][] = $vendorDir . '/composer/GeneratedDiscoveryStrategy.php';
+        $autoload['classmap'][] = $vendorDir.'/composer/GeneratedDiscoveryStrategy.php';
         $rootPackage->setAutoload($autoload);
     }
 
@@ -456,7 +456,7 @@ EOPHP
             return;
         }
 
-        $lock = substr(Factory::getComposerFile(), 0, -4) . 'lock';
+        $lock = substr(Factory::getComposerFile(), 0, -4).'lock';
         $composerJson = file_get_contents(Factory::getComposerFile());
         $lockFile = new JsonFile($lock, null, $io);
         $locker = ClassDiscovery::safeClassExists(RepositorySet::class)

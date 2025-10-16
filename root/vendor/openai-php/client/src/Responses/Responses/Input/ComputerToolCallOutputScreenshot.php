@@ -29,8 +29,7 @@ final class ComputerToolCallOutputScreenshot implements ResponseContract
         public readonly string $type,
         public readonly string $fileId,
         public readonly string $imageUrl,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ComputerToolCallOutputScreenshotType  $attributes

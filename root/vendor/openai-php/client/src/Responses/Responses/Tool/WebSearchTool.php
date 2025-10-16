@@ -11,7 +11,7 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 /**
  * @phpstan-import-type UserLocationType from WebSearchUserLocation
  *
- * @phpstan-type WebSearchToolType array{type: 'web_search'|'web_search_preview'|'web_search_preview_2025_03_11', search_context_size: 'low'|'medium'|'high', user_location: ?UserLocationType}
+ * @phpstan-type WebSearchToolType array{type: 'web_search_preview'|'web_search_preview_2025_03_11', search_context_size: 'low'|'medium'|'high', user_location: ?UserLocationType}
  *
  * @implements ResponseContract<WebSearchToolType>
  */
@@ -25,15 +25,14 @@ final class WebSearchTool implements ResponseContract
     use Fakeable;
 
     /**
-     * @param  'web_search'|'web_search_preview'|'web_search_preview_2025_03_11'  $type
+     * @param  'web_search_preview'|'web_search_preview_2025_03_11'  $type
      * @param  'low'|'medium'|'high'  $searchContextSize
      */
     private function __construct(
         public readonly string $type,
         public readonly string $searchContextSize,
         public readonly ?WebSearchUserLocation $userLocation,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  WebSearchToolType  $attributes

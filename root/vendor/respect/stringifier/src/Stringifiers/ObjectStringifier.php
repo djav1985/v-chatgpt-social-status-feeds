@@ -17,7 +17,6 @@ use function get_class;
 use function get_object_vars;
 use function is_object;
 use function sprintf;
-
 use Respect\Stringifier\Quoter;
 use Respect\Stringifier\Stringifier;
 

@@ -6,13 +6,19 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Tests\\' => array($baseDir . '/tests'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Symfony\\Contracts\\Service\\' => array($vendorDir . '/symfony/service-contracts'),
+    'Symfony\\Contracts\\HttpClient\\' => array($vendorDir . '/symfony/http-client-contracts'),
+    'Symfony\\Component\\HttpClient\\' => array($vendorDir . '/symfony/http-client'),
     'Respect\\Validation\\' => array($vendorDir . '/respect/validation/library'),
     'Respect\\Stringifier\\' => array($vendorDir . '/respect/stringifier/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-factory/src', $vendorDir . '/psr/http-message/src'),
     'Psr\\Http\\Client\\' => array($vendorDir . '/psr/http-client/src'),
+    'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Psr\\Cache\\' => array($vendorDir . '/psr/cache/src'),
+    'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'OpenAI\\' => array($vendorDir . '/openai-php/client/src'),
     'Nyholm\\Psr7\\' => array($vendorDir . '/nyholm/psr7/src'),
@@ -25,5 +31,6 @@ return array(
     'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/src'),
     'Doctrine\\DBAL\\' => array($vendorDir . '/doctrine/dbal/src'),
     'Doctrine\\Common\\' => array($vendorDir . '/doctrine/event-manager/src'),
+    'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'App\\' => array($baseDir . '/app'),
 );

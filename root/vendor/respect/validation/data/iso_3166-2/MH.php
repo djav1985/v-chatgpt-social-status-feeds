@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Marshall Islands",
   "subdivisions" => [

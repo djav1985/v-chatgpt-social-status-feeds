@@ -21,35 +21,6 @@ use App\Core\ErrorManager;
 class User
 {
     /**
-     * Cached user lookups keyed by username.
-     *
-     * @var array<string, ?object>
-     */
-    private static array $userInfoCache = [];
-
-    private static function userCacheKey(string $username): string
-    {
-        return trim($username);
-    }
-
-    private static function rememberUserInfo(string $username, ?object $info): ?object
-    {
-        self::$userInfoCache[self::userCacheKey($username)] = $info;
-
-        return $info;
-    }
-
-    private static function clearUserCacheEntry(?string $username = null): void
-    {
-        if ($username === null) {
-            self::$userInfoCache = [];
-            return;
-        }
-
-        unset(self::$userInfoCache[self::userCacheKey($username)]);
-    }
-
-    /**
      * Get all users from the database.
      *
      * @return array<int, array<string, mixed>>
@@ -74,7 +45,19 @@ class User
      */
     public static function userExists(string $username): ?object
     {
-        return self::getUserInfo($username);
+        try {
+            $db = DatabaseManager::getInstance();
+            $db->query("SELECT * FROM users WHERE username = :username");
+            $db->bind(':username', $username);
+            $result = $db->single();
+            if (is_array($result)) {
+                $result = (object)$result;
+            }
+            return $result ?: null; // Explicitly return null if no user is found
+        } catch (Exception $e) {
+            ErrorManager::getInstance()->log("Error checking if user exists: " . $e->getMessage(), 'error');
+            throw $e;
+        }
     }
 
     /**
@@ -111,9 +94,6 @@ class User
             $db->bind(':admin', $admin);
             $db->execute();
             $db->commit();
-
-            self::clearUserCacheEntry($username);
-
             return true;
         } catch (Exception $e) {
             $db->rollBack();
@@ -146,10 +126,6 @@ class User
             $db->execute();
 
             $db->commit();
-
-            self::clearUserCacheEntry($username);
-            Account::clearAccountCache($username);
-
             return true;
         } catch (Exception $e) {
             $db->rollBack();
@@ -173,9 +149,6 @@ class User
             $db->bind(':username', $username);
             $db->bind(':password', $hashedPassword);
             $db->execute();
-
-            self::clearUserCacheEntry($username);
-
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error updating password: " . $e->getMessage(), 'error');
@@ -187,23 +160,19 @@ class User
      * Get user information from the database.
      *
      * @param string $username
-     * @return object|null
+     * @return mixed
      */
-    public static function getUserInfo(string $username): ?object
+    public static function getUserInfo(string $username): mixed
     {
-        $cacheKey = self::userCacheKey($username);
-        if (array_key_exists($cacheKey, self::$userInfoCache)) {
-            return self::$userInfoCache[$cacheKey];
-        }
-
         try {
             $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
             $result = $db->single();
-            $user = is_array($result) ? (object)$result : null;
-
-            return self::rememberUserInfo($username, $user);
+            if (is_array($result)) {
+                $result = (object)$result;
+            }
+            return $result;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error retrieving user info: " . $e->getMessage(), 'error');
             throw $e;
@@ -244,9 +213,6 @@ class User
             $db->bind(':used_api_calls', $usedApiCalls);
             $db->bind(':username', $username);
             $db->execute();
-
-            self::clearUserCacheEntry($username);
-
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error updating used API calls: " . $e->getMessage(), 'error');
@@ -269,9 +235,6 @@ class User
             $db->bind(':max_api_calls', $maxApiCalls);
             $db->bind(':username', $username);
             $db->execute();
-
-            self::clearUserCacheEntry($username);
-
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error updating max API calls: " . $e->getMessage(), 'error');
@@ -290,9 +253,6 @@ class User
             $db->bind(':sent', $sent ? 1 : 0);
             $db->bind(':username', $username);
             $db->execute();
-
-            self::clearUserCacheEntry($username);
-
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error updating limit email flag: " . $e->getMessage(), 'error');
@@ -311,9 +271,6 @@ class User
             $db = DatabaseManager::getInstance();
             $db->query("UPDATE users SET used_api_calls = 0, limit_email_sent = 0");
             $db->execute();
-
-            self::clearUserCacheEntry();
-
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error resetting all API usage: " . $e->getMessage(), 'error');
@@ -342,9 +299,6 @@ class User
             $db->bind(':what', $what);
             $db->bind(':goal', $goal);
             $db->execute();
-
-            self::clearUserCacheEntry($username);
-
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error updating profile: " . $e->getMessage(), 'error');

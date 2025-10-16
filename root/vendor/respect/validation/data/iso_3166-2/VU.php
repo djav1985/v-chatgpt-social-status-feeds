@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Vanuatu",
   "subdivisions" => [

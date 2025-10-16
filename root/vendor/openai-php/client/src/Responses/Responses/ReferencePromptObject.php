@@ -29,8 +29,7 @@ final class ReferencePromptObject implements ResponseContract
         public readonly string $id,
         public readonly ?array $variables = null,
         public readonly ?string $version = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ReferencePromptObjectType  $attributes

@@ -16,6 +16,7 @@ final class OpenAI
             ->withApiKey($apiKey)
             ->withOrganization($organization)
             ->withProject($project)
+            ->withHttpHeader('OpenAI-Beta', 'assistants=v2')
             ->make();
     }
 
@@ -24,6 +25,6 @@ final class OpenAI
      */
     public static function factory(): Factory
     {
-        return new Factory();
+        return new Factory;
     }
 }

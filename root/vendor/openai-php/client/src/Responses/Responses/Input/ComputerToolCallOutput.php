@@ -37,8 +37,7 @@ final class ComputerToolCallOutput implements ResponseContract
         public readonly string $type,
         public readonly array $acknowledgedSafetyChecks,
         public readonly string $status,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ComputerToolCallOutputType  $attributes

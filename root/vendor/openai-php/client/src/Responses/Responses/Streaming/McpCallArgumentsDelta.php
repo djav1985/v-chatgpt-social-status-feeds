@@ -32,8 +32,7 @@ final class McpCallArgumentsDelta implements ResponseContract, ResponseHasMetaIn
         public readonly string $itemId,
         public readonly string $delta,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  McpCallArgumentsDoneType  $attributes

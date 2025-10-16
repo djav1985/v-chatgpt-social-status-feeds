@@ -119,19 +119,11 @@ final class Responses implements ResponsesContract
      */
     public function list(string $id, array $parameters = []): ListInputItems
     {
-        $payload = Payload::list('responses/' . $id . '/input_items', $parameters);
+        $payload = Payload::list('responses/'.$id.'/input_items', $parameters);
 
         /** @var Response<ListInputItemsType> $response */
         $response = $this->transporter->requestObject($payload);
 
         return ListInputItems::from($response->data(), $response->meta());
-    }
-
-    /**
-     * Manage conversations to store and retrieve conversation state across Response API calls.
-     */
-    public function conversations(): Conversations
-    {
-        return new Conversations($this->transporter);
     }
 }

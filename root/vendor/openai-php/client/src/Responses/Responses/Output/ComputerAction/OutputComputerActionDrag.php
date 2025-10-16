@@ -31,8 +31,7 @@ final class OutputComputerActionDrag implements ResponseContract
     private function __construct(
         public readonly array $path,
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  DragType  $attributes

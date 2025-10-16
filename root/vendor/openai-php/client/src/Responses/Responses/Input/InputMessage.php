@@ -38,8 +38,7 @@ final class InputMessage implements ResponseContract
         public readonly string $role,
         public readonly string $status,
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  InputMessageType  $attributes

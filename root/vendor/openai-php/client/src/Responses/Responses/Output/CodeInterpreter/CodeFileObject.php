@@ -25,8 +25,7 @@ final class CodeFileObject implements ResponseContract
     private function __construct(
         public readonly string $fileId,
         public readonly string $mimeType,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  CodeFileObjectType  $attributes

@@ -27,8 +27,7 @@ final class CreateResponseChoiceAudio implements ResponseContract
         public readonly string $data,
         public readonly int $expiresAt,
         public readonly string $transcript,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  CreateResponseChoiceAudioType  $attributes

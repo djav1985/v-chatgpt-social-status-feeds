@@ -15,7 +15,6 @@ namespace Respect\Stringifier\Stringifiers;
 
 use function get_class;
 use function iterator_to_array;
-
 use Respect\Stringifier\Quoter;
 use Respect\Stringifier\Stringifier;
 use Traversable;

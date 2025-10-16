@@ -11,8 +11,7 @@ final class CreateResponseChoiceLogprobs
      */
     private function __construct(
         public readonly ?array $content,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{content: ?array<int, array{token: string, logprob: float, bytes: ?array<int, int>}>}  $attributes

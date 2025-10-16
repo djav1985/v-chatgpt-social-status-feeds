@@ -17,7 +17,6 @@ use function get_class;
 use function getcwd;
 use function sprintf;
 use function str_replace;
-
 use Respect\Stringifier\Quoter;
 use Respect\Stringifier\Stringifier;
 use Throwable;
@@ -77,7 +76,7 @@ final class ThrowableStringifier implements Stringifier
             'code' => $throwable->getCode(),
             'file' => sprintf(
                 '%s:%d',
-                str_replace(getcwd() . '/', '', $throwable->getFile()),
+                str_replace(getcwd().'/', '', $throwable->getFile()),
                 $throwable->getLine()
             ),
         ];

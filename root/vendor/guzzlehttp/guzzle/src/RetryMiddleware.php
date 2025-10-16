@@ -44,7 +44,7 @@ class RetryMiddleware
     {
         $this->decider = $decider;
         $this->nextHandler = $nextHandler;
-        $this->delay = $delay ?: __CLASS__ . '::exponentialDelay';
+        $this->delay = $delay ?: __CLASS__.'::exponentialDelay';
     }
 
     /**
@@ -78,14 +78,12 @@ class RetryMiddleware
     private function onFulfilled(RequestInterface $request, array $options): callable
     {
         return function ($value) use ($request, $options) {
-            if (
-                !($this->decider)(
-                    $options['retries'],
-                    $request,
-                    $value,
-                    null
-                )
-            ) {
+            if (!($this->decider)(
+                $options['retries'],
+                $request,
+                $value,
+                null
+            )) {
                 return $value;
             }
 
@@ -99,14 +97,12 @@ class RetryMiddleware
     private function onRejected(RequestInterface $req, array $options): callable
     {
         return function ($reason) use ($req, $options) {
-            if (
-                !($this->decider)(
-                    $options['retries'],
-                    $req,
-                    null,
-                    $reason
-                )
-            ) {
+            if (!($this->decider)(
+                $options['retries'],
+                $req,
+                null,
+                $reason
+            )) {
                 return P\Create::rejectionFor($reason);
             }
 

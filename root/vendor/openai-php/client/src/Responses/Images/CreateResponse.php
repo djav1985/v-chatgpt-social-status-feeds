@@ -12,12 +12,12 @@ use OpenAI\Responses\Meta\MetaInformation;
 use OpenAI\Testing\Responses\Concerns\Fakeable;
 
 /**
- * @implements ResponseContract<array{created: int, data: array<int, array{url?: string, b64_json?: string, revised_prompt?: string}>, usage?: array{total_tokens: int, input_tokens: int|null, output_tokens: int|null, input_tokens_details: array{text_tokens: int, image_tokens: int}|null}}>
+ * @implements ResponseContract<array{created: int, data: array<int, array{url?: string, b64_json?: string, revised_prompt?: string}>, usage?: array{total_tokens: int, input_tokens: int, output_tokens: int, input_tokens_details: array{text_tokens: int, image_tokens: int}}}>
  */
 final class CreateResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
-     * @use ArrayAccessible<array{created: int, data: array<int, array{url?: string, b64_json?: string, revised_prompt?: string}>, usage?: array{total_tokens: int, input_tokens: int|null, output_tokens: int|null, input_tokens_details: array{text_tokens: int, image_tokens: int}|null}}>
+     * @use ArrayAccessible<array{created: int, data: array<int, array{url?: string, b64_json?: string, revised_prompt?: string}>, usage?: array{total_tokens: int, input_tokens: int, output_tokens: int, input_tokens_details: array{text_tokens: int, image_tokens: int}}}>
      */
     use ArrayAccessible;
 
@@ -32,13 +32,12 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
         public readonly array $data,
         private readonly MetaInformation $meta,
         public readonly ?ImageResponseUsage $usage = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Acts as static factory, and returns a new Response instance.
      *
-     * @param  array{created: int, data: array<int, array{url?: string, b64_json?: string, revised_prompt?: string}>, usage?: array{total_tokens: int, input_tokens?: int, output_tokens?: int, input_tokens_details?: array{text_tokens: int, image_tokens: int}}}  $attributes
+     * @param  array{created: int, data: array<int, array{url?: string, b64_json?: string, revised_prompt?: string}>, usage?: array{total_tokens: int, input_tokens: int, output_tokens: int, input_tokens_details: array{text_tokens: int, image_tokens: int}}}  $attributes
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {

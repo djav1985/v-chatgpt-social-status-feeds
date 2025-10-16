@@ -29,8 +29,7 @@ final class McpListTools implements ResponseContract, ResponseHasMetaInformation
     private function __construct(
         public readonly int $sequenceNumber,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  McpListToolsType  $attributes

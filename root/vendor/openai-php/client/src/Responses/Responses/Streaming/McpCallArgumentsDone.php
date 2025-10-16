@@ -32,8 +32,7 @@ final class McpCallArgumentsDone implements ResponseContract, ResponseHasMetaInf
         public readonly string $itemId,
         public readonly string $arguments,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  McpCallArgumentsDoneType  $attributes

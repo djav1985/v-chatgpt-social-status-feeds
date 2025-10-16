@@ -64,7 +64,7 @@ class RouteCollector
 
     /**
      * Adds a GET route to the collection
-     *
+     * 
      * This is simply an alias of $this->addRoute('GET', $route, $handler)
      *
      * @param string $route
@@ -77,7 +77,7 @@ class RouteCollector
 
     /**
      * Adds a POST route to the collection
-     *
+     * 
      * This is simply an alias of $this->addRoute('POST', $route, $handler)
      *
      * @param string $route
@@ -90,7 +90,7 @@ class RouteCollector
 
     /**
      * Adds a PUT route to the collection
-     *
+     * 
      * This is simply an alias of $this->addRoute('PUT', $route, $handler)
      *
      * @param string $route
@@ -103,7 +103,7 @@ class RouteCollector
 
     /**
      * Adds a DELETE route to the collection
-     *
+     * 
      * This is simply an alias of $this->addRoute('DELETE', $route, $handler)
      *
      * @param string $route
@@ -116,7 +116,7 @@ class RouteCollector
 
     /**
      * Adds a PATCH route to the collection
-     *
+     * 
      * This is simply an alias of $this->addRoute('PATCH', $route, $handler)
      *
      * @param string $route

@@ -30,8 +30,7 @@ final class VectorStoreSearchResponseFile implements ResponseContract
         public readonly float $score,
         public readonly array $attributes,
         public readonly array $content,
-    ) {
-    }
+    ) {}
 
     /**
      * Acts as static factory, and returns a new Response instance.

@@ -26,8 +26,7 @@ final class AcknowledgedSafetyCheck implements ResponseContract
         public readonly string $code,
         public readonly string $id,
         public readonly string $message,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  AcknowledgedSafetyCheckType  $attributes

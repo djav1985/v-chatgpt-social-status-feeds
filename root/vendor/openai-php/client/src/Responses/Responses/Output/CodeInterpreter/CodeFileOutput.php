@@ -31,8 +31,7 @@ final class CodeFileOutput implements ResponseContract
     private function __construct(
         public readonly array $files,
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  CodeFileOutputType  $attributes

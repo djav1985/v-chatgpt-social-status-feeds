@@ -23,9 +23,9 @@ final class Utils
     {
         switch (\gettype($input)) {
             case 'object':
-                return 'object(' . \get_class($input) . ')';
+                return 'object('.\get_class($input).')';
             case 'array':
-                return 'array(' . \count($input) . ')';
+                return 'array('.\count($input).')';
             default:
                 \ob_start();
                 \var_dump($input);
@@ -246,7 +246,7 @@ EOT
             }
             // Special match if the area when prefixed with ".". Remove any
             // existing leading "." and add a new leading ".".
-            $area = '.' . \ltrim($area, '.');
+            $area = '.'.\ltrim($area, '.');
             if (\substr($host, -\strlen($area)) === $area) {
                 return true;
             }
@@ -274,7 +274,7 @@ EOT
     {
         $data = \json_decode($json, $assoc, $depth, $options);
         if (\JSON_ERROR_NONE !== \json_last_error()) {
-            throw new InvalidArgumentException('json_decode error: ' . \json_last_error_msg());
+            throw new InvalidArgumentException('json_decode error: '.\json_last_error_msg());
         }
 
         return $data;
@@ -295,7 +295,7 @@ EOT
     {
         $json = \json_encode($value, $options, $depth);
         if (\JSON_ERROR_NONE !== \json_last_error()) {
-            throw new InvalidArgumentException('json_encode error: ' . \json_last_error_msg());
+            throw new InvalidArgumentException('json_encode error: '.\json_last_error_msg());
         }
 
         /** @var string */
@@ -340,7 +340,7 @@ EOT
 
                 $errorMessage = 'IDN conversion failed';
                 if ($errors) {
-                    $errorMessage .= ' (errors: ' . implode(', ', $errors) . ')';
+                    $errorMessage .= ' (errors: '.implode(', ', $errors).')';
                 }
 
                 throw new InvalidArgumentException($errorMessage);

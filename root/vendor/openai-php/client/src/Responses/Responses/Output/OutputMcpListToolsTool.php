@@ -31,8 +31,7 @@ final class OutputMcpListToolsTool implements ResponseContract
         public readonly array $inputSchema,
         public readonly ?string $description = null,
         public readonly ?array $annotations = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  OutputMcpListToolsToolType  $attributes

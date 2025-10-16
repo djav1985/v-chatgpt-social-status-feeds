@@ -13,8 +13,6 @@ use OpenAI\Testing\Resources\AudioTestResource;
 use OpenAI\Testing\Resources\BatchesTestResource;
 use OpenAI\Testing\Resources\ChatTestResource;
 use OpenAI\Testing\Resources\CompletionsTestResource;
-use OpenAI\Testing\Resources\ContainersTestResource;
-use OpenAI\Testing\Resources\ConversationsTestResource;
 use OpenAI\Testing\Resources\EditsTestResource;
 use OpenAI\Testing\Resources\EmbeddingsTestResource;
 use OpenAI\Testing\Resources\FilesTestResource;
@@ -40,9 +38,7 @@ class ClientFake implements ClientContract
     /**
      * @param  array<array-key, ResponseContract|StreamResponse|Throwable|string>  $responses
      */
-    public function __construct(protected array $responses = [])
-    {
-    }
+    public function __construct(protected array $responses = []) {}
 
     /**
      * @param  array<array-key, ResponseContract|StreamResponse|Throwable|string>  $responses
@@ -71,8 +67,7 @@ class ClientFake implements ClientContract
         $count = count($this->sent($resource));
 
         PHPUnit::assertSame(
-            $times,
-            $count,
+            $times, $count,
             "The expected [{$resource}] resource was sent {$count} times instead of {$times} times."
         );
     }
@@ -99,8 +94,7 @@ class ClientFake implements ClientContract
     public function assertNotSent(string $resource, ?callable $callback = null): void
     {
         PHPUnit::assertCount(
-            0,
-            $this->sent($resource, $callback),
+            0, $this->sent($resource, $callback),
             "The unexpected [{$resource}] request was sent."
         );
     }
@@ -112,7 +106,7 @@ class ClientFake implements ClientContract
             array: array_map(fn (TestRequest $request): string => $request->resource(), $this->requests)
         );
 
-        PHPUnit::assertEmpty($this->requests, 'The following requests were sent unexpectedly: ' . $resourceNames);
+        PHPUnit::assertEmpty($this->requests, 'The following requests were sent unexpectedly: '.$resourceNames);
     }
 
     /**
@@ -145,11 +139,6 @@ class ClientFake implements ClientContract
         return new ResponsesTestResource($this);
     }
 
-    public function conversations(): ConversationsTestResource
-    {
-        return new ConversationsTestResource($this);
-    }
-
     public function realtime(): RealtimeTestResource
     {
         return new RealtimeTestResource($this);
@@ -163,11 +152,6 @@ class ClientFake implements ClientContract
     public function chat(): ChatTestResource
     {
         return new ChatTestResource($this);
-    }
-
-    public function containers(): ContainersTestResource
-    {
-        return new ContainersTestResource($this);
     }
 
     public function embeddings(): EmbeddingsTestResource

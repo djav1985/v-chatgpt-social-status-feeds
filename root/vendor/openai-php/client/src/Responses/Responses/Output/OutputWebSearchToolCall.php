@@ -29,8 +29,7 @@ final class OutputWebSearchToolCall implements ResponseContract
         public readonly string $id,
         public readonly string $status,
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  OutputWebSearchToolCallType  $attributes

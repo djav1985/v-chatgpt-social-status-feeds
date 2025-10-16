@@ -36,8 +36,7 @@ final class FileSearchTool implements ResponseContract
         public readonly FileSearchComparisonFilter|FileSearchCompoundFilter|null $filters,
         public readonly int $maxNumResults,
         public readonly FileSearchRankingOption $rankingOptions,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  FileSearchToolType  $attributes

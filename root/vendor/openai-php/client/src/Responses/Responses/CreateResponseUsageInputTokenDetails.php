@@ -24,8 +24,7 @@ final class CreateResponseUsageInputTokenDetails implements ResponseContract
 
     private function __construct(
         public readonly int $cachedTokens,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  InputTokenDetailsType  $attributes

@@ -27,8 +27,7 @@ final class InputAudioTranscription implements ResponseContract
      */
     private function __construct(
         public readonly string $model
-    ) {
-    }
+    ) {}
 
     /**
      * @param  InputAudioTranscriptionType  $attributes

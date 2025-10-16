@@ -24,8 +24,7 @@ final class CreateResponseIncompleteDetails implements ResponseContract
 
     private function __construct(
         public readonly string $reason,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  IncompleteDetailsType  $attributes
