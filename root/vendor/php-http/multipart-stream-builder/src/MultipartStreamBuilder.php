@@ -137,8 +137,8 @@ class MultipartStreamBuilder
         $buffer = fopen('php://temp', 'r+');
         foreach ($this->data as $data) {
             // Add start and headers
-            fwrite($buffer, "--{$this->getBoundary()}\r\n".
-                $this->getHeaders($data['headers'])."\r\n");
+            fwrite($buffer, "--{$this->getBoundary()}\r\n" .
+                $this->getHeaders($data['headers']) . "\r\n");
 
             /** @var $contentStream StreamInterface */
             $contentStream = $data['contents'];
@@ -313,7 +313,7 @@ class MultipartStreamBuilder
         $path = rtrim($path, $separators);
 
         // Returns the trailing part of the $path starting after one of the directory separators.
-        $filename = preg_match('@[^'.preg_quote($separators, '@').']+$@', $path, $matches) ? $matches[0] : '';
+        $filename = preg_match('@[^' . preg_quote($separators, '@') . ']+$@', $path, $matches) ? $matches[0] : '';
 
         return $filename;
     }

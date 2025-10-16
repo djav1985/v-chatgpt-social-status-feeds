@@ -27,7 +27,8 @@ class ThreadRunStreamResponse implements ResponseContract
     private function __construct(
         public readonly string $event,
         public readonly ThreadResponse|ThreadRunResponse|ThreadRunStepResponse|ThreadRunStepDeltaResponse|ThreadMessageResponse|ThreadMessageDeltaResponse $response,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.
@@ -69,7 +70,7 @@ class ThreadRunStreamResponse implements ResponseContract
             'thread.message.completed',
             'thread.message.incomplete' => ThreadMessageResponse::from($attributes, $meta), // @phpstan-ignore-line
             'thread.message.delta' => ThreadMessageDeltaResponse::from($attributes), // @phpstan-ignore-line
-            default => throw new UnknownEventException('Unknown event: '.$event),
+            default => throw new UnknownEventException('Unknown event: ' . $event),
         };
 
         return new self(

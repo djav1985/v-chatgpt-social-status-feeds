@@ -79,7 +79,8 @@ class RedirectMiddleware
      */
     public function checkRedirect(RequestInterface $request, array $options, ResponseInterface $response)
     {
-        if (\strpos((string) $response->getStatusCode(), '3') !== 0
+        if (
+            \strpos((string) $response->getStatusCode(), '3') !== 0
             || !$response->hasHeader('Location')
         ) {
             return $response;
@@ -166,7 +167,8 @@ class RedirectMiddleware
         // not forcing RFC compliance, but rather emulating what all browsers
         // would do.
         $statusCode = $response->getStatusCode();
-        if ($statusCode == 303
+        if (
+            $statusCode == 303
             || ($statusCode <= 302 && !$options['allow_redirects']['strict'])
         ) {
             $safeMethods = ['GET', 'HEAD', 'OPTIONS'];
@@ -187,7 +189,8 @@ class RedirectMiddleware
 
         // Add the Referer header if it is told to do so and only
         // add the header if we are not redirecting from https to http.
-        if ($options['allow_redirects']['referer']
+        if (
+            $options['allow_redirects']['referer']
             && $modify['uri']->getScheme() === $request->getUri()->getScheme()
         ) {
             $uri = $request->getUri()->withUserInfo('');

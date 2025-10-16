@@ -29,7 +29,8 @@ final class McpCall implements ResponseContract, ResponseHasMetaInformationContr
     private function __construct(
         public readonly int $sequenceNumber,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  McpCallType  $attributes

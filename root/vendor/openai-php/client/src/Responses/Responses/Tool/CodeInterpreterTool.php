@@ -30,7 +30,8 @@ final class CodeInterpreterTool implements ResponseContract
     private function __construct(
         public readonly string|CodeInterpreterContainerAuto $container,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  CodeInterpreterToolType  $attributes

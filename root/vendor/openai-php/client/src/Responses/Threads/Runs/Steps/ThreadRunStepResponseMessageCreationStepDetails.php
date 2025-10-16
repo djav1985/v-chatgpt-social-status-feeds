@@ -26,7 +26,8 @@ final class ThreadRunStepResponseMessageCreationStepDetails implements ResponseC
     private function __construct(
         public string $type,
         public ThreadRunStepResponseMessageCreation $messageCreation,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

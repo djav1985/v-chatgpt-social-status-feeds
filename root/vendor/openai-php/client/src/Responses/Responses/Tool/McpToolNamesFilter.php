@@ -27,7 +27,8 @@ final class McpToolNamesFilter implements ResponseContract
      */
     private function __construct(
         public readonly array $toolNames,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  McpToolNamesFilterType  $attributes

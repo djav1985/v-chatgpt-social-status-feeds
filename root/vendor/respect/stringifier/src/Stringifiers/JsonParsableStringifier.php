@@ -15,7 +15,9 @@ namespace Respect\Stringifier\Stringifiers;
 
 use const JSON_UNESCAPED_UNICODE;
 use const JSON_UNESCAPED_SLASHES;
+
 use function json_encode;
+
 use Respect\Stringifier\Stringifier;
 
 /**

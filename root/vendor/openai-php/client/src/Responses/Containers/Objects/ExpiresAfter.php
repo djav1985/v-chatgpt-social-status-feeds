@@ -28,7 +28,8 @@ final class ExpiresAfter implements ResponseContract
     private function __construct(
         public readonly string $anchor,
         public readonly int $minutes,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ExpiresAfterType  $attributes

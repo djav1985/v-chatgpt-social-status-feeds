@@ -32,7 +32,8 @@ final class FunctionTool implements ResponseContract
         public readonly bool $strict,
         public readonly string $type,
         public readonly ?string $description = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  FunctionToolType  $attributes

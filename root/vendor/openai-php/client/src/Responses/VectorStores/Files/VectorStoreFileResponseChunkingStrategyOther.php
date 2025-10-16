@@ -25,7 +25,8 @@ final class VectorStoreFileResponseChunkingStrategyOther implements ResponseCont
      */
     private function __construct(
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

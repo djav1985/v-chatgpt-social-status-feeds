@@ -33,7 +33,8 @@ final class ReasoningTextDelta implements ResponseContract, ResponseHasMetaInfor
         public readonly int $outputIndex,
         public readonly int $sequenceNumber,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ReasoningTextDeltaType  $attributes

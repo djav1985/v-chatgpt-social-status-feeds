@@ -199,7 +199,7 @@ class Psr17Factory implements RequestFactoryInterface, ResponseFactoryInterface,
             if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
                 $headers['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
             } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
-                $headers['Authorization'] = 'Basic '.base64_encode($_SERVER['PHP_AUTH_USER'].':'.($_SERVER['PHP_AUTH_PW'] ?? ''));
+                $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . ($_SERVER['PHP_AUTH_PW'] ?? ''));
             } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
                 $headers['Authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
             }
@@ -222,7 +222,7 @@ class Psr17Factory implements RequestFactoryInterface, ResponseFactoryInterface,
 
         $hasPort = false;
         if (isset($server['HTTP_HOST'])) {
-            $parts = parse_url('http://'.$server['HTTP_HOST']);
+            $parts = parse_url('http://' . $server['HTTP_HOST']);
 
             $uri = $uri->withHost($parts['host'] ?? 'localhost');
 

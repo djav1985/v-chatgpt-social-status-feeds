@@ -143,11 +143,11 @@ final class Payload
      */
     public function toRequest(BaseUri $baseUri, Headers $headers, QueryParams $queryParams): RequestInterface
     {
-        $psr17Factory = new Psr17Factory;
+        $psr17Factory = new Psr17Factory();
 
         $body = null;
 
-        $uri = $baseUri->toString().$this->uri->toString();
+        $uri = $baseUri->toString() . $this->uri->toString();
 
         $queryParams = $queryParams->toArray();
         if ($this->method === Method::GET) {
@@ -155,7 +155,7 @@ final class Payload
         }
 
         if ($queryParams !== []) {
-            $uri .= '?'.http_build_query($queryParams);
+            $uri .= '?' . http_build_query($queryParams);
         }
 
         $headers = $headers->withContentType($this->contentType);
@@ -174,7 +174,7 @@ final class Payload
 
                     if (is_array($value)) {
                         foreach ($value as $nestedValue) {
-                            $streamBuilder->addResource($key.'[]', $nestedValue);
+                            $streamBuilder->addResource($key . '[]', $nestedValue);
                         }
 
                         continue;
@@ -185,7 +185,7 @@ final class Payload
 
                 $body = $streamBuilder->build();
 
-                $headers = $headers->withContentType($this->contentType, '; boundary='.$streamBuilder->getBoundary());
+                $headers = $headers->withContentType($this->contentType, '; boundary=' . $streamBuilder->getBoundary());
             } else {
                 $body = $psr17Factory->createStream(json_encode($this->parameters, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
             }

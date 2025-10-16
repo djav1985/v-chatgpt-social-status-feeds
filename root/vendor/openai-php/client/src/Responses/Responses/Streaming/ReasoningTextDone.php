@@ -33,7 +33,8 @@ final class ReasoningTextDone implements ResponseContract, ResponseHasMetaInform
         public readonly int $sequenceNumber,
         public readonly string $text,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ReasoningTextDoneType  $attributes

@@ -20,7 +20,8 @@ final class VariationResponseData implements ResponseContract
     private function __construct(
         public readonly string $url,
         public readonly string $b64_json,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

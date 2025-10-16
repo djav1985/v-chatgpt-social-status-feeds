@@ -20,7 +20,8 @@ if (!function_exists('FastRoute\simpleDispatcher')) {
 
         /** @var RouteCollector $routeCollector */
         $routeCollector = new $options['routeCollector'](
-            new $options['routeParser'], new $options['dataGenerator']
+            new $options['routeParser'](),
+            new $options['dataGenerator']()
         );
         $routeDefinitionCallback($routeCollector);
 
@@ -56,7 +57,8 @@ if (!function_exists('FastRoute\simpleDispatcher')) {
         }
 
         $routeCollector = new $options['routeCollector'](
-            new $options['routeParser'], new $options['dataGenerator']
+            new $options['routeParser'](),
+            new $options['dataGenerator']()
         );
         $routeDefinitionCallback($routeCollector);
 

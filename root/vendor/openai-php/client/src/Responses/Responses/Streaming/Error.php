@@ -31,7 +31,8 @@ final class Error implements ResponseContract, ResponseHasMetaInformationContrac
         public readonly string $message,
         public readonly ?string $param,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ErrorType  $attributes

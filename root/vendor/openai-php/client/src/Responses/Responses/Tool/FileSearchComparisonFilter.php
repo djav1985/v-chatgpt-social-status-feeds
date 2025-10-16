@@ -29,7 +29,8 @@ final class FileSearchComparisonFilter implements ResponseContract
         public readonly string $key,
         public readonly string $type,
         public readonly string|int|bool $value,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ComparisonFilterType  $attributes

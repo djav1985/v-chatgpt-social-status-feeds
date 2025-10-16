@@ -1,4 +1,5 @@
 <?php
+
 return [
   "country" => "Sao Tome and Principe",
   "subdivisions" => [

@@ -25,7 +25,8 @@ final class ClientSecret implements ResponseContract
     private function __construct(
         public readonly int $expiresAt,
         public readonly string $value,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ClientSecretType  $attributes

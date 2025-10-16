@@ -27,7 +27,8 @@ final class OutputComputerActionScreenshot implements ResponseContract
      */
     private function __construct(
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ScreenshotType  $attributes

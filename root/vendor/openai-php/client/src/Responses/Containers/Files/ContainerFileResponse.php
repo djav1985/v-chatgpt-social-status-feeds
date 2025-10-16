@@ -39,7 +39,8 @@ final class ContainerFileResponse implements ResponseContract, ResponseHasMetaIn
         public readonly string $path,
         public readonly string $source,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

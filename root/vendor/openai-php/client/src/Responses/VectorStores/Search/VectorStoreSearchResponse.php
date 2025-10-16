@@ -35,7 +35,8 @@ final class VectorStoreSearchResponse implements ResponseContract, ResponseHasMe
         public readonly bool $hasMore,
         public readonly ?string $nextPage,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

@@ -29,7 +29,8 @@ final class OutputComputerActionDoubleClick implements ResponseContract
         public readonly string $type,
         public readonly float $x,
         public readonly float $y,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  DoubleClickType  $attributes

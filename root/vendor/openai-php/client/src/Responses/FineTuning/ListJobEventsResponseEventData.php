@@ -21,7 +21,8 @@ final class ListJobEventsResponseEventData implements ResponseContract
         public readonly int $step,
         public readonly float $trainLoss,
         public readonly float $trainMeanTokenAccuracy,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

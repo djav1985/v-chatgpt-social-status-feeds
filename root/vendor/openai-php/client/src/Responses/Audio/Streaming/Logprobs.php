@@ -34,7 +34,8 @@ final class Logprobs implements ResponseContract, ResponseHasMetaInformationCont
         public readonly int $logprobs,
         public readonly string $token,
         public readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  LogprobsType  $attributes

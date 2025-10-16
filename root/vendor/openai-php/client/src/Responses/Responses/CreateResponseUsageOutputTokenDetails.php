@@ -24,7 +24,8 @@ final class CreateResponseUsageOutputTokenDetails implements ResponseContract
 
     private function __construct(
         public readonly int $reasoningTokens,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputTokenDetailsType  $attributes

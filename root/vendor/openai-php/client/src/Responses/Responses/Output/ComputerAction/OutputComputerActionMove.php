@@ -29,7 +29,8 @@ final class OutputComputerActionMove implements ResponseContract
         public readonly string $type,
         public readonly int $x,
         public readonly int $y,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  MoveType  $attributes

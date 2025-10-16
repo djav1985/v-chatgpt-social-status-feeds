@@ -9,7 +9,8 @@ final readonly class MetaInformationCustom
      */
     private function __construct(
         public array $headers
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, string|null>  $headers

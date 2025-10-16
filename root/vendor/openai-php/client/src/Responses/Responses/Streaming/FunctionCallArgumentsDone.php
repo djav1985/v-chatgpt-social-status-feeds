@@ -31,7 +31,8 @@ final class FunctionCallArgumentsDone implements ResponseContract, ResponseHasMe
         public readonly string $itemId,
         public readonly int $outputIndex,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  FunctionCallArgumentsDoneType  $attributes

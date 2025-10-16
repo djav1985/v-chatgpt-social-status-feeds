@@ -24,7 +24,8 @@ final class ThreadRunStepDeltaObject implements ResponseContract
 
     private function __construct(
         public ThreadRunStepResponseMessageCreationStepDetails|ThreadRunStepResponseToolCallsStepDetails $stepDetails,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

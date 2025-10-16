@@ -123,16 +123,10 @@ class LoginController extends Controller
     {
         $userInfo = User::getUserInfo($username);
 
-        if (is_array($userInfo)) {
-            $userPassword = $userInfo['password'] ?? null;
-        } elseif (is_object($userInfo)) {
-            $userPassword = $userInfo->password ?? null;
-        } else {
-            $userPassword = null;
+        if ($userInfo && isset($userInfo->password) && password_verify($password, (string) $userInfo->password)) {
+            return $userInfo;
         }
-        if ($userPassword && password_verify($password, $userPassword)) {
-            return is_array($userInfo) ? (object)$userInfo : $userInfo;
-        }
+
         return null;
     }
 }

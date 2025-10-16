@@ -28,7 +28,8 @@ final class McpGenericResponseError implements ResponseContract
     protected function __construct(
         public readonly string $type,
         public readonly ?array $content = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  McpErrorType  $attributes

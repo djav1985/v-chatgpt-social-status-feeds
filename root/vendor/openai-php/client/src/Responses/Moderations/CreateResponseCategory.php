@@ -12,7 +12,8 @@ final class CreateResponseCategory
         public readonly Category $category,
         public readonly bool $violated,
         public readonly float $score,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{category: string, violated: bool, score: float}  $attributes

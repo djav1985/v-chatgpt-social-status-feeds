@@ -31,7 +31,8 @@ final class CreateResponseUsage implements ResponseContract
         public readonly int $outputTokens,
         public readonly CreateResponseUsageOutputTokenDetails $outputTokensDetails,
         public readonly int $totalTokens,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  UsageType  $attributes

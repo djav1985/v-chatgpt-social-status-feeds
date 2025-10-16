@@ -31,7 +31,8 @@ final class CreateResponseFormat implements ResponseContract
 
     private function __construct(
         public readonly TextFormat|JsonSchemaFormat|JsonObjectFormat $format
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ResponseFormatType  $attributes

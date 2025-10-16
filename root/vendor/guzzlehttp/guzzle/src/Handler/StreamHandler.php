@@ -76,7 +76,8 @@ class StreamHandler
             // Determine if the error was a networking error.
             $message = $e->getMessage();
             // This list can probably get more comprehensive.
-            if (false !== \strpos($message, 'getaddrinfo') // DNS lookup failed
+            if (
+                false !== \strpos($message, 'getaddrinfo') // DNS lookup failed
                 || false !== \strpos($message, 'Connection refused')
                 || false !== \strpos($message, "couldn't connect to host") // error on HHVM
                 || false !== \strpos($message, 'connection attempt failed')
@@ -260,7 +261,7 @@ class StreamHandler
             $message = 'Error creating resource: ';
             foreach ($errors as $err) {
                 foreach ($err as $key => $value) {
-                    $message .= "[$key] $value".\PHP_EOL;
+                    $message .= "[$key] $value" . \PHP_EOL;
                 }
             }
             throw new \RuntimeException(\trim($message));
@@ -285,7 +286,8 @@ class StreamHandler
 
         // HTTP/1.1 streams using the PHP stream wrapper require a
         // Connection: close header
-        if ($request->getProtocolVersion() === '1.1'
+        if (
+            $request->getProtocolVersion() === '1.1'
             && !$request->hasHeader('Connection')
         ) {
             $request = $request->withHeader('Connection', 'close');
@@ -333,8 +335,15 @@ class StreamHandler
         );
 
         return $this->createResource(
-            function () use ($uri, &$http_response_header, $contextResource, $context, $options, $request) {
+            function () use ($uri, $contextResource, $context, $options, $request) {
                 $resource = @\fopen((string) $uri, 'r', false, $contextResource);
+
+                // See https://wiki.php.net/rfc/deprecations_php_8_5#deprecate_the_http_response_header_predefined_variable
+                if (function_exists('http_get_last_response_headers')) {
+                    /** @var array|null */
+                    $http_response_header = \http_get_last_response_headers();
+                }
+
                 $this->lastHeaders = $http_response_header ?? [];
 
                 if (false === $resource) {
@@ -372,7 +381,7 @@ class StreamHandler
                     throw new ConnectException(\sprintf("Could not resolve IPv6 address for host '%s'", $uri->getHost()), $request);
                 }
 
-                return $uri->withHost('['.$records[0]['ipv6'].']');
+                return $uri->withHost('[' . $records[0]['ipv6'] . ']');
             }
         }
 
@@ -590,13 +599,13 @@ class StreamHandler
         static $args = ['severity', 'message', 'message_code', 'bytes_transferred', 'bytes_max'];
 
         $value = Utils::debugResource($value);
-        $ident = $request->getMethod().' '.$request->getUri()->withFragment('');
+        $ident = $request->getMethod() . ' ' . $request->getUri()->withFragment('');
         self::addNotification(
             $params,
             static function (int $code, ...$passed) use ($ident, $value, $map, $args): void {
                 \fprintf($value, '<%s> [%s] ', $ident, $map[$code]);
                 foreach (\array_filter($passed) as $i => $v) {
-                    \fwrite($value, $args[$i].': "'.$v.'" ');
+                    \fwrite($value, $args[$i] . ': "' . $v . '" ');
                 }
                 \fwrite($value, "\n");
             }

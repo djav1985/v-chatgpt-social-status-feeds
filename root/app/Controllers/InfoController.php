@@ -144,9 +144,6 @@ class InfoController extends Controller
     private static function generateProfileDataAttributes(string $username): string
     {
         $userInfo = User::getUserInfo($username);
-        if (is_array($userInfo)) {
-            $userInfo = (object)$userInfo;
-        }
         if ($userInfo) {
             $data = "data-who=\"" . htmlspecialchars($userInfo->who) . "\" ";
             $data .= "data-where=\"" . htmlspecialchars($userInfo->where) . "\" ";
@@ -166,9 +163,6 @@ class InfoController extends Controller
     private static function buildSystemMessage(string $username): string
     {
         $userInfo = User::getUserInfo($username);
-        if (is_array($userInfo)) {
-            $userInfo = (object)$userInfo;
-        }
         if ($userInfo) {
             $systemMessage = "<span style=\"color: blue; font-weight: bold;\">" . SYSTEM_MSG . "</span>";
             $systemMessage .= " <span style=\"color: blue; font-weight: bold;\">You work for</span> " . htmlspecialchars($userInfo->who) . " <span style=\"color: blue; font-weight: bold;\">located in</span> " . htmlspecialchars($userInfo->where) . ". " . htmlspecialchars($userInfo->what) . " <span style=\"color: blue; font-weight: bold;\">Your goal is</span> " . htmlspecialchars($userInfo->goal) . ".";

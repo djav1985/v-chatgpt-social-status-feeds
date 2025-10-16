@@ -31,7 +31,8 @@ final class CodeInterpreterCodeDone implements ResponseContract, ResponseHasMeta
         public readonly string $itemId,
         public readonly int $outputIndex,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  CodeInterpreterCodeDoneType  $attributes

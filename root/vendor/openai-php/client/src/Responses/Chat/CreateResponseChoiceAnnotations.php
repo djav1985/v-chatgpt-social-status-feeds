@@ -7,7 +7,8 @@ final class CreateResponseChoiceAnnotations
     public function __construct(
         public readonly string $type,
         public readonly CreateResponseChoiceAnnotationsUrlCitations $urlCitations
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{type: string, url_citation: array{end_index: int, start_index: int, title: string, url: string}}  $attributes

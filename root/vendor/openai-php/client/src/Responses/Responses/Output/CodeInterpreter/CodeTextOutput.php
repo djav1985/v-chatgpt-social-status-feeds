@@ -28,7 +28,8 @@ final class CodeTextOutput implements ResponseContract
     private function __construct(
         public readonly string $logs,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  CodeTextOutputType  $attributes

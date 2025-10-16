@@ -33,7 +33,8 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
         public readonly array $embeddings,
         public readonly ?CreateResponseUsage $usage,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

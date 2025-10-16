@@ -23,7 +23,8 @@ final class VectorStoreSearchResponseContent implements ResponseContract
     private function __construct(
         public readonly string $type,
         public readonly string $text,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

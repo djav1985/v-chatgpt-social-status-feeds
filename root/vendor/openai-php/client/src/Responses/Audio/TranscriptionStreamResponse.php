@@ -28,7 +28,8 @@ final class TranscriptionStreamResponse implements ResponseContract
     private function __construct(
         public readonly string $event,
         public readonly TranscriptTextDelta|TranscriptTextDone $response,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $attributes
@@ -42,7 +43,7 @@ final class TranscriptionStreamResponse implements ResponseContract
         $response = match ($event) {
             'transcript.text.delta' => TranscriptTextDelta::from($attributes, $meta), // @phpstan-ignore-line
             'transcript.text.done' => TranscriptTextDone::from($attributes, $meta), // @phpstan-ignore-line
-            default => throw new UnknownEventException('Unknown Audio Transcription streaming event: '.$event),
+            default => throw new UnknownEventException('Unknown Audio Transcription streaming event: ' . $event),
         };
 
         return new self(

@@ -57,7 +57,8 @@ final class ThreadRunResponse implements ResponseContract, ResponseHasMetaInform
         public null|string|ThreadRunResponseToolChoice $toolChoice,
         public null|string|AssistantResponseResponseFormat $responseFormat,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

@@ -26,7 +26,8 @@ final class ThreadMessageResponseAttachment implements ResponseContract
     private function __construct(
         public string $fileId,
         public array $tools,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

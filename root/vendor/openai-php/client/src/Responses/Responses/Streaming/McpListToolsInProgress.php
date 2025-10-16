@@ -31,7 +31,8 @@ final class McpListToolsInProgress implements ResponseContract, ResponseHasMetaI
         public readonly int $outputIndex,
         public readonly string $itemId,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  McpListToolsType  $attributes

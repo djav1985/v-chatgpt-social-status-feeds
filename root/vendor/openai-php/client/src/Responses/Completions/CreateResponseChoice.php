@@ -11,7 +11,8 @@ final class CreateResponseChoice
         public readonly int $index,
         public readonly ?CreateResponseChoiceLogprobs $logprobs,
         public readonly ?string $finishReason,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{text: string, index: int, logprobs: array{tokens: array<int, string>, token_logprobs: array<int, float>, top_logprobs: array<int, string>|null, text_offset: array<int, int>}|null, finish_reason: string|null}  $attributes

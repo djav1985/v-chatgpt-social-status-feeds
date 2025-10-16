@@ -23,7 +23,8 @@ final class ThreadRunResponseRequiredActionFunctionToolCallFunction implements R
     private function __construct(
         public string $name,
         public string $arguments,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

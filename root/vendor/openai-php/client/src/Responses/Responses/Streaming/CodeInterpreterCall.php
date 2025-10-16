@@ -30,7 +30,8 @@ final class CodeInterpreterCall implements ResponseContract, ResponseHasMetaInfo
         public readonly string $itemId,
         public readonly int $outputIndex,
         private readonly MetaInformation $meta,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  CodeInterpreterCallType  $attributes

@@ -31,7 +31,8 @@ final class OutputMcpApprovalRequest implements ResponseContract
         public readonly string $name,
         public readonly string $arguments,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputMcpApprovalRequestType  $attributes

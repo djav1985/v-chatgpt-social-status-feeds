@@ -39,7 +39,8 @@ final class OutputMessageContentOutputText implements ResponseContract
         public readonly array $annotations,
         public readonly string $text,
         public readonly string $type
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputTextType  $attributes

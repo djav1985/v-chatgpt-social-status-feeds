@@ -1,4 +1,5 @@
 <?php
+
 return [
   "country" => "Wallis and Futuna",
   "subdivisions" => [

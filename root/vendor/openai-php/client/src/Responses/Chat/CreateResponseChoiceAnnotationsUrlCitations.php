@@ -9,7 +9,8 @@ final class CreateResponseChoiceAnnotationsUrlCitations
         public readonly int $startIndex,
         public readonly string $title,
         public readonly string $url,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{end_index: int, start_index: int, title: string, url: string}  $attributes

@@ -13,4 +13,6 @@ use IteratorAggregate;
  *
  * @internal
  */
-interface ResponseStreamContract extends IteratorAggregate {}
+interface ResponseStreamContract extends IteratorAggregate
+{
+}

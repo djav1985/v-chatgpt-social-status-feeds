@@ -24,7 +24,8 @@ final class ThreadRunStepResponseFunction implements ResponseContract
         public ?string $name,
         public string $arguments,
         public ?string $output,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

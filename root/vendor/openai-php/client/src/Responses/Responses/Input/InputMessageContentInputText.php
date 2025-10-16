@@ -28,7 +28,8 @@ final class InputMessageContentInputText implements ResponseContract
     private function __construct(
         public readonly string $text,
         public readonly string $type
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ContentInputTextType  $attributes

@@ -42,7 +42,8 @@ final class ImageGenerationTool implements ResponseContract
         public readonly int $partialImages,
         public readonly string $quality,
         public readonly string $size,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ImageGenerationToolType  $attributes

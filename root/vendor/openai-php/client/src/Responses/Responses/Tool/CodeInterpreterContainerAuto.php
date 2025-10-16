@@ -29,7 +29,8 @@ final class CodeInterpreterContainerAuto implements ResponseContract
     private function __construct(
         public readonly ?array $fileIds,
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  CodeInterpreterContainerAutoType  $attributes

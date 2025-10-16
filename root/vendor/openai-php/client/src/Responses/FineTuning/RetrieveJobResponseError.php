@@ -21,7 +21,8 @@ final class RetrieveJobResponseError implements ResponseContract
         public readonly string $code,
         public readonly ?string $param,
         public readonly string $message,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.

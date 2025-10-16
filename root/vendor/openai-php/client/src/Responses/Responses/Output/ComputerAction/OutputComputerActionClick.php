@@ -31,7 +31,8 @@ final class OutputComputerActionClick implements ResponseContract
         public readonly string $type,
         public readonly int $x,
         public readonly int $y,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  ClickType  $attributes

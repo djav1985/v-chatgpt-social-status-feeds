@@ -36,7 +36,8 @@ final class OutputFileSearchToolCall implements ResponseContract
         public readonly string $status,
         public readonly string $type,
         public readonly ?array $results = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputFileSearchToolCallType  $attributes

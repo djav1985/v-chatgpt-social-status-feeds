@@ -6,4 +6,6 @@ namespace OpenAI\Exceptions;
 
 use Exception;
 
-final class UnknownEventException extends Exception {}
+final class UnknownEventException extends Exception
+{
+}

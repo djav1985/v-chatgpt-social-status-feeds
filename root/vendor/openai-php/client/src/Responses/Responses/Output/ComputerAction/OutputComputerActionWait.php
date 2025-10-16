@@ -27,7 +27,8 @@ final class OutputComputerActionWait implements ResponseContract
      */
     private function __construct(
         public readonly string $type,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  WaitType  $attributes

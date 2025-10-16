@@ -21,6 +21,75 @@ use App\Core\ErrorManager;
 class Account
 {
     /**
+     * Cached account lookups keyed by "username|account".
+     *
+     * @var array<string, array<string, mixed>|false>
+     */
+    private static array $accountInfoCache = [];
+
+    private static function accountCacheKey(string $username, string $account): string
+    {
+        return trim($username) . '|' . trim($account);
+    }
+
+    private static function rememberAccountInfo(string $username, string $account, array|false $info): array|false
+    {
+        self::$accountInfoCache[self::accountCacheKey($username, $account)] = $info;
+
+        return $info;
+    }
+
+    private static function fetchAccountInfo(string $username, string $account): array|false
+    {
+        $cacheKey = self::accountCacheKey($username, $account);
+        if (array_key_exists($cacheKey, self::$accountInfoCache)) {
+            return self::$accountInfoCache[$cacheKey];
+        }
+
+        try {
+            $db = DatabaseManager::getInstance();
+            $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
+            $db->bind(':username', $username);
+            $db->bind(':account', $account);
+
+            return self::rememberAccountInfo($username, $account, $db->single());
+        } catch (Exception $e) {
+            ErrorManager::getInstance()->log("Error retrieving account info: " . $e->getMessage(), 'error');
+            throw $e;
+        }
+    }
+
+    private static function clearAccountCacheEntry(?string $username = null, ?string $account = null): void
+    {
+        if ($username === null) {
+            self::$accountInfoCache = [];
+            return;
+        }
+
+        $username = trim($username);
+
+        if ($account === null) {
+            $prefix = $username . '|';
+            foreach (array_keys(self::$accountInfoCache) as $key) {
+                if (str_starts_with($key, $prefix)) {
+                    unset(self::$accountInfoCache[$key]);
+                }
+            }
+            return;
+        }
+
+        unset(self::$accountInfoCache[self::accountCacheKey($username, $account)]);
+    }
+
+    /**
+     * Clear cached account lookups for a specific account or user.
+     */
+    public static function clearAccountCache(?string $username = null, ?string $account = null): void
+    {
+        self::clearAccountCacheEntry($username, $account);
+    }
+
+    /**
      * Get all accounts from the database.
      *
      * @return array<int, array<string, mixed>>
@@ -65,16 +134,7 @@ class Account
      */
     public static function accountExists(string $accountOwner, string $accountName): bool
     {
-        try {
-            $db = DatabaseManager::getInstance();
-            $db->query("SELECT 1 FROM accounts WHERE username = :accountOwner AND account = :accountName LIMIT 1");
-            $db->bind(':accountOwner', $accountOwner);
-            $db->bind(':accountName', $accountName);
-            return (bool) $db->single();
-        } catch (Exception $e) {
-            ErrorManager::getInstance()->log("Error checking if account exists: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        return self::getAcctInfo($accountOwner, $accountName) !== false;
     }
 
     /**
@@ -84,18 +144,9 @@ class Account
      * @param string $account
      * @return array<string, mixed>|false
      */
-    public static function getAcctInfo(string $username, string $account): array|false|null
+    public static function getAcctInfo(string $username, string $account): array|false
     {
-        try {
-            $db = DatabaseManager::getInstance();
-            $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
-            $db->bind(':username', $username);
-            $db->bind(':account', $account);
-            return $db->single();
-        } catch (Exception $e) {
-            ErrorManager::getInstance()->log("Error retrieving account info: " . $e->getMessage(), 'error');
-            throw $e;
-        }
+        return self::fetchAccountInfo($username, $account);
     }
 
     /**
@@ -110,22 +161,13 @@ class Account
      */
     public static function getAccountLink(string $username, string $account): string
     {
-        try {
-            $db = DatabaseManager::getInstance();
-            $db->query("SELECT link FROM accounts WHERE username = :username AND account = :account");
-            $db->bind(':username', $username);
-            $db->bind(':account', $account);
-            $acctInfo = $db->single();
+        $acctInfo = self::getAcctInfo($username, $account);
 
-            if (is_array($acctInfo) && isset($acctInfo['link'])) {
-                return htmlspecialchars($acctInfo['link']);
-            }
-
-            return '';
-        } catch (Exception $e) {
-            ErrorManager::getInstance()->log("Error retrieving account link: " . $e->getMessage(), 'error');
-            throw $e;
+        if (is_array($acctInfo) && isset($acctInfo['link'])) {
+            return (string) $acctInfo['link'];
         }
+
+        return '';
     }
 
     /**
@@ -146,14 +188,6 @@ class Account
         $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
-            $db->query("SELECT cron, days FROM accounts WHERE username = :accountOwner AND account = :accountName FOR UPDATE");
-            $db->bind(':accountOwner', $accountOwner);
-            $db->bind(':accountName', $accountName);
-            $current = $db->single();
-            $current = $current ? (object)$current : (object)['cron' => '', 'days' => ''];
-            $oldCron = $current->cron ?? '';
-            $oldDays = $current->days ?? '';
-
             $db->query("UPDATE accounts SET prompt = :prompt, platform = :platform, hashtags = :hashtags, link = :link, cron = :cron, days = :days WHERE username = :accountOwner AND account = :accountName");
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
@@ -165,6 +199,8 @@ class Account
             $db->bind(':days', $days);
             $db->execute();
             $db->commit();
+
+            self::clearAccountCache($accountOwner, $accountName);
 
             return true;
         } catch (Exception $e) {
@@ -203,6 +239,9 @@ class Account
             $db->bind(':days', $days);
             $db->execute();
             $db->commit();
+
+            self::clearAccountCache($accountOwner, $accountName);
+
             return true;
         } catch (Exception $e) {
             $db->rollBack();
@@ -234,6 +273,9 @@ class Account
             $db->execute();
 
             $db->commit();
+
+            self::clearAccountCache($accountOwner, $accountName);
+
             return true;
         } catch (Exception $e) {
             $db->rollBack();

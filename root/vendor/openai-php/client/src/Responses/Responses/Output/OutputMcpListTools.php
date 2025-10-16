@@ -33,7 +33,8 @@ final class OutputMcpListTools implements ResponseContract
         public readonly string $serverLabel,
         public readonly string $type,
         public readonly array $tools,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  OutputMcpListToolsType  $attributes

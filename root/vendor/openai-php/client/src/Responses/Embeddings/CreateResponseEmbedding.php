@@ -13,7 +13,8 @@ final class CreateResponseEmbedding
         public readonly string $object,
         public readonly ?int $index,
         public readonly array $embedding,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{object: string, index?: int, embedding: array<int, float>}  $attributes

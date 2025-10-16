@@ -32,19 +32,20 @@ final class SpeechStreamResponse implements ResponseHasMetaInformationContract, 
 
     public function meta(): MetaInformation
     {
-        // @phpstan-ignore-next-line
         return MetaInformation::from($this->response->getHeaders());
     }
 
     public static function fake(?string $content = null, ?MetaInformation $meta = null): static
     {
-        $psr17Factory = new Psr17Factory;
+        $psr17Factory = new Psr17Factory();
         $response = $psr17Factory->createResponse()
-            ->withBody($psr17Factory->createStream($content ?? (string) file_get_contents(__DIR__.'/../../Testing/Responses/Fixtures/Audio/speech-streamed.mp3')));
+            ->withBody($psr17Factory->createStream($content ?? (string) file_get_contents(__DIR__ . '/../../Testing/Responses/Fixtures/Audio/speech-streamed.mp3')));
 
         if ($meta instanceof \OpenAI\Responses\Meta\MetaInformation) {
             foreach ($meta->toArray() as $key => $value) {
-                $response = $response->withHeader($key, (string) $value);
+                if (is_scalar($value)) {
+                    $response = $response->withHeader($key, (string) $value);
+                }
             }
         }
 

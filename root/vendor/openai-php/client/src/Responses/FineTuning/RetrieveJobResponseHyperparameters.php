@@ -21,7 +21,8 @@ final class RetrieveJobResponseHyperparameters implements ResponseContract
         public readonly int|string $nEpochs,
         public readonly int|string|null $batchSize,
         public readonly float|string|null $learningRateMultiplier,
-    ) {}
+    ) {
+    }
 
     /**
      * Acts as static factory, and returns a new Response instance.
