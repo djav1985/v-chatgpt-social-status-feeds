@@ -19,6 +19,11 @@ if (php_sapi_name() !== 'cli') {
     exit('Forbidden');
 }
 
+// Load autoloader early so we can use WorkerHelper
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Helpers\WorkerHelper;
+
 // Validate arguments before loading config
 $validJobTypes = ['run-queue', 'fill-queue', 'daily', 'monthly'];
 
@@ -37,80 +42,6 @@ function printUsage(): void
     echo "  daily      - Run daily cleanup (purge statuses, images, IPs)\n";
     echo "  monthly    - Reset API usage counters\n";
     exit(1);
-}
-
-function workerProcessIsRunning(int $pid): bool
-{
-    if ($pid <= 0) {
-        return false;
-    }
-
-    if (function_exists('posix_kill')) {
-        return @posix_kill($pid, 0);
-    }
-
-    $procPath = '/proc/' . $pid;
-    return @is_dir($procPath);
-}
-
-
-function workerLockPath(string $jobType): string
-{
-    return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
-        . DIRECTORY_SEPARATOR
-        . 'socialrss-worker-' . $jobType . '.lock';
-}
-
-function workerGuardCanLaunch(string $jobType, bool $claimLockForSelf = false): bool
-{
-    $lockPath = workerLockPath($jobType);
-    $handle = @fopen($lockPath, 'c+');
-    if ($handle === false) {
-        return false;
-    }
-
-    $lockAcquired = @flock($handle, LOCK_EX | LOCK_NB);
-    if (!$lockAcquired) {
-        fclose($handle);
-        return false;
-    }
-
-    rewind($handle);
-    $contents = stream_get_contents($handle);
-    $pid = (int) trim((string) $contents);
-    if ($pid > 0 && workerProcessIsRunning($pid)) {
-        flock($handle, LOCK_UN);
-        fclose($handle);
-        return false;
-    }
-
-    // Clear any stale PID from the lock file
-    ftruncate($handle, 0);
-    rewind($handle);
-
-    if ($claimLockForSelf) {
-        $pid = getmypid();
-        if (!is_int($pid) || $pid <= 0) {
-            try {
-                $pid = random_int(1, PHP_INT_MAX);
-            } catch (\Throwable $exception) {
-                $pid = mt_rand(1, PHP_INT_MAX);
-            }
-        }
-
-        fwrite($handle, (string) $pid);
-        fflush($handle);
-    }
-
-    flock($handle, LOCK_UN);
-    fclose($handle);
-
-    // If not claiming lock for self, delete the lock file since it was stale
-    if (!$claimLockForSelf && $pid > 0) {
-        @unlink($lockPath);
-    }
-
-    return true;
 }
 
 function launchQueueWorker(string $jobType): void
@@ -144,14 +75,20 @@ if ($args[0] === 'worker') {
         printUsage();
     }
 
-    $claimLockForSelf = $jobType !== 'run-queue';
-    if (!workerGuardCanLaunch($jobType, $claimLockForSelf)) {
-        echo 'Worker "' . $jobType . '" already running.' . PHP_EOL;
+    // For run-queue, spawn a worker process that will claim its own lock
+    if ($jobType === 'run-queue') {
+        if (!WorkerHelper::canLaunch($jobType)) {
+            echo 'Worker "' . $jobType . '" already running.' . PHP_EOL;
+            exit(0);
+        }
+        launchQueueWorker($jobType);
         exit(0);
     }
-
-    if ($jobType === 'run-queue') {
-        launchQueueWorker($jobType);
+    
+    // For fill-queue, daily, and monthly, we just check if another instance is running
+    // The actual lock will be claimed by QueueService
+    if (!WorkerHelper::canLaunch($jobType)) {
+        echo 'Worker "' . $jobType . '" already running.' . PHP_EOL;
         exit(0);
     }
 
@@ -167,7 +104,6 @@ if ($args[0] === 'worker') {
 }
 
 require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\ErrorManager;
 use App\Services\QueueService;

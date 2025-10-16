@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Status;
 use App\Core\Mailer;
 use App\Models\Blacklist;
+use App\Helpers\WorkerHelper;
 use DateTimeImmutable;
 use DateTimeZone;
 use RecursiveDirectoryIterator;
@@ -21,10 +22,8 @@ use RuntimeException;
  */
 class QueueService
 {
-    /** @var resource|null */
-    private $workerLockHandle = null;
-
-    private ?string $workerLockPath = null;
+    /** @var array|null */
+    private $workerLock = null;
 
     private ?string $jobType = null;
 
@@ -269,44 +268,12 @@ class QueueService
 
     protected function claimWorkerLock(): bool
     {
-        $lockPath = $this->getWorkerLockPath();
-        $handle = @fopen($lockPath, 'c+');
-        if ($handle === false) {
+        $jobType = $this->jobType ?? 'run-queue';
+        $this->workerLock = WorkerHelper::claimLock($jobType);
+
+        if ($this->workerLock === null) {
             return false;
         }
-
-        if (!flock($handle, LOCK_EX | LOCK_NB)) {
-            fclose($handle);
-            return false;
-        }
-
-        rewind($handle);
-        $contents = stream_get_contents($handle);
-        $existingPid = (int) trim((string) $contents);
-
-        if ($existingPid > 0 && $this->isProcessRunning($existingPid)) {
-            flock($handle, LOCK_UN);
-            fclose($handle);
-            return false;
-        }
-
-        ftruncate($handle, 0);
-        rewind($handle);
-
-        $pid = getmypid();
-        if (!is_int($pid) || $pid <= 0) {
-            try {
-                $pid = random_int(1, PHP_INT_MAX);
-            } catch (\Throwable $exception) {
-                $pid = mt_rand(1, PHP_INT_MAX);
-            }
-        }
-
-        fwrite($handle, (string) $pid);
-        fflush($handle);
-
-        $this->workerLockHandle = $handle;
-        $this->workerLockPath = $lockPath;
 
         register_shutdown_function(function (): void {
             $this->releaseWorkerLock();
@@ -317,69 +284,11 @@ class QueueService
 
     protected function releaseWorkerLock(): void
     {
-        if ($this->workerLockHandle === null) {
-            return;
-        }
-
-        $handle = $this->workerLockHandle;
-        $lockPath = $this->workerLockPath;
-
-        $this->workerLockHandle = null;
-        $this->workerLockPath = null;
-
-        if (is_resource($handle)) {
-            ftruncate($handle, 0);
-            fflush($handle);
-            if ($lockPath !== null) {
-                @unlink($lockPath);
-            }
-            flock($handle, LOCK_UN);
-            fclose($handle);
-        } elseif ($lockPath !== null) {
-            @unlink($lockPath);
-        }
+        WorkerHelper::releaseLock($this->workerLock);
+        $this->workerLock = null;
     }
 
-    protected function getWorkerLockPath(): string
-    {
-        $jobType = $this->jobType ?? 'run-queue';
-        return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
-            . DIRECTORY_SEPARATOR
-            . 'socialrss-worker-' . $jobType . '.lock';
-    }
 
-    protected function isProcessRunning(int $pid): bool
-    {
-        if ($pid <= 0) {
-            return false;
-        }
-
-        if (function_exists('posix_kill')) {
-            return @posix_kill($pid, 0);
-        }
-
-        $procPath = '/proc/' . $pid;
-        if (!@is_dir($procPath)) {
-            return false;
-        }
-
-        // When /proc is available, double-check the process command line to reduce
-        // false positives caused by PID reuse. We expect cron.php (or the PHP
-        // binary invocation) to appear in the cmdline for a legitimate worker.
-        $cmdlineFile = $procPath . '/cmdline';
-        if (is_readable($cmdlineFile)) {
-            $cmd = @file_get_contents($cmdlineFile);
-            if ($cmd !== false) {
-                $cmd = str_replace("\0", ' ', $cmd);
-                if (stripos($cmd, 'cron.php') !== false || stripos($cmd, 'run-queue') !== false) {
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     protected function processJobBatch(array $jobs, bool $isRetryBatch): void
     {
