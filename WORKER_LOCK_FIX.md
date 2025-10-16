@@ -46,16 +46,9 @@ Created `root/app/Helpers/WorkerHelper.php` with centralized lock management:
 
 ### 2. Updated cron.php
 
-Since `WorkerHelper` requires autoloading but lock checks happen before autoloader loads, we:
-
-- Added standalone helper functions that mirror `WorkerHelper` functionality:
-  - `workerLockPath()`
-  - `workerProcessIsRunning()`
-  - `workerCanLaunch()`
-  - `workerClaimLock()`
-
+- Moved autoloader loading to the top of the file (before argument parsing) so `WorkerHelper` can be used directly
 - Changed worker launch logic to be consistent for ALL worker types:
-  - All workers now use `workerCanLaunch()` to check if another instance is running
+  - All workers now use `WorkerHelper::canLaunch()` to check if another instance is running
   - None of the workers claim locks in `cron.php`
   - Lock claiming is deferred to `QueueService`
 
@@ -82,7 +75,7 @@ Created `tests/WorkerHelperTest.php` with 17 tests covering:
 
 ```php
 // In cron.php for ALL workers (run-queue, fill-queue, daily, monthly):
-if (!workerCanLaunch($jobType)) {
+if (!WorkerHelper::canLaunch($jobType)) {
     echo 'Worker "' . $jobType . '" already running.' . PHP_EOL;
     exit(0);
 }
