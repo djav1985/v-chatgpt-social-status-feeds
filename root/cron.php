@@ -178,7 +178,7 @@ ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M
 
 // Run the job logic within the error middleware handler
 ErrorManager::handle(function () use ($jobType) {
-    $service = new QueueService();
+    $service = new QueueService($jobType);
 
     switch ($jobType) {
         case 'run-queue':

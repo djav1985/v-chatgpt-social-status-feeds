@@ -3,7 +3,7 @@
         'name' => 'appsbyv/v-chatgpt-social-status-feeds',
         'pretty_version' => 'dev-copilot/update-worker-job-locking',
         'version' => 'dev-copilot/update-worker-job-locking',
-        'reference' => 'f4300fb8d64fb7c23ba5d8ae4752afea1b310e13',
+        'reference' => 'a5801644f0d6b6a15ed86ff4b76c9cde472313e2',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'appsbyv/v-chatgpt-social-status-feeds' => array(
             'pretty_version' => 'dev-copilot/update-worker-job-locking',
             'version' => 'dev-copilot/update-worker-job-locking',
-            'reference' => 'f4300fb8d64fb7c23ba5d8ae4752afea1b310e13',
+            'reference' => 'a5801644f0d6b6a15ed86ff4b76c9cde472313e2',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
