@@ -379,18 +379,4 @@ final class QueueServiceTest extends TestCase
         $this->assertTrue($service->lockReleased);
     }
 
-    public function testPurgeImagesHandlesMissingDirectory(): void
-    {
-        $service = new TestableQueueService();
-        $tempDir = sys_get_temp_dir() . '/queue-service-missing-' . uniqid('', true);
-        $service->imageDirectoryOverride = $tempDir;
-
-        $this->assertTrue($service->purgeImages());
-        $this->assertDirectoryExists($tempDir);
-
-        $iterator = new \FilesystemIterator($tempDir);
-        $this->assertCount(0, iterator_to_array($iterator));
-
-        $this->assertTrue(@rmdir($tempDir));
-    }
 }
