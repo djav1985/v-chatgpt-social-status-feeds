@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'appsbyv/v-chatgpt-social-status-feeds',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '6e5ac3ed7a7c557751c73db21dcaa5c074a19551',
+        'pretty_version' => 'dev-copilot/update-worker-job-locking',
+        'version' => 'dev-copilot/update-worker-job-locking',
+        'reference' => 'a5801644f0d6b6a15ed86ff4b76c9cde472313e2',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'appsbyv/v-chatgpt-social-status-feeds' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '6e5ac3ed7a7c557751c73db21dcaa5c074a19551',
+            'pretty_version' => 'dev-copilot/update-worker-job-locking',
+            'version' => 'dev-copilot/update-worker-job-locking',
+            'reference' => 'a5801644f0d6b6a15ed86ff4b76c9cde472313e2',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

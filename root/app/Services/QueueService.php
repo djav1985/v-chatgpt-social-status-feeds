@@ -26,8 +26,11 @@ class QueueService
 
     private ?string $workerLockPath = null;
 
-    public function __construct()
+    private ?string $jobType = null;
+
+    public function __construct(?string $jobType = null)
     {
+        $this->jobType = $jobType;
     }
 
     public function enqueueRemainingJobs(string $username, string $account, string $cron, string $days): void
@@ -339,9 +342,10 @@ class QueueService
 
     protected function getWorkerLockPath(): string
     {
+        $jobType = $this->jobType ?? 'run-queue';
         return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
             . DIRECTORY_SEPARATOR
-            . 'socialrss-worker-run-queue.lock';
+            . 'socialrss-worker-' . $jobType . '.lock';
     }
 
     protected function isProcessRunning(int $pid): bool
@@ -417,33 +421,42 @@ class QueueService
 
     public function fillQueue(): void
     {
-        $accounts = $this->getAccounts();
-        $now = $this->now();
-        $dayName = strtolower(date('l', $now));
+        if (!$this->claimWorkerLock()) {
+            error_log('[QueueService] Fill queue worker already running; skipping fillQueue invocation.');
+            return;
+        }
 
-        foreach ($accounts as $account) {
-            $account = (object)$account;
-            $days = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) ($account->days ?? '')))), fn($v) => strlen($v) > 0);
-            if (!empty($days) && !in_array('everyday', $days, true) && !in_array($dayName, $days, true)) {
-                continue;
-            }
+        try {
+            $accounts = $this->getAccounts();
+            $now = $this->now();
+            $dayName = strtolower(date('l', $now));
 
-            foreach ($this->normalizeHours((string) ($account->cron ?? '')) as $hour) {
-                $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
-
-                $username = (string) ($account->username ?? '');
-                $acct = (string) ($account->account ?? '');
-
-                if ($username === '' || $acct === '') {
+            foreach ($accounts as $account) {
+                $account = (object)$account;
+                $days = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) ($account->days ?? '')))), fn($v) => strlen($v) > 0);
+                if (!empty($days) && !in_array('everyday', $days, true) && !in_array($dayName, $days, true)) {
                     continue;
                 }
 
-                if ($this->jobExistsInStorage($username, $acct, $scheduledAt)) {
-                    continue;
-                }
+                foreach ($this->normalizeHours((string) ($account->cron ?? '')) as $hour) {
+                    $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
 
-                $this->storeJob($username, $acct, $scheduledAt, 'pending');
+                    $username = (string) ($account->username ?? '');
+                    $acct = (string) ($account->account ?? '');
+
+                    if ($username === '' || $acct === '') {
+                        continue;
+                    }
+
+                    if ($this->jobExistsInStorage($username, $acct, $scheduledAt)) {
+                        continue;
+                    }
+
+                    $this->storeJob($username, $acct, $scheduledAt, 'pending');
+                }
             }
+        } finally {
+            $this->releaseWorkerLock();
         }
     }
 
@@ -452,9 +465,18 @@ class QueueService
      */
     public function runDaily(): void
     {
-        $this->purgeStatuses();
-        $this->purgeImages();
-        $this->purgeIps();
+        if (!$this->claimWorkerLock()) {
+            error_log('[QueueService] Daily worker already running; skipping runDaily invocation.');
+            return;
+        }
+
+        try {
+            $this->purgeStatuses();
+            $this->purgeImages();
+            $this->purgeIps();
+        } finally {
+            $this->releaseWorkerLock();
+        }
     }
 
     /**
@@ -462,7 +484,16 @@ class QueueService
      */
     public function runMonthly(): void
     {
-        $this->resetApi();
+        if (!$this->claimWorkerLock()) {
+            error_log('[QueueService] Monthly worker already running; skipping runMonthly invocation.');
+            return;
+        }
+
+        try {
+            $this->resetApi();
+        } finally {
+            $this->releaseWorkerLock();
+        }
     }
 
     protected function now(): int
