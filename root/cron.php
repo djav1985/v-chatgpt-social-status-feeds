@@ -107,6 +107,7 @@ require_once __DIR__ . '/config.php';
 
 use App\Core\ErrorManager;
 use App\Services\QueueService;
+use App\Services\MaintenanceService;
 
 // Apply configured runtime limits after loading settings
 ini_set('max_execution_time', (string) (defined('CRON_MAX_EXECUTION_TIME') ? CRON_MAX_EXECUTION_TIME : 0));
@@ -114,19 +115,21 @@ ini_set('memory_limit', defined('CRON_MEMORY_LIMIT') ? CRON_MEMORY_LIMIT : '512M
 
 // Run the job logic within the error middleware handler
 ErrorManager::handle(function () use ($jobType) {
-    $service = new QueueService($jobType);
-
     switch ($jobType) {
         case 'run-queue':
+            $service = new QueueService($jobType);
             $service->runQueue();
             break;
         case 'fill-queue':
+            $service = new QueueService($jobType);
             $service->fillQueue();
             break;
         case 'daily':
+            $service = new MaintenanceService($jobType);
             $service->runDaily();
             break;
         case 'monthly':
+            $service = new MaintenanceService($jobType);
             $service->runMonthly();
             break;
     }

@@ -31,7 +31,6 @@ final class TestableQueueService extends QueueService
     public array $releaseTimestamps = [];
     public int $fakeReleasedCount = 0;
     public int $resetAllProcessingCount = 0;
-    public ?string $imageDirectoryOverride = null;
     /** @var array<string, object> */
     public array $userInfoMap = [];
     /** @var array<string, int> */
@@ -245,15 +244,6 @@ final class TestableQueueService extends QueueService
         unset($job);
         
         return $count;
-    }
-
-    protected function getImageDirectory(): string
-    {
-        if ($this->imageDirectoryOverride !== null) {
-            return $this->imageDirectoryOverride;
-        }
-
-        return parent::getImageDirectory();
     }
 
     protected function getUserInfo(string $username): ?object
