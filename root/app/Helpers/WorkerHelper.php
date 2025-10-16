@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 /**
  * Centralized worker lock management for all job types.
- * 
+ *
  * Manages lock files for run-queue, fill-queue, daily, and monthly workers
  * to prevent multiple instances of the same worker from running simultaneously
  * while allowing different workers to run concurrently.
@@ -56,11 +56,13 @@ class WorkerHelper
             if ($cmd !== false) {
                 $cmd = str_replace("\0", ' ', $cmd);
                 // Check if this is a worker process by looking for cron.php or job type
-                if (stripos($cmd, 'cron.php') !== false || 
+                if (
+                    stripos($cmd, 'cron.php') !== false ||
                     stripos($cmd, 'run-queue') !== false ||
                     stripos($cmd, 'fill-queue') !== false ||
                     stripos($cmd, 'daily') !== false ||
-                    stripos($cmd, 'monthly') !== false) {
+                    stripos($cmd, 'monthly') !== false
+                ) {
                     return true;
                 }
                 return false;
@@ -94,7 +96,7 @@ class WorkerHelper
         rewind($handle);
         $contents = stream_get_contents($handle);
         $pid = (int) trim((string) $contents);
-        
+
         $canLaunch = !($pid > 0 && self::isProcessRunning($pid));
 
         flock($handle, LOCK_UN);
@@ -212,7 +214,7 @@ class WorkerHelper
         rewind($handle);
         $contents = stream_get_contents($handle);
         $pid = (int) trim((string) $contents);
-        
+
         if ($pid > 0 && self::isProcessRunning($pid)) {
             flock($handle, LOCK_UN);
             fclose($handle);
