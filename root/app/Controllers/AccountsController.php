@@ -119,11 +119,16 @@ class AccountsController extends Controller
         if (empty($prompt)) {
             MessageHelper::addMessage('Missing required field(s).');
         }
-        if (!Validator::alnum('-')->noWhitespace()->lowercase()->length(8, 18)->validate($accountName)) {
-            MessageHelper::addMessage('Account name must be 8-18 characters long, alphanumeric and hyphens only.');
-        }
-        if (!Validator::url()->startsWith('https://')->validate($link)) {
-            MessageHelper::addMessage('Link must be a valid URL starting with https://.');
+
+        // Centralized validation
+        $accountValidationErrors = \App\Helpers\Validation::validateAccount([
+            'accountName' => $accountName,
+            'link' => $link,
+            'cronArr' => isset($_POST['cron']) && is_array($_POST['cron']) ? $_POST['cron'] : [],
+        ]);
+
+        foreach ($accountValidationErrors as $err) {
+            MessageHelper::addMessage($err);
         }
 
         if (!empty($session->get('messages'))) {

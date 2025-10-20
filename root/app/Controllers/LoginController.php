@@ -70,6 +70,21 @@ class LoginController extends Controller
         } else {
             $username = trim($_POST['username'] ?? '');
             $password = trim($_POST['password'] ?? '');
+
+            // Centralized login validation
+            $loginErrors = \App\Helpers\Validation::validateLogin([
+                'username' => $username,
+                'password' => $password,
+            ]);
+
+            if (!empty($loginErrors)) {
+                foreach ($loginErrors as $err) {
+                    MessageHelper::addMessage($err);
+                }
+                $this->render('login', []);
+                return;
+            }
+
             $userInfo = self::validateCredentials($username, $password);
 
             if ($userInfo) {

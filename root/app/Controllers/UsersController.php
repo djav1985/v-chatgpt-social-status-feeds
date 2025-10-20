@@ -102,14 +102,15 @@ class UsersController extends Controller
         $expires = trim($_POST['expires']);
         $admin = intval($_POST['admin']);
 
-        if (!Validator::alnum()->noWhitespace()->lowercase()->length(5, 16)->validate($username)) {
-            MessageHelper::addMessage('Username must be 5-16 characters long, lowercase letters and numbers only.');
-        }
-        if (!empty($password) && !Validator::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
-            MessageHelper::addMessage('Password must be 8-16 characters long, including at least one letter, one number, and one symbol.');
-        }
-        if (!Validator::email()->validate($email)) {
-            MessageHelper::addMessage('Please provide a valid email address.');
+        // Centralized validation
+        $userValidationErrors = \App\Helpers\Validation::validateUser([
+            'username' => $username,
+            'password' => $password,
+            'email' => $email,
+        ]);
+
+        foreach ($userValidationErrors as $err) {
+            MessageHelper::addMessage($err);
         }
 
         if (!empty($session->get('messages'))) {
