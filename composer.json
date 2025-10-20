@@ -1,0 +1,33 @@
+{
+  "name": "appsbyv/v-chatgpt-social-status-feeds",
+  "description": "A modular PHP application for managing, scheduling, and distributing social media status updates.",
+  "type": "project",
+  "require": {
+    "php": "^8.2"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.10",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+    "phpunit/phpunit": "^10.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "root/app/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "phpcs": "phpcs --standard=phpcs.xml root/",
+    "phpcbf": "phpcbf --standard=phpcs.xml root/",
+    "test": "phpunit"
+  }
+}

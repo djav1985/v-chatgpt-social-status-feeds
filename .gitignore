@@ -3,21 +3,7 @@
 *.code-workspace
 
 # Ensure these files are ignored no matter where they are located
-/composer.lock
-/composer.json
 /.phpunit.result.cache
 
 # Ignore vendor only in the root directory
-/vendor
 /root/php_app.log
-
-# Ignore dev dependencies and their binaries in root/vendor
-./root/vendor/bin/.phpunit.result.cache
-./root/vendor/myclabs/
-./root/vendor/nikic/php-parser/
-./root/vendor/phar-io/
-./root/vendor/phpunit/
-./root/vendor/sebastian/
-./root/vendor/squizlabs/
-./root/vendor/staabm/
-./root/vendor/theseer/
