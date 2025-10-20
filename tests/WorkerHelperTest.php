@@ -100,7 +100,7 @@ final class WorkerHelperTest extends TestCase
 
         $this->assertTrue(WorkerHelper::canLaunch($this->testJobType));
         // Stale lock should be cleaned up
-        $this->assertFileNotExists($lockPath);
+        $this->assertFileDoesNotExist($lockPath);
     }
 
     public function testClaimLockSucceedsWhenNoLockExists(): void
@@ -150,7 +150,7 @@ final class WorkerHelperTest extends TestCase
         $this->assertFileExists($lockPath);
 
         WorkerHelper::releaseLock($lockInfo);
-        $this->assertFileNotExists($lockPath);
+        $this->assertFileDoesNotExist($lockPath);
     }
 
     public function testReleaseLockHandlesNullLockInfo(): void
