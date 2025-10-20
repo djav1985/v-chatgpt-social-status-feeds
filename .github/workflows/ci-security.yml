@@ -26,6 +26,7 @@ jobs:
         with:
           php-version: '8.2'
           tools: phpstan
+          coverage: xdebug
       # PHPStan
       - name: PHPStan (root)
         if: hashFiles('phpstan.neon') != ''

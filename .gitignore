@@ -4,6 +4,7 @@
 
 # Ensure these files are ignored no matter where they are located
 /.phpunit.result.cache
+/coverage.xml
 
 # Ignore vendor only in the root directory
 /root/php_app.log
