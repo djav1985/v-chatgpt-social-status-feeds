@@ -426,7 +426,18 @@ class AccountsController extends Controller
 
         return $accountRow;
     }
-}
+
+    /**
+     * Build user-level account and API usage stats for display.
+     *
+     * @return array{
+     *     totalAccounts: int,
+     *     maxApiCallsLabel: string,
+     *     usedApiCalls: int,
+     *     expiresLabel: string
+     * }
+     */
+    private static function buildUserStats(): array
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
@@ -480,3 +491,4 @@ class AccountsController extends Controller
             return (string) $expires;
         }
     }
+}

@@ -481,6 +481,23 @@ footer p {
   height: 100%;
 }
 
+.account-list-card:hover {
+  transform: translateY(-2px);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
+}
+
+.account-summary {
+    flex: none;
+    margin-top: 100px;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    border: 2px solid #66cc33;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
 .account-card {
   width: 100%;
 }
@@ -532,6 +549,14 @@ footer p {
   border-radius: 8px;
   background-color: #ffffff;
   padding: 15px;
+}
+
+.calendar-day:hover {
+  transform: translateY(-2px);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
 }
 
 .calendar-day h4 {
