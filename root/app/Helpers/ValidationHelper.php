@@ -26,10 +26,8 @@ class ValidationHelper
             $errors[] = 'Username must be 5-16 characters long, lowercase letters and numbers only.';
         }
 
-        if ($password !== '') {
-            if (!v::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
-                $errors[] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
-            }
+        if ($password !== '' && !self::isValidPassword($password)) {
+            $errors[] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
         }
 
         if (!v::email()->validate($email)) {
@@ -37,6 +35,17 @@ class ValidationHelper
         }
 
         return $errors;
+    }
+    
+    /**
+     * Check if password meets requirements.
+     *
+     * @param string $password Password to validate
+     * @return bool True if valid
+     */
+    private static function isValidPassword(string $password): bool
+    {
+        return v::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password);
     }
 
     /**
@@ -57,7 +66,7 @@ class ValidationHelper
             $errors[] = 'Account name must be 8-18 characters long, alphanumeric and hyphens only.';
         }
 
-        if ($link !== '' && !v::url()->startsWith('https://')->validate($link)) {
+        if ($link !== '' && !self::isValidHttpsUrl($link)) {
             $errors[] = 'Link must be a valid URL starting with https://.';
         }
 
@@ -68,6 +77,17 @@ class ValidationHelper
         }
 
         return $errors;
+    }
+    
+    /**
+     * Check if URL is valid HTTPS URL.
+     *
+     * @param string $url URL to validate
+     * @return bool True if valid
+     */
+    private static function isValidHttpsUrl(string $url): bool
+    {
+        return v::url()->startsWith('https://')->validate($url);
     }
 
     /**

@@ -185,7 +185,7 @@ class CacheService
 
         try {
             $iterator = $this->createApcuIterator($prefixedPattern);
-            return $this->deleteApcuEntries($iterator, $prefixedPattern);
+            return $this->deleteApcuEntries($iterator);
         } catch (\Throwable $e) {
             ErrorManager::getInstance()->log(
                 "Failed to clear APCu cache with pattern '{$prefixedPattern}': {$e->getMessage()}",
@@ -199,10 +199,9 @@ class CacheService
      * Delete APCu entries from iterator.
      *
      * @param \APCUIterator $iterator Iterator over cache entries
-     * @param string $pattern Pattern being cleared (for logging)
      * @return bool True if all deletions succeeded
      */
-    private function deleteApcuEntries(\APCUIterator $iterator, string $pattern): bool
+    private function deleteApcuEntries(\APCUIterator $iterator): bool
     {
         $deleted = true;
 
