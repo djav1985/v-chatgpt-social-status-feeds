@@ -42,7 +42,8 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 - **IP Blacklisting:** Monitors and blacklists suspicious IP addresses to prevent brute-force attacks.
 - **Safe Media Storage:** Generates images using sanitized filesystem paths while preserving original account identifiers for database access.
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
-- **Modular Classes:** Core logic is organized into classes such as DatabaseManager, User, Account, StatusService, FeedController, and ErrorManager for maintainability and scalability.
+- **Two-Tier APCu Caching:** High-performance caching layer (L1: in-memory static, L2: APCu persistent) dramatically reduces database queries and filesystem I/O. Models cache user info, account data, and status feeds. RSS feed XML output is cached for instant delivery. Image metadata is cached to eliminate up to 99% of filesystem operations. Fully configurable via `CACHE_ENABLED` and `CACHE_TTL_*` constants.
+- **Modular Classes:** Core logic is organized into classes such as DatabaseManager, User, Account, StatusService, FeedController, CacheService, and ErrorManager for maintainability and scalability.
 - **Global Error Handling:** Centralized logging and exception management via the `ErrorManager` singleton.
 - **Accessible Dashboard UI:** Collapsible status feeds expose synchronized ARIA states, scoped form controls, and responsive footer spacing so navigation and content remain usable across assistive technologies and compact screens.
 
@@ -51,7 +52,7 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 
 |     |      Feature      | Summary |
 | :-- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseManager</code>, <code>User</code>, <code>Account</code>, <code>StatusService</code>, <code>FeedController</code>, and the singleton <code>ErrorManager</code> (see <code>root/app/</code>).</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by Composer via <code>vendor/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
+| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseManager</code>, <code>User</code>, <code>Account</code>, <code>StatusService</code>, <code>FeedController</code>, <code>CacheService</code>, and the singleton <code>ErrorManager</code> (see <code>root/app/</code>).</li><li>Two-tier caching with APCu for persistent cross-request data and in-memory arrays for single-request optimization.</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by Composer via <code>vendor/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
 | 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using Doctrine DBAL in <code>DatabaseManager.php</code>.</li><li>Robust error handling via the <code>ErrorManager</code> singleton.</li><li>Clean inline documentation throughout core files.</li></ul> |
 | 📄  | **Documentation** | <ul><li>Includes install and usage steps.</li><li>Written in <code>PHP</code>, <code>SQL</code>, and <code>text</code> formats.</li><li>Simple onboarding for developers and admins.</li></ul> |
 | 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>StatusService.php</code>.</li><li>Real-time RSS feed generation using <code>FeedController::outputRssFeed()</code>.</li><li>Secure login and session control via the MVC controllers.</li><li>Email notifications powered by PHPMailer with customizable templates.</li></ul> |
@@ -152,6 +153,13 @@ Install the project using the following steps:
 
    - Open `root/config.php` and update the necessary variables, including MySQL database credentials.
    - Optionally adjust `CRON_MAX_EXECUTION_TIME` and `CRON_MEMORY_LIMIT` to control how long the cron script runs and how much memory it can use.
+   - **Cache Configuration (Optional):** APCu caching is enabled by default with sensible TTL values. Configure via environment variables or edit these constants in `config.php`:
+     - `CACHE_ENABLED` (default: true) - Master switch for APCu caching
+     - `CACHE_TTL_USER` (default: 300s) - User info cache lifetime
+     - `CACHE_TTL_ACCOUNT` (default: 600s) - Account data cache lifetime
+     - `CACHE_TTL_STATUS` (default: 60s) - Status data cache lifetime
+     - `CACHE_TTL_FEED` (default: 180s) - RSS feed and image metadata cache lifetime
+   - **Note:** If APCu extension is not available, the system automatically falls back to in-memory caching for the current request only.
 
 4. **Install Database:**
 

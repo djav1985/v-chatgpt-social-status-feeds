@@ -7,11 +7,19 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 - **Models** (`root/app/Models/`): Encapsulate all database logic. Use the custom `Database` class (Doctrine DBAL wrapper) for queries and transactions. Example: `User.php`, `Account.php`.
 - **Views** (`root/app/Views/`): Render HTML templates. Use partials and layouts for reuse.
 - **Core** (`root/app/Core/`): Shared utilities (routing, error logging, CSRF, mail, etc.).
-- **Services** (`root/app/Services/`): Business logic (status scheduling, queue, security).
+- **Services** (`root/app/Services/`): Business logic (status scheduling, queue, security, caching).
 
 **Configuration:**
-- Centralized in `root/config.php` (DB credentials, API keys, session/cookie settings).
+- Centralized in `root/config.php` (DB credentials, API keys, session/cookie settings, cache TTLs).
 - All environment-sensitive data should be set here or via Docker env vars.
+
+**Caching:**
+- Two-tier caching system: L1 (in-memory static arrays), L2 (APCu persistent cache)
+- Managed by `CacheService.php` singleton in Services
+- Automatically falls back to in-memory when APCu unavailable
+- All Models (`User`, `Account`, `Status`) use two-tier caching for frequently accessed data
+- RSS feed XML output is cached for instant delivery
+- Cache TTLs configurable via `CACHE_TTL_*` constants in `config.php`
 
 **Routing:**
 - Managed by `Router.php` in Core. Controllers define routes and map to views.
@@ -42,6 +50,7 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 - Cookie security: Set `httponly`, `secure`, and `SameSite=Lax` in config.
 - IP blacklisting: Use `Utility.php` for suspicious IPs.
 - All DB access must use the `Database` class for consistency and error handling.
+- Caching: Use `CacheService` for persistent data. Models implement two-tier caching automatically. Cache invalidation happens in Model mutation methods (create, update, delete).
 
 ## Integration Points & External Dependencies
 - **OpenAI API:** Managed by `ApiHandler.php` for post/image generation.
@@ -52,7 +61,10 @@ This is a modular PHP app for managing, scheduling, and distributing social medi
 ## Key Files & Examples
 - `root/config.php`: All config and environment settings
 - `root/app/Controllers/AuthController.php`: Auth/session logic
-- `root/app/Models/User.php`: User DB logic
+- `root/app/Models/User.php`: User DB logic with two-tier caching
+- `root/app/Models/Account.php`: Account DB logic with two-tier caching
+- `root/app/Models/Status.php`: Status DB logic with APCu caching
+- `root/app/Services/CacheService.php`: APCu cache abstraction layer
 - `root/app/Core/Utility.php`: RSS, IP blacklist, helpers
 - `root/app/Services/StatusService.php`: Status scheduling/queue
 - `root/public/install.php`: DB install
