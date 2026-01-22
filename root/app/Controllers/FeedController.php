@@ -126,7 +126,22 @@ class FeedController extends Controller
         }
 
         // Set the content type to RSS XML
-        header('Content-Type: application/rss+xml; charset=utf-8');
+        // Force correct content type + charset
+        header('Content-Type: application/rss+xml; charset=UTF-8');
+        
+        // Kill caching (IFTTT poison-cache prevention)
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        
+        // Disable compression at PHP level
+        ini_set('zlib.output_compression', 'Off');
+        
+        // Defensive: clear any existing buffer content without discarding the active buffer
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
 
         $rssUrl = DOMAIN . '/feeds/' . urlencode($accountOwner) . '/' . ($isAllAccounts ? 'all' : urlencode($accountName));
         $escapedRssUrl = htmlspecialchars($rssUrl, ENT_QUOTES, 'UTF-8');
@@ -136,12 +151,20 @@ class FeedController extends Controller
         // Output RSS feed
         echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
         echo '<rss version="2.0" xmlns:atom="https://www.w3.org/2005/Atom" xmlns:content="https://purl.org/rss/1.0/modules/content/">' . PHP_EOL;
+        
         echo '<channel>' . PHP_EOL;
         echo '<title>' . $escapedAccountOwner . ' status feed</title>' . PHP_EOL;
+        
         echo '<link>' . $escapedRssUrl . '</link>' . PHP_EOL;
-        echo '<atom:link href="' . $escapedRssUrl . '" rel="self" type="application/rss+xml" /> ' . PHP_EOL;
+        echo '<atom:link href="' . $escapedRssUrl . '" rel="self" type="application/rss+xml" />' . PHP_EOL;
+        
         echo '<description>Status feed for ' . $escapedAccountName . '</description>' . PHP_EOL;
         echo '<language>en-us</language>' . PHP_EOL;
+        
+        // Strongly recommended for IFTTT stability
+        echo '<generator>Vontainment Feed Engine</generator>' . PHP_EOL;
+        echo '<lastBuildDate>' . gmdate(DATE_RSS) . '</lastBuildDate>' . PHP_EOL;
+        echo '<ttl>10</ttl>' . PHP_EOL;
 
         // Output each status as an RSS item
         foreach ($statuses as $status) {
