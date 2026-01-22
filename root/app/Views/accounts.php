@@ -62,6 +62,22 @@ require 'partials/header.php';
                 <input type="hidden" name="csrf_token" value="<?php echo App\Core\SessionManager::getInstance()->get('csrf_token'); ?>">
                 <button type="submit" class="btn btn-primary btn-lg" name="edit_account">Add/Update Account</button>
             </form>
+            <?php
+                $stats = $userStats ?? [];
+                $totalAccounts = $stats['totalAccounts'] ?? 0;
+                $maxApiCallsLabel = $stats['maxApiCallsLabel'] ?? 'Off';
+                $usedApiCalls = $stats['usedApiCalls'] ?? 0;
+                $expiresLabel = $stats['expiresLabel'] ?? 'N/A';
+            ?>
+            <div class="card-body account-summary">
+                <h4>Account Summary</h4>
+                <ul class="account-summary-list">
+                    <li><strong>Total Accounts:</strong> <?php echo htmlspecialchars((string) $totalAccounts); ?></li>
+                    <li><strong>Max API Calls:</strong> <?php echo htmlspecialchars((string) $maxApiCallsLabel); ?></li>
+                    <li><strong>Used API Calls:</strong> <?php echo htmlspecialchars((string) $usedApiCalls); ?></li>
+                    <li><strong>Expires:</strong> <?php echo htmlspecialchars((string) $expiresLabel); ?></li>
+                </ul>
+            </div>
         </div>
         <!-- Account List Section -->
         <div class="account-right card column col-8 col-md-8 col-sm-12">

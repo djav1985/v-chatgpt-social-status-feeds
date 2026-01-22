@@ -35,12 +35,14 @@ class AccountsController extends Controller
         $cronOptions = self::generateCronOptions();
         $accountList = self::generateAccountList();
         $calendarOverview = self::generateCalendarOverview();
+            $userStats = self::buildUserStats();
 
         $this->render('accounts', [
             'daysOptions' => $daysOptions,
             'cronOptions' => $cronOptions,
             'accountList' => $accountList,
             'calendarOverview' => $calendarOverview,
+                'userStats' => $userStats,
         ]);
     }
 
@@ -425,3 +427,56 @@ class AccountsController extends Controller
         return $accountRow;
     }
 }
+    {
+        $session = SessionManager::getInstance();
+        $username = $session->get('username');
+
+        $userInfo = User::getUserInfo($username);
+        $accountCount = count(User::getAllUserAccts($username));
+
+        $maxApiCallsRaw = $userInfo->max_api_calls ?? null;
+        $usedApiCalls = (int) ($userInfo->used_api_calls ?? 0);
+        $expiresRaw = $userInfo->expires ?? '';
+
+        return [
+            'totalAccounts' => $accountCount,
+            'maxApiCallsLabel' => self::formatMaxApiCalls($maxApiCallsRaw),
+            'usedApiCalls' => $usedApiCalls,
+            'expiresLabel' => self::formatExpiryDate($expiresRaw),
+        ];
+    }
+
+    /**
+     * Format the maximum API call allowance for display.
+     */
+    private static function formatMaxApiCalls(int|string|null $maxApiCalls): string
+    {
+        if ($maxApiCalls === null) {
+            return 'Off';
+        }
+
+        $maxValue = (int) $maxApiCalls;
+
+        if ($maxValue <= 0 || $maxValue >= 9999999999) {
+            return 'Off';
+        }
+
+        return number_format($maxValue);
+    }
+
+    /**
+     * Format an expiration date as mm/dd/yyyy or return a sensible fallback.
+     */
+    private static function formatExpiryDate(?string $expires): string
+    {
+        if (empty($expires) || $expires === '0000-00-00') {
+            return 'N/A';
+        }
+
+        try {
+            $date = new \DateTime($expires);
+            return $date->format('m/d/Y');
+        } catch (\Exception) {
+            return (string) $expires;
+        }
+    }
