@@ -8,3 +8,7 @@
 
 # Ignore vendor only in the root directory
 /root/php_app.log
+
+
+#Ignore insiders AI rules
+.github\instructions\codacy.instructions.md
