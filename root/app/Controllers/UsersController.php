@@ -98,11 +98,12 @@ class UsersController extends Controller
         $password = ValidationHelper::sanitizeString($_POST['password'] ?? '');
         $plainPassword = $password;
         $email = ValidationHelper::sanitizeString($_POST['email'] ?? '');
-        $totalAccounts = ValidationHelper::validateInteger($_POST['total-accounts'] ?? 0, 0);
-        $maxApiCalls = ValidationHelper::validateInteger($_POST['max-api-calls'] ?? 0, 0);
-        $usedApiCalls = ValidationHelper::validateInteger($_POST['used-api-calls'] ?? 0, 0);
+        // Fix: Handle null returns with default values
+        $totalAccounts = ValidationHelper::validateInteger($_POST['total-accounts'] ?? 0, 0) ?? 0;
+        $maxApiCalls = ValidationHelper::validateInteger($_POST['max-api-calls'] ?? 0, 0) ?? 0;
+        $usedApiCalls = ValidationHelper::validateInteger($_POST['used-api-calls'] ?? 0, 0) ?? 0;
         $expires = ValidationHelper::sanitizeString($_POST['expires'] ?? '');
-        $admin = ValidationHelper::validateInteger($_POST['admin'] ?? 0, 0);
+        $admin = ValidationHelper::validateInteger($_POST['admin'] ?? 0, 0) ?? 0;
 
         // Centralized validation
         $userValidationErrors = ValidationHelper::validateUser([

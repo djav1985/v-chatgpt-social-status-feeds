@@ -84,10 +84,18 @@ class AccountsController extends Controller
     {
         $session = SessionManager::getInstance();
         $accountOwner = $session->get('username');
-        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
+        // Fix: Handle space-to-dash conversion and use alphanumeric-dash mode
+        $rawAccountName = $_POST['account'] ?? '';
+        $normalizedAccountName = str_replace(' ', '-', $rawAccountName);
+        $accountName = ValidationHelper::sanitizeString($normalizedAccountName, 'alphanumeric-dash');
         $prompt = ValidationHelper::sanitizeString($_POST['prompt'] ?? '');
         $platform = ValidationHelper::sanitizeString($_POST['platform'] ?? '');
+        // Fix: Handle null return from validateInteger
         $hashtags = ValidationHelper::validateInteger($_POST['hashtags'] ?? 0);
+        if ($hashtags === null) {
+            $hashtags = 0;
+            MessageHelper::addMessage('Invalid hashtags value supplied. Defaulting to 0.');
+        }
         $link = ValidationHelper::sanitizeString($_POST['link'] ?? '');
         
         // Validate cron array and process if valid

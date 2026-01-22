@@ -79,8 +79,9 @@ class InfoController extends Controller
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
-        $password = ValidationHelper::sanitizeString($_POST['password'] ?? '', 'text');
-        $password2 = ValidationHelper::sanitizeString($_POST['password2'] ?? '', 'text');
+        // Fix: Don't sanitize passwords - only cast to string
+        $password = (string) ($_POST['password'] ?? '');
+        $password2 = (string) ($_POST['password2'] ?? '');
 
         if ($password !== $password2) {
             MessageHelper::addMessage('Passwords do not match. Please try again.');
