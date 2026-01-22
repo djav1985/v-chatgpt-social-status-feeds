@@ -21,7 +21,8 @@ class ValidationTest extends TestCase
         $this->assertEquals('test-123', $result);
 
         // alphanumeric-space
-        $this->assertEquals('hello world 123', ValidationHelper::sanitizeString('hello world 123!@#', 'alphanumeric-space'));
+        $result = ValidationHelper::sanitizeString('hello world 123!@#', 'alphanumeric-space');
+        $this->assertEquals('hello world 123', $result);
 
         // text (with punctuation)
         $expected = 'Hello, world! It\'s "great".';

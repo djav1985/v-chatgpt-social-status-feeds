@@ -99,12 +99,12 @@ final class CacheServiceTest extends TestCase
         };
         
         // First call should execute callback
-        $result1 = $this->cache->remember($key, $callback, 60);
+        $result1 = $this->cache->remember($key, 60, $callback);
         $this->assertSame($expectedValue, $result1);
         $this->assertSame(1, $callCount, 'Callback should be called once');
         
         // Second call should use cached value
-        $result2 = $this->cache->remember($key, $callback, 60);
+        $result2 = $this->cache->remember($key, 60, $callback);
         $this->assertSame($expectedValue, $result2);
         $this->assertSame(1, $callCount, 'Callback should not be called again');
     }

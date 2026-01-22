@@ -296,12 +296,6 @@ class Status
         
         try {
             $cache = CacheService::getInstance();
-            
-            if ($username === null) {
-                // Clear all status-related cache entries and all RSS XML cache entries
-
-        try {
-            $cache = CacheService::getInstance();
 
             if ($username === null) {
                 // Clear all status-related cache entries and all RSS XML cache entries.
@@ -319,7 +313,6 @@ class Status
                 $cache->delete("status:feed:{$username}:{$account}:all");
                 $cache->delete("status:count:{$username}:{$account}");
                 $cache->delete("status:latest:{$username}:{$account}");
-                $cache->clear("rss:xml:{$username}:");
                 $cache->clear("rss:xml:{$username}:");
             }
         } catch (Exception $e) {

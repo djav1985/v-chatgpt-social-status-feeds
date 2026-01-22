@@ -163,8 +163,20 @@ class CacheService
      */
     public function clear(?string $pattern = null): bool
     {
+        // Clear in-memory cache
+        if ($pattern === null) {
+            self::$memoryCache = [];
+        } else {
+            // Clear matching keys from memory cache
+            $prefixedPattern = $this->prefixKey($pattern);
+            foreach (array_keys(self::$memoryCache) as $key) {
+                if (strpos($key, $prefixedPattern) === 0) {
+                    unset(self::$memoryCache[$key]);
+                }
+            }
+        }
+
         if (!$this->apcuAvailable) {
-            $this->memoryCache = [];
             return true;
         }
 
