@@ -22,6 +22,7 @@ use App\Models\Status;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
+use App\Helpers\Validation;
 
 class HomeController extends Controller
 {
@@ -111,14 +112,24 @@ class HomeController extends Controller
     private static function deleteStatus(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = trim($_POST['account']);
+        $accountName = Validation::sanitizeString($_POST['account'] ?? '');
+        if (empty($accountName)) {
+            MessageHelper::addMessage('Invalid account name.');
+            header('Location: /home');
+            exit;
+        }
         $accountOwner = $session->get('username');
         if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
             MessageHelper::addMessage('Username mismatch.');
             header('Location: /home');
             exit;
         }
-        $statusId = (int) $_POST['id'];
+        $statusId = Validation::validateInteger($_POST['id'] ?? '');
+        if ($statusId === false) {
+            MessageHelper::addMessage('Invalid status ID.');
+            header('Location: /home');
+            exit;
+        }
         try {
             $statusImagePath = Status::getStatusImagePath($statusId, $accountName, $accountOwner);
             if ($statusImagePath) {
@@ -149,7 +160,12 @@ class HomeController extends Controller
     private static function generateStatus(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = trim($_POST['account']);
+        $accountName = Validation::sanitizeString($_POST['account'] ?? '');
+        if (empty($accountName)) {
+            MessageHelper::addMessage('Invalid account name.');
+            header('Location: /home');
+            exit;
+        }
         $accountOwner = $session->get('username');
         if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
             MessageHelper::addMessage('Username mismatch.');

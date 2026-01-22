@@ -22,6 +22,7 @@ use App\Core\Csrf;
 use App\Core\SessionManager;
 use Respect\Validation\Validator;
 use App\Helpers\MessageHelper;
+use App\Helpers\Validation;
 
 class UsersController extends Controller
 {
@@ -93,18 +94,18 @@ class UsersController extends Controller
     private static function editUsers(): void
     {
         $session = SessionManager::getInstance();
-        $username = trim($_POST['username']);
-        $password = trim($_POST['password']);
+        $username = Validation::sanitizeString($_POST['username'] ?? '');
+        $password = Validation::sanitizeString($_POST['password'] ?? '');
         $plainPassword = $password;
-        $email = trim($_POST['email']);
-        $totalAccounts = intval($_POST['total-accounts']);
-        $maxApiCalls = intval($_POST['max-api-calls']);
-        $usedApiCalls = intval($_POST['used-api-calls']);
-        $expires = trim($_POST['expires']);
-        $admin = intval($_POST['admin']);
+        $email = Validation::sanitizeString($_POST['email'] ?? '');
+        $totalAccounts = Validation::validateInteger($_POST['total-accounts'] ?? 0, 0);
+        $maxApiCalls = Validation::validateInteger($_POST['max-api-calls'] ?? 0, 0);
+        $usedApiCalls = Validation::validateInteger($_POST['used-api-calls'] ?? 0, 0);
+        $expires = Validation::sanitizeString($_POST['expires'] ?? '');
+        $admin = Validation::validateInteger($_POST['admin'] ?? 0, 0);
 
         // Centralized validation
-        $userValidationErrors = \App\Helpers\Validation::validateUser([
+        $userValidationErrors = Validation::validateUser([
             'username' => $username,
             'password' => $password,
             'email' => $email,
@@ -184,7 +185,7 @@ class UsersController extends Controller
     private static function deleteUser(): void
     {
         $session = SessionManager::getInstance();
-        $username = $_POST['username'];
+        $username = Validation::sanitizeString($_POST['username'] ?? '');
         if ($username === $session->get('username')) {
             MessageHelper::addMessage("Sorry, you can't delete your own account.");
         } else {
@@ -207,7 +208,7 @@ class UsersController extends Controller
     private static function loginAs(): void
     {
         $session = SessionManager::getInstance();
-        $username = $_POST['username'];
+        $username = Validation::sanitizeString($_POST['username'] ?? '');
         try {
             $user = User::getUserInfo($username);
             if ($user) {

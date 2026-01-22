@@ -20,6 +20,7 @@ use App\Core\Csrf;
 use Respect\Validation\Validator;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
+use App\Helpers\Validation;
 
 class InfoController extends Controller
 {
@@ -78,15 +79,20 @@ class InfoController extends Controller
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
-        $password = $_POST['password'];
-        $password2 = $_POST['password2'];
+        $password = Validation::sanitizeString($_POST['password'] ?? '', 'text');
+        $password2 = Validation::sanitizeString($_POST['password2'] ?? '', 'text');
 
         if ($password !== $password2) {
             MessageHelper::addMessage('Passwords do not match. Please try again.');
         }
 
-        if (!Validator::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password)) {
-            MessageHelper::addMessage('Password must be 8-16 characters long, including at least one letter, one number, and one symbol.');
+        $errors = Validation::validateUser(['username' => $username, 'password' => $password, 'email' => '']);
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                if (str_contains($error, 'Password')) {
+                    MessageHelper::addMessage($error);
+                }
+            }
         }
 
         if (!empty($session->get('messages'))) {
@@ -114,10 +120,10 @@ class InfoController extends Controller
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
-        $who = trim($_POST['who']);
-        $where = trim($_POST['where']);
-        $what = trim($_POST['what']);
-        $goal = trim($_POST['goal']);
+        $who = Validation::sanitizeString($_POST['who'] ?? '', 'text');
+        $where = Validation::sanitizeString($_POST['where'] ?? '', 'text');
+        $what = Validation::sanitizeString($_POST['what'] ?? '', 'text');
+        $goal = Validation::sanitizeString($_POST['goal'] ?? '', 'text');
 
         if (empty($who) || empty($where) || empty($what) || empty($goal)) {
             MessageHelper::addMessage('All fields are required.');
