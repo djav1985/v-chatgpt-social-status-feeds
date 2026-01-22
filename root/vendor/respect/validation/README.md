@@ -15,5 +15,5 @@ The most awesome validation engine ever created for PHP.
 
 Learn More:
 
-* [Documentation](https://respect-validation.readthedocs.io)
-* [How to contribute](CONTRIBUTING.md)
+- [Documentation](https://respect-validation.readthedocs.io)
+- [How to contribute](CONTRIBUTING.md)

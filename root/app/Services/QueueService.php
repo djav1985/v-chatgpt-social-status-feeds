@@ -6,6 +6,7 @@ namespace App\Services;
 use App\Core\DatabaseManager;
 use App\Services\StatusService;
 use App\Models\Account;
+use function random_bytes;
 use App\Models\User;
 use App\Core\Mailer;
 use App\Helpers\WorkerHelper;
@@ -556,7 +557,7 @@ class QueueService
 
     protected function generateJobId(): string
     {
-        $data = random_bytes(16);
+        $data = \random_bytes(16);
         $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
         $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
 

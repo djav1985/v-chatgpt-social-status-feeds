@@ -19,10 +19,13 @@ label {
 .form-input:not(:placeholder-shown):invalid,
 textarea,
 select {
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
   box-sizing: border-box;
   /* Original inset shadow */
-  box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset,
+  box-shadow:
+    rgb(204, 219, 232) 3px 3px 6px 0px inset,
     rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
   border-width: 2px;
   border-style: solid;
@@ -40,10 +43,13 @@ select {
 }
 
 .form-select {
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
   box-sizing: border-box;
   /* Original inset shadow */
-  box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset,
+  box-shadow:
+    rgb(204, 219, 232) 3px 3px 6px 0px inset,
     rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
   border-width: 2px;
   border-style: solid;
@@ -73,7 +79,8 @@ textarea:focus,
 select:focus {
   outline: none;
   /* Match top-left light source */
-  box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset,
+  box-shadow:
+    rgb(204, 219, 232) 3px 3px 6px 0px inset,
     rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
   border-color: #0366d6;
 }
@@ -81,7 +88,9 @@ select:focus {
 /* Button Styles */
 
 .btn {
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
   cursor: pointer;
   border: none;
   border-radius: 6px;
@@ -102,7 +111,9 @@ form.form-inline .btn {
 /* Original .btn-primary shadow */
 
 .btn.btn-primary {
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out,
+  transition:
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
     box-shadow 0.2s;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   border-color: #0253b8;
@@ -114,7 +125,8 @@ form.form-inline .btn {
 
 .btn.btn-primary:hover,
 .btn.btn-primary:focus {
-  box-shadow: rgba(0, 0, 0, 0.15) -3px -3px 5px 0px,
+  box-shadow:
+    rgba(0, 0, 0, 0.15) -3px -3px 5px 0px,
     rgba(2, 83, 184, 0.2) -3px -3px 6px 1px;
   border-color: #004494;
   background-color: #0253b8;
@@ -124,7 +136,8 @@ form.form-inline .btn {
 /* Active: Match top-left light source with inset feel */
 
 .btn.btn-primary:active {
-  box-shadow: rgba(0, 0, 0, 0.15) -3px -3px 5px inset,
+  box-shadow:
+    rgba(0, 0, 0, 0.15) -3px -3px 5px inset,
     rgba(2, 83, 184, 0.25) -3px -3px 4px inset;
   border-color: #00326e;
   background-color: #003d82;

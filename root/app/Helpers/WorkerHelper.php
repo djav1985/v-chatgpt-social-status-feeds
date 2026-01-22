@@ -2,6 +2,10 @@
 
 namespace App\Helpers;
 
+use function posix_kill;
+use function random_int;
+use function mt_rand;
+
 /**
  * Centralized worker lock management for all job types.
  *
@@ -38,7 +42,7 @@ class WorkerHelper
 
         // Use posix_kill if available for better accuracy
         if (function_exists('posix_kill')) {
-            return @posix_kill($pid, 0);
+            return @\posix_kill($pid, 0);
         }
 
         // Fallback to /proc filesystem check
@@ -147,9 +151,9 @@ class WorkerHelper
         $pid = getmypid();
         if (!is_int($pid) || $pid <= 0) {
             try {
-                $pid = random_int(1, PHP_INT_MAX);
+                $pid = \random_int(1, PHP_INT_MAX);
             } catch (\Throwable $exception) {
-                $pid = mt_rand(1, PHP_INT_MAX);
+                $pid = \mt_rand(1, PHP_INT_MAX);
             }
         }
 
@@ -228,9 +232,9 @@ class WorkerHelper
         $pid = getmypid();
         if (!is_int($pid) || $pid <= 0) {
             try {
-                $pid = random_int(1, PHP_INT_MAX);
+                $pid = \random_int(1, PHP_INT_MAX);
             } catch (\Throwable $exception) {
-                $pid = mt_rand(1, PHP_INT_MAX);
+                $pid = \mt_rand(1, PHP_INT_MAX);
             }
         }
 

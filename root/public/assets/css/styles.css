@@ -133,11 +133,16 @@ footer p {
 }
 
 .tab-item {
-  transition: background-color 0.3s, color 0.3s;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   cursor: pointer;
   margin: 2px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
   border-radius: 6px;
   background-color: #f1f1f1;
@@ -227,7 +232,9 @@ footer p {
 }
 
 .status-item {
-  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow:
+    rgba(0, 0, 0, 0.19) 0px 10px 20px,
+    rgba(0, 0, 0, 0.23) 0px 6px 6px;
   border: 2px solid #66cc33;
   border-bottom-width: 10px;
   border-radius: 8px;
@@ -237,7 +244,9 @@ footer p {
 
 .status-item:hover {
   transform: translateY(-2px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -276,7 +285,9 @@ footer p {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.2s, background-color 0.3s;
+  transition:
+    transform 0.2s,
+    background-color 0.3s;
   border-radius: 4px;
   width: 64px;
   height: 64px;
@@ -313,7 +324,9 @@ footer p {
   margin-right: -20px;
   margin-bottom: -20px;
   margin-left: -20px;
-  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow:
+    rgba(0, 0, 0, 0.19) 0px 10px 20px,
+    rgba(0, 0, 0, 0.23) 0px 6px 6px;
   border-top: 2px solid #66cc33;
   border-bottom: 2px solid #66cc33;
   background: aliceblue;
@@ -458,7 +471,9 @@ footer p {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-start;
-  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow:
+    rgba(0, 0, 0, 0.19) 0px 10px 20px,
+    rgba(0, 0, 0, 0.23) 0px 6px 6px;
   border: 2px solid #66cc33;
   border-bottom-width: 10px;
   border-radius: 8px;
@@ -509,7 +524,9 @@ footer p {
 }
 
 .calendar-day {
-  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow:
+    rgba(0, 0, 0, 0.19) 0px 10px 20px,
+    rgba(0, 0, 0, 0.23) 0px 6px 6px;
   border: 2px solid #66cc33;
   border-bottom-width: 10px;
   border-radius: 8px;

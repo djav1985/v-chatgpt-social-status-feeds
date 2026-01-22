@@ -17,6 +17,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Mailer;
 use App\Models\User;
+use function random_bytes;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 use Respect\Validation\Validator;
@@ -216,7 +217,7 @@ class UsersController extends Controller
                 $session->set('username', $user->username);
                 $session->set('logged_in', true);
                 $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
-                $session->set('csrf_token', bin2hex(random_bytes(32)));
+                $session->set('csrf_token', bin2hex(\random_bytes(32)));
                 $session->set('is_admin', $user->admin);
                 $session->set('timeout', time());
                 $session->regenerate();

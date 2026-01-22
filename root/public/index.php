@@ -18,11 +18,12 @@ require_once '../vendor/autoload.php';
 use App\Core\Router;
 use App\Core\ErrorManager;
 use App\Core\SessionManager;
+use function random_bytes;
 
 $session = SessionManager::getInstance();
 $session->start();
 if (!$session->get('csrf_token')) {
-    $session->set('csrf_token', bin2hex(random_bytes(32)));
+    $session->set('csrf_token', bin2hex(\random_bytes(32)));
 }
 
 ErrorManager::handle(function (): void {

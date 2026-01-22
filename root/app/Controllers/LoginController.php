@@ -16,6 +16,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Models\Blacklist;
+use function random_bytes;
 use App\Core\ErrorManager;
 use App\Core\Controller;
 use App\Core\Csrf;
@@ -91,7 +92,7 @@ class LoginController extends Controller
                 $session->set('logged_in', true);
                 $session->set('username', $userInfo->username);
                 $session->set('user_agent', $_SERVER['HTTP_USER_AGENT']);
-                $session->set('csrf_token', bin2hex(random_bytes(32)));
+                $session->set('csrf_token', bin2hex(\random_bytes(32)));
                 $session->set('is_admin', $userInfo->admin);
                 $session->set('timeout', time());
                 $session->regenerate();

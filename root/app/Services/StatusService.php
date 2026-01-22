@@ -17,6 +17,7 @@ namespace App\Services;
 use App\Models\Account;
 use App\Models\User;
 use App\Models\Status;
+use function random_bytes;
 use App\Core\ErrorManager;
 use GuzzleHttp\Client as GuzzleClient;
 use InvalidArgumentException;
@@ -517,7 +518,7 @@ class StatusService
     private static function generateImageFilename(): string
     {
         try {
-            return bin2hex(random_bytes(16)) . '.png';
+            return bin2hex(\random_bytes(16)) . '.png';
         } catch (\Throwable $throwable) {
             throw new RuntimeException('Unable to generate image filename.', 0, $throwable);
         }
