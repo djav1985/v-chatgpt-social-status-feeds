@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\Helpers\Validation;
+use App\Helpers\ValidationHelper;
 use PHPUnit\Framework\TestCase;
 
 class ValidationTest extends TestCase
@@ -13,23 +13,23 @@ class ValidationTest extends TestCase
     public function testSanitizeString(): void
     {
         // alphanumeric
-        $this->assertEquals('abc123', Validation::sanitizeString('abc-123!@#', 'alphanumeric'));
-        $this->assertEquals('hello', Validation::sanitizeString(' hello ', 'alphanumeric'));
+        $this->assertEquals('abc123', ValidationHelper::sanitizeString('abc-123!@#', 'alphanumeric'));
+        $this->assertEquals('hello', ValidationHelper::sanitizeString(' hello ', 'alphanumeric'));
 
         // alphanumeric-dash
-        $this->assertEquals('test-123', Validation::sanitizeString('test-123!@#', 'alphanumeric-dash'));
+        $this->assertEquals('test-123', ValidationHelper::sanitizeString('test-123!@#', 'alphanumeric-dash'));
 
         // alphanumeric-space
-        $this->assertEquals('hello world 123', Validation::sanitizeString('hello world 123!@#', 'alphanumeric-space'));
+        $this->assertEquals('hello world 123', ValidationHelper::sanitizeString('hello world 123!@#', 'alphanumeric-space'));
 
         // text (with punctuation)
         $expected = 'Hello, world! It\'s "great".';
         $input = 'Hello, world! It\'s "great".';
-        $this->assertEquals($expected, Validation::sanitizeString($input, 'text'));
-        $this->assertEquals('Hello world', Validation::sanitizeString('Hello world@#$%', 'text'));
+        $this->assertEquals($expected, ValidationHelper::sanitizeString($input, 'text'));
+        $this->assertEquals('Hello world', ValidationHelper::sanitizeString('Hello world@#$%', 'text'));
 
         // default (alphanumeric)
-        $this->assertEquals('test123', Validation::sanitizeString('test-123', 'invalid-type'));
+        $this->assertEquals('test123', ValidationHelper::sanitizeString('test-123', 'invalid-type'));
     }
 
     /**
@@ -38,15 +38,15 @@ class ValidationTest extends TestCase
     public function testSanitizeArray(): void
     {
         $input = ['hello!', 'world@', 'test#123'];
-        $result = Validation::sanitizeArray($input, function ($item) {
-            return Validation::sanitizeString($item, 'alphanumeric');
+        $result = ValidationHelper::sanitizeArray($input, function ($item) {
+            return ValidationHelper::sanitizeString($item, 'alphanumeric');
         });
 
         $this->assertEquals(['hello', 'world', 'test123'], $result);
 
         // Test with trim
         $input2 = [' test ', ' hello ', ' world '];
-        $result2 = Validation::sanitizeArray($input2, 'trim');
+        $result2 = ValidationHelper::sanitizeArray($input2, 'trim');
         $this->assertEquals(['test', 'hello', 'world'], $result2);
     }
 
@@ -56,30 +56,30 @@ class ValidationTest extends TestCase
     public function testValidateInteger(): void
     {
         // Valid integers
-        $this->assertEquals(5, Validation::validateInteger(5));
-        $this->assertEquals(10, Validation::validateInteger('10'));
-        $this->assertEquals(0, Validation::validateInteger(0));
-        $this->assertEquals(-5, Validation::validateInteger(-5));
-        $this->assertEquals(-10, Validation::validateInteger('-10'));
+        $this->assertEquals(5, ValidationHelper::validateInteger(5));
+        $this->assertEquals(10, ValidationHelper::validateInteger('10'));
+        $this->assertEquals(0, ValidationHelper::validateInteger(0));
+        $this->assertEquals(-5, ValidationHelper::validateInteger(-5));
+        $this->assertEquals(-10, ValidationHelper::validateInteger('-10'));
 
         // With min/max boundaries
-        $this->assertEquals(5, Validation::validateInteger(5, 0, 10));
-        $this->assertEquals(0, Validation::validateInteger(0, 0, 10));
-        $this->assertEquals(10, Validation::validateInteger(10, 0, 10));
+        $this->assertEquals(5, ValidationHelper::validateInteger(5, 0, 10));
+        $this->assertEquals(0, ValidationHelper::validateInteger(0, 0, 10));
+        $this->assertEquals(10, ValidationHelper::validateInteger(10, 0, 10));
 
         // Out of bounds
-        $this->assertNull(Validation::validateInteger(-1, 0, 10));
-        $this->assertNull(Validation::validateInteger(11, 0, 10));
+        $this->assertNull(ValidationHelper::validateInteger(-1, 0, 10));
+        $this->assertNull(ValidationHelper::validateInteger(11, 0, 10));
 
         // Invalid inputs
-        $this->assertNull(Validation::validateInteger('abc'));
-        $this->assertNull(Validation::validateInteger(null));
-        $this->assertNull(Validation::validateInteger([]));
+        $this->assertNull(ValidationHelper::validateInteger('abc'));
+        $this->assertNull(ValidationHelper::validateInteger(null));
+        $this->assertNull(ValidationHelper::validateInteger([]));
 
         // Reject floats and scientific notation (stricter validation)
-        $this->assertNull(Validation::validateInteger(3.14));
-        $this->assertNull(Validation::validateInteger('3.14'));
-        $this->assertNull(Validation::validateInteger('1e2'));
+        $this->assertNull(ValidationHelper::validateInteger(3.14));
+        $this->assertNull(ValidationHelper::validateInteger('3.14'));
+        $this->assertNull(ValidationHelper::validateInteger('1e2'));
     }
 
     /**
@@ -88,29 +88,29 @@ class ValidationTest extends TestCase
     public function testValidateDaysArray(): void
     {
         // Valid 'everyday'
-        $this->assertEmpty(Validation::validateDaysArray('everyday'));
+        $this->assertEmpty(ValidationHelper::validateDaysArray('everyday'));
 
         // Valid array of days
-        $this->assertEmpty(Validation::validateDaysArray(['monday', 'tuesday', 'wednesday']));
-        $this->assertEmpty(Validation::validateDaysArray(['friday']));
-        $this->assertEmpty(Validation::validateDaysArray(['Monday', 'Tuesday'])); // Case insensitive
+        $this->assertEmpty(ValidationHelper::validateDaysArray(['monday', 'tuesday', 'wednesday']));
+        $this->assertEmpty(ValidationHelper::validateDaysArray(['friday']));
+        $this->assertEmpty(ValidationHelper::validateDaysArray(['Monday', 'Tuesday'])); // Case insensitive
 
         // All days
         $allDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        $this->assertEmpty(Validation::validateDaysArray($allDays));
+        $this->assertEmpty(ValidationHelper::validateDaysArray($allDays));
 
         // Invalid: not array or 'everyday'
-        $errors = Validation::validateDaysArray('invalid');
+        $errors = ValidationHelper::validateDaysArray('invalid');
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('Days must be either "everyday" or an array', $errors[0]);
 
         // Invalid: empty array
-        $errors = Validation::validateDaysArray([]);
+        $errors = ValidationHelper::validateDaysArray([]);
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('At least one day must be selected', $errors[0]);
 
         // Invalid: invalid day name
-        $errors = Validation::validateDaysArray(['monday', 'invalidday']);
+        $errors = ValidationHelper::validateDaysArray(['monday', 'invalidday']);
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('Invalid day name', $errors[0]);
     }
@@ -121,33 +121,33 @@ class ValidationTest extends TestCase
     public function testValidateCronArray(): void
     {
         // Valid cron arrays
-        $this->assertEmpty(Validation::validateCronArray([0, 6, 12, 18]));
-        $this->assertEmpty(Validation::validateCronArray(['0', '12', '23']));
-        $this->assertEmpty(Validation::validateCronArray([0]));
-        $this->assertEmpty(Validation::validateCronArray(['null', 0, 'null', 12]));
-        $this->assertEmpty(Validation::validateCronArray([null, 0, null, 12]));
+        $this->assertEmpty(ValidationHelper::validateCronArray([0, 6, 12, 18]));
+        $this->assertEmpty(ValidationHelper::validateCronArray(['0', '12', '23']));
+        $this->assertEmpty(ValidationHelper::validateCronArray([0]));
+        $this->assertEmpty(ValidationHelper::validateCronArray(['null', 0, 'null', 12]));
+        $this->assertEmpty(ValidationHelper::validateCronArray([null, 0, null, 12]));
 
         // Invalid: not an array
-        $errors = Validation::validateCronArray('not-array');
+        $errors = ValidationHelper::validateCronArray('not-array');
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('Cron schedule must be an array', $errors[0]);
 
         // Invalid: empty array
-        $errors = Validation::validateCronArray([]);
+        $errors = ValidationHelper::validateCronArray([]);
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('At least one hour must be specified', $errors[0]);
 
         // Invalid: hour out of range
-        $errors = Validation::validateCronArray([0, 24, 12]);
+        $errors = ValidationHelper::validateCronArray([0, 24, 12]);
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('between 0 and 23', $errors[0]);
 
-        $errors = Validation::validateCronArray([0, -1, 12]);
+        $errors = ValidationHelper::validateCronArray([0, -1, 12]);
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('between 0 and 23', $errors[0]);
 
         // Invalid: non-numeric
-        $errors = Validation::validateCronArray([0, 'abc', 12]);
+        $errors = ValidationHelper::validateCronArray([0, 'abc', 12]);
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('Hours must be numeric', $errors[0]);
     }
@@ -159,13 +159,13 @@ class ValidationTest extends TestCase
     {
         $expected = '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;';
         $input = '<script>alert("xss")</script>';
-        $this->assertEquals($expected, Validation::escapeOutput($input));
-        $this->assertEquals('It&#039;s &quot;great&quot;', Validation::escapeOutput('It\'s "great"'));
-        $this->assertEquals('hello world', Validation::escapeOutput('hello world'));
-        $this->assertEquals('&amp;&lt;&gt;&quot;&#039;', Validation::escapeOutput('&<>"\''));
+        $this->assertEquals($expected, ValidationHelper::escapeOutput($input));
+        $this->assertEquals('It&#039;s &quot;great&quot;', ValidationHelper::escapeOutput('It\'s "great"'));
+        $this->assertEquals('hello world', ValidationHelper::escapeOutput('hello world'));
+        $this->assertEquals('&amp;&lt;&gt;&quot;&#039;', ValidationHelper::escapeOutput('&<>"\''));
 
         // Test with different flags
-        $this->assertEquals('&amp;&lt;&gt;"\'', Validation::escapeOutput('&<>"\'', ENT_NOQUOTES));
+        $this->assertEquals('&amp;&lt;&gt;"\'', ValidationHelper::escapeOutput('&<>"\'', ENT_NOQUOTES));
     }
 
     /**
@@ -174,26 +174,26 @@ class ValidationTest extends TestCase
     public function testValidateUrl(): void
     {
         // Valid URLs
-        $this->assertEmpty(Validation::validateUrl('https://example.com'));
-        $this->assertEmpty(Validation::validateUrl('http://example.com'));
-        $this->assertEmpty(Validation::validateUrl('https://example.com/path/to/page'));
-        $this->assertEmpty(Validation::validateUrl('https://example.com?query=1'));
+        $this->assertEmpty(ValidationHelper::validateUrl('https://example.com'));
+        $this->assertEmpty(ValidationHelper::validateUrl('http://example.com'));
+        $this->assertEmpty(ValidationHelper::validateUrl('https://example.com/path/to/page'));
+        $this->assertEmpty(ValidationHelper::validateUrl('https://example.com?query=1'));
 
         // Valid with HTTPS requirement
-        $this->assertEmpty(Validation::validateUrl('https://example.com', true));
+        $this->assertEmpty(ValidationHelper::validateUrl('https://example.com', true));
 
         // Invalid: empty URL
-        $errors = Validation::validateUrl('');
+        $errors = ValidationHelper::validateUrl('');
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('URL cannot be empty', $errors[0]);
 
         // Invalid: malformed URL
-        $errors = Validation::validateUrl('not-a-url');
+        $errors = ValidationHelper::validateUrl('not-a-url');
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('Invalid URL format', $errors[0]);
 
         // Invalid: HTTP when HTTPS required
-        $errors = Validation::validateUrl('http://example.com', true);
+        $errors = ValidationHelper::validateUrl('http://example.com', true);
         $this->assertNotEmpty($errors);
         $this->assertStringContainsString('URL must use HTTPS protocol', $errors[0]);
     }
@@ -204,14 +204,14 @@ class ValidationTest extends TestCase
     public function testValidateUser(): void
     {
         // Valid user
-        $this->assertEmpty(Validation::validateUser([
+        $this->assertEmpty(ValidationHelper::validateUser([
             'username' => 'testuser',
             'password' => 'Pass123!',
             'email' => 'test@example.com'
         ]));
 
         // Invalid username
-        $errors = Validation::validateUser([
+        $errors = ValidationHelper::validateUser([
             'username' => 'ab',
             'password' => 'Pass123!',
             'email' => 'test@example.com'
@@ -225,13 +225,13 @@ class ValidationTest extends TestCase
     public function testValidateAccount(): void
     {
         // Valid account
-        $this->assertEmpty(Validation::validateAccount([
+        $this->assertEmpty(ValidationHelper::validateAccount([
             'accountName' => 'test-account',
             'link' => 'https://example.com'
         ]));
 
         // Invalid account name
-        $errors = Validation::validateAccount([
+        $errors = ValidationHelper::validateAccount([
             'accountName' => 'ab',
             'link' => 'https://example.com'
         ]);
@@ -244,13 +244,13 @@ class ValidationTest extends TestCase
     public function testValidateLogin(): void
     {
         // Valid login
-        $this->assertEmpty(Validation::validateLogin([
+        $this->assertEmpty(ValidationHelper::validateLogin([
             'username' => 'testuser',
             'password' => 'password123'
         ]));
 
         // Invalid: missing username
-        $errors = Validation::validateLogin([
+        $errors = ValidationHelper::validateLogin([
             'username' => '',
             'password' => 'password123'
         ]);

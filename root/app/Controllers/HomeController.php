@@ -22,7 +22,7 @@ use App\Models\Status;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
-use App\Helpers\Validation;
+use App\Helpers\ValidationHelper;
 
 class HomeController extends Controller
 {
@@ -112,7 +112,7 @@ class HomeController extends Controller
     private static function deleteStatus(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = Validation::sanitizeString($_POST['account'] ?? '');
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
         if (empty($accountName)) {
             MessageHelper::addMessage('Invalid account name.');
             header('Location: /home');
@@ -124,7 +124,7 @@ class HomeController extends Controller
             header('Location: /home');
             exit;
         }
-        $statusId = Validation::validateInteger($_POST['id'] ?? '');
+        $statusId = ValidationHelper::validateInteger($_POST['id'] ?? '');
         if ($statusId === null) {
             MessageHelper::addMessage('Invalid status ID.');
             header('Location: /home');
@@ -160,7 +160,7 @@ class HomeController extends Controller
     private static function generateStatus(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = Validation::sanitizeString($_POST['account'] ?? '');
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
         if (empty($accountName)) {
             MessageHelper::addMessage('Invalid account name.');
             header('Location: /home');

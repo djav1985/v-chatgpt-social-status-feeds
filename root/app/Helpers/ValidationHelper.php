@@ -5,7 +5,7 @@ namespace App\Helpers;
 
 use Respect\Validation\Validator as v;
 
-class Validation
+class ValidationHelper
 {
     /**
      * Validate user creation/update input.

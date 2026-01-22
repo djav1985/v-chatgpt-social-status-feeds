@@ -73,7 +73,7 @@ class LoginController extends Controller
             $password = trim($_POST['password'] ?? '');
 
             // Centralized login validation
-            $loginErrors = \App\Helpers\Validation::validateLogin([
+            $loginErrors = \App\Helpers\ValidationHelper::validateLogin([
                 'username' => $username,
                 'password' => $password,
             ]);

@@ -20,7 +20,7 @@ use App\Models\User;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
-use App\Helpers\Validation;
+use App\Helpers\ValidationHelper;
 use App\Services\QueueService;
 
 class AccountsController extends Controller
@@ -84,14 +84,14 @@ class AccountsController extends Controller
     {
         $session = SessionManager::getInstance();
         $accountOwner = $session->get('username');
-        $accountName = Validation::sanitizeString($_POST['account'] ?? '');
-        $prompt = Validation::sanitizeString($_POST['prompt'] ?? '');
-        $platform = Validation::sanitizeString($_POST['platform'] ?? '');
-        $hashtags = Validation::validateInteger($_POST['hashtags'] ?? 0);
-        $link = Validation::sanitizeString($_POST['link'] ?? '');
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
+        $prompt = ValidationHelper::sanitizeString($_POST['prompt'] ?? '');
+        $platform = ValidationHelper::sanitizeString($_POST['platform'] ?? '');
+        $hashtags = ValidationHelper::validateInteger($_POST['hashtags'] ?? 0);
+        $link = ValidationHelper::sanitizeString($_POST['link'] ?? '');
         
         // Validate cron array and process if valid
-        $cronErrors = Validation::validateCronArray($_POST['cron'] ?? []);
+        $cronErrors = ValidationHelper::validateCronArray($_POST['cron'] ?? []);
         foreach ($cronErrors as $err) {
             MessageHelper::addMessage($err);
         }
@@ -114,7 +114,7 @@ class AccountsController extends Controller
         }
         
         // Validate days array and process if valid
-        $daysErrors = Validation::validateDaysArray($_POST['days'] ?? []);
+        $daysErrors = ValidationHelper::validateDaysArray($_POST['days'] ?? []);
         foreach ($daysErrors as $err) {
             MessageHelper::addMessage($err);
         }
@@ -139,7 +139,7 @@ class AccountsController extends Controller
         }
 
         // Centralized validation
-        $accountValidationErrors = Validation::validateAccount([
+        $accountValidationErrors = ValidationHelper::validateAccount([
             'accountName' => $accountName,
             'link' => $link,
             'cronArr' => isset($_POST['cron']) && is_array($_POST['cron']) ? $_POST['cron'] : [],
@@ -199,7 +199,7 @@ class AccountsController extends Controller
     private static function deleteAccount(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = Validation::sanitizeString($_POST['account'] ?? '');
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
         $accountOwner = $session->get('username');
         try {
             Account::deleteAccount($accountOwner, $accountName);

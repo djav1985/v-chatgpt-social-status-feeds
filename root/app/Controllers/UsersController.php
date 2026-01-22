@@ -22,7 +22,7 @@ use App\Core\Csrf;
 use App\Core\SessionManager;
 use Respect\Validation\Validator;
 use App\Helpers\MessageHelper;
-use App\Helpers\Validation;
+use App\Helpers\ValidationHelper;
 
 class UsersController extends Controller
 {
@@ -94,18 +94,18 @@ class UsersController extends Controller
     private static function editUsers(): void
     {
         $session = SessionManager::getInstance();
-        $username = Validation::sanitizeString($_POST['username'] ?? '');
-        $password = Validation::sanitizeString($_POST['password'] ?? '');
+        $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
+        $password = ValidationHelper::sanitizeString($_POST['password'] ?? '');
         $plainPassword = $password;
-        $email = Validation::sanitizeString($_POST['email'] ?? '');
-        $totalAccounts = Validation::validateInteger($_POST['total-accounts'] ?? 0, 0);
-        $maxApiCalls = Validation::validateInteger($_POST['max-api-calls'] ?? 0, 0);
-        $usedApiCalls = Validation::validateInteger($_POST['used-api-calls'] ?? 0, 0);
-        $expires = Validation::sanitizeString($_POST['expires'] ?? '');
-        $admin = Validation::validateInteger($_POST['admin'] ?? 0, 0);
+        $email = ValidationHelper::sanitizeString($_POST['email'] ?? '');
+        $totalAccounts = ValidationHelper::validateInteger($_POST['total-accounts'] ?? 0, 0);
+        $maxApiCalls = ValidationHelper::validateInteger($_POST['max-api-calls'] ?? 0, 0);
+        $usedApiCalls = ValidationHelper::validateInteger($_POST['used-api-calls'] ?? 0, 0);
+        $expires = ValidationHelper::sanitizeString($_POST['expires'] ?? '');
+        $admin = ValidationHelper::validateInteger($_POST['admin'] ?? 0, 0);
 
         // Centralized validation
-        $userValidationErrors = Validation::validateUser([
+        $userValidationErrors = ValidationHelper::validateUser([
             'username' => $username,
             'password' => $password,
             'email' => $email,
@@ -185,7 +185,7 @@ class UsersController extends Controller
     private static function deleteUser(): void
     {
         $session = SessionManager::getInstance();
-        $username = Validation::sanitizeString($_POST['username'] ?? '');
+        $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
         if ($username === $session->get('username')) {
             MessageHelper::addMessage("Sorry, you can't delete your own account.");
         } else {
@@ -208,7 +208,7 @@ class UsersController extends Controller
     private static function loginAs(): void
     {
         $session = SessionManager::getInstance();
-        $username = Validation::sanitizeString($_POST['username'] ?? '');
+        $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
         try {
             $user = User::getUserInfo($username);
             if ($user) {

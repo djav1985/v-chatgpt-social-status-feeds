@@ -89,6 +89,3 @@ if (!empty($missing_config)) {
         die("Configuration error: Missing required settings. Please check server logs.");
     }
 }
-
-// Load view helper functions for consistent output escaping
-require_once __DIR__ . '/app/Helpers/ViewHelper.php';
