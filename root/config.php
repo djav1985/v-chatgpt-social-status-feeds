@@ -64,6 +64,13 @@ define('SMTP_PASSWORD', 'password');
 define('SMTP_FROM_EMAIL', 'no-reply@example.com');
 define('SMTP_FROM_NAME', 'ChatGPT API');
 
+// Cache settings (APCu)
+define('CACHE_ENABLED', getenv('CACHE_ENABLED') !== false ? (bool)getenv('CACHE_ENABLED') : true);
+define('CACHE_TTL_USER', getenv('CACHE_TTL_USER') !== false ? (int)getenv('CACHE_TTL_USER') : 300); // 5 minutes
+define('CACHE_TTL_ACCOUNT', getenv('CACHE_TTL_ACCOUNT') !== false ? (int)getenv('CACHE_TTL_ACCOUNT') : 600); // 10 minutes
+define('CACHE_TTL_STATUS', getenv('CACHE_TTL_STATUS') !== false ? (int)getenv('CACHE_TTL_STATUS') : 60); // 1 minute
+define('CACHE_TTL_FEED', getenv('CACHE_TTL_FEED') !== false ? (int)getenv('CACHE_TTL_FEED') : 180); // 3 minutes
+
 
 // Validate required configuration constants
 $required_constants = ['DB_HOST', 'DB_USER', 'DB_NAME', 'API_KEY'];

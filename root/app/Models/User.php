@@ -17,11 +17,12 @@ namespace App\Models;
 use Exception;
 use App\Core\DatabaseManager;
 use App\Core\ErrorManager;
+use App\Services\CacheService;
 
 class User
 {
     /**
-     * Cached user lookups keyed by username.
+     * Cached user lookups keyed by username (L1 cache - in-memory).
      *
      * @var array<string, ?object>
      */
@@ -32,6 +33,17 @@ class User
         return trim($username);
     }
 
+    /**
+     * Generate APCu cache key for user info (L2 cache).
+     *
+     * @param string $username
+     * @return string
+     */
+    private static function userApcuCacheKey(string $username): string
+    {
+        return 'user:info:' . trim($username);
+    }
+
     private static function rememberUserInfo(string $username, ?object $info): ?object
     {
         self::$userInfoCache[self::userCacheKey($username)] = $info;
@@ -39,14 +51,26 @@ class User
         return $info;
     }
 
+    /**
+     * Clear user cache entry from both L1 (static) and L2 (APCu) caches.
+     *
+     * @param string|null $username If null, clears all user cache entries
+     * @return void
+     */
     private static function clearUserCacheEntry(?string $username = null): void
     {
         if ($username === null) {
             self::$userInfoCache = [];
+            if (CACHE_ENABLED) {
+                CacheService::getInstance()->clear('user:info:');
+            }
             return;
         }
 
         unset(self::$userInfoCache[self::userCacheKey($username)]);
+        if (CACHE_ENABLED) {
+            CacheService::getInstance()->delete(self::userApcuCacheKey($username));
+        }
     }
 
     /**
@@ -184,19 +208,41 @@ class User
     }
 
     /**
-     * Get user information from the database.
+     * Get user information using two-tier caching strategy.
+     * - L1 cache: Static array (in-memory, request-scoped)
+     * - L2 cache: APCu (persistent across requests)
      *
      * @param string $username
      * @return object|null
      */
     public static function getUserInfo(string $username): ?object
     {
+        // Check L1 cache (static array) first
         $cacheKey = self::userCacheKey($username);
         if (array_key_exists($cacheKey, self::$userInfoCache)) {
             return self::$userInfoCache[$cacheKey];
         }
 
         try {
+            // Check L2 cache (APCu) if enabled
+            if (CACHE_ENABLED) {
+                $apcuKey = self::userApcuCacheKey($username);
+                $cache = CacheService::getInstance();
+                
+                // Use remember() to handle cache miss automatically
+                $user = $cache->remember($apcuKey, CACHE_TTL_USER, function () use ($username) {
+                    $db = DatabaseManager::getInstance();
+                    $db->query("SELECT * FROM users WHERE username = :username");
+                    $db->bind(':username', $username);
+                    $result = $db->single();
+                    return is_array($result) ? (object)$result : null;
+                });
+                
+                // Store in L1 cache and return
+                return self::rememberUserInfo($username, $user);
+            }
+
+            // If cache disabled, query database directly
             $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM users WHERE username = :username");
             $db->bind(':username', $username);
