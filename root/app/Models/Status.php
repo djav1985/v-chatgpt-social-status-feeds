@@ -299,20 +299,27 @@ class Status
             
             if ($username === null) {
                 // Clear all status-related cache entries and all RSS XML cache entries
+
+        try {
+            $cache = CacheService::getInstance();
+
+            if ($username === null) {
+                // Clear all status-related cache entries and all RSS XML cache entries.
                 $cache->clear('status:');
                 $cache->clear('rss:xml');
             } elseif ($account === null) {
-                // Clear all status-related cache entries for the user and their RSS XML feeds
+                // Clear all status-related cache entries for the user and their RSS XML feeds.
                 $cache->clear("status:feed:{$username}:");
                 $cache->clear("status:count:{$username}:");
                 $cache->clear("status:latest:{$username}:");
                 $cache->clear("rss:xml:{$username}:");
             } else {
                 // Clear status-related cache entries for the specific user/account combination
-                // and invalidate the user's RSS XML feeds
+                // and invalidate the user's RSS XML feeds.
                 $cache->delete("status:feed:{$username}:{$account}:all");
                 $cache->delete("status:count:{$username}:{$account}");
                 $cache->delete("status:latest:{$username}:{$account}");
+                $cache->clear("rss:xml:{$username}:");
                 $cache->clear("rss:xml:{$username}:");
             }
         } catch (Exception $e) {
