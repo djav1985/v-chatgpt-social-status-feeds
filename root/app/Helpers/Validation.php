@@ -147,35 +147,53 @@ class Validation
      */
     public static function validateInteger($value, ?int $min = null, ?int $max = null): ?int
     {
-        // Handle actual integers
+        $intValue = self::convertToInteger($value);
+        
+        if ($intValue === null) {
+            return null;
+        }
+        
+        return self::validateIntegerBounds($intValue, $min, $max);
+    }
+    
+    /**
+     * Convert value to integer if valid.
+     *
+     * @param mixed $value Value to convert
+     * @return int|null Integer value or null on failure
+     */
+    private static function convertToInteger($value): ?int
+    {
         if (is_int($value)) {
-            if ($min !== null && $value < $min) {
-                return null;
-            }
-            
-            if ($max !== null && $value > $max) {
-                return null;
-            }
-            
             return $value;
         }
         
-        // Handle string integers (no floats, scientific notation, etc.)
         if (is_string($value) && preg_match('/^-?\d+$/', $value)) {
-            $intValue = (int) $value;
-            
-            if ($min !== null && $intValue < $min) {
-                return null;
-            }
-            
-            if ($max !== null && $intValue > $max) {
-                return null;
-            }
-            
-            return $intValue;
+            return (int) $value;
         }
-
+        
         return null;
+    }
+    
+    /**
+     * Validate integer is within bounds.
+     *
+     * @param int $value Integer to validate
+     * @param int|null $min Minimum value (inclusive)
+     * @param int|null $max Maximum value (inclusive)
+     * @return int|null Integer or null if out of bounds
+     */
+    private static function validateIntegerBounds(int $value, ?int $min, ?int $max): ?int
+    {
+        if ($min !== null && $value < $min) {
+            return null;
+        }
+        
+        if ($max !== null && $value > $max) {
+            return null;
+        }
+        
+        return $value;
     }
 
     /**
@@ -223,36 +241,52 @@ class Validation
      */
     public static function validateCronArray($cron): array
     {
-        $errors = [];
-
         if (!is_array($cron)) {
-            $errors[] = 'Cron schedule must be an array.';
-            return $errors;
+            return ['Cron schedule must be an array.'];
         }
 
         if (empty($cron)) {
-            $errors[] = 'At least one hour must be specified in the cron schedule.';
-            return $errors;
+            return ['At least one hour must be specified in the cron schedule.'];
         }
 
+        return self::validateCronHours($cron);
+    }
+    
+    /**
+     * Validate individual cron hour values.
+     *
+     * @param array $cron Array of hour values
+     * @return string[] Array of validation errors (empty = valid)
+     */
+    private static function validateCronHours(array $cron): array
+    {
         foreach ($cron as $hour) {
             if ($hour === 'null' || $hour === null) {
                 continue;
             }
 
-            if (!v::digit()->validate((string) $hour)) {
-                $errors[] = 'Invalid cron hour(s) supplied. Hours must be numeric between 0 and 23.';
-                break;
-            }
-
-            $intHour = (int) $hour;
-            if ($intHour < 0 || $intHour > 23) {
-                $errors[] = 'Invalid cron hour(s) supplied. Hours must be between 0 and 23.';
-                break;
+            if (!self::isValidCronHour($hour)) {
+                return ['Invalid cron hour(s) supplied. Hours must be numeric between 0 and 23.'];
             }
         }
 
-        return $errors;
+        return [];
+    }
+    
+    /**
+     * Check if a cron hour value is valid.
+     *
+     * @param mixed $hour Hour value to check
+     * @return bool True if valid, false otherwise
+     */
+    private static function isValidCronHour($hour): bool
+    {
+        if (!v::digit()->validate((string) $hour)) {
+            return false;
+        }
+
+        $intHour = (int) $hour;
+        return $intHour >= 0 && $intHour <= 23;
     }
 
     /**

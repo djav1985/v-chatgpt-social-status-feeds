@@ -163,52 +163,60 @@ class CacheService
      */
     public function clear(?string $pattern = null): bool
     {
-        if ($this->apcuAvailable) {
-            if ($pattern === null) {
-                // Clear only entries with our prefix to avoid affecting other applications
-                $prefixedPattern = self::PREFIX;
-            } else {
-                $prefixedPattern = $this->prefixKey($pattern);
-            }
-
-            try {
-                $iterator = $this->createApcuIterator($prefixedPattern);
-                $deleted = true;
-
-                foreach ($iterator as $entry) {
-                    if (!apcu_delete($entry['key'])) {
-                        $deleted = false;
-                        ErrorManager::getInstance()->log(
-                            "Failed to delete APCu cache key: {$entry['key']}",
-                            'warning'
-                        );
-                    }
-                }
-
-                return $deleted;
-            } catch (\Throwable $e) {
-                ErrorManager::getInstance()->log(
-                    "Failed to clear APCu cache with pattern '{$prefixedPattern}': {$e->getMessage()}",
-                    'error'
-                );
-                return false;
-            }
-        } else {
-            if ($pattern === null) {
-                // Clear only entries with our prefix
-                $prefixedPattern = self::PREFIX;
-            } else {
-                $prefixedPattern = $this->prefixKey($pattern);
-            }
-            
-            foreach (self::$memoryCache as $key => $entry) {
-                if (str_starts_with($key, $prefixedPattern)) {
-                    unset(self::$memoryCache[$key]);
-                }
-            }
-            
+        if (!$this->apcuAvailable) {
+            $this->memoryCache = [];
             return true;
         }
+
+        return $this->clearApcuCache($pattern);
+    }
+    
+    /**
+     * Clear APCu cache entries.
+     *
+     * @param string|null $pattern Optional pattern to match keys
+     * @return bool True on success, false on failure
+     */
+    private function clearApcuCache(?string $pattern): bool
+    {
+        $prefixedPattern = $pattern === null 
+            ? self::PREFIX 
+            : $this->prefixKey($pattern);
+
+        try {
+            $iterator = $this->createApcuIterator($prefixedPattern);
+            return $this->deleteApcuEntries($iterator, $prefixedPattern);
+        } catch (\Throwable $e) {
+            ErrorManager::getInstance()->log(
+                "Failed to clear APCu cache with pattern '{$prefixedPattern}': {$e->getMessage()}",
+                'error'
+            );
+            return false;
+        }
+    }
+    
+    /**
+     * Delete APCu entries from iterator.
+     *
+     * @param \APCUIterator $iterator Iterator over cache entries
+     * @param string $pattern Pattern being cleared (for logging)
+     * @return bool True if all deletions succeeded
+     */
+    private function deleteApcuEntries(\APCUIterator $iterator, string $pattern): bool
+    {
+        $deleted = true;
+
+        foreach ($iterator as $entry) {
+            if (!apcu_delete($entry['key'])) {
+                $deleted = false;
+                ErrorManager::getInstance()->log(
+                    "Failed to delete APCu cache key: {$entry['key']}",
+                    'warning'
+                );
+            }
+        }
+
+        return $deleted;
     }
 
     /**

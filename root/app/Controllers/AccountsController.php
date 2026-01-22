@@ -90,16 +90,47 @@ class AccountsController extends Controller
         $hashtags = Validation::validateInteger($_POST['hashtags'] ?? 0);
         $link = Validation::sanitizeString($_POST['link'] ?? '');
         
-        $cronResult = Validation::validateCronArray($_POST['cron'] ?? []);
-        $cron = $cronResult['value'];
-        $invalidCron = !$cronResult['valid'];
-        
-        $daysResult = Validation::validateDaysArray($_POST['days'] ?? []);
-        $days = $daysResult['value'];
-
-        if ($invalidCron) {
-            MessageHelper::addMessage('Invalid cron hour(s) supplied. Hours must be between 0 and 23.');
+        // Validate cron array and process if valid
+        $cronErrors = Validation::validateCronArray($_POST['cron'] ?? []);
+        foreach ($cronErrors as $err) {
+            MessageHelper::addMessage($err);
         }
+        
+        // Process cron hours into comma-separated string
+        $cron = 'null';
+        if (empty($cronErrors) && isset($_POST['cron']) && is_array($_POST['cron'])) {
+            $hours = [];
+            foreach ($_POST['cron'] as $hour) {
+                if ($hour === 'null') {
+                    continue;
+                }
+                if (ctype_digit($hour) && (int)$hour >= 0 && (int)$hour <= 23) {
+                    $hours[] = str_pad((string)(int)$hour, 2, '0', STR_PAD_LEFT);
+                }
+            }
+            if (!empty($hours)) {
+                $cron = implode(',', $hours);
+            }
+        }
+        
+        // Validate days array and process if valid
+        $daysErrors = Validation::validateDaysArray($_POST['days'] ?? []);
+        foreach ($daysErrors as $err) {
+            MessageHelper::addMessage($err);
+        }
+        
+        // Process days into comma-separated string or 'everyday'
+        $days = '';
+        if (empty($daysErrors) && isset($_POST['days'])) {
+            if ($_POST['days'] === 'everyday') {
+                $days = 'everyday';
+            } elseif (is_array($_POST['days'])) {
+                $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') 
+                    ? 'everyday' 
+                    : implode(',', $_POST['days']);
+            }
+        }
+
         if ($cron === 'null' || empty($days) || empty($platform)) {
             MessageHelper::addMessage('Error processing input.');
         }

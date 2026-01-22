@@ -125,7 +125,7 @@ class HomeController extends Controller
             exit;
         }
         $statusId = Validation::validateInteger($_POST['id'] ?? '');
-        if ($statusId === false) {
+        if ($statusId === null) {
             MessageHelper::addMessage('Invalid status ID.');
             header('Location: /home');
             exit;
