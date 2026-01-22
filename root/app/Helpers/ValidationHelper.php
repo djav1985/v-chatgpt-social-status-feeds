@@ -1,5 +1,7 @@
 <?php
 // phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+// SuppressWarnings(PHPMD.TooManyPublicMethods) - Helper class with multiple validation utilities
+// SuppressWarnings(PHPMD.TooManyMethods) - Helper class with multiple validation utilities
 
 namespace App\Helpers;
 
@@ -17,24 +19,57 @@ class ValidationHelper
     public static function validateUser(array $data): array
     {
         $errors = [];
-
         $username = trim((string) ($data['username'] ?? ''));
         $password = trim((string) ($data['password'] ?? ''));
         $email = trim((string) ($data['email'] ?? ''));
 
-        if (!v::alnum()->noWhitespace()->lowercase()->length(5, 16)->validate($username)) {
-            $errors[] = 'Username must be 5-16 characters long, lowercase letters and numbers only.';
-        }
-
-        if ($password !== '' && !self::isValidPassword($password)) {
-            $errors[] = 'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.';
-        }
-
-        if (!v::email()->validate($email)) {
-            $errors[] = 'Please provide a valid email address.';
-        }
+        $errors = array_merge($errors, self::validateUsername($username));
+        $errors = array_merge($errors, self::validatePasswordIfProvided($password));
+        $errors = array_merge($errors, self::validateEmail($email));
 
         return $errors;
+    }
+    
+    /**
+     * Validate username format.
+     *
+     * @param string $username Username to validate
+     * @return string[] Array of error messages
+     */
+    private static function validateUsername(string $username): array
+    {
+        if (!v::alnum()->noWhitespace()->lowercase()->length(5, 16)->validate($username)) {
+            return ['Username must be 5-16 characters long, lowercase letters and numbers only.'];
+        }
+        return [];
+    }
+    
+    /**
+     * Validate password if provided.
+     *
+     * @param string $password Password to validate
+     * @return string[] Array of error messages
+     */
+    private static function validatePasswordIfProvided(string $password): array
+    {
+        if ($password !== '' && !self::isValidPassword($password)) {
+            return ['Password must be 8-16 characters long, including at least one letter, one number, and one symbol.'];
+        }
+        return [];
+    }
+    
+    /**
+     * Validate email format.
+     *
+     * @param string $email Email to validate
+     * @return string[] Array of error messages
+     */
+    private static function validateEmail(string $email): array
+    {
+        if (!v::email()->validate($email)) {
+            return ['Please provide a valid email address.'];
+        }
+        return [];
     }
     
     /**
@@ -58,25 +93,46 @@ class ValidationHelper
     public static function validateAccount(array $data): array
     {
         $errors = [];
-
         $accountName = trim((string) ($data['accountName'] ?? ''));
         $link = trim((string) ($data['link'] ?? ''));
 
-        if (!v::alnum('-')->noWhitespace()->lowercase()->length(8, 18)->validate($accountName)) {
-            $errors[] = 'Account name must be 8-18 characters long, alphanumeric and hyphens only.';
-        }
-
-        if ($link !== '' && !self::isValidHttpsUrl($link)) {
-            $errors[] = 'Link must be a valid URL starting with https://.';
-        }
+        $errors = array_merge($errors, self::validateAccountName($accountName));
+        $errors = array_merge($errors, self::validateAccountLink($link));
 
         // Optional: cron array validation
         if (isset($data['cronArr']) && is_array($data['cronArr'])) {
-            $cronErrors = self::validateCronArray($data['cronArr']);
-            $errors = array_merge($errors, $cronErrors);
+            $errors = array_merge($errors, self::validateCronArray($data['cronArr']));
         }
 
         return $errors;
+    }
+    
+    /**
+     * Validate account name format.
+     *
+     * @param string $accountName Account name to validate
+     * @return string[] Array of error messages
+     */
+    private static function validateAccountName(string $accountName): array
+    {
+        if (!v::alnum('-')->noWhitespace()->lowercase()->length(8, 18)->validate($accountName)) {
+            return ['Account name must be 8-18 characters long, alphanumeric and hyphens only.'];
+        }
+        return [];
+    }
+    
+    /**
+     * Validate account link if provided.
+     *
+     * @param string $link Link to validate
+     * @return string[] Array of error messages
+     */
+    private static function validateAccountLink(string $link): array
+    {
+        if ($link !== '' && !self::isValidHttpsUrl($link)) {
+            return ['Link must be a valid URL starting with https://.'];
+        }
+        return [];
     }
     
     /**

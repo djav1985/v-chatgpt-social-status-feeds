@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile
+// SuppressWarnings(PHPMD.TooManyPublicMethods) - Test class needs comprehensive coverage
 
 declare(strict_types=1);
 
