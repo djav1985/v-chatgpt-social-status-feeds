@@ -36,6 +36,17 @@ class Account
     private static array $accountListCache = [];
 
     /**
+     * Build APCu cache key for account list by username.
+     *
+     * @param string $username
+     * @return string
+     */
+    private static function accountListApcuCacheKey(string $username): string
+    {
+        return 'account:list:' . trim($username);
+    }
+
+    /**
      * Fetch account info using two-tier caching strategy.
      * - L1 cache: Static array (in-memory, request-scoped)
      * - L2 cache: APCu (persistent across requests)
