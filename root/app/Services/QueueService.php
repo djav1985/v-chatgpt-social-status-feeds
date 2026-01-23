@@ -32,7 +32,7 @@ class QueueService
 
     public function enqueueRemainingJobs(string $username, string $account, string $cron, string $days): void
     {
-        $now = $this->now();
+        $now = time();
         $daysArr = array_filter(
             array_map('strtolower', array_map('trim', explode(',', (string) $days))),
             fn($v) => strlen($v) > 0
@@ -59,7 +59,7 @@ class QueueService
 
     public function removeFutureJobs(string $username, string $account): void
     {
-        StatusJob::deleteFutureJobs($username, $account, $this->now());
+        StatusJob::deleteFutureJobs($username, $account, time());
     }
 
     public function removeAllJobs(string $username, string $account): void
@@ -97,7 +97,7 @@ class QueueService
                 $processedAny = false;
 
                 $retryJobs = $this->filterUnattemptedJobs(
-                    $this->claimDueJobsByStatus($this->now(), 'retry'),
+                    $this->claimDueJobsByStatus(time(), 'retry'),
                     $attemptedJobIds
                 );
                 if (!empty($retryJobs)) {
@@ -113,7 +113,7 @@ class QueueService
                 }
 
                 $pendingJobs = $this->filterUnattemptedJobs(
-                    $this->claimDueJobsByStatus($this->now(), 'pending'),
+                    $this->claimDueJobsByStatus(time(), 'pending'),
                     $attemptedJobIds
                 );
                 if (!empty($pendingJobs)) {
@@ -143,7 +143,7 @@ class QueueService
         try {
             StatusJob::clearAllPendingJobs();
             $accounts = Account::getAllAccounts();
-            $now = $this->now();
+            $now = time();
 
             foreach ($accounts as $account) {
                 $account = (object)$account;
@@ -198,11 +198,6 @@ class QueueService
     {
         WorkerHelper::releaseLock($this->workerLock);
         $this->workerLock = null;
-    }
-
-    private function now(): int
-    {
-        return time();
     }
 
     /**

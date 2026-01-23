@@ -51,7 +51,9 @@ class LoginController extends Controller
         $session = SessionManager::getInstance();
         if ($session->get('logged_in') === true && isset($_POST['logout'])) {
             if (Csrf::validate($_POST['csrf_token'] ?? '')) {
-                self::logoutUser();
+                SessionManager::getInstance()->destroy();
+                header('Location: /login');
+                exit();
             } else {
                 MessageHelper::addMessage('Invalid CSRF token. Please try again.');
                 header('Location: /login');
@@ -114,18 +116,6 @@ class LoginController extends Controller
         }
 
         $this->render('login', []);
-    }
-
-    /**
-     * Destroy the user session and redirect to the login page.
-     *
-     * @return void
-     */
-    private static function logoutUser(): void
-    {
-        SessionManager::getInstance()->destroy();
-        header('Location: /login');
-        exit();
     }
 
     /**
