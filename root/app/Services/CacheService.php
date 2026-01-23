@@ -45,7 +45,7 @@ class CacheService
      */
     private function __construct()
     {
-        $this->apcuAvailable = extension_loaded('apcu') && apcu_enabled();
+        $this->apcuAvailable = extension_loaded('apcu') && \apcu_enabled();
         
         if (!$this->apcuAvailable) {
             ErrorManager::getInstance()->log(
@@ -79,7 +79,7 @@ class CacheService
 
         if ($this->apcuAvailable) {
             $success = false;
-            $value = apcu_fetch($prefixedKey, $success);
+            $value = \apcu_fetch($prefixedKey, $success);
             
             if ($success) {
                 return $value;
@@ -112,7 +112,7 @@ class CacheService
         $prefixedKey = $this->prefixKey($key);
 
         if ($this->apcuAvailable) {
-            $result = apcu_store($prefixedKey, $value, $ttl);
+            $result = \apcu_store($prefixedKey, $value, $ttl);
             
             if (!$result) {
                 ErrorManager::getInstance()->log(
@@ -144,7 +144,7 @@ class CacheService
         $prefixedKey = $this->prefixKey($key);
 
         if ($this->apcuAvailable) {
-            return apcu_delete($prefixedKey);
+            return \apcu_delete($prefixedKey);
         } else {
             if (isset(self::$memoryCache[$prefixedKey])) {
                 unset(self::$memoryCache[$prefixedKey]);
@@ -218,7 +218,7 @@ class CacheService
         $deleted = true;
 
         foreach ($iterator as $entry) {
-            if (!apcu_delete($entry['key'])) {
+            if (!\apcu_delete($entry['key'])) {
                 $deleted = false;
                 ErrorManager::getInstance()->log(
                     "Failed to delete APCu cache key: {$entry['key']}",
@@ -241,7 +241,7 @@ class CacheService
         $prefixedKey = $this->prefixKey($key);
 
         if ($this->apcuAvailable) {
-            return apcu_exists($prefixedKey);
+            return \apcu_exists($prefixedKey);
         } else {
             if (isset(self::$memoryCache[$prefixedKey])) {
                 $entry = self::$memoryCache[$prefixedKey];

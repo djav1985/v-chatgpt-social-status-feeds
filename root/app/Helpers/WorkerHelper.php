@@ -152,7 +152,7 @@ class WorkerHelper
         if (!is_int($pid) || $pid <= 0) {
             try {
                 $pid = \random_int(1, PHP_INT_MAX);
-            } catch (\Throwable $exception) {
+            } catch (\Throwable) {
                 $pid = \mt_rand(1, PHP_INT_MAX);
             }
         }
@@ -233,7 +233,7 @@ class WorkerHelper
         if (!is_int($pid) || $pid <= 0) {
             try {
                 $pid = \random_int(1, PHP_INT_MAX);
-            } catch (\Throwable $exception) {
+            } catch (\Throwable) {
                 $pid = \mt_rand(1, PHP_INT_MAX);
             }
         }
