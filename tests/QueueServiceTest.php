@@ -429,5 +429,4 @@ final class QueueServiceTest extends TestCase
         $this->assertSame('retry', $service->dueJobs[0]['status'] ?? null);
         $this->assertTrue($service->lockReleased);
     }
-
 }

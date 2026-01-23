@@ -247,7 +247,7 @@ final class TestableQueueService extends QueueService
     protected function resetAllProcessingFlags(): int
     {
         $this->resetAllProcessingCount++;
-        
+
         // Reset all processing flags in the test jobs
         $count = 0;
         foreach ($this->dueJobs as &$job) {
@@ -257,7 +257,7 @@ final class TestableQueueService extends QueueService
             }
         }
         unset($job);
-        
+
         return $count;
     }
 
