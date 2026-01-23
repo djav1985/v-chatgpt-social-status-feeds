@@ -32,12 +32,12 @@ class TimezoneSchedulingTest extends TestCase
      */
     public function testSchedulingRespectsConfiguredTimezone(): void
     {
-        // Set timezone to EST (same as DEFAULT_TIMEZONE in config.php)
+        // Set timezone to America/New_York (same as DEFAULT_TIMEZONE in config.php)
         date_default_timezone_set('America/New_York');
 
         $service = new TestableQueueService();
         // Simulate midnight EST on Friday, January 23, 2026
-        $service->fakeNow = strtotime('2026-01-23 00:00:00 EST');
+        $service->fakeNow = strtotime('2026-01-23 00:00:00');
 
         // Schedule jobs for 7am, 12pm (noon), 2pm
         $hours = [7, 12, 14];
@@ -76,7 +76,7 @@ class TimezoneSchedulingTest extends TestCase
         date_default_timezone_set('America/New_York');
 
         $service = new TestableQueueService();
-        $service->fakeNow = strtotime('2026-01-23 00:00:00 EST');
+        $service->fakeNow = strtotime('2026-01-23 00:00:00');
         $service->accounts = [
             (object) [
                 'username' => 'testuser',
