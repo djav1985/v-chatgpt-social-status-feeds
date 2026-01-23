@@ -211,6 +211,30 @@ class Status
         }
     }
 
+    /**
+     * Get accounts that exceed the maximum status limit.
+     *
+     * @param int $maxStatuses Maximum allowed statuses per account.
+     * @return array<int, array<string, mixed>> Array of accounts with status counts.
+     */
+    public static function getOverLimitAccounts(int $maxStatuses): array
+    {
+        try {
+            $db = DatabaseManager::getInstance();
+            $db->query(
+                'SELECT username, account, COUNT(*) AS status_count '
+                . 'FROM status_updates '
+                . 'GROUP BY username, account '
+                . 'HAVING COUNT(*) > :max_statuses'
+            );
+            $db->bind(':max_statuses', $maxStatuses);
+            return $db->resultSet();
+        } catch (Exception $e) {
+            ErrorManager::getInstance()->log("Error getting over-limit accounts: " . $e->getMessage(), 'error');
+            throw $e;
+        }
+    }
+
     public static function hasStatusBeenPosted(string $accountName, string $accountOwner, string $hour): bool
     {
         try {
