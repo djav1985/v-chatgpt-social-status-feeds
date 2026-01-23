@@ -317,11 +317,6 @@ final class TestableQueueService extends QueueService
         return parent::scheduledTimestampForHour($hour, $reference);
     }
 
-    public function callScheduledTimestampForHourSameDay(int $hour, int $reference): int
-    {
-        return parent::scheduledTimestampForHourSameDay($hour, $reference);
-    }
-
     public function hasExistingJob(string $username, string $account, int $scheduledAt): bool
     {
         return $this->existingJobs[$this->key($username, $account, $scheduledAt)] ?? false;
