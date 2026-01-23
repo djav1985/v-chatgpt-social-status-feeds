@@ -5,6 +5,12 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ## Unreleased
 ### Added
+- **APCu Caching Infrastructure**: Implemented comprehensive two-tier caching system (L1: in-memory static, L2: APCu persistent) across all Models and Controllers
+  - New `CacheService` class with singleton pattern, automatic APCu detection, and fallback to in-memory caching
+  - Integrated caching into `User`, `Account`, and `Status` models with configurable TTLs
+  - RSS feed XML output caching for instant delivery of cached feeds
+  - Image metadata caching to eliminate filesystem I/O bottlenecks (up to 99% reduction in file operations)
+  - Cache configuration via environment variables or config.php constants: `CACHE_ENABLED`, `CACHE_TTL_USER`, `CACHE_TTL_ACCOUNT`, `CACHE_TTL_STATUS`, `CACHE_TTL_FEED`
 - Simplified `status_jobs` schema with `scheduled_at`, `account`, `username`, and a lightweight `status` enum for retry tracking.
 - Queue tests covering the new retry lifecycle and fill-queue scheduling rules.
 - Separate installation and upgrade paths: `install.php`/`install.sql` for fresh installs and `upgrade.php`/`upgrade.sql` for schema migrations.

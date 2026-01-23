@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Core\Csrf;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
+use App\Helpers\ValidationHelper;
 use App\Services\QueueService;
 
 class AccountsController extends Controller
@@ -83,14 +84,29 @@ class AccountsController extends Controller
     {
         $session = SessionManager::getInstance();
         $accountOwner = $session->get('username');
-        $accountName = preg_replace('/[^a-z0-9-]/', '', strtolower(str_replace(' ', '-', trim($_POST['account']))));
-        $prompt = trim($_POST['prompt']);
-        $platform = trim($_POST['platform']);
-        $hashtags = isset($_POST['hashtags']) ? (int) $_POST['hashtags'] : 0;
-        $link = trim($_POST['link']);
+        // Fix: Handle space-to-dash conversion and use alphanumeric-dash mode
+        $rawAccountName = $_POST['account'] ?? '';
+        $normalizedAccountName = str_replace(' ', '-', $rawAccountName);
+        $accountName = ValidationHelper::sanitizeString($normalizedAccountName, 'alphanumeric-dash');
+        $prompt = ValidationHelper::sanitizeString($_POST['prompt'] ?? '');
+        $platform = ValidationHelper::sanitizeString($_POST['platform'] ?? '');
+        // Fix: Handle null return from validateInteger
+        $hashtags = ValidationHelper::validateInteger($_POST['hashtags'] ?? 0);
+        if ($hashtags === null) {
+            $hashtags = 0;
+            MessageHelper::addMessage('Invalid hashtags value supplied. Defaulting to 0.');
+        }
+        $link = ValidationHelper::sanitizeString($_POST['link'] ?? '');
+        
+        // Validate cron array and process if valid
+        $cronErrors = ValidationHelper::validateCronArray($_POST['cron'] ?? []);
+        foreach ($cronErrors as $err) {
+            MessageHelper::addMessage($err);
+        }
+        
+        // Process cron hours into comma-separated string
         $cron = 'null';
-        $invalidCron = false;
-        if (isset($_POST['cron']) && is_array($_POST['cron'])) {
+        if (empty($cronErrors) && isset($_POST['cron']) && is_array($_POST['cron'])) {
             $hours = [];
             foreach ($_POST['cron'] as $hour) {
                 if ($hour === 'null') {
@@ -98,22 +114,31 @@ class AccountsController extends Controller
                 }
                 if (ctype_digit($hour) && (int)$hour >= 0 && (int)$hour <= 23) {
                     $hours[] = str_pad((string)(int)$hour, 2, '0', STR_PAD_LEFT);
-                } else {
-                    $invalidCron = true;
                 }
             }
             if (!empty($hours)) {
                 $cron = implode(',', $hours);
             }
         }
+        
+        // Validate days array and process if valid
+        $daysErrors = ValidationHelper::validateDaysArray($_POST['days'] ?? []);
+        foreach ($daysErrors as $err) {
+            MessageHelper::addMessage($err);
+        }
+        
+        // Process days into comma-separated string or 'everyday'
         $days = '';
-        if (isset($_POST['days']) && is_array($_POST['days'])) {
-            $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') ? 'everyday' : implode(',', $_POST['days']);
+        if (empty($daysErrors) && isset($_POST['days'])) {
+            if ($_POST['days'] === 'everyday') {
+                $days = 'everyday';
+            } elseif (is_array($_POST['days'])) {
+                $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') 
+                    ? 'everyday' 
+                    : implode(',', $_POST['days']);
+            }
         }
 
-        if ($invalidCron) {
-            MessageHelper::addMessage('Invalid cron hour(s) supplied. Hours must be between 0 and 23.');
-        }
         if ($cron === 'null' || empty($days) || empty($platform)) {
             MessageHelper::addMessage('Error processing input.');
         }
@@ -122,7 +147,7 @@ class AccountsController extends Controller
         }
 
         // Centralized validation
-        $accountValidationErrors = \App\Helpers\Validation::validateAccount([
+        $accountValidationErrors = ValidationHelper::validateAccount([
             'accountName' => $accountName,
             'link' => $link,
             'cronArr' => isset($_POST['cron']) && is_array($_POST['cron']) ? $_POST['cron'] : [],
@@ -182,7 +207,7 @@ class AccountsController extends Controller
     private static function deleteAccount(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = trim($_POST['account']);
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
         $accountOwner = $session->get('username');
         try {
             Account::deleteAccount($accountOwner, $accountName);

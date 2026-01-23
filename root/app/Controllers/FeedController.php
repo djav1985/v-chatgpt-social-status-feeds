@@ -18,6 +18,7 @@ use App\Core\Controller;
 use App\Models\Account;
 use App\Models\Status;
 use App\Core\ErrorManager;
+use App\Services\CacheService;
 
 class FeedController extends Controller
 {
@@ -69,6 +70,32 @@ class FeedController extends Controller
         // Sanitize input to prevent XSS attacks while preserving characters for lookups
         $accountName = trim(strip_tags($accountName));
         $accountOwner = trim(strip_tags($accountOwner));
+
+        // Check cache for complete RSS XML output
+        if (defined('CACHE_ENABLED') && CACHE_ENABLED) {
+            $cacheKey = "rss:xml:{$accountOwner}:{$accountName}";
+            $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 180;
+            
+            $cachedXml = CacheService::getInstance()->get($cacheKey);
+            if ($cachedXml !== null) {
+                header('Content-Type: application/rss+xml; charset=UTF-8');
+                // Fix: Use appropriate cache headers for RSS feeds
+                header('Cache-Control: public, max-age=' . $ttl);
+                header('Pragma:');
+                header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $ttl) . ' GMT');
+                ini_set('zlib.output_compression', 'Off');
+                
+                if (ob_get_level() > 0) {
+                    ob_clean();
+                }
+                
+                echo $cachedXml;
+                return;
+            }
+            
+            // Start output buffering to capture XML
+            ob_start();
+        }
 
         $statuses = [];
         $isAllAccounts = ($accountName === 'all');
@@ -183,8 +210,7 @@ class FeedController extends Controller
                 $pathAccount = basename($status->account);
                 $pathImage   = basename($status->status_image);
 
-                $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
-                $imageFileSize = file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
+                $imageFileSize = self::getImageFileSize($pathOwner, $pathAccount, $pathImage);
                 $enclosureTag  = '<enclosure url="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
             }
 
@@ -208,6 +234,17 @@ class FeedController extends Controller
 
         echo '</channel>' . PHP_EOL;
         echo '</rss>';
+        
+        // Store XML output in cache
+        if (defined('CACHE_ENABLED') && CACHE_ENABLED) {
+            $xmlOutput = ob_get_clean();
+            
+            $cacheKey = "rss:xml:{$accountOwner}:{$accountName}";
+            $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 180;
+            CacheService::getInstance()->set($cacheKey, $xmlOutput, $ttl);
+            
+            echo $xmlOutput;
+        }
     }
 
     /**
@@ -243,5 +280,29 @@ class FeedController extends Controller
     protected static function getStatusUpdatesForAccount(string $accountOwner, string $accountName): array
     {
         return Status::getStatusUpdates($accountOwner, $accountName);
+    }
+
+    /**
+     * Get image file size with caching to reduce filesystem I/O.
+     *
+     * @param string $pathOwner   Owner directory name
+     * @param string $pathAccount Account directory name
+     * @param string $pathImage   Image filename
+     * @return int File size in bytes, or 0 if file doesn't exist
+     */
+    protected static function getImageFileSize(string $pathOwner, string $pathAccount, string $pathImage): int
+    {
+        if (!defined('CACHE_ENABLED') || !CACHE_ENABLED) {
+            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
+            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
+        }
+
+        $cacheKey = "image:size:{$pathOwner}:{$pathAccount}:{$pathImage}";
+        $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 600;
+
+        return CacheService::getInstance()->remember($cacheKey, $ttl, function () use ($pathOwner, $pathAccount, $pathImage) {
+            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
+            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
+        });
     }
 }
