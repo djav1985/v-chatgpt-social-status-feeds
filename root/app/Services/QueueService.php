@@ -49,7 +49,7 @@ class QueueService
                 continue;
             }
 
-            if (StatusJob::exists($username, $account, $scheduledAt)) {
+            if ($this->jobExistsInStorage($username, $account, $scheduledAt)) {
                 continue;
             }
 
@@ -59,12 +59,12 @@ class QueueService
 
     public function removeFutureJobs(string $username, string $account): void
     {
-        StatusJob::deleteFutureJobs($username, $account, $this->now());
+        $this->deleteFutureJobs($username, $account, $this->now());
     }
 
     public function removeAllJobs(string $username, string $account): void
     {
-        StatusJob::deleteAllForAccount($username, $account);
+        $this->deleteAllJobsForAccount($username, $account);
     }
 
     public function rescheduleAccountJobs(string $username, string $account, string $cron, string $days): void
@@ -85,7 +85,7 @@ class QueueService
         try {
             // Since we have the worker lock, no other worker can be running.
             // Reset all processing flags from any previously crashed/interrupted workers.
-            $count = StatusJob::resetAllProcessingFlags();
+            $count = $this->resetAllProcessingFlags();
             if ($count > 0) {
                 ErrorManager::getInstance()->log(
                     sprintf('[QueueService] Reset %d stuck processing flag(s) from previous worker run.', $count),
@@ -141,7 +141,7 @@ class QueueService
         }
 
         try {
-            StatusJob::clearAllPendingJobs();
+            $this->clearAllJobs();
             $accounts = $this->getAccounts();
             $now = $this->now();
 
@@ -166,7 +166,7 @@ class QueueService
                         continue;
                     }
 
-                    if (StatusJob::exists($username, $acct, $scheduledAt)) {
+                    if ($this->jobExistsInStorage($username, $acct, $scheduledAt)) {
                         continue;
                     }
 
@@ -238,6 +238,55 @@ class QueueService
     {
         $timeout = defined('STATUS_JOB_STALE_AFTER') ? (int) constant('STATUS_JOB_STALE_AFTER') : 3600;
         return StatusJob::releaseStaleJobs($now, $timeout);
+    }
+
+    /**
+     * Reset all processing flags.
+     * This is safe to call when holding the worker lock since no other worker can be running.
+     */
+    protected function resetAllProcessingFlags(): int
+    {
+        return StatusJob::resetAllProcessingFlags();
+    }
+
+    protected function clearAllJobs(): void
+    {
+        StatusJob::clearAllPendingJobs();
+    }
+
+    protected function jobExistsInStorage(string $username, string $account, int $scheduledAt): bool
+    {
+        return StatusJob::exists($username, $account, $scheduledAt);
+    }
+
+    protected function insertJobInStorage(string $id, string $username, string $account, int $scheduledAt, string $status): void
+    {
+        StatusJob::insert($id, $username, $account, $scheduledAt, $status);
+    }
+
+    protected function deleteFutureJobs(string $username, string $account, int $fromTimestamp): void
+    {
+        StatusJob::deleteFutureJobs($username, $account, $fromTimestamp);
+    }
+
+    protected function deleteAllJobsForAccount(string $username, string $account): void
+    {
+        StatusJob::deleteAllForAccount($username, $account);
+    }
+
+    protected function deleteJobById(string $id): void
+    {
+        StatusJob::deleteById($id);
+    }
+
+    protected function markJobStatus(string $id, string $status): void
+    {
+        StatusJob::markStatus($id, $status);
+    }
+
+    protected function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
+    {
+        StatusJob::markStatusAndProcessing($id, $status, $processing);
     }
 
     /**
@@ -413,13 +462,13 @@ class QueueService
 
             $status = strtolower((string) ($job['status'] ?? 'pending'));
             if ($status !== 'pending' && $status !== 'retry') {
-                StatusJob::deleteById($job['id']);
+                $this->deleteJobById($job['id']);
                 continue;
             }
 
             try {
                 $this->processJobPayload($job);
-                StatusJob::deleteById($job['id']);
+                $this->deleteJobById($job['id']);
             } catch (\Throwable $e) {
                 // On failure, reset processing flag and handle retry logic
                 ErrorManager::getInstance()->log(
@@ -436,10 +485,10 @@ class QueueService
                 
                 if ($isRetryBatch || $status === 'retry') {
                     // Retry jobs that fail should be deleted
-                    StatusJob::deleteById($job['id']);
+                    $this->deleteJobById($job['id']);
                 } else {
                     // Pending jobs that fail should be marked for retry
-                    StatusJob::markStatusAndProcessing($job['id'], 'retry', false);
+                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
                 }
             }
         }
@@ -447,7 +496,7 @@ class QueueService
 
     private function storeJob(string $username, string $account, int $scheduledAt, string $status): void
     {
-        StatusJob::insert($this->generateJobId(), $username, $account, $scheduledAt, $status);
+        $this->insertJobInStorage($this->generateJobId(), $username, $account, $scheduledAt, $status);
     }
 
     /**
