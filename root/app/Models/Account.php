@@ -35,41 +35,6 @@ class Account
      */
     private static array $accountListCache = [];
 
-    private static function accountCacheKey(string $username, string $account): string
-    {
-        return trim($username) . '|' . trim($account);
-    }
-
-    /**
-     * Generate APCu cache key for account info (L2 cache).
-     *
-     * @param string $username
-     * @param string $account
-     * @return string
-     */
-    private static function accountApcuCacheKey(string $username, string $account): string
-    {
-        return 'account:info:' . trim($username) . ':' . trim($account);
-    }
-
-    /**
-     * Generate APCu cache key for account list (L2 cache).
-     *
-     * @param string $username
-     * @return string
-     */
-    private static function accountListApcuCacheKey(string $username): string
-    {
-        return 'account:list:' . trim($username);
-    }
-
-    private static function rememberAccountInfo(string $username, string $account, array|false $info): array|false
-    {
-        self::$accountInfoCache[self::accountCacheKey($username, $account)] = $info;
-
-        return $info;
-    }
-
     /**
      * Fetch account info using two-tier caching strategy.
      * - L1 cache: Static array (in-memory, request-scoped)
@@ -82,7 +47,7 @@ class Account
     private static function fetchAccountInfo(string $username, string $account): array|false
     {
         // Check L1 cache (static array) first
-        $cacheKey = self::accountCacheKey($username, $account);
+        $cacheKey = trim($username) . '|' . trim($account);
         if (array_key_exists($cacheKey, self::$accountInfoCache)) {
             return self::$accountInfoCache[$cacheKey];
         }
@@ -90,7 +55,7 @@ class Account
         try {
             // Check L2 cache (APCu) if enabled
             if (CACHE_ENABLED) {
-                $apcuKey = self::accountApcuCacheKey($username, $account);
+                $apcuKey = 'account:info:' . trim($username) . ':' . trim($account);
                 $cache = CacheService::getInstance();
                 
                 // Use remember() to handle cache miss automatically
@@ -103,7 +68,8 @@ class Account
                 });
                 
                 // Store in L1 cache and return
-                return self::rememberAccountInfo($username, $account, $info);
+                self::$accountInfoCache[$cacheKey] = $info;
+                return $info;
             }
 
             // If cache disabled, query database directly
@@ -111,8 +77,11 @@ class Account
             $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $username);
             $db->bind(':account', $account);
+            $result = $db->single();
 
-            return self::rememberAccountInfo($username, $account, $db->single());
+            // Store in L1 cache and return
+            self::$accountInfoCache[$cacheKey] = $result;
+            return $result;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error retrieving account info: " . $e->getMessage(), 'error');
             throw $e;
@@ -152,18 +121,19 @@ class Account
             
             if (CACHE_ENABLED) {
                 CacheService::getInstance()->clear('account:info:' . $username . ':');
-                CacheService::getInstance()->delete(self::accountListApcuCacheKey($username));
+                CacheService::getInstance()->delete('account:list:' . trim($username));
             }
             return;
         }
 
         // Clear specific account
-        unset(self::$accountInfoCache[self::accountCacheKey($username, $account)]);
+        $cacheKey = trim($username) . '|' . trim($account);
+        unset(self::$accountInfoCache[$cacheKey]);
         unset(self::$accountListCache[$username]);
         
         if (CACHE_ENABLED) {
-            CacheService::getInstance()->delete(self::accountApcuCacheKey($username, $account));
-            CacheService::getInstance()->delete(self::accountListApcuCacheKey($username));
+            CacheService::getInstance()->delete('account:info:' . trim($username) . ':' . trim($account));
+            CacheService::getInstance()->delete('account:list:' . trim($username));
         }
     }
 

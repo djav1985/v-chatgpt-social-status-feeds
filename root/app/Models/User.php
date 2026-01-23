@@ -28,29 +28,6 @@ class User
      */
     private static array $userInfoCache = [];
 
-    private static function userCacheKey(string $username): string
-    {
-        return trim($username);
-    }
-
-    /**
-     * Generate APCu cache key for user info (L2 cache).
-     *
-     * @param string $username
-     * @return string
-     */
-    private static function userApcuCacheKey(string $username): string
-    {
-        return 'user:info:' . trim($username);
-    }
-
-    private static function rememberUserInfo(string $username, ?object $info): ?object
-    {
-        self::$userInfoCache[self::userCacheKey($username)] = $info;
-
-        return $info;
-    }
-
     /**
      * Clear user cache entry from both L1 (static) and L2 (APCu) caches.
      *
@@ -67,9 +44,9 @@ class User
             return;
         }
 
-        unset(self::$userInfoCache[self::userCacheKey($username)]);
+        unset(self::$userInfoCache[trim($username)]);
         if (CACHE_ENABLED) {
-            CacheService::getInstance()->delete(self::userApcuCacheKey($username));
+            CacheService::getInstance()->delete('user:info:' . trim($username));
         }
     }
 
@@ -218,7 +195,7 @@ class User
     public static function getUserInfo(string $username): ?object
     {
         // Check L1 cache (static array) first
-        $cacheKey = self::userCacheKey($username);
+        $cacheKey = trim($username);
         if (array_key_exists($cacheKey, self::$userInfoCache)) {
             return self::$userInfoCache[$cacheKey];
         }
@@ -226,7 +203,7 @@ class User
         try {
             // Check L2 cache (APCu) if enabled
             if (CACHE_ENABLED) {
-                $apcuKey = self::userApcuCacheKey($username);
+                $apcuKey = 'user:info:' . trim($username);
                 $cache = CacheService::getInstance();
                 
                 // Use remember() to handle cache miss automatically
@@ -239,7 +216,8 @@ class User
                 });
                 
                 // Store in L1 cache and return
-                return self::rememberUserInfo($username, $user);
+                self::$userInfoCache[$cacheKey] = $user;
+                return $user;
             }
 
             // If cache disabled, query database directly
@@ -249,7 +227,9 @@ class User
             $result = $db->single();
             $user = is_array($result) ? (object)$result : null;
 
-            return self::rememberUserInfo($username, $user);
+            // Store in L1 cache and return
+            self::$userInfoCache[$cacheKey] = $user;
+            return $user;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error retrieving user info: " . $e->getMessage(), 'error');
             throw $e;

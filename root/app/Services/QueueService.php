@@ -96,7 +96,13 @@ class QueueService
                 );
                 if (!empty($retryJobs)) {
                     $this->processJobBatch($retryJobs, true);
-                    $attemptedJobIds = array_merge($attemptedJobIds, $this->extractJobIds($retryJobs));
+                    // Extract job IDs from processed jobs
+                    foreach ($retryJobs as $job) {
+                        $id = (string) ($job['id'] ?? '');
+                        if ($id !== '') {
+                            $attemptedJobIds[] = $id;
+                        }
+                    }
                     $processedAny = true;
                 }
 
@@ -106,7 +112,13 @@ class QueueService
                 );
                 if (!empty($pendingJobs)) {
                     $this->processJobBatch($pendingJobs, false);
-                    $attemptedJobIds = array_merge($attemptedJobIds, $this->extractJobIds($pendingJobs));
+                    // Extract job IDs from processed jobs
+                    foreach ($pendingJobs as $job) {
+                        $id = (string) ($job['id'] ?? '');
+                        if ($id !== '') {
+                            $attemptedJobIds[] = $id;
+                        }
+                    }
                     $processedAny = true;
                 }
             } while ($processedAny);
@@ -139,26 +151,6 @@ class QueueService
         }
 
         return $filtered;
-    }
-
-    /**
-     * @param array<int, array<string, mixed>> $jobs
-     * @return array<int, string>
-     */
-    private function extractJobIds(array $jobs): array
-    {
-        $ids = [];
-
-        foreach ($jobs as $job) {
-            $id = (string) ($job['id'] ?? '');
-            if ($id === '') {
-                continue;
-            }
-
-            $ids[] = $id;
-        }
-
-        return $ids;
     }
 
     protected function claimWorkerLock(): bool
