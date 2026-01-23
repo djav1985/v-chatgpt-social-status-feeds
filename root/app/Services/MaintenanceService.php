@@ -164,17 +164,17 @@ class MaintenanceService
         return true;
     }
 
-    protected function getImageDirectory(): string
-    {
-        return __DIR__ . '/../../public/images/';
-    }
-
     /**
      * Purge old entries from the IP blacklist.
      */
     public function purgeIps(): bool
     {
         return Blacklist::clearIpBlacklist();
+    }
+
+    protected function getImageDirectory(): string
+    {
+        return __DIR__ . '/../../public/images/';
     }
 
     protected function claimWorkerLock(): bool

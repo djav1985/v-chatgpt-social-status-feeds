@@ -72,7 +72,6 @@ class QueueService
         $this->enqueueRemainingJobs($username, $account, $cron, $days);
     }
 
-
     public function runQueue(): void
     {
         if (!$this->claimWorkerLock()) {
@@ -127,94 +126,6 @@ class QueueService
         }
     }
 
-    /**
-     * @param array<int, array<string, mixed>> $jobs
-     * @param array<int, string> $attemptedIds
-     * @return array<int, array<string, mixed>>
-     */
-    private function filterUnattemptedJobs(array $jobs, array $attemptedIds): array
-    {
-        if ($attemptedIds === []) {
-            return $jobs;
-        }
-
-        $seen = array_fill_keys($attemptedIds, true);
-        $filtered = [];
-
-        foreach ($jobs as $job) {
-            $id = (string) ($job['id'] ?? '');
-            if ($id === '' || isset($seen[$id])) {
-                continue;
-            }
-
-            $filtered[] = $job;
-        }
-
-        return $filtered;
-    }
-
-    protected function claimWorkerLock(): bool
-    {
-        $jobType = $this->jobType ?? 'run-queue';
-        $this->workerLock = WorkerHelper::claimLock($jobType);
-
-        if ($this->workerLock === null) {
-            return false;
-        }
-
-        register_shutdown_function(function (): void {
-            $this->releaseWorkerLock();
-        });
-
-        return true;
-    }
-
-    protected function releaseWorkerLock(): void
-    {
-        WorkerHelper::releaseLock($this->workerLock);
-        $this->workerLock = null;
-    }
-
-
-
-    private function processJobBatch(array $jobs, bool $isRetryBatch): void
-    {
-        foreach ($jobs as $job) {
-            if (!isset($job['id'], $job['account'], $job['username'])) {
-                continue;
-            }
-
-            $status = strtolower((string) ($job['status'] ?? 'pending'));
-            if ($status !== 'pending' && $status !== 'retry') {
-                $this->deleteJobById($job['id']);
-                continue;
-            }
-
-            try {
-                $this->processJobPayload($job);
-                $this->deleteJobById($job['id']);
-            } catch (\Throwable $e) {
-                // On failure, reset processing flag and handle retry logic
-                error_log(sprintf(
-                    '[QueueService] Job %s for %s/%s (status: %s) failed: %s',
-                    (string) ($job['id'] ?? 'unknown'),
-                    (string) ($job['username'] ?? 'unknown'),
-                    (string) ($job['account'] ?? 'unknown'),
-                    $status,
-                    $e->getMessage()
-                ));
-                
-                if ($isRetryBatch || $status === 'retry') {
-                    // Retry jobs that fail should be deleted
-                    $this->deleteJobById($job['id']);
-                } else {
-                    // Pending jobs that fail should be marked for retry
-                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
-                }
-            }
-        }
-    }
-
     public function fillQueue(): void
     {
         if (!$this->claimWorkerLock()) {
@@ -260,13 +171,34 @@ class QueueService
         }
     }
 
+    protected function claimWorkerLock(): bool
+    {
+        $jobType = $this->jobType ?? 'run-queue';
+        $this->workerLock = WorkerHelper::claimLock($jobType);
+
+        if ($this->workerLock === null) {
+            return false;
+        }
+
+        register_shutdown_function(function (): void {
+            $this->releaseWorkerLock();
+        });
+
+        return true;
+    }
+
+    protected function releaseWorkerLock(): void
+    {
+        WorkerHelper::releaseLock($this->workerLock);
+        $this->workerLock = null;
+    }
+
     protected function clearAllJobs(): void
     {
         $db = DatabaseManager::getInstance();
         $db->query("DELETE FROM status_jobs WHERE status = 'pending'");
         $db->execute();
     }
-
 
     protected function now(): int
     {
@@ -421,11 +353,6 @@ class QueueService
         return $db->single() !== false;
     }
 
-    private function storeJob(string $username, string $account, int $scheduledAt, string $status): void
-    {
-        $this->insertJobInStorage($this->generateJobId(), $username, $account, $scheduledAt, $status);
-    }
-
     protected function insertJobInStorage(string $id, string $username, string $account, int $scheduledAt, string $status): void
     {
         $db = DatabaseManager::getInstance();
@@ -465,17 +392,6 @@ class QueueService
     protected function getAccounts(): array
     {
         return Account::getAllAccounts();
-    }
-
-    /**
-     * Process a job payload.
-     *
-     * @param array<string, mixed> $job
-     * @return void
-     */
-    private function processJobPayload(array $job): void
-    {
-        $this->generateStatusesForJob($job, 1); // Generate 1 status per job
     }
 
     protected function generateStatusesForJob(array $job, int $count): void
@@ -605,6 +521,24 @@ class QueueService
         );
     }
 
+    /**
+     * Returns a timestamp for the specified hour on the reference day.
+     * This always returns a timestamp on the same calendar day as the reference,
+     * regardless of whether the hour has passed.
+     *
+     * @param int $hour The hour (0-23) to schedule.
+     * @param int $reference The reference timestamp.
+     * @return int The scheduled timestamp (always same day as reference).
+     */
+    protected function scheduledTimestampForHour(int $hour, int $reference): int
+    {
+        $tz = new DateTimeZone(date_default_timezone_get());
+        $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);
+        $scheduled = $referenceTime->setTime($hour, 0, 0);
+
+        return (int) $scheduled->format('U');
+    }
+
     protected function generateJobId(): string
     {
         $data = \random_bytes(16);
@@ -612,6 +546,49 @@ class QueueService
         $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
 
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+    private function processJobBatch(array $jobs, bool $isRetryBatch): void
+    {
+        foreach ($jobs as $job) {
+            if (!isset($job['id'], $job['account'], $job['username'])) {
+                continue;
+            }
+
+            $status = strtolower((string) ($job['status'] ?? 'pending'));
+            if ($status !== 'pending' && $status !== 'retry') {
+                $this->deleteJobById($job['id']);
+                continue;
+            }
+
+            try {
+                $this->processJobPayload($job);
+                $this->deleteJobById($job['id']);
+            } catch (\Throwable $e) {
+                // On failure, reset processing flag and handle retry logic
+                error_log(sprintf(
+                    '[QueueService] Job %s for %s/%s (status: %s) failed: %s',
+                    (string) ($job['id'] ?? 'unknown'),
+                    (string) ($job['username'] ?? 'unknown'),
+                    (string) ($job['account'] ?? 'unknown'),
+                    $status,
+                    $e->getMessage()
+                ));
+                
+                if ($isRetryBatch || $status === 'retry') {
+                    // Retry jobs that fail should be deleted
+                    $this->deleteJobById($job['id']);
+                } else {
+                    // Pending jobs that fail should be marked for retry
+                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
+                }
+            }
+        }
+    }
+
+    private function storeJob(string $username, string $account, int $scheduledAt, string $status): void
+    {
+        $this->insertJobInStorage($this->generateJobId(), $username, $account, $scheduledAt, $status);
     }
 
     /**
@@ -635,24 +612,6 @@ class QueueService
     }
 
     /**
-     * Returns a timestamp for the specified hour on the reference day.
-     * This always returns a timestamp on the same calendar day as the reference,
-     * regardless of whether the hour has passed.
-     *
-     * @param int $hour The hour (0-23) to schedule.
-     * @param int $reference The reference timestamp.
-     * @return int The scheduled timestamp (always same day as reference).
-     */
-    protected function scheduledTimestampForHour(int $hour, int $reference): int
-    {
-        $tz = new DateTimeZone(date_default_timezone_get());
-        $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);
-        $scheduled = $referenceTime->setTime($hour, 0, 0);
-
-        return (int) $scheduled->format('U');
-    }
-
-    /**
      * @param string[] $days
      */
     private function isScheduledDayAllowed(array $days, int $scheduledAt): bool
@@ -664,5 +623,42 @@ class QueueService
         $dayName = strtolower(date('l', $scheduledAt));
 
         return in_array($dayName, $days, true);
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $jobs
+     * @param array<int, string> $attemptedIds
+     * @return array<int, array<string, mixed>>
+     */
+    private function filterUnattemptedJobs(array $jobs, array $attemptedIds): array
+    {
+        if ($attemptedIds === []) {
+            return $jobs;
+        }
+
+        $seen = array_fill_keys($attemptedIds, true);
+        $filtered = [];
+
+        foreach ($jobs as $job) {
+            $id = (string) ($job['id'] ?? '');
+            if ($id === '' || isset($seen[$id])) {
+                continue;
+            }
+
+            $filtered[] = $job;
+        }
+
+        return $filtered;
+    }
+
+    /**
+     * Process a job payload.
+     *
+     * @param array<string, mixed> $job
+     * @return void
+     */
+    private function processJobPayload(array $job): void
+    {
+        $this->generateStatusesForJob($job, 1); // Generate 1 status per job
     }
 }
