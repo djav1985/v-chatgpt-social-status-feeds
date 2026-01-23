@@ -69,8 +69,33 @@ input[type="checkbox"] {
 }
 
 input[type="submit"] {
-  margin-top: 20px;
-  margin-bottom: 10px;
+  transition:
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  border-color: #0253b8;
+  background-color: #0366d6;
+  color: #ffffff;
+}
+
+input[type="submit"]:hover,
+input[type="submit"]:focus {
+  box-shadow:
+    rgba(0, 0, 0, 0.15) -3px -3px 5px 0px,
+    rgba(2, 83, 184, 0.2) -3px -3px 6px 1px;
+  border-color: #004494;
+  background-color: #0253b8;
+  color: #ffffff;
+}
+
+input[type="submit"]:active {
+  box-shadow:
+    rgba(0, 0, 0, 0.15) -3px -3px 5px inset,
+    rgba(2, 83, 184, 0.25) -3px -3px 4px inset;
+  border-color: #00326e;
+  background-color: #003d82;
+  color: #ffffff;
 }
 
 .form-input:focus,
@@ -142,6 +167,66 @@ form.form-inline .btn {
   border-color: #00326e;
   background-color: #003d82;
   color: #ffffff;
+}
+
+.btn.btn-success {
+  transition:
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  border-color: rgb(45, 162, 60);
+  background-color: rgb(48, 174, 64);
+  color: rgb(255, 255, 255);
+}
+
+.btn.btn-success:hover,
+.btn.btn-success:focus {
+  box-shadow:
+    rgba(0, 0, 0, 0.15) -3px -3px 5px 0px,
+    rgba(48, 174, 64, 0.2) -3px -3px 6px 1px;
+  border-color: rgb(40, 146, 54);
+  background-color: rgb(44, 160, 60);
+  color: rgb(255, 255, 255);
+}
+
+.btn.btn-success:active {
+  box-shadow:
+    rgba(0, 0, 0, 0.15) -3px -3px 5px inset,
+    rgba(48, 174, 64, 0.25) -3px -3px 4px inset;
+  border-color: rgb(33, 120, 47);
+  background-color: rgb(38, 140, 52);
+  color: rgb(255, 255, 255);
+}
+
+.btn.btn-error {
+  transition:
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  border-color: rgb(217, 80, 0);
+  background-color: rgb(232, 86, 0);
+  color: rgb(255, 255, 255);
+}
+
+.btn.btn-error:hover,
+.btn.btn-error:focus {
+  box-shadow:
+    rgba(0, 0, 0, 0.15) -3px -3px 5px 0px,
+    rgba(232, 86, 0, 0.2) -3px -3px 6px 1px;
+  border-color: rgb(200, 74, 0);
+  background-color: rgb(220, 78, 0);
+  color: rgb(255, 255, 255);
+}
+
+.btn.btn-error:active {
+  box-shadow:
+    rgba(0, 0, 0, 0.15) -3px -3px 5px inset,
+    rgba(232, 86, 0, 0.25) -3px -3px 4px inset;
+  border-color: rgb(180, 62, 0);
+  background-color: rgb(200, 70, 0);
+  color: rgb(255, 255, 255);
 }
 
 .btn-lg {

@@ -264,7 +264,7 @@ footer p {
 
 .status-image {
   margin-bottom: 10px;
-  border-radius: 4px;
+  border-radius: 6px;
   width: 100%;
   height: auto;
   -o-object-fit: cover;
@@ -490,7 +490,7 @@ footer p {
 }
 
 .account-summary {
-    flex: none;
+    flex: none!important;
     margin-top: 100px;
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     border: 2px solid #66cc33;
