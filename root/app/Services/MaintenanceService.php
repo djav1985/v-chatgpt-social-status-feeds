@@ -164,12 +164,12 @@ class MaintenanceService
         return Blacklist::clearIpBlacklist();
     }
 
-    protected function getImageDirectory(): string
+    private function getImageDirectory(): string
     {
         return __DIR__ . '/../../public/images/';
     }
 
-    protected function claimWorkerLock(): bool
+    private function claimWorkerLock(): bool
     {
         $jobType = $this->jobType ?? 'maintenance';
         $this->workerLock = WorkerHelper::claimLock($jobType);
@@ -185,7 +185,7 @@ class MaintenanceService
         return true;
     }
 
-    protected function releaseWorkerLock(): void
+    private function releaseWorkerLock(): void
     {
         WorkerHelper::releaseLock($this->workerLock);
         $this->workerLock = null;

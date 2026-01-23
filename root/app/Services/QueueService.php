@@ -178,7 +178,7 @@ class QueueService
         }
     }
 
-    protected function claimWorkerLock(): bool
+    private function claimWorkerLock(): bool
     {
         $jobType = $this->jobType ?? 'run-queue';
         $this->workerLock = WorkerHelper::claimLock($jobType);
@@ -194,13 +194,13 @@ class QueueService
         return true;
     }
 
-    protected function releaseWorkerLock(): void
+    private function releaseWorkerLock(): void
     {
         WorkerHelper::releaseLock($this->workerLock);
         $this->workerLock = null;
     }
 
-    protected function now(): int
+    private function now(): int
     {
         return time();
     }
@@ -213,7 +213,7 @@ class QueueService
      * @param string $status Job status to filter by (e.g., 'pending' or 'retry').
      * @return array<int, array<string, mixed>> Array of successfully claimed jobs.
      */
-    protected function claimDueJobsByStatus(int $now, string $status): array
+    private function claimDueJobsByStatus(int $now, string $status): array
     {
         $claimedJobs = [];
 
@@ -234,7 +234,7 @@ class QueueService
         return $claimedJobs;
     }
 
-    protected function releaseStaleProcessingJobs(int $now): int
+    private function releaseStaleProcessingJobs(int $now): int
     {
         $timeout = defined('STATUS_JOB_STALE_AFTER') ? (int) constant('STATUS_JOB_STALE_AFTER') : 3600;
         return StatusJob::releaseStaleJobs($now, $timeout);
@@ -244,47 +244,47 @@ class QueueService
      * Reset all processing flags.
      * This is safe to call when holding the worker lock since no other worker can be running.
      */
-    protected function resetAllProcessingFlags(): int
+    private function resetAllProcessingFlags(): int
     {
         return StatusJob::resetAllProcessingFlags();
     }
 
-    protected function clearAllJobs(): void
+    private function clearAllJobs(): void
     {
         StatusJob::clearAllPendingJobs();
     }
 
-    protected function jobExistsInStorage(string $username, string $account, int $scheduledAt): bool
+    private function jobExistsInStorage(string $username, string $account, int $scheduledAt): bool
     {
         return StatusJob::exists($username, $account, $scheduledAt);
     }
 
-    protected function insertJobInStorage(string $id, string $username, string $account, int $scheduledAt, string $status): void
+    private function insertJobInStorage(string $id, string $username, string $account, int $scheduledAt, string $status): void
     {
         StatusJob::insert($id, $username, $account, $scheduledAt, $status);
     }
 
-    protected function deleteFutureJobs(string $username, string $account, int $fromTimestamp): void
+    private function deleteFutureJobs(string $username, string $account, int $fromTimestamp): void
     {
         StatusJob::deleteFutureJobs($username, $account, $fromTimestamp);
     }
 
-    protected function deleteAllJobsForAccount(string $username, string $account): void
+    private function deleteAllJobsForAccount(string $username, string $account): void
     {
         StatusJob::deleteAllForAccount($username, $account);
     }
 
-    protected function deleteJobById(string $id): void
+    private function deleteJobById(string $id): void
     {
         StatusJob::deleteById($id);
     }
 
-    protected function markJobStatus(string $id, string $status): void
+    private function markJobStatus(string $id, string $status): void
     {
         StatusJob::markStatus($id, $status);
     }
 
-    protected function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
+    private function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
     {
         StatusJob::markStatusAndProcessing($id, $status, $processing);
     }
@@ -294,12 +294,12 @@ class QueueService
      *
      * @return array<int, array<string, mixed>>
      */
-    protected function getAccounts(): array
+    private function getAccounts(): array
     {
         return Account::getAllAccounts();
     }
 
-    protected function generateStatusesForJob(array $job, int $count): void
+    private function generateStatusesForJob(array $job, int $count): void
     {
         $account = (string) ($job['account'] ?? '');
         $username = (string) ($job['username'] ?? '');
@@ -352,7 +352,7 @@ class QueueService
      * @param string $username
      * @return array|null
      */
-    protected function callStatusServiceGenerateStatus(string $account, string $username): ?array
+    private function callStatusServiceGenerateStatus(string $account, string $username): ?array
     {
         return StatusService::generateStatus($account, $username);
     }
@@ -365,7 +365,7 @@ class QueueService
      * @param string $username
      * @return object|null
      */
-    protected function getUserInfo(string $username): ?object
+    private function getUserInfo(string $username): ?object
     {
         $info = User::getUserInfo($username);
 
@@ -385,7 +385,7 @@ class QueueService
      * @param int $usedApiCalls
      * @return void
      */
-    protected function updateUsedApiCalls(string $username, int $usedApiCalls): void
+    private function updateUsedApiCalls(string $username, int $usedApiCalls): void
     {
         User::updateUsedApiCalls($username, $usedApiCalls);
     }
@@ -399,7 +399,7 @@ class QueueService
      * @param bool $sent
      * @return void
      */
-    protected function setLimitEmailSent(string $username, bool $sent): void
+    private function setLimitEmailSent(string $username, bool $sent): void
     {
         User::setLimitEmailSent($username, $sent);
     }
@@ -412,7 +412,7 @@ class QueueService
      * @param object $user
      * @return void
      */
-    protected function sendLimitEmail(object $user): void
+    private function sendLimitEmail(object $user): void
     {
         if (!isset($user->email, $user->username)) {
             return;
@@ -435,7 +435,7 @@ class QueueService
      * @param int $reference The reference timestamp.
      * @return int The scheduled timestamp (always same day as reference).
      */
-    protected function scheduledTimestampForHour(int $hour, int $reference): int
+    private function scheduledTimestampForHour(int $hour, int $reference): int
     {
         $tz = new DateTimeZone(date_default_timezone_get());
         $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);
@@ -444,7 +444,7 @@ class QueueService
         return (int) $scheduled->format('U');
     }
 
-    protected function generateJobId(): string
+    private function generateJobId(): string
     {
         $data = \random_bytes(16);
         $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
