@@ -531,13 +531,27 @@ class QueueService
     }
 
     /**
-     * Wrapper for status generation to allow easier testing.
+     * Wrapper for status generation to allow test stubbing.
+     * This method exists to enable TestableQueueService to override
+     * the behavior during testing without calling the actual API.
+     *
+     * @param string $account
+     * @param string $username
+     * @return array|null
      */
     protected function callStatusServiceGenerateStatus(string $account, string $username): ?array
     {
         return StatusService::generateStatus($account, $username);
     }
 
+    /**
+     * Wrapper for user info retrieval to allow test stubbing.
+     * This method exists to enable TestableQueueService to provide
+     * fake user data during testing.
+     *
+     * @param string $username
+     * @return object|null
+     */
     protected function getUserInfo(string $username): ?object
     {
         $info = User::getUserInfo($username);
@@ -549,16 +563,42 @@ class QueueService
         return is_object($info) ? $info : (object) $info;
     }
 
+    /**
+     * Wrapper for updating API calls to allow test tracking.
+     * This method exists to enable TestableQueueService to track
+     * API usage updates during testing.
+     *
+     * @param string $username
+     * @param int $usedApiCalls
+     * @return void
+     */
     protected function updateUsedApiCalls(string $username, int $usedApiCalls): void
     {
         User::updateUsedApiCalls($username, $usedApiCalls);
     }
 
+    /**
+     * Wrapper for setting limit email flag to allow test tracking.
+     * This method exists to enable TestableQueueService to track
+     * when limit emails are sent during testing.
+     *
+     * @param string $username
+     * @param bool $sent
+     * @return void
+     */
     protected function setLimitEmailSent(string $username, bool $sent): void
     {
         User::setLimitEmailSent($username, $sent);
     }
 
+    /**
+     * Wrapper for sending limit email to allow test stubbing.
+     * This method exists to enable TestableQueueService to verify
+     * email notifications without actually sending emails during testing.
+     *
+     * @param object $user
+     * @return void
+     */
     protected function sendLimitEmail(object $user): void
     {
         if (!isset($user->email, $user->username)) {
