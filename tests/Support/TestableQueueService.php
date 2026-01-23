@@ -247,7 +247,7 @@ final class TestableQueueService extends QueueService
     protected function resetAllProcessingFlags(): int
     {
         $this->resetAllProcessingCount++;
-        
+
         // Reset all processing flags in the test jobs
         $count = 0;
         foreach ($this->dueJobs as &$job) {
@@ -257,7 +257,7 @@ final class TestableQueueService extends QueueService
             }
         }
         unset($job);
-        
+
         return $count;
     }
 
@@ -315,11 +315,6 @@ final class TestableQueueService extends QueueService
     public function callScheduledTimestampForHour(int $hour, int $reference): int
     {
         return parent::scheduledTimestampForHour($hour, $reference);
-    }
-
-    public function callScheduledTimestampForHourSameDay(int $hour, int $reference): int
-    {
-        return parent::scheduledTimestampForHourSameDay($hour, $reference);
     }
 
     public function hasExistingJob(string $username, string $account, int $scheduledAt): bool

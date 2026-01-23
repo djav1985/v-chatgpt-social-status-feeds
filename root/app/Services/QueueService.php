@@ -38,7 +38,7 @@ class QueueService
         );
 
         foreach ($this->normalizeHours($cron) as $hour) {
-            $scheduledAt = $this->scheduledTimestampForHourSameDay($hour, $now);
+            $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
 
             if ($scheduledAt <= $now) {
                 continue;
@@ -243,7 +243,7 @@ class QueueService
                 );
 
                 foreach ($this->normalizeHours((string) ($account->cron ?? '')) as $hour) {
-                    $scheduledAt = $this->scheduledTimestampForHourSameDay($hour, $now);
+                    $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
 
                     $username = (string) ($account->username ?? '');
                     $acct = (string) ($account->account ?? '');
@@ -608,37 +608,15 @@ class QueueService
     }
 
     /**
-     * Returns a timestamp for the specified hour. If the hour has already passed
-     * on the reference day, the timestamp will be for the same hour on the next day.
-     * Use scheduledTimestampForHourSameDay() if you need a same-day timestamp regardless
-     * of whether the hour has passed.
-     *
-     * @param int $hour The hour (0-23) to schedule.
-     * @param int $reference The reference timestamp.
-     * @return int The scheduled timestamp (may be next day if hour has passed).
-     */
-    protected function scheduledTimestampForHour(int $hour, int $reference): int
-    {
-        $tz = new DateTimeZone(date_default_timezone_get());
-        $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);
-        $scheduled = $referenceTime->setTime($hour, 0, 0);
-        if ((int) $scheduled->format('U') <= $reference) {
-            $scheduled = $scheduled->modify('+1 day');
-        }
-
-        return (int) $scheduled->format('U');
-    }
-
-    /**
-     * Returns a same-day timestamp for the specified hour on the reference day,
-     * regardless of whether the hour has passed. This always returns a timestamp
-     * on the same calendar day as the reference timestamp.
+     * Returns a timestamp for the specified hour on the reference day.
+     * This always returns a timestamp on the same calendar day as the reference,
+     * regardless of whether the hour has passed.
      *
      * @param int $hour The hour (0-23) to schedule.
      * @param int $reference The reference timestamp.
      * @return int The scheduled timestamp (always same day as reference).
      */
-    protected function scheduledTimestampForHourSameDay(int $hour, int $reference): int
+    protected function scheduledTimestampForHour(int $hour, int $reference): int
     {
         $tz = new DateTimeZone(date_default_timezone_get());
         $referenceTime = (new DateTimeImmutable('@' . $reference))->setTimezone($tz);

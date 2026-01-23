@@ -107,7 +107,7 @@ final class QueueServiceTest extends TestCase
         $service = new TestableQueueService();
         $service->fakeNow = strtotime('2024-01-01 08:30:00');
 
-        $scheduled = $service->callScheduledTimestampForHourSameDay(8, $service->fakeNow);
+        $scheduled = $service->callScheduledTimestampForHour(8, $service->fakeNow);
 
         $this->assertSame(strtotime('2024-01-01 08:00:00'), $scheduled);
     }
@@ -343,7 +343,7 @@ final class QueueServiceTest extends TestCase
 
         $this->assertSame(
             strtotime('2024-01-01 08:00:00'),
-            $service->callScheduledTimestampForHourSameDay(8, $reference)
+            $service->callScheduledTimestampForHour(8, $reference)
         );
     }
 
@@ -429,5 +429,4 @@ final class QueueServiceTest extends TestCase
         $this->assertSame('retry', $service->dueJobs[0]['status'] ?? null);
         $this->assertTrue($service->lockReleased);
     }
-
 }
