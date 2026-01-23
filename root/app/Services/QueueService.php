@@ -3,9 +3,10 @@
 
 namespace App\Services;
 
-use App\Core\DatabaseManager;
+use App\Core\ErrorManager;
 use App\Services\StatusService;
 use App\Models\Account;
+use App\Models\StatusJob;
 use function random_bytes;
 use App\Models\User;
 use App\Core\Mailer;
@@ -48,7 +49,7 @@ class QueueService
                 continue;
             }
 
-            if ($this->jobExistsInStorage($username, $account, $scheduledAt)) {
+            if (StatusJob::exists($username, $account, $scheduledAt)) {
                 continue;
             }
 
@@ -58,12 +59,12 @@ class QueueService
 
     public function removeFutureJobs(string $username, string $account): void
     {
-        $this->deleteFutureJobs($username, $account, $this->now());
+        StatusJob::deleteFutureJobs($username, $account, $this->now());
     }
 
     public function removeAllJobs(string $username, string $account): void
     {
-        $this->deleteAllJobsForAccount($username, $account);
+        StatusJob::deleteAllForAccount($username, $account);
     }
 
     public function rescheduleAccountJobs(string $username, string $account, string $cron, string $days): void
@@ -75,7 +76,7 @@ class QueueService
     public function runQueue(): void
     {
         if (!$this->claimWorkerLock()) {
-            error_log('[QueueService] Queue worker already running; skipping runQueue invocation.');
+            ErrorManager::getInstance()->log('[QueueService] Queue worker already running; skipping runQueue invocation.', 'info');
             return;
         }
 
@@ -84,7 +85,13 @@ class QueueService
         try {
             // Since we have the worker lock, no other worker can be running.
             // Reset all processing flags from any previously crashed/interrupted workers.
-            $this->resetAllProcessingFlags();
+            $count = StatusJob::resetAllProcessingFlags();
+            if ($count > 0) {
+                ErrorManager::getInstance()->log(
+                    sprintf('[QueueService] Reset %d stuck processing flag(s) from previous worker run.', $count),
+                    'info'
+                );
+            }
 
             do {
                 $processedAny = false;
@@ -129,12 +136,12 @@ class QueueService
     public function fillQueue(): void
     {
         if (!$this->claimWorkerLock()) {
-            error_log('[QueueService] Fill queue worker already running; skipping fillQueue invocation.');
+            ErrorManager::getInstance()->log('[QueueService] Fill queue worker already running; skipping fillQueue invocation.', 'info');
             return;
         }
 
         try {
-            $this->clearAllJobs();
+            StatusJob::clearAllPendingJobs();
             $accounts = $this->getAccounts();
             $now = $this->now();
 
@@ -159,7 +166,7 @@ class QueueService
                         continue;
                     }
 
-                    if ($this->jobExistsInStorage($username, $acct, $scheduledAt)) {
+                    if (StatusJob::exists($username, $acct, $scheduledAt)) {
                         continue;
                     }
 
@@ -193,60 +200,9 @@ class QueueService
         $this->workerLock = null;
     }
 
-    protected function clearAllJobs(): void
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query("DELETE FROM status_jobs WHERE status = 'pending'");
-        $db->execute();
-    }
-
     protected function now(): int
     {
         return time();
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    protected function fetchDueJobs(int $now): array
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status IN (\'pending\', \'retry\') AND scheduled_at <= :now ORDER BY scheduled_at ASC');
-        $db->bind(':now', $now);
-        return $db->resultSet();
-    }
-
-    /**
-     * Atomically claim jobs for processing to prevent concurrent execution.
-     * @return array<int, array<string, mixed>>
-     */
-    protected function claimDueJobs(int $now): array
-    {
-        $db = DatabaseManager::getInstance();
-        $claimedJobs = [];
-
-        $this->releaseStaleProcessingJobs($now);
-
-        // First, get candidate job IDs
-        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status IN (\'pending\', \'retry\') AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
-        $db->bind(':now', $now);
-        $candidates = $db->resultSet();
-        
-        // Atomically claim each job individually by setting processing = TRUE
-        foreach ($candidates as $candidate) {
-            // Try to atomically claim this specific job
-            $db->query('UPDATE status_jobs SET processing = TRUE WHERE id = :id AND processing = FALSE');
-            $db->bind(':id', $candidate['id']);
-            $db->execute();
-            
-            // If we successfully claimed it (rowCount = 1), add to our list
-            if ($db->rowCount() === 1) {
-                $candidate['processing'] = true;
-                $claimedJobs[] = $candidate;
-            }
-        }
-        
-        return $claimedJobs;
     }
 
     /**
@@ -255,133 +211,29 @@ class QueueService
      */
     protected function claimDueJobsByStatus(int $now, string $status): array
     {
-        $db = DatabaseManager::getInstance();
         $claimedJobs = [];
 
+        $this->releaseStaleProcessingJobs($now);
+
         // First, get candidate job IDs for specific status
-        $db->query('SELECT id, account, username, scheduled_at, status FROM status_jobs WHERE status = :status AND scheduled_at <= :now AND processing = FALSE ORDER BY scheduled_at ASC');
-        $db->bind(':status', $status);
-        $db->bind(':now', $now);
-        $candidates = $db->resultSet();
+        $candidates = StatusJob::fetchDueJobsByStatus($now, $status);
 
         // Atomically claim each job individually by setting processing = TRUE
         foreach ($candidates as $candidate) {
             // Try to atomically claim this specific job
-            $db->query('UPDATE status_jobs SET processing = TRUE WHERE id = :id AND processing = FALSE');
-            $db->bind(':id', $candidate['id']);
-            $db->execute();
-            
-            // If we successfully claimed it (rowCount = 1), add to our list
-            if ($db->rowCount() === 1) {
+            if (StatusJob::claimJob($candidate['id'])) {
                 $candidate['processing'] = true;
                 $claimedJobs[] = $candidate;
             }
         }
-        
+
         return $claimedJobs;
     }
 
     protected function releaseStaleProcessingJobs(int $now): int
     {
         $timeout = defined('STATUS_JOB_STALE_AFTER') ? (int) constant('STATUS_JOB_STALE_AFTER') : 3600;
-        if ($timeout <= 0) {
-            return 0;
-        }
-
-        $threshold = max(0, $now - $timeout);
-
-        $db = DatabaseManager::getInstance();
-        $db->query('UPDATE status_jobs SET processing = FALSE WHERE processing = TRUE AND scheduled_at <= :threshold');
-        $db->bind(':threshold', $threshold);
-        $db->execute();
-
-        return $db->rowCount();
-    }
-
-    /**
-     * Reset all processing flags.
-     * This is safe to call when holding the worker lock since no other worker can be running.
-     */
-    protected function resetAllProcessingFlags(): int
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('UPDATE status_jobs SET processing = FALSE WHERE processing = TRUE');
-        $db->execute();
-
-        $count = $db->rowCount();
-        if ($count > 0) {
-            error_log(sprintf('[QueueService] Reset %d stuck processing flag(s) from previous worker run.', $count));
-        }
-
-        return $count;
-    }
-
-    protected function deleteJobById(string $id): void
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('DELETE FROM status_jobs WHERE id = :id');
-        $db->bind(':id', $id);
-        $db->execute();
-    }
-
-    protected function markJobStatus(string $id, string $status): void
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('UPDATE status_jobs SET status = :status WHERE id = :id');
-        $db->bind(':status', $status);
-        $db->bind(':id', $id);
-        $db->execute();
-    }
-
-    protected function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('UPDATE status_jobs SET status = :status, processing = :processing WHERE id = :id');
-        $db->bind(':status', $status);
-        $db->bind(':processing', $processing ? 1 : 0);
-        $db->bind(':id', $id);
-        $db->execute();
-    }
-
-    protected function jobExistsInStorage(string $username, string $account, int $scheduledAt): bool
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('SELECT id FROM status_jobs WHERE username = :username AND account = :account AND scheduled_at = :scheduled_at LIMIT 1');
-        $db->bind(':username', $username);
-        $db->bind(':account', $account);
-        $db->bind(':scheduled_at', $scheduledAt);
-        return $db->single() !== false;
-    }
-
-    protected function insertJobInStorage(string $id, string $username, string $account, int $scheduledAt, string $status): void
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('INSERT INTO status_jobs (id, scheduled_at, account, username, status) VALUES (:id, :scheduled_at, :account, :username, :status)');
-        $db->bind(':id', $id);
-        $db->bind(':scheduled_at', $scheduledAt);
-        $db->bind(':account', $account);
-        $db->bind(':username', $username);
-        $db->bind(':status', $status);
-        $db->execute();
-    }
-
-    protected function deleteFutureJobs(string $username, string $account, int $fromTimestamp): void
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('DELETE FROM status_jobs WHERE username = :username AND account = :account AND scheduled_at >= :scheduled_at');
-        $db->bind(':username', $username);
-        $db->bind(':account', $account);
-        $db->bind(':scheduled_at', $fromTimestamp);
-        $db->execute();
-    }
-
-    protected function deleteAllJobsForAccount(string $username, string $account): void
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query('DELETE FROM status_jobs WHERE username = :username AND account = :account');
-        $db->bind(':username', $username);
-        $db->bind(':account', $account);
-        $db->execute();
+        return StatusJob::releaseStaleJobs($now, $timeout);
     }
 
     /**
@@ -557,30 +409,33 @@ class QueueService
 
             $status = strtolower((string) ($job['status'] ?? 'pending'));
             if ($status !== 'pending' && $status !== 'retry') {
-                $this->deleteJobById($job['id']);
+                StatusJob::deleteById($job['id']);
                 continue;
             }
 
             try {
                 $this->processJobPayload($job);
-                $this->deleteJobById($job['id']);
+                StatusJob::deleteById($job['id']);
             } catch (\Throwable $e) {
                 // On failure, reset processing flag and handle retry logic
-                error_log(sprintf(
-                    '[QueueService] Job %s for %s/%s (status: %s) failed: %s',
-                    (string) ($job['id'] ?? 'unknown'),
-                    (string) ($job['username'] ?? 'unknown'),
-                    (string) ($job['account'] ?? 'unknown'),
-                    $status,
-                    $e->getMessage()
-                ));
+                ErrorManager::getInstance()->log(
+                    sprintf(
+                        '[QueueService] Job %s for %s/%s (status: %s) failed: %s',
+                        (string) ($job['id'] ?? 'unknown'),
+                        (string) ($job['username'] ?? 'unknown'),
+                        (string) ($job['account'] ?? 'unknown'),
+                        $status,
+                        $e->getMessage()
+                    ),
+                    'error'
+                );
                 
                 if ($isRetryBatch || $status === 'retry') {
                     // Retry jobs that fail should be deleted
-                    $this->deleteJobById($job['id']);
+                    StatusJob::deleteById($job['id']);
                 } else {
                     // Pending jobs that fail should be marked for retry
-                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
+                    StatusJob::markStatusAndProcessing($job['id'], 'retry', false);
                 }
             }
         }
@@ -588,7 +443,7 @@ class QueueService
 
     private function storeJob(string $username, string $account, int $scheduledAt, string $status): void
     {
-        $this->insertJobInStorage($this->generateJobId(), $username, $account, $scheduledAt, $status);
+        StatusJob::insert($this->generateJobId(), $username, $account, $scheduledAt, $status);
     }
 
     /**

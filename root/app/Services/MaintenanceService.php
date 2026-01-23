@@ -3,7 +3,7 @@
 
 namespace App\Services;
 
-use App\Core\DatabaseManager;
+use App\Core\ErrorManager;
 use App\Models\User;
 use App\Models\Status;
 use App\Core\Mailer;
@@ -33,7 +33,7 @@ class MaintenanceService
     public function runDaily(): void
     {
         if (!$this->claimWorkerLock()) {
-            error_log('[MaintenanceService] Daily worker already running; skipping runDaily invocation.');
+            ErrorManager::getInstance()->log('[MaintenanceService] Daily worker already running; skipping runDaily invocation.', 'info');
             return;
         }
 
@@ -52,7 +52,7 @@ class MaintenanceService
     public function runMonthly(): void
     {
         if (!$this->claimWorkerLock()) {
-            error_log('[MaintenanceService] Monthly worker already running; skipping runMonthly invocation.');
+            ErrorManager::getInstance()->log('[MaintenanceService] Monthly worker already running; skipping runMonthly invocation.', 'info');
             return;
         }
 
@@ -68,15 +68,7 @@ class MaintenanceService
      */
     public function purgeStatuses(): bool
     {
-        $db = DatabaseManager::getInstance();
-        $db->query(
-            'SELECT username, account, COUNT(*) AS status_count '
-            . 'FROM status_updates '
-            . 'GROUP BY username, account '
-            . 'HAVING COUNT(*) > :max_statuses'
-        );
-        $db->bind(':max_statuses', MAX_STATUSES);
-        $overLimitAccounts = $db->resultSet();
+        $overLimitAccounts = Status::getOverLimitAccounts(MAX_STATUSES);
 
         if (empty($overLimitAccounts)) {
             return true;
