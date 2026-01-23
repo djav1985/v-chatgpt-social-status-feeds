@@ -32,14 +32,21 @@ class QueueService
     public function enqueueRemainingJobs(string $username, string $account, string $cron, string $days): void
     {
         $now = $this->now();
-        $dayName = strtolower(date('l', $now));
-        $daysArr = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) $days))), fn($v) => strlen($v) > 0);
-        if (!empty($daysArr) && !in_array('everyday', $daysArr, true) && !in_array($dayName, $daysArr, true)) {
-            return;
-        }
+        $daysArr = array_filter(
+            array_map('strtolower', array_map('trim', explode(',', (string) $days))),
+            fn($v) => strlen($v) > 0
+        );
 
         foreach ($this->normalizeHours($cron) as $hour) {
             $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
+
+            if ($scheduledAt <= $now) {
+                continue;
+            }
+
+            if (!$this->isScheduledDayAllowed($daysArr, $scheduledAt)) {
+                continue;
+            }
 
             if ($this->jobExistsInStorage($username, $account, $scheduledAt)) {
                 continue;
@@ -59,6 +66,11 @@ class QueueService
         $this->deleteAllJobsForAccount($username, $account);
     }
 
+    public function rescheduleAccountJobs(string $username, string $account, string $cron, string $days): void
+    {
+        $this->removeFutureJobs($username, $account);
+        $this->enqueueRemainingJobs($username, $account, $cron, $days);
+    }
 
 
     public function runQueue(): void
@@ -219,16 +231,16 @@ class QueueService
         }
 
         try {
+            $this->clearAllJobs();
             $accounts = $this->getAccounts();
             $now = $this->now();
-            $dayName = strtolower(date('l', $now));
 
             foreach ($accounts as $account) {
                 $account = (object)$account;
-                $days = array_filter(array_map('strtolower', array_map('trim', explode(',', (string) ($account->days ?? '')))), fn($v) => strlen($v) > 0);
-                if (!empty($days) && !in_array('everyday', $days, true) && !in_array($dayName, $days, true)) {
-                    continue;
-                }
+                $days = array_filter(
+                    array_map('strtolower', array_map('trim', explode(',', (string) ($account->days ?? '')))),
+                    fn($v) => strlen($v) > 0
+                );
 
                 foreach ($this->normalizeHours((string) ($account->cron ?? '')) as $hour) {
                     $scheduledAt = $this->scheduledTimestampForHour($hour, $now);
@@ -237,6 +249,10 @@ class QueueService
                     $acct = (string) ($account->account ?? '');
 
                     if ($username === '' || $acct === '') {
+                        continue;
+                    }
+
+                    if (!$this->isScheduledDayAllowed($days, $scheduledAt)) {
                         continue;
                     }
 
@@ -250,6 +266,13 @@ class QueueService
         } finally {
             $this->releaseWorkerLock();
         }
+    }
+
+    protected function clearAllJobs(): void
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query("DELETE FROM status_jobs WHERE status = 'pending'");
+        $db->execute();
     }
 
 
@@ -584,6 +607,15 @@ class QueueService
         return array_values(array_unique($hours));
     }
 
+    /**
+     * Returns a timestamp for the specified hour on the reference day.
+     * This always returns a timestamp on the same calendar day as the reference,
+     * regardless of whether the hour has passed.
+     *
+     * @param int $hour The hour (0-23) to schedule.
+     * @param int $reference The reference timestamp.
+     * @return int The scheduled timestamp (always same day as reference).
+     */
     protected function scheduledTimestampForHour(int $hour, int $reference): int
     {
         $tz = new DateTimeZone(date_default_timezone_get());
@@ -591,5 +623,19 @@ class QueueService
         $scheduled = $referenceTime->setTime($hour, 0, 0);
 
         return (int) $scheduled->format('U');
+    }
+
+    /**
+     * @param string[] $days
+     */
+    protected function isScheduledDayAllowed(array $days, int $scheduledAt): bool
+    {
+        if ($days === [] || in_array('everyday', $days, true)) {
+            return true;
+        }
+
+        $dayName = strtolower(date('l', $scheduledAt));
+
+        return in_array($dayName, $days, true);
     }
 }
