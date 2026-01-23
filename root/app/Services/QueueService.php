@@ -206,8 +206,12 @@ class QueueService
     }
 
     /**
-     * Atomically claim jobs with specific status for processing to prevent concurrent execution.
-     * @return array<int, array<string, mixed>>
+     * Atomically claim jobs with a specific status for processing.
+     * Filters jobs by the given status parameter and prevents concurrent execution.
+     * 
+     * @param int $now Current timestamp.
+     * @param string $status Job status to filter by (e.g., 'pending' or 'retry').
+     * @return array<int, array<string, mixed>> Array of successfully claimed jobs.
      */
     protected function claimDueJobsByStatus(int $now, string $status): array
     {
