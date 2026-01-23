@@ -132,7 +132,7 @@ class Account
             
             if (CACHE_ENABLED) {
                 CacheService::getInstance()->clear('account:info:' . $username . ':');
-                CacheService::getInstance()->delete('account:list:' . trim($username));
+                CacheService::getInstance()->delete(self::accountListApcuCacheKey($username));
             }
             return;
         }
@@ -144,7 +144,7 @@ class Account
         
         if (CACHE_ENABLED) {
             CacheService::getInstance()->delete('account:info:' . trim($username) . ':' . trim($account));
-            CacheService::getInstance()->delete('account:list:' . trim($username));
+            CacheService::getInstance()->delete(self::accountListApcuCacheKey($username));
         }
     }
 
