@@ -231,7 +231,7 @@ class Status
             return $db->resultSet();
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error getting over-limit accounts: " . $e->getMessage(), 'error');
-            return [];
+            throw $e;
         }
     }
 
