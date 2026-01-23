@@ -120,7 +120,7 @@ class QueueService
      * @param array<int, string> $attemptedIds
      * @return array<int, array<string, mixed>>
      */
-    protected function filterUnattemptedJobs(array $jobs, array $attemptedIds): array
+    private function filterUnattemptedJobs(array $jobs, array $attemptedIds): array
     {
         if ($attemptedIds === []) {
             return $jobs;
@@ -145,7 +145,7 @@ class QueueService
      * @param array<int, array<string, mixed>> $jobs
      * @return array<int, string>
      */
-    protected function extractJobIds(array $jobs): array
+    private function extractJobIds(array $jobs): array
     {
         $ids = [];
 
@@ -185,7 +185,7 @@ class QueueService
 
 
 
-    protected function processJobBatch(array $jobs, bool $isRetryBatch): void
+    private function processJobBatch(array $jobs, bool $isRetryBatch): void
     {
         foreach ($jobs as $job) {
             if (!isset($job['id'], $job['account'], $job['username'])) {
@@ -429,7 +429,7 @@ class QueueService
         return $db->single() !== false;
     }
 
-    protected function storeJob(string $username, string $account, int $scheduledAt, string $status): void
+    private function storeJob(string $username, string $account, int $scheduledAt, string $status): void
     {
         $this->insertJobInStorage($this->generateJobId(), $username, $account, $scheduledAt, $status);
     }
@@ -481,7 +481,7 @@ class QueueService
      * @param array<string, mixed> $job
      * @return void
      */
-    protected function processJobPayload(array $job): void
+    private function processJobPayload(array $job): void
     {
         $this->generateStatusesForJob($job, 1); // Generate 1 status per job
     }
@@ -573,7 +573,7 @@ class QueueService
         );
     }
 
-    protected function statusesPerJob(): int
+    private function statusesPerJob(): int
     {
         return 1;
     }
@@ -590,7 +590,7 @@ class QueueService
     /**
      * @return int[]
      */
-    protected function normalizeHours(string $cron): array
+    private function normalizeHours(string $cron): array
     {
         $parts = array_filter(array_map('trim', explode(',', $cron)), fn($v) => strlen($v) > 0);
         $hours = [];
@@ -628,7 +628,7 @@ class QueueService
     /**
      * @param string[] $days
      */
-    protected function isScheduledDayAllowed(array $days, int $scheduledAt): bool
+    private function isScheduledDayAllowed(array $days, int $scheduledAt): bool
     {
         if ($days === [] || in_array('everyday', $days, true)) {
             return true;
