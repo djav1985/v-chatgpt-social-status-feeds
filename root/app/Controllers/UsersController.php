@@ -87,6 +87,37 @@ class UsersController extends Controller
     }
 
     /**
+     * Generate the HTML list of all users for the admin panel.
+     *
+     * @return string Rendered list items
+     */
+    private static function generateUserList(): string
+    {
+        $users = User::getAllUsers();
+        $output = '';
+        foreach ($users as $user) {
+            $user = (object)$user;
+            $dataAttributes  = "data-username=\"" . htmlspecialchars($user->username) . "\" ";
+            $dataAttributes .= "data-email=\"" . htmlspecialchars($user->email) . "\" ";
+            $dataAttributes .= "data-admin=\"" . htmlspecialchars($user->admin) . "\" ";
+            $dataAttributes .= "data-total-accounts=\"" . htmlspecialchars($user->total_accounts) . "\" ";
+            $dataAttributes .= "data-max-api-calls=\"" . htmlspecialchars($user->max_api_calls) . "\" ";
+            $dataAttributes .= "data-used-api-calls=\"" . htmlspecialchars($user->used_api_calls) . "\" ";
+            $dataAttributes .= "data-expires=\"" . htmlspecialchars($user->expires) . "\" ";
+
+            ob_start();
+            $viewData = [
+                'user' => $user,
+                'dataAttributes' => $dataAttributes,
+            ];
+            extract($viewData);
+            include __DIR__ . '/../Views/partials/user-list-item.php';
+            $output .= ob_get_clean();
+        }
+        return $output;
+    }
+
+    /**
      * Create or update a user based on form input.
      *
      * @return void
@@ -233,35 +264,5 @@ class UsersController extends Controller
         }
         header('Location: /users');
         exit;
-    }
-    /**
-     * Generate the HTML list of all users for the admin panel.
-     *
-     * @return string Rendered list items
-     */
-    private static function generateUserList(): string
-    {
-        $users = User::getAllUsers();
-        $output = '';
-        foreach ($users as $user) {
-            $user = (object)$user;
-            $dataAttributes  = "data-username=\"" . htmlspecialchars($user->username) . "\" ";
-            $dataAttributes .= "data-email=\"" . htmlspecialchars($user->email) . "\" ";
-            $dataAttributes .= "data-admin=\"" . htmlspecialchars($user->admin) . "\" ";
-            $dataAttributes .= "data-total-accounts=\"" . htmlspecialchars($user->total_accounts) . "\" ";
-            $dataAttributes .= "data-max-api-calls=\"" . htmlspecialchars($user->max_api_calls) . "\" ";
-            $dataAttributes .= "data-used-api-calls=\"" . htmlspecialchars($user->used_api_calls) . "\" ";
-            $dataAttributes .= "data-expires=\"" . htmlspecialchars($user->expires) . "\" ";
-
-            ob_start();
-            $viewData = [
-                'user' => $user,
-                'dataAttributes' => $dataAttributes,
-            ];
-            extract($viewData);
-            include __DIR__ . '/../Views/partials/user-list-item.php';
-            $output .= ob_get_clean();
-        }
-        return $output;
     }
 }

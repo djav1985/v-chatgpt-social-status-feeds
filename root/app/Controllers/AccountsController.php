@@ -76,151 +76,6 @@ class AccountsController extends Controller
     }
 
     /**
-     * Create a new account or update an existing one for the current user.
-     *
-     * @return void
-     */
-    private static function createOrUpdateAccount(): void
-    {
-        $session = SessionManager::getInstance();
-        $accountOwner = $session->get('username');
-        // Fix: Handle space-to-dash conversion and use alphanumeric-dash mode
-        $rawAccountName = $_POST['account'] ?? '';
-        $normalizedAccountName = str_replace(' ', '-', $rawAccountName);
-        $accountName = ValidationHelper::sanitizeString($normalizedAccountName, 'alphanumeric-dash');
-        $prompt = ValidationHelper::sanitizeString($_POST['prompt'] ?? '');
-        $platform = ValidationHelper::sanitizeString($_POST['platform'] ?? '');
-        // Fix: Handle null return from validateInteger
-        $hashtags = ValidationHelper::validateInteger($_POST['hashtags'] ?? 0);
-        if ($hashtags === null) {
-            $hashtags = 0;
-            MessageHelper::addMessage('Invalid hashtags value supplied. Defaulting to 0.');
-        }
-        $link = ValidationHelper::sanitizeString($_POST['link'] ?? '');
-        
-        // Validate cron array and process if valid
-        $cronErrors = ValidationHelper::validateCronArray($_POST['cron'] ?? []);
-        foreach ($cronErrors as $err) {
-            MessageHelper::addMessage($err);
-        }
-        
-        // Process cron hours into comma-separated string
-        $cron = 'null';
-        if (empty($cronErrors) && isset($_POST['cron']) && is_array($_POST['cron'])) {
-            $hours = [];
-            foreach ($_POST['cron'] as $hour) {
-                if ($hour === 'null') {
-                    continue;
-                }
-                if (ctype_digit($hour) && (int)$hour >= 0 && (int)$hour <= 23) {
-                    $hours[] = str_pad((string)(int)$hour, 2, '0', STR_PAD_LEFT);
-                }
-            }
-            if (!empty($hours)) {
-                $cron = implode(',', $hours);
-            }
-        }
-        
-        // Validate days array and process if valid
-        $daysErrors = ValidationHelper::validateDaysArray($_POST['days'] ?? []);
-        foreach ($daysErrors as $err) {
-            MessageHelper::addMessage($err);
-        }
-        
-        // Process days into comma-separated string or 'everyday'
-        $days = '';
-        if (empty($daysErrors) && isset($_POST['days'])) {
-            if ($_POST['days'] === 'everyday') {
-                $days = 'everyday';
-            } elseif (is_array($_POST['days'])) {
-                $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') 
-                    ? 'everyday' 
-                    : implode(',', $_POST['days']);
-            }
-        }
-
-        if ($cron === 'null' || empty($days) || empty($platform)) {
-            MessageHelper::addMessage('Error processing input.');
-        }
-        if (empty($prompt)) {
-            MessageHelper::addMessage('Missing required field(s).');
-        }
-
-        // Centralized validation
-        $accountValidationErrors = ValidationHelper::validateAccount([
-            'accountName' => $accountName,
-            'link' => $link,
-            'cronArr' => isset($_POST['cron']) && is_array($_POST['cron']) ? $_POST['cron'] : [],
-        ]);
-
-        foreach ($accountValidationErrors as $err) {
-            MessageHelper::addMessage($err);
-        }
-
-        if (!empty($session->get('messages'))) {
-            header('Location: /accounts');
-            exit;
-        }
-
-        try {
-            $queue = new QueueService();
-            if (Account::accountExists($accountOwner, $accountName)) {
-                $oldInfo = Account::getAcctInfo($accountOwner, $accountName);
-                if (is_array($oldInfo)) {
-                    $oldInfo = (object)$oldInfo;
-                }
-                Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
-                if ($oldInfo && ($oldInfo->cron !== $cron || $oldInfo->days !== $days)) {
-                    $queue->rescheduleAccountJobs($accountOwner, $accountName, $cron, $days);
-                }
-            } else {
-                Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
-                $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
-                if (!file_exists($acctImagePath)) {
-                    mkdir(
-                        $acctImagePath,
-                        defined('DIR_MODE') ? DIR_MODE : 0755,
-                        true
-                    );
-                    $indexFilePath = $acctImagePath . '/index.php';
-                    file_put_contents(
-                        $indexFilePath,
-                        '<?php die(); ?>'
-                    );
-                }
-                $queue->enqueueRemainingJobs($accountOwner, $accountName, $cron, $days);
-            }
-            MessageHelper::addMessage('Account has been created or modified.');
-        } catch (\Exception $e) {
-            MessageHelper::addMessage('Failed to create or modify account: ' . $e->getMessage());
-        }
-        header('Location: /accounts');
-        exit;
-    }
-
-    /**
-     * Delete an account owned by the current user.
-     *
-     * @return void
-     */
-    private static function deleteAccount(): void
-    {
-        $session = SessionManager::getInstance();
-        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
-        $accountOwner = $session->get('username');
-        try {
-            Account::deleteAccount($accountOwner, $accountName);
-            $queueService = new QueueService();
-            $queueService->removeAllJobs($accountOwner, $accountName);
-            MessageHelper::addMessage('Account Deleted.');
-        } catch (\Exception $e) {
-            MessageHelper::addMessage('Failed to delete account: ' . $e->getMessage());
-        }
-        header('Location: /accounts');
-        exit;
-    }
-
-    /**
      * Build a calendar overview of scheduled posts grouped by day and time slot.
      *
      * @return string HTML representation of the calendar
@@ -525,5 +380,150 @@ class AccountsController extends Controller
         } catch (\Exception) {
             return (string) $expires;
         }
+    }
+
+    /**
+     * Create a new account or update an existing one for the current user.
+     *
+     * @return void
+     */
+    private static function createOrUpdateAccount(): void
+    {
+        $session = SessionManager::getInstance();
+        $accountOwner = $session->get('username');
+        // Fix: Handle space-to-dash conversion and use alphanumeric-dash mode
+        $rawAccountName = $_POST['account'] ?? '';
+        $normalizedAccountName = str_replace(' ', '-', $rawAccountName);
+        $accountName = ValidationHelper::sanitizeString($normalizedAccountName, 'alphanumeric-dash');
+        $prompt = ValidationHelper::sanitizeString($_POST['prompt'] ?? '');
+        $platform = ValidationHelper::sanitizeString($_POST['platform'] ?? '');
+        // Fix: Handle null return from validateInteger
+        $hashtags = ValidationHelper::validateInteger($_POST['hashtags'] ?? 0);
+        if ($hashtags === null) {
+            $hashtags = 0;
+            MessageHelper::addMessage('Invalid hashtags value supplied. Defaulting to 0.');
+        }
+        $link = ValidationHelper::sanitizeString($_POST['link'] ?? '');
+        
+        // Validate cron array and process if valid
+        $cronErrors = ValidationHelper::validateCronArray($_POST['cron'] ?? []);
+        foreach ($cronErrors as $err) {
+            MessageHelper::addMessage($err);
+        }
+        
+        // Process cron hours into comma-separated string
+        $cron = 'null';
+        if (empty($cronErrors) && isset($_POST['cron']) && is_array($_POST['cron'])) {
+            $hours = [];
+            foreach ($_POST['cron'] as $hour) {
+                if ($hour === 'null') {
+                    continue;
+                }
+                if (ctype_digit($hour) && (int)$hour >= 0 && (int)$hour <= 23) {
+                    $hours[] = str_pad((string)(int)$hour, 2, '0', STR_PAD_LEFT);
+                }
+            }
+            if (!empty($hours)) {
+                $cron = implode(',', $hours);
+            }
+        }
+        
+        // Validate days array and process if valid
+        $daysErrors = ValidationHelper::validateDaysArray($_POST['days'] ?? []);
+        foreach ($daysErrors as $err) {
+            MessageHelper::addMessage($err);
+        }
+        
+        // Process days into comma-separated string or 'everyday'
+        $days = '';
+        if (empty($daysErrors) && isset($_POST['days'])) {
+            if ($_POST['days'] === 'everyday') {
+                $days = 'everyday';
+            } elseif (is_array($_POST['days'])) {
+                $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') 
+                    ? 'everyday' 
+                    : implode(',', $_POST['days']);
+            }
+        }
+
+        if ($cron === 'null' || empty($days) || empty($platform)) {
+            MessageHelper::addMessage('Error processing input.');
+        }
+        if (empty($prompt)) {
+            MessageHelper::addMessage('Missing required field(s).');
+        }
+
+        // Centralized validation
+        $accountValidationErrors = ValidationHelper::validateAccount([
+            'accountName' => $accountName,
+            'link' => $link,
+            'cronArr' => isset($_POST['cron']) && is_array($_POST['cron']) ? $_POST['cron'] : [],
+        ]);
+
+        foreach ($accountValidationErrors as $err) {
+            MessageHelper::addMessage($err);
+        }
+
+        if (!empty($session->get('messages'))) {
+            header('Location: /accounts');
+            exit;
+        }
+
+        try {
+            $queue = new QueueService();
+            if (Account::accountExists($accountOwner, $accountName)) {
+                $oldInfo = Account::getAcctInfo($accountOwner, $accountName);
+                if (is_array($oldInfo)) {
+                    $oldInfo = (object)$oldInfo;
+                }
+                Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                if ($oldInfo && ($oldInfo->cron !== $cron || $oldInfo->days !== $days)) {
+                    $queue->rescheduleAccountJobs($accountOwner, $accountName, $cron, $days);
+                }
+            } else {
+                Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
+                if (!file_exists($acctImagePath)) {
+                    mkdir(
+                        $acctImagePath,
+                        defined('DIR_MODE') ? DIR_MODE : 0755,
+                        true
+                    );
+                    $indexFilePath = $acctImagePath . '/index.php';
+                    file_put_contents(
+                        $indexFilePath,
+                        '<?php die(); ?>'
+                    );
+                }
+                $queue->enqueueRemainingJobs($accountOwner, $accountName, $cron, $days);
+            }
+            MessageHelper::addMessage('Account has been created or modified.');
+        } catch (\Exception $e) {
+            MessageHelper::addMessage('Failed to create or modify account: ' . $e->getMessage());
+        }
+        header('Location: /accounts');
+        exit;
+    }
+
+    /**
+     * Delete an account owned by the current user.
+     *
+     * @return void
+     */
+    private static function deleteAccount(): void
+    {
+        $session = SessionManager::getInstance();
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
+        $accountOwner = $session->get('username');
+        try {
+            Account::deleteAccount($accountOwner, $accountName);
+            $queueService = new QueueService();
+            $queueService->removeAllJobs($accountOwner, $accountName);
+            MessageHelper::addMessage('Account Deleted.');
+        } catch (\Exception $e) {
+            MessageHelper::addMessage('Failed to delete account: ' . $e->getMessage());
+        }
+        header('Location: /accounts');
+        exit;
     }
 }

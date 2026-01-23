@@ -57,6 +57,74 @@ class FeedController extends Controller
         $this->index($user, $account);
     }
 
+    /**
+     * Retrieve all accounts for a given owner.
+     *
+     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
+     * to provide fake account data during testing without database access.
+     *
+     * @param string $accountOwner
+     * @return array<int, array<string, mixed>>
+     */
+    protected static function getAllAccountsForOwner(string $accountOwner): array
+    {
+        return Account::getAllUserAccts($accountOwner);
+    }
+
+    /**
+     * Retrieve an account link for the owner/account pair.
+     *
+     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
+     * to provide fake link data during testing without database access.
+     *
+     * @param string $accountOwner
+     * @param string $accountName
+     * @return string
+     */
+    protected static function getAccountLinkForOwner(string $accountOwner, string $accountName): string
+    {
+        return Account::getAccountLink($accountOwner, $accountName);
+    }
+
+    /**
+     * Retrieve status updates for the owner/account pair.
+     *
+     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
+     * to provide fake status data during testing without database access.
+     *
+     * @param string $accountOwner
+     * @param string $accountName
+     * @return array<int, array<string, mixed>>
+     */
+    protected static function getStatusUpdatesForAccount(string $accountOwner, string $accountName): array
+    {
+        return Status::getStatusUpdates($accountOwner, $accountName);
+    }
+
+    /**
+     * Get image file size with caching to reduce filesystem I/O.
+     *
+     * @param string $pathOwner   Owner directory name
+     * @param string $pathAccount Account directory name
+     * @param string $pathImage   Image filename
+     * @return int File size in bytes, or 0 if file doesn't exist
+     */
+    protected static function getImageFileSize(string $pathOwner, string $pathAccount, string $pathImage): int
+    {
+        if (!defined('CACHE_ENABLED') || !CACHE_ENABLED) {
+            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
+            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
+        }
+
+        $cacheKey = "image:size:{$pathOwner}:{$pathAccount}:{$pathImage}";
+        $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 600;
+
+        return CacheService::getInstance()->remember($cacheKey, $ttl, function () use ($pathOwner, $pathAccount, $pathImage) {
+            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
+            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
+        });
+    }
+
 
     /**
      * Output an RSS feed for a specific account or all accounts.
@@ -245,73 +313,5 @@ class FeedController extends Controller
             
             echo $xmlOutput;
         }
-    }
-
-    /**
-     * Retrieve all accounts for a given owner.
-     *
-     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
-     * to provide fake account data during testing without database access.
-     *
-     * @param string $accountOwner
-     * @return array<int, array<string, mixed>>
-     */
-    protected static function getAllAccountsForOwner(string $accountOwner): array
-    {
-        return Account::getAllUserAccts($accountOwner);
-    }
-
-    /**
-     * Retrieve an account link for the owner/account pair.
-     *
-     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
-     * to provide fake link data during testing without database access.
-     *
-     * @param string $accountOwner
-     * @param string $accountName
-     * @return string
-     */
-    protected static function getAccountLinkForOwner(string $accountOwner, string $accountName): string
-    {
-        return Account::getAccountLink($accountOwner, $accountName);
-    }
-
-    /**
-     * Retrieve status updates for the owner/account pair.
-     *
-     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
-     * to provide fake status data during testing without database access.
-     *
-     * @param string $accountOwner
-     * @param string $accountName
-     * @return array<int, array<string, mixed>>
-     */
-    protected static function getStatusUpdatesForAccount(string $accountOwner, string $accountName): array
-    {
-        return Status::getStatusUpdates($accountOwner, $accountName);
-    }
-
-    /**
-     * Get image file size with caching to reduce filesystem I/O.
-     *
-     * @param string $pathOwner   Owner directory name
-     * @param string $pathAccount Account directory name
-     * @param string $pathImage   Image filename
-     * @return int File size in bytes, or 0 if file doesn't exist
-     */
-    protected static function getImageFileSize(string $pathOwner, string $pathAccount, string $pathImage): int
-    {
-        if (!defined('CACHE_ENABLED') || !CACHE_ENABLED) {
-            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
-            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
-        }
-
-        $cacheKey = "image:size:{$pathOwner}:{$pathAccount}:{$pathImage}";
-        $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 600;
-
-        return CacheService::getInstance()->remember($cacheKey, $ttl, function () use ($pathOwner, $pathAccount, $pathImage) {
-            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
-            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
-        });
     }
 }
