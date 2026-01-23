@@ -109,7 +109,7 @@ class FeedController extends Controller
      * @param string $pathImage   Image filename
      * @return int File size in bytes, or 0 if file doesn't exist
      */
-    protected static function getImageFileSize(string $pathOwner, string $pathAccount, string $pathImage): int
+    private static function getImageFileSize(string $pathOwner, string $pathAccount, string $pathImage): int
     {
         if (!defined('CACHE_ENABLED') || !CACHE_ENABLED) {
             $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
