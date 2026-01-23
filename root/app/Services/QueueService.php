@@ -613,11 +613,6 @@ class QueueService
         );
     }
 
-    private function statusesPerJob(): int
-    {
-        return 1;
-    }
-
     protected function generateJobId(): string
     {
         $data = \random_bytes(16);
