@@ -101,7 +101,7 @@ class MaintenanceService
      */
     public function purgeImages(): bool
     {
-        $imageDir = rtrim($this->getImageDirectory(), DIRECTORY_SEPARATOR);
+        $imageDir = rtrim(__DIR__ . '/../../public/images/', DIRECTORY_SEPARATOR);
         if ($imageDir === '') {
             return true;
         }
@@ -162,11 +162,6 @@ class MaintenanceService
     public function purgeIps(): bool
     {
         return Blacklist::clearIpBlacklist();
-    }
-
-    private function getImageDirectory(): string
-    {
-        return __DIR__ . '/../../public/images/';
     }
 
     private function claimWorkerLock(): bool

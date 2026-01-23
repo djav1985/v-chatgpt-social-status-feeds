@@ -58,41 +58,6 @@ class FeedController extends Controller
     }
 
     /**
-     * Retrieve all accounts for a given owner.
-     *
-     * @param string $accountOwner
-     * @return array<int, array<string, mixed>>
-     */
-    private static function getAllAccountsForOwner(string $accountOwner): array
-    {
-        return Account::getAllUserAccts($accountOwner);
-    }
-
-    /**
-     * Retrieve an account link for the owner/account pair.
-     *
-     * @param string $accountOwner
-     * @param string $accountName
-     * @return string
-     */
-    private static function getAccountLinkForOwner(string $accountOwner, string $accountName): string
-    {
-        return Account::getAccountLink($accountOwner, $accountName);
-    }
-
-    /**
-     * Retrieve status updates for the owner/account pair.
-     *
-     * @param string $accountOwner
-     * @param string $accountName
-     * @return array<int, array<string, mixed>>
-     */
-    private static function getStatusUpdatesForAccount(string $accountOwner, string $accountName): array
-    {
-        return Status::getStatusUpdates($accountOwner, $accountName);
-    }
-
-    /**
      * Get image file size with caching to reduce filesystem I/O.
      *
      * @param string $pathOwner   Owner directory name
@@ -161,7 +126,7 @@ class FeedController extends Controller
 
         // Fetch statuses for all accounts if 'all' is specified
         if ($isAllAccounts) {
-            $accounts = static::getAllAccountsForOwner($accountOwner);
+            $accounts = Account::getAllUserAccts($accountOwner);
 
             foreach ($accounts as $account) {
                 $account = (object)$account;
@@ -172,10 +137,10 @@ class FeedController extends Controller
                 $currentAccountName = (string)$account->account;
 
                 // Retrieve account link
-                $accountLink = static::getAccountLinkForOwner($accountOwner, $currentAccountName);
+                $accountLink = Account::getAccountLink($accountOwner, $currentAccountName);
 
                 // Retrieve status updates for the account
-                $statusInfo = static::getStatusUpdatesForAccount($accountOwner, $currentAccountName);
+                $statusInfo = Status::getStatusUpdates($accountOwner, $currentAccountName);
 
                 foreach ($statusInfo as $status) {
                     $status = (object)$status;
@@ -196,10 +161,10 @@ class FeedController extends Controller
             );
         } else {
             // Retrieve account link
-            $accountLink = static::getAccountLinkForOwner($accountOwner, $accountName);
+            $accountLink = Account::getAccountLink($accountOwner, $accountName);
 
             // Retrieve status updates for the account
-            $statuses = static::getStatusUpdatesForAccount($accountOwner, $accountName);
+            $statuses = Status::getStatusUpdates($accountOwner, $accountName);
 
             foreach ($statuses as &$status) {
                 $status = (object)$status;

@@ -32,7 +32,7 @@ class QueueService
 
     public function enqueueRemainingJobs(string $username, string $account, string $cron, string $days): void
     {
-        $now = $this->now();
+        $now = time();
         $daysArr = array_filter(
             array_map('strtolower', array_map('trim', explode(',', (string) $days))),
             fn($v) => strlen($v) > 0
@@ -49,7 +49,7 @@ class QueueService
                 continue;
             }
 
-            if ($this->jobExistsInStorage($username, $account, $scheduledAt)) {
+            if (StatusJob::exists($username, $account, $scheduledAt)) {
                 continue;
             }
 
@@ -59,12 +59,12 @@ class QueueService
 
     public function removeFutureJobs(string $username, string $account): void
     {
-        $this->deleteFutureJobs($username, $account, $this->now());
+        StatusJob::deleteFutureJobs($username, $account, time());
     }
 
     public function removeAllJobs(string $username, string $account): void
     {
-        $this->deleteAllJobsForAccount($username, $account);
+        StatusJob::deleteAllForAccount($username, $account);
     }
 
     public function rescheduleAccountJobs(string $username, string $account, string $cron, string $days): void
@@ -85,7 +85,7 @@ class QueueService
         try {
             // Since we have the worker lock, no other worker can be running.
             // Reset all processing flags from any previously crashed/interrupted workers.
-            $count = $this->resetAllProcessingFlags();
+            $count = StatusJob::resetAllProcessingFlags();
             if ($count > 0) {
                 ErrorManager::getInstance()->log(
                     sprintf('[QueueService] Reset %d stuck processing flag(s) from previous worker run.', $count),
@@ -97,7 +97,7 @@ class QueueService
                 $processedAny = false;
 
                 $retryJobs = $this->filterUnattemptedJobs(
-                    $this->claimDueJobsByStatus($this->now(), 'retry'),
+                    $this->claimDueJobsByStatus(time(), 'retry'),
                     $attemptedJobIds
                 );
                 if (!empty($retryJobs)) {
@@ -113,7 +113,7 @@ class QueueService
                 }
 
                 $pendingJobs = $this->filterUnattemptedJobs(
-                    $this->claimDueJobsByStatus($this->now(), 'pending'),
+                    $this->claimDueJobsByStatus(time(), 'pending'),
                     $attemptedJobIds
                 );
                 if (!empty($pendingJobs)) {
@@ -141,9 +141,9 @@ class QueueService
         }
 
         try {
-            $this->clearAllJobs();
-            $accounts = $this->getAccounts();
-            $now = $this->now();
+            StatusJob::clearAllPendingJobs();
+            $accounts = Account::getAllAccounts();
+            $now = time();
 
             foreach ($accounts as $account) {
                 $account = (object)$account;
@@ -166,7 +166,7 @@ class QueueService
                         continue;
                     }
 
-                    if ($this->jobExistsInStorage($username, $acct, $scheduledAt)) {
+                    if (StatusJob::exists($username, $acct, $scheduledAt)) {
                         continue;
                     }
 
@@ -198,11 +198,6 @@ class QueueService
     {
         WorkerHelper::releaseLock($this->workerLock);
         $this->workerLock = null;
-    }
-
-    private function now(): int
-    {
-        return time();
     }
 
     /**
@@ -240,65 +235,6 @@ class QueueService
         return StatusJob::releaseStaleJobs($now, $timeout);
     }
 
-    /**
-     * Reset all processing flags.
-     * This is safe to call when holding the worker lock since no other worker can be running.
-     */
-    private function resetAllProcessingFlags(): int
-    {
-        return StatusJob::resetAllProcessingFlags();
-    }
-
-    private function clearAllJobs(): void
-    {
-        StatusJob::clearAllPendingJobs();
-    }
-
-    private function jobExistsInStorage(string $username, string $account, int $scheduledAt): bool
-    {
-        return StatusJob::exists($username, $account, $scheduledAt);
-    }
-
-    private function insertJobInStorage(string $id, string $username, string $account, int $scheduledAt, string $status): void
-    {
-        StatusJob::insert($id, $username, $account, $scheduledAt, $status);
-    }
-
-    private function deleteFutureJobs(string $username, string $account, int $fromTimestamp): void
-    {
-        StatusJob::deleteFutureJobs($username, $account, $fromTimestamp);
-    }
-
-    private function deleteAllJobsForAccount(string $username, string $account): void
-    {
-        StatusJob::deleteAllForAccount($username, $account);
-    }
-
-    private function deleteJobById(string $id): void
-    {
-        StatusJob::deleteById($id);
-    }
-
-    private function markJobStatus(string $id, string $status): void
-    {
-        StatusJob::markStatus($id, $status);
-    }
-
-    private function markJobStatusAndProcessing(string $id, string $status, bool $processing): void
-    {
-        StatusJob::markStatusAndProcessing($id, $status, $processing);
-    }
-
-    /**
-     * Get all accounts.
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    private function getAccounts(): array
-    {
-        return Account::getAllAccounts();
-    }
-
     private function generateStatusesForJob(array $job, int $count): void
     {
         $account = (string) ($job['account'] ?? '');
@@ -322,39 +258,25 @@ class QueueService
             if ($maxApiCalls > 0 && $usedApiCalls >= $maxApiCalls) {
                 if (!$limitEmailSent) {
                     $this->sendLimitEmail($user);
-                    $this->setLimitEmailSent($username, true);
+                    User::setLimitEmailSent($username, true);
                     $limitEmailSent = true;
                 }
 
                 throw new RuntimeException(sprintf('API limit reached for %s.', $username));
             }
 
-            $result = $this->callStatusServiceGenerateStatus($account, $username);
+            $result = StatusService::generateStatus($account, $username);
             if (isset($result['error'])) {
                 throw new RuntimeException((string) $result['error']);
             }
 
             $usedApiCalls++;
-            $this->updateUsedApiCalls($username, $usedApiCalls);
+            User::updateUsedApiCalls($username, $usedApiCalls);
 
             if (property_exists($user, 'used_api_calls')) {
                 $user->used_api_calls = $usedApiCalls;
             }
         }
-    }
-
-    /**
-     * Wrapper for status generation to allow test stubbing.
-     * This method exists to enable TestableQueueService to override
-     * the behavior during testing without calling the actual API.
-     *
-     * @param string $account
-     * @param string $username
-     * @return array|null
-     */
-    private function callStatusServiceGenerateStatus(string $account, string $username): ?array
-    {
-        return StatusService::generateStatus($account, $username);
     }
 
     /**
@@ -374,34 +296,6 @@ class QueueService
         }
 
         return is_object($info) ? $info : (object) $info;
-    }
-
-    /**
-     * Wrapper for updating API calls to allow test tracking.
-     * This method exists to enable TestableQueueService to track
-     * API usage updates during testing.
-     *
-     * @param string $username
-     * @param int $usedApiCalls
-     * @return void
-     */
-    private function updateUsedApiCalls(string $username, int $usedApiCalls): void
-    {
-        User::updateUsedApiCalls($username, $usedApiCalls);
-    }
-
-    /**
-     * Wrapper for setting limit email flag to allow test tracking.
-     * This method exists to enable TestableQueueService to track
-     * when limit emails are sent during testing.
-     *
-     * @param string $username
-     * @param bool $sent
-     * @return void
-     */
-    private function setLimitEmailSent(string $username, bool $sent): void
-    {
-        User::setLimitEmailSent($username, $sent);
     }
 
     /**
@@ -462,13 +356,13 @@ class QueueService
 
             $status = strtolower((string) ($job['status'] ?? 'pending'));
             if ($status !== 'pending' && $status !== 'retry') {
-                $this->deleteJobById($job['id']);
+                StatusJob::deleteById($job['id']);
                 continue;
             }
 
             try {
                 $this->processJobPayload($job);
-                $this->deleteJobById($job['id']);
+                StatusJob::deleteById($job['id']);
             } catch (\Throwable $e) {
                 // On failure, reset processing flag and handle retry logic
                 ErrorManager::getInstance()->log(
@@ -485,10 +379,10 @@ class QueueService
                 
                 if ($isRetryBatch || $status === 'retry') {
                     // Retry jobs that fail should be deleted
-                    $this->deleteJobById($job['id']);
+                    StatusJob::deleteById($job['id']);
                 } else {
                     // Pending jobs that fail should be marked for retry
-                    $this->markJobStatusAndProcessing($job['id'], 'retry', false);
+                    StatusJob::markStatusAndProcessing($job['id'], 'retry', false);
                 }
             }
         }
@@ -496,7 +390,7 @@ class QueueService
 
     private function storeJob(string $username, string $account, int $scheduledAt, string $status): void
     {
-        $this->insertJobInStorage($this->generateJobId(), $username, $account, $scheduledAt, $status);
+        StatusJob::insert($this->generateJobId(), $username, $account, $scheduledAt, $status);
     }
 
     /**
