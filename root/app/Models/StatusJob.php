@@ -23,7 +23,7 @@ class StatusJob
     /**
      * Clear all pending jobs from the queue.
      *
-     * @return bool True on success, false on failure.
+     * @return bool True on success.
      */
     public static function clearAllPendingJobs(): bool
     {
@@ -34,7 +34,7 @@ class StatusJob
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error clearing pending jobs: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -68,7 +68,7 @@ class StatusJob
      * Atomically claim a specific job by setting processing flag.
      *
      * @param string $jobId Job ID to claim.
-     * @return bool True if claimed successfully, false otherwise.
+     * @return bool True if claimed successfully, false if already claimed.
      */
     public static function claimJob(string $jobId): bool
     {
@@ -80,7 +80,7 @@ class StatusJob
             return $db->rowCount() === 1;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error claiming job {$jobId}: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -108,7 +108,7 @@ class StatusJob
             return $db->rowCount();
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error releasing stale jobs: " . $e->getMessage(), 'error');
-            return 0;
+            throw $e;
         }
     }
 
@@ -126,7 +126,7 @@ class StatusJob
             return $db->rowCount();
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error resetting processing flags: " . $e->getMessage(), 'error');
-            return 0;
+            throw $e;
         }
     }
 
@@ -134,7 +134,7 @@ class StatusJob
      * Delete a job by ID.
      *
      * @param string $id Job ID.
-     * @return bool True on success, false on failure.
+     * @return bool True on success.
      */
     public static function deleteById(string $id): bool
     {
@@ -146,7 +146,7 @@ class StatusJob
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error deleting job {$id}: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -155,7 +155,7 @@ class StatusJob
      *
      * @param string $id Job ID.
      * @param string $status New status.
-     * @return bool True on success, false on failure.
+     * @return bool True on success.
      */
     public static function markStatus(string $id, string $status): bool
     {
@@ -168,7 +168,7 @@ class StatusJob
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error marking job {$id} status: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -178,7 +178,7 @@ class StatusJob
      * @param string $id Job ID.
      * @param string $status New status.
      * @param bool $processing Processing flag value.
-     * @return bool True on success, false on failure.
+     * @return bool True on success.
      */
     public static function markStatusAndProcessing(string $id, string $status, bool $processing): bool
     {
@@ -192,7 +192,7 @@ class StatusJob
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error marking job {$id} status and processing: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -219,7 +219,7 @@ class StatusJob
             return $db->single() !== false;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error checking job existence: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -231,7 +231,7 @@ class StatusJob
      * @param string $account Account name.
      * @param int $scheduledAt Scheduled timestamp.
      * @param string $status Job status.
-     * @return bool True on success, false on failure.
+     * @return bool True on success.
      */
     public static function insert(string $id, string $username, string $account, int $scheduledAt, string $status): bool
     {
@@ -250,7 +250,7 @@ class StatusJob
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error inserting job: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -260,7 +260,7 @@ class StatusJob
      * @param string $username Account owner.
      * @param string $account Account name.
      * @param int $fromTimestamp Starting timestamp.
-     * @return bool True on success, false on failure.
+     * @return bool True on success.
      */
     public static function deleteFutureJobs(string $username, string $account, int $fromTimestamp): bool
     {
@@ -277,7 +277,7 @@ class StatusJob
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error deleting future jobs: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 
@@ -286,7 +286,7 @@ class StatusJob
      *
      * @param string $username Account owner.
      * @param string $account Account name.
-     * @return bool True on success, false on failure.
+     * @return bool True on success.
      */
     public static function deleteAllForAccount(string $username, string $account): bool
     {
@@ -299,7 +299,7 @@ class StatusJob
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error deleting all jobs for account: " . $e->getMessage(), 'error');
-            return false;
+            throw $e;
         }
     }
 }
