@@ -17,19 +17,50 @@ namespace App\Models;
 use Exception;
 use App\Core\DatabaseManager;
 use App\Core\ErrorManager;
+use App\Services\CacheService;
 
 class Account
 {
     /**
-     * Cached account lookups keyed by "username|account".
+     * Cached account lookups keyed by "username|account" (L1 cache - in-memory).
      *
      * @var array<string, array<string, mixed>|false>
      */
     private static array $accountInfoCache = [];
 
+    /**
+     * Cached account list lookups keyed by username (L1 cache - in-memory).
+     *
+     * @var array<string, array<int, array<string, mixed>>>
+     */
+    private static array $accountListCache = [];
+
     private static function accountCacheKey(string $username, string $account): string
     {
         return trim($username) . '|' . trim($account);
+    }
+
+    /**
+     * Generate APCu cache key for account info (L2 cache).
+     *
+     * @param string $username
+     * @param string $account
+     * @return string
+     */
+    private static function accountApcuCacheKey(string $username, string $account): string
+    {
+        return 'account:info:' . trim($username) . ':' . trim($account);
+    }
+
+    /**
+     * Generate APCu cache key for account list (L2 cache).
+     *
+     * @param string $username
+     * @return string
+     */
+    private static function accountListApcuCacheKey(string $username): string
+    {
+        return 'account:list:' . trim($username);
     }
 
     private static function rememberAccountInfo(string $username, string $account, array|false $info): array|false
@@ -39,14 +70,43 @@ class Account
         return $info;
     }
 
+    /**
+     * Fetch account info using two-tier caching strategy.
+     * - L1 cache: Static array (in-memory, request-scoped)
+     * - L2 cache: APCu (persistent across requests)
+     *
+     * @param string $username
+     * @param string $account
+     * @return array<string, mixed>|false
+     */
     private static function fetchAccountInfo(string $username, string $account): array|false
     {
+        // Check L1 cache (static array) first
         $cacheKey = self::accountCacheKey($username, $account);
         if (array_key_exists($cacheKey, self::$accountInfoCache)) {
             return self::$accountInfoCache[$cacheKey];
         }
 
         try {
+            // Check L2 cache (APCu) if enabled
+            if (CACHE_ENABLED) {
+                $apcuKey = self::accountApcuCacheKey($username, $account);
+                $cache = CacheService::getInstance();
+                
+                // Use remember() to handle cache miss automatically
+                $info = $cache->remember($apcuKey, CACHE_TTL_ACCOUNT, function () use ($username, $account) {
+                    $db = DatabaseManager::getInstance();
+                    $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
+                    $db->bind(':username', $username);
+                    $db->bind(':account', $account);
+                    return $db->single();
+                });
+                
+                // Store in L1 cache and return
+                return self::rememberAccountInfo($username, $account, $info);
+            }
+
+            // If cache disabled, query database directly
             $db = DatabaseManager::getInstance();
             $db->query("SELECT * FROM accounts WHERE username = :username AND account = :account");
             $db->bind(':username', $username);
@@ -59,26 +119,52 @@ class Account
         }
     }
 
+    /**
+     * Clear account cache entry from both L1 (static) and L2 (APCu) caches.
+     *
+     * @param string|null $username If null, clears all account cache entries
+     * @param string|null $account If null, clears all accounts for the specified user
+     * @return void
+     */
     private static function clearAccountCacheEntry(?string $username = null, ?string $account = null): void
     {
         if ($username === null) {
             self::$accountInfoCache = [];
+            self::$accountListCache = [];
+            if (CACHE_ENABLED) {
+                CacheService::getInstance()->clear('account:info:');
+                CacheService::getInstance()->clear('account:list:');
+            }
             return;
         }
 
         $username = trim($username);
 
         if ($account === null) {
+            // Clear all accounts for this user
             $prefix = $username . '|';
             foreach (array_keys(self::$accountInfoCache) as $key) {
                 if (str_starts_with($key, $prefix)) {
                     unset(self::$accountInfoCache[$key]);
                 }
             }
+            unset(self::$accountListCache[$username]);
+            
+            if (CACHE_ENABLED) {
+                CacheService::getInstance()->clear('account:info:' . $username . ':');
+                CacheService::getInstance()->delete(self::accountListApcuCacheKey($username));
+            }
             return;
         }
 
+        // Clear specific account
         unset(self::$accountInfoCache[self::accountCacheKey($username, $account)]);
+        unset(self::$accountListCache[$username]);
+        
+        if (CACHE_ENABLED) {
+            CacheService::getInstance()->delete(self::accountApcuCacheKey($username, $account));
+            CacheService::getInstance()->delete(self::accountListApcuCacheKey($username));
+        }
     }
 
     /**
@@ -107,18 +193,50 @@ class Account
     }
 
     /**
-     * Get all user accounts for a specific user.
+     * Get all user accounts for a specific user using two-tier caching strategy.
+     * - L1 cache: Static array (in-memory, request-scoped)
+     * - L2 cache: APCu (persistent across requests)
      *
      * @param string $username
      * @return array<int, array<string, mixed>>
      */
     public static function getAllUserAccts(string $username): array
     {
+        $username = trim($username);
+        
+        // Check L1 cache (static array) first
+        if (array_key_exists($username, self::$accountListCache)) {
+            return self::$accountListCache[$username];
+        }
+
         try {
+            // Check L2 cache (APCu) if enabled
+            if (CACHE_ENABLED) {
+                $apcuKey = self::accountListApcuCacheKey($username);
+                $cache = CacheService::getInstance();
+                
+                // Use remember() to handle cache miss automatically
+                $accounts = $cache->remember($apcuKey, CACHE_TTL_ACCOUNT, function () use ($username) {
+                    $db = DatabaseManager::getInstance();
+                    $db->query("SELECT account FROM accounts WHERE username = :username");
+                    $db->bind(':username', $username);
+                    return $db->resultSet();
+                });
+                
+                // Store in L1 cache and return
+                self::$accountListCache[$username] = $accounts;
+                return $accounts;
+            }
+
+            // If cache disabled, query database directly
             $db = DatabaseManager::getInstance();
             $db->query("SELECT account FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
-            return $db->resultSet();
+            $accounts = $db->resultSet();
+            
+            // Store in L1 cache and return
+            self::$accountListCache[$username] = $accounts;
+            return $accounts;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error retrieving all user accounts: " . $e->getMessage(), 'error');
             throw $e;
