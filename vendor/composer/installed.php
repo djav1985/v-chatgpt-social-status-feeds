@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'appsbyv/v-chatgpt-social-status-feeds',
-        'pretty_version' => 'dev-copilot/fix-unit-tests',
-        'version' => 'dev-copilot/fix-unit-tests',
-        'reference' => '8ada36885c5ce869db9d9f3bdc70762bfaca18dc',
+        'pretty_version' => 'dev-copilot/refactor-class-methods-visibility',
+        'version' => 'dev-copilot/refactor-class-methods-visibility',
+        'reference' => '278682c001389b876592d5bba8468497d0126aa8',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'appsbyv/v-chatgpt-social-status-feeds' => array(
-            'pretty_version' => 'dev-copilot/fix-unit-tests',
-            'version' => 'dev-copilot/fix-unit-tests',
-            'reference' => '8ada36885c5ce869db9d9f3bdc70762bfaca18dc',
+            'pretty_version' => 'dev-copilot/refactor-class-methods-visibility',
+            'version' => 'dev-copilot/refactor-class-methods-visibility',
+            'reference' => '278682c001389b876592d5bba8468497d0126aa8',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
