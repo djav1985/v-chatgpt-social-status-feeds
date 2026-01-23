@@ -250,6 +250,9 @@ class FeedController extends Controller
     /**
      * Retrieve all accounts for a given owner.
      *
+     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
+     * to provide fake account data during testing without database access.
+     *
      * @param string $accountOwner
      * @return array<int, array<string, mixed>>
      */
@@ -260,6 +263,9 @@ class FeedController extends Controller
 
     /**
      * Retrieve an account link for the owner/account pair.
+     *
+     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
+     * to provide fake link data during testing without database access.
      *
      * @param string $accountOwner
      * @param string $accountName
@@ -272,6 +278,9 @@ class FeedController extends Controller
 
     /**
      * Retrieve status updates for the owner/account pair.
+     *
+     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
+     * to provide fake status data during testing without database access.
      *
      * @param string $accountOwner
      * @param string $accountName
