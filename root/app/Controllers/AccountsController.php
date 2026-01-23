@@ -171,8 +171,7 @@ class AccountsController extends Controller
                 }
                 Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
                 if ($oldInfo && ($oldInfo->cron !== $cron || $oldInfo->days !== $days)) {
-                    $queue->removeFutureJobs($accountOwner, $accountName);
-                    $queue->enqueueRemainingJobs($accountOwner, $accountName, $cron, $days);
+                    $queue->rescheduleAccountJobs($accountOwner, $accountName, $cron, $days);
                 }
             } else {
                 Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);

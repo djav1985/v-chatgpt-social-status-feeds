@@ -39,6 +39,9 @@ final class TestableQueueService extends QueueService
     public array $limitEmailUpdates = [];
     /** @var array<int, string> */
     public array $sentLimitEmails = [];
+    /** @var array<int, string> */
+    public array $callSequence = [];
+    public int $clearAllJobsCount = 0;
 
     public bool $lockAvailable = true;
     public bool $lockReleased = false;
@@ -56,6 +59,18 @@ final class TestableQueueService extends QueueService
     protected function getAccounts(): array
     {
         return $this->accounts;
+    }
+
+    public function removeFutureJobs(string $username, string $account): void
+    {
+        $this->callSequence[] = 'removeFutureJobs';
+        parent::removeFutureJobs($username, $account);
+    }
+
+    public function enqueueRemainingJobs(string $username, string $account, string $cron, string $days): void
+    {
+        $this->callSequence[] = 'enqueueRemainingJobs';
+        parent::enqueueRemainingJobs($username, $account, $cron, $days);
     }
 
     protected function fetchDueJobs(int $now): array
@@ -302,6 +317,16 @@ final class TestableQueueService extends QueueService
         return parent::scheduledTimestampForHour($hour, $reference);
     }
 
+    public function callScheduledTimestampForHourSameDay(int $hour, int $reference): int
+    {
+        return parent::scheduledTimestampForHourSameDay($hour, $reference);
+    }
+
+    public function hasExistingJob(string $username, string $account, int $scheduledAt): bool
+    {
+        return $this->existingJobs[$this->key($username, $account, $scheduledAt)] ?? false;
+    }
+
     protected function addExistingJob(string $username, string $account, int $scheduledAt): void
     {
         $this->existingJobs[$this->key($username, $account, $scheduledAt)] = true;
@@ -320,5 +345,11 @@ final class TestableQueueService extends QueueService
     protected function releaseWorkerLock(): void
     {
         $this->lockReleased = true;
+    }
+
+    protected function clearAllJobs(): void
+    {
+        $this->clearAllJobsCount++;
+        $this->existingJobs = [];
     }
 }

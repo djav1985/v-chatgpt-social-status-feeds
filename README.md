@@ -183,7 +183,7 @@ Install the project using the following steps:
    - The `worker` prefix acquires a PID-based lock for the specific task being launched. That guarantees only one instance of a given job flag runs at once while still allowing the other workers to execute concurrently. When the guard succeeds, `run-queue` is spawned as a background process so the cron entry returns immediately.
    - On hosts that cannot spawn background processes, call the single-argument form directly (for example, `php cron.php run-queue`). `run-queue` still respects its per-flag lock when invoked inline and drains all due jobs before exiting.
    - **daily:** runs cleanup tasks (purge statuses, images, IPs)
-   - **fill-queue:** adds future job slots for the current day without truncating existing jobs
+  - **fill-queue:** clears queued jobs and adds all scheduled job slots for the current day
    - **run-queue:** executes due jobs (`scheduled_at <= now`) and enforces a single retry before permanent failure
    - **monthly:** resets API usage counters (run on the 1st of each month)
 
@@ -203,7 +203,7 @@ CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
 CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
 ```
 
-- **fill-queue** runs once daily to append the next 24 hours of work, including hours earlier in the day so `run-queue` can catch up after delays, while leaving existing rows untouched.
+- **fill-queue** runs once daily to clear existing rows and append the current day's scheduled work, including hours earlier in the day.
 - **run-queue** runs frequently to process records where `scheduled_at <= NOW()`. Each invocation drains all due retry jobs before moving to pending jobs and repeats until neither queue has work remaining. Successful jobs are deleted. A first failure updates the row to `status = 'retry'`; a second failure deletes the job permanently.
 - `status` only tracks whether the job is on its original attempt (`pending`) or retrying (`retry`). There is no long-lived worker loop—cron cadence controls execution.
 
