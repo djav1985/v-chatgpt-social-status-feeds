@@ -43,13 +43,6 @@ define('IMG_AGE', 360);
 // Session timeout limit in seconds (default: 30 minutes)
 define('SESSION_TIMEOUT_LIMIT', 1800);
 
-// Default timezone for the application (used for scheduling and timestamps)
-// Set this to your local timezone to ensure scheduled posts run at the correct times
-// Examples: 'America/New_York', 'America/Los_Angeles', 'Europe/London', 'UTC'
-// See: https://www.php.net/manual/en/timezones.php for full list
-define('DEFAULT_TIMEZONE', getenv('DEFAULT_TIMEZONE') !== false ? getenv('DEFAULT_TIMEZONE') : 'America/New_York');
-date_default_timezone_set(DEFAULT_TIMEZONE);
-
 // Default permissions for creating directories
 define('DIR_MODE', 0755);
 

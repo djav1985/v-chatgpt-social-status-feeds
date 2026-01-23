@@ -152,7 +152,6 @@ Install the project using the following steps:
 3. **Update Configuration:**
 
    - Open `root/config.php` and update the necessary variables, including MySQL database credentials.
-   - **Timezone Configuration (IMPORTANT):** Set `DEFAULT_TIMEZONE` to your local timezone to ensure scheduled posts run at the correct times. Examples: `'America/New_York'`, `'America/Los_Angeles'`, `'Europe/London'`, `'UTC'`. See [PHP Timezones](https://www.php.net/manual/en/timezones.php) for the full list. This setting ensures that when you schedule a post for 7am, it runs at 7am in YOUR timezone, not UTC.
    - Optionally adjust `CRON_MAX_EXECUTION_TIME` and `CRON_MEMORY_LIMIT` to control how long the cron script runs and how much memory it can use.
    - **Cache Configuration (Optional):** APCu caching is enabled by default with sensible TTL values. Configure via environment variables or edit these constants in `config.php`:
      - `CACHE_ENABLED` (default: true) - Master switch for APCu caching
