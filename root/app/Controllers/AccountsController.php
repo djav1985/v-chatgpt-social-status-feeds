@@ -267,13 +267,23 @@ class AccountsController extends Controller
                 foreach ($cronTimes as $time) {
                     $hour = (int) $time;
                     $slot = 'night';
-                    if ($hour >= 5 && $hour <= 12) {
+                    if ($hour >= 5 && $hour < 12) {
                         $slot = 'morning';
-                    } elseif ($hour >= 13 && $hour <= 17) {
+                    } elseif ($hour >= 12 && $hour <= 17) {
                         $slot = 'afternoon';
                     }
-                    $overview[$day][$slot][] = self::formatHour($hour) . ': ' . $acct->account;
+                    $overview[$day][$slot][] = [
+                        'hour' => $hour,
+                        'text' => self::formatHour($hour) . ': ' . $acct->account
+                    ];
                 }
+            }
+        }
+
+        // Sort entries within each slot chronologically by hour
+        foreach ($overview as $day => $slots) {
+            foreach ($slots as $slot => $entries) {
+                usort($overview[$day][$slot], fn($a, $b) => $a['hour'] <=> $b['hour']);
             }
         }
 
@@ -297,7 +307,7 @@ class AccountsController extends Controller
     /**
      * Convert the overview array to an HTML grid.
      *
-     * @param array<string, array<string, list<string>>> $overview    Organized array of posts
+     * @param array<string, array<string, list<array{hour: int, text: string}>>> $overview    Organized array of posts
      * @param array<int, string> $daysOfWeek  Days of the week in order
      * @return string HTML table grid
      */
@@ -312,7 +322,8 @@ class AccountsController extends Controller
                 $html .= '<strong>' . ucfirst($slot) . '</strong>';
                 $html .= '<ul>';
                 foreach ($overview[$day][$slot] as $entry) {
-                    $html .= '<li>' . htmlspecialchars((string)$entry) . '</li>';
+                    $entryText = is_array($entry) ? $entry['text'] : $entry;
+                    $html .= '<li>' . htmlspecialchars((string)$entryText) . '</li>';
                 }
                 if (empty($overview[$day][$slot])) {
                     $html .= '<li>&nbsp;</li>';
