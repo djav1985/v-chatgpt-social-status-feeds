@@ -307,7 +307,7 @@ class AccountsController extends Controller
     /**
      * Convert the overview array to an HTML grid.
      *
-     * @param array<string, array<string, list<string>>> $overview    Organized array of posts
+     * @param array<string, array<string, list<array{hour: int, text: string}>>> $overview    Organized array of posts
      * @param array<int, string> $daysOfWeek  Days of the week in order
      * @return string HTML table grid
      */
