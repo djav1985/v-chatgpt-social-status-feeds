@@ -60,13 +60,10 @@ class FeedController extends Controller
     /**
      * Retrieve all accounts for a given owner.
      *
-     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
-     * to provide fake account data during testing without database access.
-     *
      * @param string $accountOwner
      * @return array<int, array<string, mixed>>
      */
-    protected static function getAllAccountsForOwner(string $accountOwner): array
+    private static function getAllAccountsForOwner(string $accountOwner): array
     {
         return Account::getAllUserAccts($accountOwner);
     }
@@ -74,14 +71,11 @@ class FeedController extends Controller
     /**
      * Retrieve an account link for the owner/account pair.
      *
-     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
-     * to provide fake link data during testing without database access.
-     *
      * @param string $accountOwner
      * @param string $accountName
      * @return string
      */
-    protected static function getAccountLinkForOwner(string $accountOwner, string $accountName): string
+    private static function getAccountLinkForOwner(string $accountOwner, string $accountName): string
     {
         return Account::getAccountLink($accountOwner, $accountName);
     }
@@ -89,14 +83,11 @@ class FeedController extends Controller
     /**
      * Retrieve status updates for the owner/account pair.
      *
-     * This wrapper method exists to allow test doubles (like FeedControllerTestDouble)
-     * to provide fake status data during testing without database access.
-     *
      * @param string $accountOwner
      * @param string $accountName
      * @return array<int, array<string, mixed>>
      */
-    protected static function getStatusUpdatesForAccount(string $accountOwner, string $accountName): array
+    private static function getStatusUpdatesForAccount(string $accountOwner, string $accountName): array
     {
         return Status::getStatusUpdates($accountOwner, $accountName);
     }
