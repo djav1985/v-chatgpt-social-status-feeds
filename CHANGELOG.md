@@ -6,6 +6,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 ## Unreleased
 ### Added
 - **APCu Caching Infrastructure**: Implemented comprehensive two-tier caching system (L1: in-memory static, L2: APCu persistent) across all Models and Controllers
+- **Code Quality Improvements**: Refactored class methods to follow PHP standards and improve maintainability
   - New `CacheService` class with singleton pattern, automatic APCu detection, and fallback to in-memory caching
   - Integrated caching into `User`, `Account`, and `Status` models with configurable TTLs
   - RSS feed XML output caching for instant delivery of cached feeds
@@ -18,6 +19,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Regression coverage for next-day scheduling, stale job recovery, quota enforcement, and image purge edge cases.
 
 ### Changed
+- **Method Organization**: Reorganized methods in `QueueService` and `MaintenanceService` to follow PHP standards (properties → constructor → public → protected → private)
+- **Code Simplification**: Inlined trivial wrapper methods in `User`, `Account`, and `QueueService` models to reduce unnecessary abstraction
 - Queue worker invocations now use `php cron.php worker <task>` to acquire a PID lock before spawning the single-argument worker, ensuring only one queue runner is active at a time.
 - Worker locks are now tracked per job flag, preventing duplicate launches of the same task while allowing different cron workers to run in parallel.
 - `QueueService::runQueue()` loops with a fresh timestamp until no retry or pending jobs remain, draining any work that becomes due mid-run while continuing to prioritise retries.
@@ -34,6 +37,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Accounts dashboard and queue maintenance now reuse fetched account rows, share timestamp calculations, and prune only over-limit status histories to avoid redundant database work.
 
 ### Removed
+- **Dead Code Elimination**: Removed unused `statusesPerJob()` method from `QueueService`
 - Enqueue DBAL transport usage and the JSON-backed queue schema.
 - `STATUS_JOB_BATCH_SIZE` configuration option and the batch-size helper methods.
 
