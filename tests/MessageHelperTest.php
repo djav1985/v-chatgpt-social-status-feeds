@@ -15,12 +15,12 @@ final class MessageHelperTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Start a clean session for each test
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_write_close();
         }
-        
+
         $_SESSION = [];
         $this->session = SessionManager::getInstance();
     }

@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile PHPMD.TooManyPublicMethods - Test class requires comprehensive coverage
 
 declare(strict_types=1);
 
@@ -31,9 +32,9 @@ final class QueueServiceTest extends TestCase
     public function testNormalizeHoursFiltersInvalidValues(): void
     {
         $service = new QueueService();
-        
+
         $result = $this->invokePrivateMethod($service, 'normalizeHours', '0,6,12,18,24');
-        
+
         $this->assertIsArray($result);
         $this->assertCount(4, $result);
         $this->assertContains(0, $result);
@@ -176,10 +177,11 @@ final class QueueServiceTest extends TestCase
         $service = new QueueService();
         
         $result = $this->invokePrivateMethod($service, 'generateJobId');
-        
+
         $this->assertIsString($result);
         // UUID v4 format: 8-4-4-4-12 hex characters
-        $this->assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $result);
+        $pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
+        $this->assertMatchesRegularExpression($pattern, $result);
     }
 
     public function testGenerateJobIdProducesUniqueIds(): void

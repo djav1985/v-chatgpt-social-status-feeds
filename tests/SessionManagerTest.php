@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile PHPMD.TooManyPublicMethods - Test class requires comprehensive coverage
 
 declare(strict_types=1);
 
@@ -14,12 +15,12 @@ final class SessionManagerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Clean up any existing session
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_write_close();
         }
-        
+
         $_SESSION = [];
         $this->session = SessionManager::getInstance();
     }

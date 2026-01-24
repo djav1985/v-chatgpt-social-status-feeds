@@ -22,9 +22,9 @@ final class MaintenanceServiceTest extends TestCase
     public function testConstructorStoresJobType(): void
     {
         $service = new MaintenanceService('daily');
-        
+
         $jobType = $this->getPrivateProperty($service, 'jobType');
-        
+
         $this->assertSame('daily', $jobType);
     }
 
@@ -62,15 +62,13 @@ final class MaintenanceServiceTest extends TestCase
      */
     public function testPurgeImagesHandlesMissingDirectory(): void
     {
-        $service = new MaintenanceService();
-        
         // Create a test directory path
         $testDir = sys_get_temp_dir() . '/test-purge-images-' . uniqid();
-        
+
         // Since we can't easily override the hardcoded path in purgeImages,
         // we'll test the expected behavior conceptually
         $this->assertTrue(true, 'MaintenanceService should handle missing directories');
-        
+
         // Clean up if directory was created
         if (is_dir($testDir)) {
             rmdir($testDir);
