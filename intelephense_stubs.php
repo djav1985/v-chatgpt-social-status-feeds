@@ -18,8 +18,9 @@ namespace {
          * @param int $length
          * @return string
          */
-        function random_bytes(int $length) {
+        function random_bytes(int $length): string {
             // Stub for static analysis only.
+            return '';
         }
     }
 
@@ -29,8 +30,9 @@ namespace {
          * @param int $max
          * @return int
          */
-        function random_int(int $min, int $max) {
+        function random_int(int $min, int $max): int {
             // Stub for static analysis only.
+            return 0;
         }
     }
 
@@ -40,8 +42,9 @@ namespace {
          * @param int|null $max
          * @return int
          */
-        function mt_rand(?int $min = null, ?int $max = null) {
+        function mt_rand(?int $min = null, ?int $max = null): int {
             // Stub for static analysis only.
+            return 0;
         }
     }
 

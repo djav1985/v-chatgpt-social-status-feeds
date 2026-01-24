@@ -130,7 +130,7 @@ class ValidationHelper
      * @param int|null $max Maximum value (inclusive)
      * @return int|null Validated integer or null on failure
      */
-    public static function validateInteger($value, ?int $min = null, ?int $max = null): ?int
+    public static function validateInteger(mixed $value, ?int $min = null, ?int $max = null): ?int
     {
         $intValue = self::convertToInteger($value);
         
@@ -148,7 +148,7 @@ class ValidationHelper
      * @param mixed $days Days value to validate
      * @return string[] Array of validation errors (empty = valid)
      */
-    public static function validateDaysArray($days): array
+    public static function validateDaysArray(mixed $days): array
     {
         $errors = [];
         $validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -184,7 +184,7 @@ class ValidationHelper
      * @param mixed $cron Cron array to validate
      * @return string[] Array of validation errors (empty = valid)
      */
-    public static function validateCronArray($cron): array
+    public static function validateCronArray(mixed $cron): array
     {
         if (!is_array($cron)) {
             return ['Cron schedule must be an array.'];
@@ -349,7 +349,7 @@ class ValidationHelper
      * @param mixed $value Value to convert
      * @return int|null Integer value or null on failure
      */
-    private static function convertToInteger($value): ?int
+    private static function convertToInteger(mixed $value): ?int
     {
         if (is_int($value)) {
             return $value;
@@ -410,7 +410,7 @@ class ValidationHelper
      * @param mixed $hour Hour value to check
      * @return bool True if valid, false otherwise
      */
-    private static function isValidCronHour($hour): bool
+    private static function isValidCronHour(mixed $hour): bool
     {
         if (!v::digit()->validate((string) $hour)) {
             return false;

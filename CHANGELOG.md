@@ -21,6 +21,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 ### Changed
 - **Method Organization**: Reorganized methods in `QueueService` and `MaintenanceService` to follow PHP standards (properties → constructor → public → protected → private)
 - **Code Simplification**: Inlined trivial wrapper methods in `User`, `Account`, and `QueueService` models to reduce unnecessary abstraction
+- Added explicit return and parameter types in helper/cache/database stubs and documented UI script parameter expectations.
 - Aligned the PHP 8.2 requirement across Composer, Docker, and README prerequisites.
 - Documented the `processing` flag in the queue table schema.
 - Updated the README project structure overview to reflect top-level tooling, tests, and Docker layout.
