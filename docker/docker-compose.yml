@@ -10,7 +10,6 @@ services:
       API_ENDPOINT: 'https://api.openai.com/v1/'
       MODEL: 'gpt-4o-mini'
       TEMPERATURE: 1
-      TOKENS: 256
       DOMAIN: 'https://spectre3.hugev.xyz'
       SYSTEM_MSG: 'You are a social media marketer. You will respond with professional, fun, emoji loaded social status update and nothing else.'
       MAX_WIDTH: 720

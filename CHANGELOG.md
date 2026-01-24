@@ -23,6 +23,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - **Code Simplification**: Inlined trivial wrapper methods in `User`, `Account`, and `QueueService` models to reduce unnecessary abstraction
 - Aligned the PHP 8.2 requirement across Composer, Docker, and README prerequisites.
 - Documented the `processing` flag in the queue table schema.
+- Updated the README project structure overview to reflect top-level tooling, tests, and Docker layout.
 - Queue worker invocations now use `php cron.php worker <task>` to acquire a PID lock before spawning the single-argument worker, ensuring only one queue runner is active at a time.
 - Worker locks are now tracked per job flag, preventing duplicate launches of the same task while allowing different cron workers to run in parallel.
 - `QueueService::runQueue()` loops with a fresh timestamp until no retry or pending jobs remain, draining any work that becomes due mid-run while continuing to prioritise retries.
@@ -42,6 +43,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - **Dead Code Elimination**: Removed unused `statusesPerJob()` method from `QueueService`
 - Enqueue DBAL transport usage and the JSON-backed queue schema.
 - `STATUS_JOB_BATCH_SIZE` configuration option and the batch-size helper methods.
+- `TOKENS` configuration from Docker-specific environment and config scaffolding.
 
 ### Fixed
 - Added detection and handling for incomplete OpenAI API responses with `status: 'incomplete'` to provide clear error messages instead of failing silently when responses are truncated.

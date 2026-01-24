@@ -30,7 +30,7 @@ VIII. [ License](#-license)
 
 v-chatgpt-social-status-feeds is a modular PHP application for managing, scheduling, and distributing social media status updates. It features user authentication, account management, status scheduling, and real-time RSS feeds, all with a focus on security and extensibility. Scheduled posts are recorded in a compact `status_jobs` table and processed by purpose-built cron targets. Built for social media managers and developers, it streamlines multi-account status posting and automation.
 
-All PHP source files live inside the `root` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by Composer's `vendor/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
+Application PHP source lives inside the `root` directory, primarily in `root/app` and `root/public`. Tooling, tests, and Composer metadata live at the repository root, while container setup sits in the `docker` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by Composer's `vendor/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
 
 Version 3.0.0 introduces improvements such as dedicated classes for all database operations, a more intuitive user interface, and enhanced user settings for prompt customization. The API schema is now more structured, and the platform is more robust and user-friendly.
 
@@ -65,25 +65,30 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 
 ```sh
 └── /
+    ├── CHANGELOG.md
+    ├── MIGRATION.md
     ├── README.md
+    ├── composer.json
+    ├── composer.lock
     ├── docker/
-    └── root
-        ├── vendor/
-        ├── composer.json
-        ├── composer.lock
-        ├── config.php
-        ├── cron.php
-        ├── install.sql
-        ├── app/
-        │   ├── Core/
-        │   ├── Controllers/
-        │   ├── Models/
-        │   └── Views/
-        └── public/
-            ├── assets/
-            ├── images/
-            ├── index.php
-            └── install.php
+    ├── root/
+    │   ├── config.php
+    │   ├── cron.php
+    │   ├── install.sql
+    │   ├── upgrade.sql
+    │   ├── app/
+    │   │   ├── Core/
+    │   │   ├── Controllers/
+    │   │   ├── Models/
+    │   │   └── Views/
+    │   └── public/
+    │       ├── assets/
+    │       ├── images/
+    │       ├── index.php
+    │       ├── install.php
+    │       └── upgrade.php
+    ├── tests/
+    └── vendor/
 ```
 The code under `root/app` follows an MVC pattern with `Controllers`, `Models`, and `Views`. Shared framework classes live in the `Core` directory.
 
@@ -134,7 +139,7 @@ Call `$session->destroy();` to end the session during logout.
 Before getting started with the installation, ensure your runtime environment meets the following requirements:
 
 - **Web Server:** Apache
-- **Programming Language:** PHP 8.2+
+- **Programming Language:** PHP 8.2
 - **Database:** MySQL 8.0+ or compatible MariaDB
 
 ### ⚙️ Installation
@@ -207,6 +212,7 @@ CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_
 - **fill-queue** runs once daily to clear existing rows and append the current day's scheduled work, including hours earlier in the day.
 - **run-queue** runs frequently to process records where `scheduled_at <= NOW()`. Each invocation drains all due retry jobs before moving to pending jobs and repeats until neither queue has work remaining. Successful jobs are deleted. A first failure updates the row to `status = 'retry'`; a second failure deletes the job permanently.
 - `status` only tracks whether the job is on its original attempt (`pending`) or retrying (`retry`). There is no long-lived worker loop—cron cadence controls execution.
+- `processing` is flipped to `true` when a worker claims a job and reset to `false` when work completes or a stale job is released, preventing duplicate workers from acting on the same row.
 
 ### 🤖 Usage
 

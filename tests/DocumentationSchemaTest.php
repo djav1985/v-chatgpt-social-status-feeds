@@ -17,6 +17,14 @@ final class DocumentationSchemaTest extends TestCase
         $this->assertStringContainsString('processing BOOLEAN NOT NULL DEFAULT FALSE', $readme);
     }
 
+    public function testQueueTableDocsExplainProcessingFlagUsage(): void
+    {
+        $readme = file_get_contents(__DIR__ . '/../README.md');
+
+        $this->assertNotFalse($readme);
+        $this->assertStringContainsString('`processing` is flipped to `true` when a worker claims a job', $readme);
+    }
+
     public function testQueueTableSchemaIncludesProcessingColumn(): void
     {
         $installSql = file_get_contents(__DIR__ . '/../root/install.sql');
