@@ -56,26 +56,6 @@ final class MaintenanceServiceTest extends TestCase
     }
 
     /**
-     * Test that purgeImages handles missing directory gracefully.
-     * This test ensures the method returns true when the directory doesn't exist
-     * and can be created successfully.
-     */
-    public function testPurgeImagesHandlesMissingDirectory(): void
-    {
-        // Create a test directory path
-        $testDir = sys_get_temp_dir() . '/test-purge-images-' . uniqid();
-
-        // Since we can't easily override the hardcoded path in purgeImages,
-        // we'll test the expected behavior conceptually
-        $this->assertTrue(true, 'MaintenanceService should handle missing directories');
-
-        // Clean up if directory was created
-        if (is_dir($testDir)) {
-            rmdir($testDir);
-        }
-    }
-
-    /**
      * Test that the service maintains singleton-like behavior for worker locks.
      */
     public function testMultipleInstancesCanHaveDifferentJobTypes(): void
