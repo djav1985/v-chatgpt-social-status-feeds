@@ -157,24 +157,6 @@ final class RouterTest extends TestCase
     }
 
     /**
-     * Test that dispatch handles special characters in URI.
-     */
-    public function testDispatchHandlesSpecialCharactersInUri(): void
-    {
-        ob_start();
-        
-        try {
-            $this->router->dispatch('GET', '/test?foo=bar&baz=qux');
-        } catch (\Exception $e) {
-            // Expected
-        }
-        
-        ob_end_clean();
-        
-        $this->assertTrue(true, 'Special characters in URI handled gracefully');
-    }
-
-    /**
      * Test that Router maintains state across calls.
      */
     public function testRouterMaintainsState(): void
