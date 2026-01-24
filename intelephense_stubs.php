@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Intelephense/PHP static analysis stubs.
  *
@@ -17,8 +18,10 @@ namespace {
         /**
          * @param int $length
          * @return string
+         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
          */
-        function random_bytes(int $length): string {
+        function random_bytes(int $length): string
+        {
             // Stub for static analysis only.
             return '';
         }
@@ -29,8 +32,10 @@ namespace {
          * @param int $min
          * @param int $max
          * @return int
+         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
          */
-        function random_int(int $min, int $max): int {
+        function random_int(int $min, int $max): int
+        {
             // Stub for static analysis only.
             return 0;
         }
@@ -38,11 +43,13 @@ namespace {
 
     if (!function_exists('mt_rand')) {
         /**
-         * @param int|null $min
-         * @param int|null $max
+         * @param int $min
+         * @param int $max
          * @return int
+         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
          */
-        function mt_rand(?int $min = null, ?int $max = null): int {
+        function mt_rand(int $min = 0, int $max = PHP_INT_MAX): int
+        {
             // Stub for static analysis only.
             return 0;
         }
@@ -53,8 +60,10 @@ namespace {
          * @param int $pid
          * @param int $sig
          * @return bool
+         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
          */
-        function posix_kill(int $pid, int $sig): bool {
+        function posix_kill(int $pid, int $sig): bool
+        {
             // Stub for static analysis only.
             return false;
         }
@@ -64,7 +73,8 @@ namespace {
         /**
          * @return bool
          */
-        function apcu_enabled(): bool {
+        function apcu_enabled(): bool
+        {
             // Stub for static analysis only.
             return false;
         }
@@ -75,8 +85,10 @@ namespace {
          * @param string|string[] $key
          * @param bool $success
          * @return mixed
+         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
          */
-        function apcu_fetch(string|array $key, bool &$success = null): mixed {
+        function apcu_fetch(string|array $key, bool &$success = null): mixed
+        {
             // Stub for static analysis only.
         }
     }
@@ -87,8 +99,10 @@ namespace {
          * @param mixed $value
          * @param int $ttl
          * @return bool|array
+         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
          */
-        function apcu_store(string|array $key, mixed $value = null, int $ttl = 0): bool|array {
+        function apcu_store(string|array $key, mixed $value = null, int $ttl = 0): bool|array
+        {
             // Stub for static analysis only.
             return false;
         }
@@ -98,8 +112,10 @@ namespace {
         /**
          * @param string|string[]|APCUIterator $key
          * @return bool|string[]
+         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
          */
-        function apcu_delete(string|array|APCUIterator $key): bool|array {
+        function apcu_delete(string|array|APCUIterator $key): bool|array
+        {
             // Stub for static analysis only.
             return false;
         }
@@ -109,8 +125,10 @@ namespace {
         /**
          * @param string|string[] $keys
          * @return bool|string[]
+         * @SuppressWarnings(PHPMD.UnusedFormalParameter)
          */
-        function apcu_exists(string|array $keys): bool|array {
+        function apcu_exists(string|array $keys): bool|array
+        {
             // Stub for static analysis only.
             return false;
         }
@@ -120,7 +138,8 @@ namespace {
         /**
          * APCUIterator stub for static analysis.
          */
-        class APCUIterator implements Iterator {
+        class APCUIterator implements Iterator
+        {
             /**
              * @param string|string[]|null $search
              * @param int $format
@@ -132,16 +151,37 @@ namespace {
                 int $format = APC_ITER_ALL,
                 int $chunk_size = 100,
                 int $list = APC_LIST_ACTIVE
-            ) {}
+            ) {
+            }
 
-            public function current(): mixed {}
-            public function key(): mixed {}
-            public function next(): void {}
-            public function rewind(): void {}
-            public function valid(): bool { return false; }
-            public function getTotalCount(): int { return 0; }
-            public function getTotalHits(): int { return 0; }
-            public function getTotalSize(): int { return 0; }
+            public function current(): mixed
+            {
+            }
+            public function key(): mixed
+            {
+            }
+            public function next(): void
+            {
+            }
+            public function rewind(): void
+            {
+            }
+            public function valid(): bool
+            {
+                return false;
+            }
+            public function getTotalCount(): int
+            {
+                return 0;
+            }
+            public function getTotalHits(): int
+            {
+                return 0;
+            }
+            public function getTotalSize(): int
+            {
+                return 0;
+            }
         }
     }
 
