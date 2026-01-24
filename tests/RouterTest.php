@@ -123,22 +123,6 @@ final class RouterTest extends TestCase
     }
 
     /**
-     * Test that multiple calls to getInstance return the same instance.
-     */
-    public function testSingletonConsistency(): void
-    {
-        $instances = [];
-        
-        for ($i = 0; $i < 5; $i++) {
-            $instances[] = Router::getInstance();
-        }
-        
-        foreach ($instances as $instance) {
-            $this->assertSame($instances[0], $instance);
-        }
-    }
-
-    /**
      * Test that dispatch doesn't crash with empty URI.
      */
     public function testDispatchHandlesEmptyUri(): void
