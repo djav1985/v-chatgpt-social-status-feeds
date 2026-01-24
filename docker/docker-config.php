@@ -25,9 +25,6 @@ define('MODEL', getenv('MODEL'));
 // Temperature setting for the AI's creativity (0 to 2 where higher values mean more creative responses)
 define('TEMPERATURE', getenv('TEMPERATURE'));
 
-// Maximum number of tokens to generate in a response
-define('TOKENS', getenv('TOKENS'));
-
 // Domain where the status service is hosted
 define('DOMAIN', getenv('DOMAIN'));
 
