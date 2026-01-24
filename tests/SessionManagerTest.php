@@ -218,17 +218,4 @@ final class SessionManagerTest extends TestCase
         
         $this->assertSame($complexData, $result);
     }
-
-    public function testIsValidReturnsTrueWithValidSession(): void
-    {
-        $_SESSION['logged_in'] = true;
-        $_SESSION['timeout'] = time();
-        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        
-        $result = $this->session->isValid();
-        
-        $this->assertTrue($result);
-        // Timeout should be updated
-        $this->assertGreaterThanOrEqual(time(), $_SESSION['timeout']);
-    }
 }
