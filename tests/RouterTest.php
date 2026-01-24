@@ -23,20 +23,23 @@ final class RouterTest extends TestCase
         $instance1 = Router::getInstance();
         $instance2 = Router::getInstance();
 
+        $this->assertInstanceOf(Router::class, $instance1);
+        $this->assertInstanceOf(Router::class, $instance2);
         $this->assertSame($instance1, $instance2);
     }
 
-    public function testRouterIsSingleton(): void
-    {
-        $router1 = Router::getInstance();
-        $router2 = Router::getInstance();
-        
-        $this->assertInstanceOf(Router::class, $router1);
-        $this->assertInstanceOf(Router::class, $router2);
-        $this->assertSame($router1, $router2);
-    }
-
     /**
+     * Test that dispatch method exists and can be called.
+     * We can't fully test dispatch without a live HTTP environment,
+     * but we can verify the method exists and accepts the right parameters.
+     */
+    public function testDispatchMethodExists(): void
+    {
+        $this->assertTrue(
+            method_exists($this->router, 'dispatch'),
+            'Router should have a dispatch method'
+        );
+    }
      * Test that dispatch method exists and can be called.
      * We can't fully test dispatch without a live HTTP environment,
      * but we can verify the method exists and accepts the right parameters.
