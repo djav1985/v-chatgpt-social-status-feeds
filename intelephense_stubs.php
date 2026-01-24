@@ -22,7 +22,8 @@ namespace {
          */
         function random_bytes(int $length): string
         {
-            // Stub for static analysis only.
+            // Stub for static analysis only. Parameters are intentionally unused.
+            unset($length);
             return '';
         }
     }
@@ -36,7 +37,8 @@ namespace {
          */
         function random_int(int $min, int $max): int
         {
-            // Stub for static analysis only.
+            // Stub for static analysis only. Parameters are intentionally unused.
+            unset($min, $max);
             return 0;
         }
     }
@@ -50,7 +52,8 @@ namespace {
          */
         function mt_rand(int $min = 0, int $max = PHP_INT_MAX): int
         {
-            // Stub for static analysis only.
+            // Stub for static analysis only. Parameters are intentionally unused.
+            unset($min, $max);
             return 0;
         }
     }
@@ -64,7 +67,8 @@ namespace {
          */
         function posix_kill(int $pid, int $sig): bool
         {
-            // Stub for static analysis only.
+            // Stub for static analysis only. Parameters are intentionally unused.
+            unset($pid, $sig);
             return false;
         }
     }
@@ -89,7 +93,8 @@ namespace {
          */
         function apcu_fetch(string|array $key, bool &$success = null): mixed
         {
-            // Stub for static analysis only.
+            // Stub for static analysis only. Parameters are intentionally unused.
+            unset($key, $success);
         }
     }
 
@@ -103,7 +108,8 @@ namespace {
          */
         function apcu_store(string|array $key, mixed $value = null, int $ttl = 0): bool|array
         {
-            // Stub for static analysis only.
+            // Stub for static analysis only. Parameters are intentionally unused.
+            unset($key, $value, $ttl);
             return false;
         }
     }
@@ -116,7 +122,8 @@ namespace {
          */
         function apcu_delete(string|array|APCUIterator $key): bool|array
         {
-            // Stub for static analysis only.
+            // Stub for static analysis only. Parameters are intentionally unused.
+            unset($key);
             return false;
         }
     }
@@ -129,7 +136,8 @@ namespace {
          */
         function apcu_exists(string|array $keys): bool|array
         {
-            // Stub for static analysis only.
+            // Stub for static analysis only. Parameters are intentionally unused.
+            unset($keys);
             return false;
         }
     }
@@ -145,6 +153,7 @@ namespace {
              * @param int $format
              * @param int $chunk_size
              * @param int $list
+             * @SuppressWarnings(PHPMD.UnusedFormalParameter)
              */
             public function __construct(
                 string|array|null $search = null,
@@ -152,6 +161,8 @@ namespace {
                 int $chunk_size = 100,
                 int $list = APC_LIST_ACTIVE
             ) {
+                // Stub for static analysis only. Parameters are intentionally unused.
+                unset($search, $format, $chunk_size, $list);
             }
 
             public function current(): mixed
