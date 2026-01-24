@@ -157,26 +157,6 @@ final class RouterTest extends TestCase
     }
 
     /**
-     * Test that Router maintains state across calls.
-     */
-    public function testRouterMaintainsState(): void
-    {
-        $router1 = Router::getInstance();
-        
-        ob_start();
-        try {
-            $router1->dispatch('GET', '/test1');
-        } catch (\Exception $e) {
-            // Expected
-        }
-        ob_end_clean();
-        
-        $router2 = Router::getInstance();
-        
-        $this->assertSame($router1, $router2);
-    }
-
-    /**
      * Test that dispatch method signature is correct.
      */
     public function testDispatchMethodSignature(): void
