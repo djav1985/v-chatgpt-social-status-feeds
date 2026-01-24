@@ -18,7 +18,6 @@ use App\Core\Controller;
 use App\Core\Mailer;
 use App\Models\User;
 use function random_bytes;
-use App\Core\Csrf;
 use App\Core\SessionManager;
 use Respect\Validation\Validator;
 use App\Helpers\MessageHelper;
@@ -61,7 +60,7 @@ class UsersController extends Controller
             exit('Forbidden');
         }
 
-        if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
+        if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
             MessageHelper::addMessage('Invalid CSRF token. Please try again.');
             header('Location: /users');
             exit;

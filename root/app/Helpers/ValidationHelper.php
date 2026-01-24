@@ -6,6 +6,7 @@
 namespace App\Helpers;
 
 use Respect\Validation\Validator as v;
+use App\Core\SessionManager;
 
 class ValidationHelper
 {
@@ -405,5 +406,17 @@ class ValidationHelper
         }
 
         return $errors;
+    }
+
+    /**
+     * Validate a CSRF token against the session token.
+     *
+     * @param string $token Token provided by the client.
+     * @return bool True when the token matches the session token.
+     */
+    public static function validateCsrfToken(string $token): bool
+    {
+        $sessionToken = SessionManager::getInstance()->get('csrf_token');
+        return is_string($sessionToken) && hash_equals($sessionToken, $token);
     }
 }

@@ -19,7 +19,6 @@ use App\Core\Mailer;
 use App\Services\StatusService;
 use App\Models\User;
 use App\Models\Status;
-use App\Core\Csrf;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
@@ -83,7 +82,7 @@ class HomeController extends Controller
     public function handleSubmission(): void
     {
         $session = SessionManager::getInstance();
-        if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
+        if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
             MessageHelper::addMessage('Invalid CSRF token. Please try again.');
             header('Location: /home');
             exit;

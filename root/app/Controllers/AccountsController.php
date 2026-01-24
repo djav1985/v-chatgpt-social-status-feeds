@@ -17,7 +17,6 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Account;
 use App\Models\User;
-use App\Core\Csrf;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
@@ -55,7 +54,7 @@ class AccountsController extends Controller
     public function handleSubmission(): void
     {
         $session = SessionManager::getInstance();
-        if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
+        if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
             MessageHelper::addMessage('Invalid CSRF token. Please try again.');
             header('Location: /accounts');
             exit;

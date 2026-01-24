@@ -19,9 +19,9 @@ use App\Models\Blacklist;
 use function random_bytes;
 use App\Core\ErrorManager;
 use App\Core\Controller;
-use App\Core\Csrf;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
+use App\Helpers\ValidationHelper;
 
 class LoginController extends Controller
 {
@@ -50,7 +50,7 @@ class LoginController extends Controller
     {
         $session = SessionManager::getInstance();
         if ($session->get('logged_in') === true && isset($_POST['logout'])) {
-            if (Csrf::validate($_POST['csrf_token'] ?? '')) {
+            if (ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
                 SessionManager::getInstance()->destroy();
                 header('Location: /login');
                 exit();
@@ -66,7 +66,7 @@ class LoginController extends Controller
             exit();
         }
 
-        if (!Csrf::validate($_POST['csrf_token'] ?? '')) {
+        if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
             $error = 'Invalid CSRF token. Please try again.';
             ErrorManager::getInstance()->log($error);
             MessageHelper::addMessage($error);

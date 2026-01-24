@@ -75,7 +75,7 @@ class CacheService
      */
     public function get(string $key, $default = null)
     {
-        $prefixedKey = $this->prefixKey($key);
+        $prefixedKey = self::PREFIX . $key;
 
         if ($this->apcuAvailable) {
             $success = false;
@@ -109,7 +109,7 @@ class CacheService
      */
     public function set(string $key, $value, int $ttl = 3600): bool
     {
-        $prefixedKey = $this->prefixKey($key);
+        $prefixedKey = self::PREFIX . $key;
 
         if ($this->apcuAvailable) {
             $result = \apcu_store($prefixedKey, $value, $ttl);
@@ -141,7 +141,7 @@ class CacheService
      */
     public function delete(string $key): bool
     {
-        $prefixedKey = $this->prefixKey($key);
+        $prefixedKey = self::PREFIX . $key;
 
         if ($this->apcuAvailable) {
             return \apcu_delete($prefixedKey);
@@ -168,7 +168,7 @@ class CacheService
             self::$memoryCache = [];
         } else {
             // Clear matching keys from memory cache
-            $prefixedPattern = $this->prefixKey($pattern);
+            $prefixedPattern = self::PREFIX . $pattern;
             foreach (array_keys(self::$memoryCache) as $key) {
                 if (strpos($key, $prefixedPattern) === 0) {
                     unset(self::$memoryCache[$key]);
@@ -193,10 +193,10 @@ class CacheService
     {
         $prefixedPattern = $pattern === null 
             ? self::PREFIX 
-            : $this->prefixKey($pattern);
+            : self::PREFIX . $pattern;
 
         try {
-            $iterator = $this->createApcuIterator($prefixedPattern);
+            $iterator = new \APCUIterator('/^' . preg_quote($prefixedPattern, '/') . '/');
             return $this->deleteApcuEntries($iterator);
         } catch (\Throwable $e) {
             ErrorManager::getInstance()->log(
@@ -238,7 +238,7 @@ class CacheService
      */
     public function has(string $key): bool
     {
-        $prefixedKey = $this->prefixKey($key);
+        $prefixedKey = self::PREFIX . $key;
 
         if ($this->apcuAvailable) {
             return \apcu_exists($prefixedKey);
@@ -288,25 +288,4 @@ class CacheService
         }
     }
 
-    /**
-     * Add the cache key prefix.
-     *
-     * @param string $key The original key.
-     * @return string The prefixed key.
-     */
-    private function prefixKey(string $key): string
-    {
-        return self::PREFIX . $key;
-    }
-
-    /**
-     * Create an APCUIterator for the given pattern.
-     *
-     * @param string $pattern The pattern to match.
-     * @return \APCUIterator The iterator.
-     */
-    private function createApcuIterator(string $pattern): \APCUIterator
-    {
-        return new \APCUIterator('/^' . preg_quote($pattern, '/') . '/');
-    }
 }

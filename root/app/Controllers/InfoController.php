@@ -16,7 +16,6 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\User;
-use App\Core\Csrf;
 use Respect\Validation\Validator;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
@@ -50,7 +49,7 @@ class InfoController extends Controller
     {
         $token = $_POST['csrf_token'] ?? '';
         $session = SessionManager::getInstance();
-        if (!Csrf::validate($token)) {
+        if (!ValidationHelper::validateCsrfToken($token)) {
             MessageHelper::addMessage('Invalid CSRF token. Please try again.');
             header('Location: /info');
             exit;
