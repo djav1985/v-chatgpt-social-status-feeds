@@ -28,27 +28,7 @@ class User
      */
     private static array $userInfoCache = [];
 
-    /**
-     * Clear user cache entry from both L1 (static) and L2 (APCu) caches.
-     *
-     * @param string|null $username If null, clears all user cache entries
-     * @return void
-     */
-    private static function clearUserCacheEntry(?string $username = null): void
-    {
-        if ($username === null) {
-            self::$userInfoCache = [];
-            if (CACHE_ENABLED) {
-                CacheService::getInstance()->clear('user:info:');
-            }
-            return;
-        }
-
-        unset(self::$userInfoCache[trim($username)]);
-        if (CACHE_ENABLED) {
-            CacheService::getInstance()->delete('user:info:' . trim($username));
-        }
-    }
+    
 
     /**
      * Get all users from the database.
@@ -375,6 +355,28 @@ class User
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error updating profile: " . $e->getMessage(), 'error');
             throw $e;
+        }
+    }
+
+    /**
+     * Clear user cache entry from both L1 (static) and L2 (APCu) caches.
+     *
+     * @param string|null $username If null, clears all user cache entries
+     * @return void
+     */
+    private static function clearUserCacheEntry(?string $username = null): void
+    {
+        if ($username === null) {
+            self::$userInfoCache = [];
+            if (CACHE_ENABLED) {
+                CacheService::getInstance()->clear('user:info:');
+            }
+            return;
+        }
+
+        unset(self::$userInfoCache[trim($username)]);
+        if (CACHE_ENABLED) {
+            CacheService::getInstance()->delete('user:info:' . trim($username));
         }
     }
 }

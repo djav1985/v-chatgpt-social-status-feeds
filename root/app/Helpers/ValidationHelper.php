@@ -30,59 +30,6 @@ class ValidationHelper
 
         return $errors;
     }
-    
-    /**
-     * Validate username format.
-     *
-     * @param string $username Username to validate
-     * @return string[] Array of error messages
-     */
-    private static function validateUsername(string $username): array
-    {
-        if (!v::alnum()->noWhitespace()->lowercase()->length(5, 16)->validate($username)) {
-            return ['Username must be 5-16 characters long, lowercase letters and numbers only.'];
-        }
-        return [];
-    }
-    
-    /**
-     * Validate password if provided.
-     *
-     * @param string $password Password to validate
-     * @return string[] Array of error messages
-     */
-    private static function validatePasswordIfProvided(string $password): array
-    {
-        if ($password !== '' && !self::isValidPassword($password)) {
-            return ['Password must be 8-16 characters long, including at least one letter, one number, and one symbol.'];
-        }
-        return [];
-    }
-    
-    /**
-     * Validate email format.
-     *
-     * @param string $email Email to validate
-     * @return string[] Array of error messages
-     */
-    private static function validateEmail(string $email): array
-    {
-        if (!v::email()->validate($email)) {
-            return ['Please provide a valid email address.'];
-        }
-        return [];
-    }
-    
-    /**
-     * Check if password meets requirements.
-     *
-     * @param string $password Password to validate
-     * @return bool True if valid
-     */
-    private static function isValidPassword(string $password): bool
-    {
-        return v::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password);
-    }
 
     /**
      * Validate account creation/update input.
@@ -106,45 +53,6 @@ class ValidationHelper
         }
 
         return $errors;
-    }
-    
-    /**
-     * Validate account name format.
-     *
-     * @param string $accountName Account name to validate
-     * @return string[] Array of error messages
-     */
-    private static function validateAccountName(string $accountName): array
-    {
-        if (!v::alnum('-')->noWhitespace()->lowercase()->length(8, 18)->validate($accountName)) {
-            return ['Account name must be 8-18 characters long, alphanumeric and hyphens only.'];
-        }
-        return [];
-    }
-    
-    /**
-     * Validate account link if provided.
-     *
-     * @param string $link Link to validate
-     * @return string[] Array of error messages
-     */
-    private static function validateAccountLink(string $link): array
-    {
-        if ($link !== '' && !self::isValidHttpsUrl($link)) {
-            return ['Link must be a valid URL starting with https://.'];
-        }
-        return [];
-    }
-    
-    /**
-     * Check if URL is valid HTTPS URL.
-     *
-     * @param string $url URL to validate
-     * @return bool True if valid
-     */
-    private static function isValidHttpsUrl(string $url): bool
-    {
-        return v::url()->startsWith('https://')->validate($url);
     }
 
     /**
@@ -232,46 +140,6 @@ class ValidationHelper
         
         return self::validateIntegerBounds($intValue, $min, $max);
     }
-    
-    /**
-     * Convert value to integer if valid.
-     *
-     * @param mixed $value Value to convert
-     * @return int|null Integer value or null on failure
-     */
-    private static function convertToInteger($value): ?int
-    {
-        if (is_int($value)) {
-            return $value;
-        }
-        
-        if (is_string($value) && preg_match('/^-?\d+$/', $value)) {
-            return (int) $value;
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Validate integer is within bounds.
-     *
-     * @param int $value Integer to validate
-     * @param int|null $min Minimum value (inclusive)
-     * @param int|null $max Maximum value (inclusive)
-     * @return int|null Integer or null if out of bounds
-     */
-    private static function validateIntegerBounds(int $value, ?int $min, ?int $max): ?int
-    {
-        if ($min !== null && $value < $min) {
-            return null;
-        }
-        
-        if ($max !== null && $value > $max) {
-            return null;
-        }
-        
-        return $value;
-    }
 
     /**
      * Validate days array for account scheduling.
@@ -328,43 +196,6 @@ class ValidationHelper
 
         return self::validateCronHours($cron);
     }
-    
-    /**
-     * Validate individual cron hour values.
-     *
-     * @param array $cron Array of hour values
-     * @return string[] Array of validation errors (empty = valid)
-     */
-    private static function validateCronHours(array $cron): array
-    {
-        foreach ($cron as $hour) {
-            if ($hour === 'null' || $hour === null) {
-                continue;
-            }
-
-            if (!self::isValidCronHour($hour)) {
-                return ['Invalid cron hour(s) supplied. Hours must be numeric between 0 and 23.'];
-            }
-        }
-
-        return [];
-    }
-    
-    /**
-     * Check if a cron hour value is valid.
-     *
-     * @param mixed $hour Hour value to check
-     * @return bool True if valid, false otherwise
-     */
-    private static function isValidCronHour($hour): bool
-    {
-        if (!v::digit()->validate((string) $hour)) {
-            return false;
-        }
-
-        $intHour = (int) $hour;
-        return $intHour >= 0 && $intHour <= 23;
-    }
 
     /**
      * Escape output for safe HTML rendering.
@@ -418,5 +249,174 @@ class ValidationHelper
     {
         $sessionToken = SessionManager::getInstance()->get('csrf_token');
         return is_string($sessionToken) && hash_equals($sessionToken, $token);
+    }
+
+    /**
+     * Validate username format.
+     *
+     * @param string $username Username to validate
+     * @return string[] Array of error messages
+     */
+    private static function validateUsername(string $username): array
+    {
+        if (!v::alnum()->noWhitespace()->lowercase()->length(5, 16)->validate($username)) {
+            return ['Username must be 5-16 characters long, lowercase letters and numbers only.'];
+        }
+        return [];
+    }
+    
+    /**
+     * Validate password if provided.
+     *
+     * @param string $password Password to validate
+     * @return string[] Array of error messages
+     */
+    private static function validatePasswordIfProvided(string $password): array
+    {
+        if ($password !== '' && !self::isValidPassword($password)) {
+            return ['Password must be 8-16 characters long, including at least one letter, one number, and one symbol.'];
+        }
+        return [];
+    }
+    
+    /**
+     * Validate email format.
+     *
+     * @param string $email Email to validate
+     * @return string[] Array of error messages
+     */
+    private static function validateEmail(string $email): array
+    {
+        if (!v::email()->validate($email)) {
+            return ['Please provide a valid email address.'];
+        }
+        return [];
+    }
+    
+    /**
+     * Check if password meets requirements.
+     *
+     * @param string $password Password to validate
+     * @return bool True if valid
+     */
+    private static function isValidPassword(string $password): bool
+    {
+        return v::regex('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/')->validate($password);
+    }
+
+    /**
+     * Validate account name format.
+     *
+     * @param string $accountName Account name to validate
+     * @return string[] Array of error messages
+     */
+    private static function validateAccountName(string $accountName): array
+    {
+        if (!v::alnum('-')->noWhitespace()->lowercase()->length(8, 18)->validate($accountName)) {
+            return ['Account name must be 8-18 characters long, alphanumeric and hyphens only.'];
+        }
+        return [];
+    }
+    
+    /**
+     * Validate account link if provided.
+     *
+     * @param string $link Link to validate
+     * @return string[] Array of error messages
+     */
+    private static function validateAccountLink(string $link): array
+    {
+        if ($link !== '' && !self::isValidHttpsUrl($link)) {
+            return ['Link must be a valid URL starting with https://.'];
+        }
+        return [];
+    }
+    
+    /**
+     * Check if URL is valid HTTPS URL.
+     *
+     * @param string $url URL to validate
+     * @return bool True if valid
+     */
+    private static function isValidHttpsUrl(string $url): bool
+    {
+        return v::url()->startsWith('https://')->validate($url);
+    }
+
+    /**
+     * Convert value to integer if valid.
+     *
+     * @param mixed $value Value to convert
+     * @return int|null Integer value or null on failure
+     */
+    private static function convertToInteger($value): ?int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+        
+        if (is_string($value) && preg_match('/^-?\d+$/', $value)) {
+            return (int) $value;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Validate integer is within bounds.
+     *
+     * @param int $value Integer to validate
+     * @param int|null $min Minimum value (inclusive)
+     * @param int|null $max Maximum value (inclusive)
+     * @return int|null Integer or null if out of bounds
+     */
+    private static function validateIntegerBounds(int $value, ?int $min, ?int $max): ?int
+    {
+        if ($min !== null && $value < $min) {
+            return null;
+        }
+        
+        if ($max !== null && $value > $max) {
+            return null;
+        }
+        
+        return $value;
+    }
+    
+    /**
+     * Validate individual cron hour values.
+     *
+     * @param array $cron Array of hour values
+     * @return string[] Array of validation errors (empty = valid)
+     */
+    private static function validateCronHours(array $cron): array
+    {
+        foreach ($cron as $hour) {
+            if ($hour === 'null' || $hour === null) {
+                continue;
+            }
+
+            if (!self::isValidCronHour($hour)) {
+                return ['Invalid cron hour(s) supplied. Hours must be numeric between 0 and 23.'];
+            }
+        }
+
+        return [];
+    }
+    
+    /**
+     * Check if a cron hour value is valid.
+     *
+     * @param mixed $hour Hour value to check
+     * @return bool True if valid, false otherwise
+     */
+    private static function isValidCronHour($hour): bool
+    {
+        if (!v::digit()->validate((string) $hour)) {
+            return false;
+        }
+
+        $intHour = (int) $hour;
+        return $intHour >= 0 && $intHour <= 23;
     }
 }

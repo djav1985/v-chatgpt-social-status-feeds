@@ -51,6 +51,20 @@ class ErrorManager
     }
 
     /**
+     * Execute the given callback within the error handler context.
+     * Public static methods should appear before public instance methods.
+     */
+    public static function handle(callable $callback): void
+    {
+        $handler = self::getInstance();
+        try {
+            $callback();
+        } catch (Throwable $exception) {
+            $handler->handleException($exception);
+        }
+    }
+
+    /**
      * Log a message to the application log.
      */
     public function log(string $message, string $type = 'error'): void
@@ -95,19 +109,6 @@ class ErrorManager
             $this->log($message, 'fatal');
             http_response_code(500);
             echo 'A critical error occurred.';
-        }
-    }
-
-    /**
-     * Execute the given callback within the error handler context.
-     */
-    public static function handle(callable $callback): void
-    {
-        $handler = self::getInstance();
-        try {
-            $callback();
-        } catch (Throwable $exception) {
-            $handler->handleException($exception);
         }
     }
 }

@@ -29,24 +29,7 @@ class StatusService
     /** @var \OpenAI\Client|null */
     private static $client = null;
 
-    /**
-     * Get shared OpenAI client instance.
-     */
-    private static function getClient(): \OpenAI\Client
-    {
-        if (self::$client === null) {
-            self::$client = OpenAI::factory()
-                ->withApiKey(API_KEY)
-                ->withBaseUri(rtrim(API_ENDPOINT, '/'))
-                ->withHttpClient(new GuzzleClient([
-                    'timeout' => 30,
-                    'connect_timeout' => 10,
-                ]))
-                ->make();
-        }
-
-        return self::$client;
-    }
+    
     /**
      * Generates a status update and associated image for a given account.
      *
@@ -184,6 +167,25 @@ class StatusService
         Status::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
 
         return ['success' => true];
+    }
+
+    /**
+     * Get shared OpenAI client instance.
+     */
+    private static function getClient(): \OpenAI\Client
+    {
+        if (self::$client === null) {
+            self::$client = OpenAI::factory()
+                ->withApiKey(API_KEY)
+                ->withBaseUri(rtrim(API_ENDPOINT, '/'))
+                ->withHttpClient(new GuzzleClient([
+                    'timeout' => 30,
+                    'connect_timeout' => 10,
+                ]))
+                ->make();
+        }
+
+        return self::$client;
     }
 
     /**

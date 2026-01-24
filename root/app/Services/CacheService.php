@@ -182,53 +182,6 @@ class CacheService
 
         return $this->clearApcuCache($pattern);
     }
-    
-    /**
-     * Clear APCu cache entries.
-     *
-     * @param string|null $pattern Optional pattern to match keys
-     * @return bool True on success, false on failure
-     */
-    private function clearApcuCache(?string $pattern): bool
-    {
-        $prefixedPattern = $pattern === null 
-            ? self::PREFIX 
-            : self::PREFIX . $pattern;
-
-        try {
-            $iterator = new \APCUIterator('/^' . preg_quote($prefixedPattern, '/') . '/');
-            return $this->deleteApcuEntries($iterator);
-        } catch (\Throwable $e) {
-            ErrorManager::getInstance()->log(
-                "Failed to clear APCu cache with pattern '{$prefixedPattern}': {$e->getMessage()}",
-                'error'
-            );
-            return false;
-        }
-    }
-    
-    /**
-     * Delete APCu entries from iterator.
-     *
-     * @param \APCUIterator $iterator Iterator over cache entries
-     * @return bool True if all deletions succeeded
-     */
-    private function deleteApcuEntries(\APCUIterator $iterator): bool
-    {
-        $deleted = true;
-
-        foreach ($iterator as $entry) {
-            if (!\apcu_delete($entry['key'])) {
-                $deleted = false;
-                ErrorManager::getInstance()->log(
-                    "Failed to delete APCu cache key: {$entry['key']}",
-                    'warning'
-                );
-            }
-        }
-
-        return $deleted;
-    }
 
     /**
      * Check if a key exists in the cache.
@@ -286,6 +239,53 @@ class CacheService
             
             throw $e;
         }
+    }
+
+    /**
+     * Clear APCu cache entries.
+     *
+     * @param string|null $pattern Optional pattern to match keys
+     * @return bool True on success, false on failure
+     */
+    private function clearApcuCache(?string $pattern): bool
+    {
+        $prefixedPattern = $pattern === null 
+            ? self::PREFIX 
+            : self::PREFIX . $pattern;
+
+        try {
+            $iterator = new \APCUIterator('/^' . preg_quote($prefixedPattern, '/') . '/');
+            return $this->deleteApcuEntries($iterator);
+        } catch (\Throwable $e) {
+            ErrorManager::getInstance()->log(
+                "Failed to clear APCu cache with pattern '{$prefixedPattern}': {$e->getMessage()}",
+                'error'
+            );
+            return false;
+        }
+    }
+    
+    /**
+     * Delete APCu entries from iterator.
+     *
+     * @param \APCUIterator $iterator Iterator over cache entries
+     * @return bool True if all deletions succeeded
+     */
+    private function deleteApcuEntries(\APCUIterator $iterator): bool
+    {
+        $deleted = true;
+
+        foreach ($iterator as $entry) {
+            if (!\apcu_delete($entry['key'])) {
+                $deleted = false;
+                ErrorManager::getInstance()->log(
+                    "Failed to delete APCu cache key: {$entry['key']}",
+                    'warning'
+                );
+            }
+        }
+
+        return $deleted;
     }
 
 }

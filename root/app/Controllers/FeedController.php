@@ -57,30 +57,6 @@ class FeedController extends Controller
         $this->index($user, $account);
     }
 
-    /**
-     * Get image file size with caching to reduce filesystem I/O.
-     *
-     * @param string $pathOwner   Owner directory name
-     * @param string $pathAccount Account directory name
-     * @param string $pathImage   Image filename
-     * @return int File size in bytes, or 0 if file doesn't exist
-     */
-    private static function getImageFileSize(string $pathOwner, string $pathAccount, string $pathImage): int
-    {
-        if (!defined('CACHE_ENABLED') || !CACHE_ENABLED) {
-            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
-            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
-        }
-
-        $cacheKey = "image:size:{$pathOwner}:{$pathAccount}:{$pathImage}";
-        $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 600;
-
-        return CacheService::getInstance()->remember($cacheKey, $ttl, function () use ($pathOwner, $pathAccount, $pathImage) {
-            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
-            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
-        });
-    }
-
 
     /**
      * Output an RSS feed for a specific account or all accounts.
@@ -269,5 +245,29 @@ class FeedController extends Controller
             
             echo $xmlOutput;
         }
+    }
+
+    /**
+     * Get image file size with caching to reduce filesystem I/O.
+     *
+     * @param string $pathOwner   Owner directory name
+     * @param string $pathAccount Account directory name
+     * @param string $pathImage   Image filename
+     * @return int File size in bytes, or 0 if file doesn't exist
+     */
+    private static function getImageFileSize(string $pathOwner, string $pathAccount, string $pathImage): int
+    {
+        if (!defined('CACHE_ENABLED') || !CACHE_ENABLED) {
+            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
+            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
+        }
+
+        $cacheKey = "image:size:{$pathOwner}:{$pathAccount}:{$pathImage}";
+        $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 600;
+
+        return CacheService::getInstance()->remember($cacheKey, $ttl, function () use ($pathOwner, $pathAccount, $pathImage) {
+            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
+            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
+        });
     }
 }

@@ -129,21 +129,6 @@ class Status
         }
     }
     
-    /**
-     * Fetch status updates from database (uncached).
-     *
-     * @param string $username
-     * @param string $account
-     * @return array<int, array<string, mixed>>
-     */
-    private static function fetchStatusUpdates(string $username, string $account): array
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query("SELECT * FROM status_updates WHERE account = :accountName AND username = :accountOwner ORDER BY created_at DESC");
-        $db->bind(':accountName', $account);
-        $db->bind(':accountOwner', $username);
-        return $db->resultSet();
-    }
 
     /**
      * Count total statuses for a user and account.
@@ -171,26 +156,6 @@ class Status
         }
     }
     
-    /**
-     * Fetch status count from database (uncached).
-     *
-     * @param string $accountName
-     * @param string $accountOwner
-     * @return int
-     */
-    private static function fetchStatusCount(string $accountName, string $accountOwner): int
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account AND username = :username");
-        $db->bind(':account', $accountName);
-        $db->bind(':username', $accountOwner);
-        $result = $db->single();
-        if ($result) {
-            $result = (object)$result;
-            return $result->count;
-        }
-        return 0;
-    }
 
     public static function deleteOldStatuses(string $accountName, string $accountOwner, int $deleteCount): bool
     {
@@ -286,22 +251,6 @@ class Status
         }
     }
     
-    /**
-     * Fetch latest status update from database (uncached).
-     *
-     * @param string $accountName
-     * @param string $accountOwner
-     * @return object|null
-     */
-    private static function fetchLatestStatusUpdate(string $accountName, string $accountOwner): ?object
-    {
-        $db = DatabaseManager::getInstance();
-        $db->query("SELECT * FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at DESC LIMIT 1");
-        $db->bind(':account', $accountName);
-        $db->bind(':username', $accountOwner);
-        $result = $db->single();
-        return $result ? (object)$result : null;
-    }
     
     /**
      * Clear cached status data for a specific user/account combination.
@@ -342,5 +291,59 @@ class Status
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error clearing status cache: " . $e->getMessage(), 'error');
         }
+    }
+
+    /**
+     * Fetch status updates from database (uncached).
+     *
+     * @param string $username
+     * @param string $account
+     * @return array<int, array<string, mixed>>
+     */
+    private static function fetchStatusUpdates(string $username, string $account): array
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query("SELECT * FROM status_updates WHERE account = :accountName AND username = :accountOwner ORDER BY created_at DESC");
+        $db->bind(':accountName', $account);
+        $db->bind(':accountOwner', $username);
+        return $db->resultSet();
+    }
+
+    /**
+     * Fetch status count from database (uncached).
+     *
+     * @param string $accountName
+     * @param string $accountOwner
+     * @return int
+     */
+    private static function fetchStatusCount(string $accountName, string $accountOwner): int
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query("SELECT COUNT(*) as count FROM status_updates WHERE account = :account AND username = :username");
+        $db->bind(':account', $accountName);
+        $db->bind(':username', $accountOwner);
+        $result = $db->single();
+        if ($result) {
+            $result = (object)$result;
+            return $result->count;
+        }
+        return 0;
+    }
+
+    /**
+     * Fetch latest status update from database (uncached).
+     *
+     * @param string $accountName
+     * @param string $accountOwner
+     * @return object|null
+     */
+    private static function fetchLatestStatusUpdate(string $accountName, string $accountOwner): ?object
+    {
+        $db = DatabaseManager::getInstance();
+        $db->query("SELECT * FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at DESC LIMIT 1");
+        $db->bind(':account', $accountName);
+        $db->bind(':username', $accountOwner);
+        $result = $db->single();
+        return $result ? (object)$result : null;
     }
 }

@@ -23,6 +23,8 @@ use Exception;
 use App\Core\ErrorManager;
 class DatabaseManager
 {
+    private const MAX_RETRIES = 3;
+
     private static ?DatabaseManager $instance = null;
     private static ?Connection $dbh = null;
     private static ?int $lastUsedTime = null;
@@ -36,7 +38,6 @@ class DatabaseManager
     private ?Result $result = null;
     private ?int $affectedRows = null;
     private int $retryCount = 0;
-    private const MAX_RETRIES = 3;
 
     /**
      * Create a new DatabaseManager instance and connect.
@@ -59,60 +60,6 @@ class DatabaseManager
             self::$instance = new self();
         }
         return self::$instance;
-    }
-
-    /**
-     * Establish a database connection if needed.
-     *
-     * @return void
-     */
-    private function connect(): void
-    {
-        if (self::$dbh !== null && self::$lastUsedTime !== null && (time() - self::$lastUsedTime) > self::$idleTimeout) {
-            $this->closeConnection();
-        }
-
-        if (self::$dbh === null) {
-            $params = [
-                'dbname'   => DB_NAME,
-                'user'     => DB_USER,
-                'password' => DB_PASSWORD,
-                'host'     => DB_HOST,
-                'driver'   => 'pdo_mysql',
-                'charset'  => 'utf8mb4',
-            ];
-
-            try {
-                self::$dbh = DriverManager::getConnection($params);
-            } catch (DBALException $e) {
-                ErrorManager::getInstance()->log('Database connection failed: ' . $e->getMessage(), 'error');
-                throw new Exception('Database connection failed');
-            }
-        }
-
-        self::$lastUsedTime = time();
-    }
-
-    /**
-     * Close the current database connection.
-     *
-     * @return void
-     */
-    private function closeConnection(): void
-    {
-        self::$dbh = null;
-        self::$lastUsedTime = null;
-    }
-
-    /**
-     * Reconnect to the database.
-     *
-     * @return void
-     */
-    private function reconnect(): void
-    {
-        $this->closeConnection();
-        $this->connect();
     }
 
     /**
@@ -285,5 +232,59 @@ class DatabaseManager
         $code = $e->getPrevious() ? $e->getPrevious()->getCode() : $e->getCode();
         $errors = ['2006', '2013', '1047', '1049'];
         return in_array((string) $code, $errors, true);
+    }
+
+    /**
+     * Establish a database connection if needed.
+     *
+     * @return void
+     */
+    private function connect(): void
+    {
+        if (self::$dbh !== null && self::$lastUsedTime !== null && (time() - self::$lastUsedTime) > self::$idleTimeout) {
+            $this->closeConnection();
+        }
+
+        if (self::$dbh === null) {
+            $params = [
+                'dbname'   => DB_NAME,
+                'user'     => DB_USER,
+                'password' => DB_PASSWORD,
+                'host'     => DB_HOST,
+                'driver'   => 'pdo_mysql',
+                'charset'  => 'utf8mb4',
+            ];
+
+            try {
+                self::$dbh = DriverManager::getConnection($params);
+            } catch (DBALException $e) {
+                ErrorManager::getInstance()->log('Database connection failed: ' . $e->getMessage(), 'error');
+                throw new Exception('Database connection failed');
+            }
+        }
+
+        self::$lastUsedTime = time();
+    }
+
+    /**
+     * Close the current database connection.
+     *
+     * @return void
+     */
+    private function closeConnection(): void
+    {
+        self::$dbh = null;
+        self::$lastUsedTime = null;
+    }
+
+    /**
+     * Reconnect to the database.
+     *
+     * @return void
+     */
+    private function reconnect(): void
+    {
+        $this->closeConnection();
+        $this->connect();
     }
 }
