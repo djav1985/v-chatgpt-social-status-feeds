@@ -134,7 +134,7 @@ Call `$session->destroy();` to end the session during logout.
 Before getting started with the installation, ensure your runtime environment meets the following requirements:
 
 - **Web Server:** Apache
-- **Programming Language:** PHP 8.0+
+- **Programming Language:** PHP 8.2+
 - **Database:** MySQL 8.0+ or compatible MariaDB
 
 ### ⚙️ Installation
@@ -197,7 +197,8 @@ CREATE TABLE status_jobs (
     scheduled_at BIGINT NOT NULL,
     account VARCHAR(255) NOT NULL,
     username VARCHAR(255) NOT NULL,
-    status ENUM('pending','retry') NOT NULL DEFAULT 'pending'
+    status ENUM('pending','retry') NOT NULL DEFAULT 'pending',
+    processing BOOLEAN NOT NULL DEFAULT FALSE
 );
 CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
 CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
