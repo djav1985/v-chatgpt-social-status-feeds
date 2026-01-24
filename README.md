@@ -139,7 +139,7 @@ Call `$session->destroy();` to end the session during logout.
 Before getting started with the installation, ensure your runtime environment meets the following requirements:
 
 - **Web Server:** Apache
-- **Programming Language:** PHP 8.2
+- **Programming Language:** PHP 8.2+
 - **Database:** MySQL 8.0+ or compatible MariaDB
 
 ### ⚙️ Installation
