@@ -109,6 +109,22 @@ final class CacheServiceTest extends TestCase
         $this->assertSame(1, $callCount, 'Callback should not be called again');
     }
 
+    public function testRememberStoresArray(): void
+    {
+        $key = 'array_key';
+        $expectedValue = [
+            'status' => 'ok',
+            'count' => 3,
+        ];
+
+        $result = $this->cache->remember($key, 60, function () use ($expectedValue) {
+            return $expectedValue;
+        });
+
+        $this->assertSame($expectedValue, $result);
+        $this->assertSame($expectedValue, $this->cache->get($key));
+    }
+
     public function testSetWithTtl(): void
     {
         $key = 'test_key';

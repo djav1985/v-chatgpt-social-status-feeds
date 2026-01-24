@@ -129,7 +129,8 @@ require 'partials/header.php';
      * Toggles the visibility of the status content and account action container.
      * Ensures only one section is open at a time.
      * Saves the toggle state in localStorage.
-     * @param {HTMLElement} button - The button that was clicked to toggle the section.
+     * @param {HTMLElement|null} element - The element to show or hide.
+     * @param {boolean} shouldShow - Whether the element should be visible.
      */
     function setDisplayState(element, shouldShow) {
         if (!element) return;
@@ -139,6 +140,10 @@ require 'partials/header.php';
         element.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
     }
 
+    /**
+     * Toggle the active status section for the selected account.
+     * @param {HTMLButtonElement} button - The collapse toggle button.
+     */
     function toggleSection(button) {
         const statusContainer = button.closest('.status-container');
         if (!statusContainer) return;

@@ -73,7 +73,7 @@ class CacheService
      * @param mixed $default Default value if key is not found.
      * @return mixed The cached value or default.
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $prefixedKey = self::PREFIX . $key;
 
@@ -107,7 +107,7 @@ class CacheService
      * @param int $ttl Time-to-live in seconds (0 = never expires).
      * @return bool True on success, false on failure.
      */
-    public function set(string $key, $value, int $ttl = 3600): bool
+    public function set(string $key, mixed $value, int $ttl = 3600): bool
     {
         $prefixedKey = self::PREFIX . $key;
 
@@ -218,7 +218,7 @@ class CacheService
      * @param callable $callback Callback to generate value if not cached.
      * @return mixed The cached or generated value.
      */
-    public function remember(string $key, int $ttl, callable $callback)
+    public function remember(string $key, int $ttl, callable $callback): mixed
     {
         $sentinel = new \stdClass();
         $value = $this->get($key, $sentinel);

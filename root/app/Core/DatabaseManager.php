@@ -86,7 +86,7 @@ class DatabaseManager
      * @param int|null $type  Parameter type constant
      * @return void
      */
-    public function bind(string $param, $value, ?int $type = null): void
+    public function bind(string $param, mixed $value, ?int $type = null): void
     {
         if ($type === null) {
             switch (true) {
