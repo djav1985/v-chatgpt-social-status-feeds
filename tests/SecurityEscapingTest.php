@@ -16,7 +16,7 @@ class SecurityEscapingTest extends TestCase
         $method->setAccessible(true);
 
         $input = '"onmouseover="alert(1)" & <script>';
-        $expected = htmlspecialchars($input, ENT_QUOTES);
+        $expected = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
 
         $this->assertSame($expected, $method->invoke(null, $input));
     }
@@ -28,7 +28,7 @@ class SecurityEscapingTest extends TestCase
         $method->setAccessible(true);
 
         $input = "Welcome to \"System\" <b>Notice</b> & enjoy";
-        $expected = htmlspecialchars($input, ENT_QUOTES);
+        $expected = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
 
         $this->assertSame($expected, $method->invoke(null, $input));
     }
