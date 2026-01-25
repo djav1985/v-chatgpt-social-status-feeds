@@ -110,7 +110,7 @@ class InfoController extends Controller
      */
     private static function escapeSystemMessage(string $message): string
     {
-        return htmlspecialchars($message, ENT_QUOTES);
+        return htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
     }
 
     /**
