@@ -79,10 +79,10 @@ class InfoController extends Controller
     {
         $userInfo = User::getUserInfo($username);
         if ($userInfo) {
-            $data = "data-who=\"" . htmlspecialchars($userInfo->who, ENT_QUOTES) . "\" ";
-            $data .= "data-where=\"" . htmlspecialchars($userInfo->where, ENT_QUOTES) . "\" ";
-            $data .= "data-what=\"" . htmlspecialchars($userInfo->what, ENT_QUOTES) . "\" ";
-            $data .= "data-goal=\"" . htmlspecialchars($userInfo->goal, ENT_QUOTES) . "\"";
+            $data = "data-who=\"" . htmlspecialchars($userInfo->who, ENT_QUOTES, 'UTF-8') . "\" ";
+            $data .= "data-where=\"" . htmlspecialchars($userInfo->where, ENT_QUOTES, 'UTF-8') . "\" ";
+            $data .= "data-what=\"" . htmlspecialchars($userInfo->what, ENT_QUOTES, 'UTF-8') . "\" ";
+            $data .= "data-goal=\"" . htmlspecialchars($userInfo->goal, ENT_QUOTES, 'UTF-8') . "\"";
             return $data;
         }
         return '';
@@ -99,7 +99,7 @@ class InfoController extends Controller
         $userInfo = User::getUserInfo($username);
         if ($userInfo) {
             $systemMessage = "<span style=\"color: blue; font-weight: bold;\">" . self::escapeSystemMessage(SYSTEM_MSG) . "</span>";
-            $systemMessage .= " <span style=\"color: blue; font-weight: bold;\">You work for</span> " . htmlspecialchars($userInfo->who, ENT_QUOTES) . " <span style=\"color: blue; font-weight: bold;\">located in</span> " . htmlspecialchars($userInfo->where, ENT_QUOTES) . ". " . htmlspecialchars($userInfo->what, ENT_QUOTES) . " <span style=\"color: blue; font-weight: bold;\">Your goal is</span> " . htmlspecialchars($userInfo->goal, ENT_QUOTES) . ".";
+            $systemMessage .= " <span style=\"color: blue; font-weight: bold;\">You work for</span> " . htmlspecialchars($userInfo->who, ENT_QUOTES, 'UTF-8') . " <span style=\"color: blue; font-weight: bold;\">located in</span> " . htmlspecialchars($userInfo->where, ENT_QUOTES, 'UTF-8') . ". " . htmlspecialchars($userInfo->what, ENT_QUOTES, 'UTF-8') . " <span style=\"color: blue; font-weight: bold;\">Your goal is</span> " . htmlspecialchars($userInfo->goal, ENT_QUOTES, 'UTF-8') . ".";
             return $systemMessage;
         }
         return "<span style=\"color: blue; font-weight: bold;\">" . self::escapeSystemMessage(SYSTEM_MSG) . "</span>";
