@@ -58,3 +58,5 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Dashboard share/copy buttons now emit URL-encoded paths so clipboard and share APIs work with names containing spaces or reserved characters.
 - Queue scheduling releases stale `processing` jobs, enforces API quotas for background runs, and guards image purging when the directory is missing.
 - Account schedule updates now clear queued jobs before re-enqueuing, and queue scheduling skips past hours instead of rescheduling them.
+- **Reduced APCu logging noise**: CacheService now logs "APCu not available" message only once per process instead of on every instantiation, eliminating redundant I/O overhead.
+- **Added queue processing backoff**: QueueService now includes a 10-second pause after failed status generation and a 5-second idle sleep when no jobs are claimed, preventing tight retry loops and reducing CPU usage during OpenAI API failures or idle periods.
