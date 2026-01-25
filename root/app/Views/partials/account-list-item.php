@@ -18,7 +18,8 @@
                 <?php
                 $csrfToken = htmlspecialchars(
                     App\Core\SessionManager::getInstance()->get('csrf_token'),
-                    ENT_QUOTES
+                    ENT_QUOTES,
+                    'UTF-8'
                 );
                 ?>
                 <input
