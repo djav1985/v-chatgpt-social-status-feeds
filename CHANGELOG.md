@@ -48,6 +48,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - `TOKENS` configuration from Docker-specific environment and config scaffolding.
 
 ### Fixed
+- **Security**: Added `rel="noopener noreferrer"` to external links with `target="_blank"` in account-list-item.php to prevent reverse-tabnabbing attacks.
+- Added regression test in `ViewEscapingTest.php` to ensure all external links with `target="_blank"` include the secure `rel` attribute.
 - Escaped CSRF token rendering, system message text, and account data attributes to harden HTML output against injection.
 - Ensured view-layer output consistently escapes user-configurable fields with `ENT_QUOTES` in account and profile screens.
 - Added detection and handling for incomplete OpenAI API responses with `status: 'incomplete'` to provide clear error messages instead of failing silently when responses are truncated.
