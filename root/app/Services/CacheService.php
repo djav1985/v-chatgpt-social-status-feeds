@@ -41,17 +41,23 @@ class CacheService
     private static array $memoryCache = [];
 
     /**
+     * Flag to track if APCu unavailable message has been logged.
+     */
+    private static bool $apcuUnavailableLogged = false;
+
+    /**
      * Private constructor to enforce singleton pattern.
      */
     private function __construct()
     {
         $this->apcuAvailable = extension_loaded('apcu') && \apcu_enabled();
         
-        if (!$this->apcuAvailable) {
+        if (!$this->apcuAvailable && !self::$apcuUnavailableLogged) {
             ErrorManager::getInstance()->log(
                 'APCu is not available. Using in-memory cache fallback.',
                 'info'
             );
+            self::$apcuUnavailableLogged = true;
         }
     }
 

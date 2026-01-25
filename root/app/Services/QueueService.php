@@ -127,6 +127,11 @@ class QueueService
                     }
                     $processedAny = true;
                 }
+
+                // Add idle sleep when no jobs were processed to avoid tight loops
+                if (!$processedAny) {
+                    sleep(5);
+                }
             } while ($processedAny);
         } finally {
             $this->releaseWorkerLock();
@@ -384,6 +389,9 @@ class QueueService
                     // Pending jobs that fail should be marked for retry
                     StatusJob::markStatusAndProcessing($job['id'], 'retry', false);
                 }
+
+                // Add 10-second backoff after failed status generation to avoid tight retry loops
+                sleep(10);
             }
         }
     }
