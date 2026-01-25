@@ -270,13 +270,13 @@ class AccountsController extends Controller
                 $timesStr = implode(', ', $times);
             }
 
-            $dataAttributes  = "data-account-name=\"{$accountName}\" ";
-            $dataAttributes .= "data-prompt=\"" . htmlspecialchars($account->prompt) . "\" ";
-            $dataAttributes .= "data-link=\"" . htmlspecialchars($account->link) . "\" ";
+            $dataAttributes  = "data-account-name=\"" . self::escapeAttribute($accountName) . "\" ";
+            $dataAttributes .= "data-prompt=\"" . self::escapeAttribute($account->prompt) . "\" ";
+            $dataAttributes .= "data-link=\"" . self::escapeAttribute($account->link) . "\" ";
             $dataAttributes .= "data-hashtags=\"" . ($account->hashtags ? '1' : '0') . "\" ";
-            $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $account->cron))) . "\" ";
-            $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $account->days))) . "\" ";
-            $dataAttributes .= "data-platform=\"" . htmlspecialchars($account->platform) . "\"";
+            $dataAttributes .= "data-cron=\"" . self::escapeAttribute(implode(',', explode(',', $account->cron))) . "\" ";
+            $dataAttributes .= "data-days=\"" . self::escapeAttribute(implode(',', explode(',', $account->days))) . "\" ";
+            $dataAttributes .= "data-platform=\"" . self::escapeAttribute($account->platform) . "\"";
 
             ob_start();
             $viewData = [
@@ -291,6 +291,14 @@ class AccountsController extends Controller
             $output .= ob_get_clean();
         }
         return $output;
+    }
+
+    /**
+     * Escape attribute values for safe HTML output.
+     */
+    private static function escapeAttribute(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES);
     }
 
     /**

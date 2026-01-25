@@ -35,9 +35,9 @@ final class MessageHelperTest extends TestCase
     public function testAddMessageStoresMessageInSession(): void
     {
         $message = 'Test message';
-        
+
         MessageHelper::addMessage($message);
-        
+
         $messages = $this->session->get('messages', []);
         $this->assertIsArray($messages);
         $this->assertCount(1, $messages);
@@ -49,11 +49,11 @@ final class MessageHelperTest extends TestCase
         $message1 = 'First message';
         $message2 = 'Second message';
         $message3 = 'Third message';
-        
+
         MessageHelper::addMessage($message1);
         MessageHelper::addMessage($message2);
         MessageHelper::addMessage($message3);
-        
+
         $messages = $this->session->get('messages', []);
         $this->assertCount(3, $messages);
         $this->assertSame($message1, $messages[0]);
@@ -65,10 +65,10 @@ final class MessageHelperTest extends TestCase
     {
         // Pre-populate session with a message
         $this->session->set('messages', ['Existing message']);
-        
+
         $newMessage = 'New message';
         MessageHelper::addMessage($newMessage);
-        
+
         $messages = $this->session->get('messages', []);
         $this->assertCount(2, $messages);
         $this->assertSame('Existing message', $messages[0]);
@@ -79,14 +79,14 @@ final class MessageHelperTest extends TestCase
     {
         $message1 = 'Test message 1';
         $message2 = 'Test message 2';
-        
+
         MessageHelper::addMessage($message1);
         MessageHelper::addMessage($message2);
-        
+
         ob_start();
         MessageHelper::displayAndClearMessages();
         $output = ob_get_clean();
-        
+
         $this->assertStringContainsString('<script>', $output);
         $this->assertStringContainsString('showToast', $output);
         $this->assertStringContainsString(json_encode($message1), $output);
@@ -96,13 +96,13 @@ final class MessageHelperTest extends TestCase
     public function testDisplayAndClearMessagesClearsSession(): void
     {
         MessageHelper::addMessage('Test message');
-        
+
         $this->assertNotEmpty($this->session->get('messages', []));
-        
+
         ob_start();
         MessageHelper::displayAndClearMessages();
         ob_end_clean();
-        
+
         $messages = $this->session->get('messages', []);
         $this->assertIsArray($messages);
         $this->assertEmpty($messages);
@@ -112,24 +112,24 @@ final class MessageHelperTest extends TestCase
     {
         // Ensure no messages in session
         $this->session->set('messages', []);
-        
+
         ob_start();
         MessageHelper::displayAndClearMessages();
         $output = ob_get_clean();
-        
+
         $this->assertEmpty($output);
     }
 
     public function testDisplayAndClearMessagesHandlesSpecialCharacters(): void
     {
         $message = 'Message with "quotes" and <html>';
-        
+
         MessageHelper::addMessage($message);
-        
+
         ob_start();
         MessageHelper::displayAndClearMessages();
         $output = ob_get_clean();
-        
+
         // JSON encoding should escape special characters properly
         $this->assertStringContainsString(json_encode($message), $output);
     }
@@ -138,10 +138,10 @@ final class MessageHelperTest extends TestCase
     {
         MessageHelper::addMessage('Message 1');
         $this->assertCount(1, $this->session->get('messages', []));
-        
+
         MessageHelper::addMessage('Message 2');
         $this->assertCount(2, $this->session->get('messages', []));
-        
+
         MessageHelper::addMessage('Message 3');
         $this->assertCount(3, $this->session->get('messages', []));
     }
@@ -149,7 +149,7 @@ final class MessageHelperTest extends TestCase
     public function testEmptyStringMessage(): void
     {
         MessageHelper::addMessage('');
-        
+
         $messages = $this->session->get('messages', []);
         $this->assertCount(1, $messages);
         $this->assertSame('', $messages[0]);

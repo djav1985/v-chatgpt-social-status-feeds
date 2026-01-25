@@ -172,6 +172,10 @@ final class CronCliTest extends TestCase
 
     private function workerLockPath(string $jobType): string
     {
-        return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'socialrss-worker-' . $jobType . '.lock';
+        return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
+            . DIRECTORY_SEPARATOR
+            . 'socialrss-worker-'
+            . $jobType
+            . '.lock';
     }
 }
