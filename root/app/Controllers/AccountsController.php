@@ -176,7 +176,7 @@ class AccountsController extends Controller
                 $html .= '<ul>';
                 foreach ($overview[$day][$slot] as $entry) {
                     $entryText = is_array($entry) ? $entry['text'] : $entry;
-                    $html .= '<li>' . htmlspecialchars((string)$entryText) . '</li>';
+                    $html .= '<li>' . htmlspecialchars((string) $entryText, ENT_QUOTES, 'UTF-8') . '</li>';
                 }
                 if (empty($overview[$day][$slot])) {
                     $html .= '<li>&nbsp;</li>';
@@ -270,7 +270,8 @@ class AccountsController extends Controller
                 $timesStr = implode(', ', $times);
             }
 
-            $dataAttributes  = "data-account-name=\"" . htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8') . "\" ";
+            $escapedAccountName = htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8');
+            $dataAttributes  = "data-account-name=\"" . $escapedAccountName . "\" ";
             $dataAttributes .= "data-prompt=\"" . htmlspecialchars($account->prompt, ENT_QUOTES, 'UTF-8') . "\" ";
             $dataAttributes .= "data-link=\"" . htmlspecialchars($account->link, ENT_QUOTES, 'UTF-8') . "\" ";
             $dataAttributes .= "data-hashtags=\"" . ($account->hashtags ? '1' : '0') . "\" ";

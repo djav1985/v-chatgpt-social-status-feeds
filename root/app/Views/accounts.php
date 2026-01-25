@@ -72,10 +72,10 @@ require 'partials/header.php';
             <div class="card-body account-summary">
                 <h4>Account Summary</h4>
                 <ul class="account-summary-list">
-                    <li><strong>Total Accounts:</strong> <?php echo htmlspecialchars((string) $totalAccounts); ?></li>
-                    <li><strong>Max API Calls:</strong> <?php echo htmlspecialchars((string) $maxApiCallsLabel); ?></li>
-                    <li><strong>Used API Calls:</strong> <?php echo htmlspecialchars((string) $usedApiCalls); ?></li>
-                    <li><strong>Expires:</strong> <?php echo htmlspecialchars((string) $expiresLabel); ?></li>
+                    <li><strong>Total Accounts:</strong> <?php echo htmlspecialchars((string) $totalAccounts, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <li><strong>Max API Calls:</strong> <?php echo htmlspecialchars((string) $maxApiCallsLabel, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <li><strong>Used API Calls:</strong> <?php echo htmlspecialchars((string) $usedApiCalls, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <li><strong>Expires:</strong> <?php echo htmlspecialchars((string) $expiresLabel, ENT_QUOTES, 'UTF-8'); ?></li>
                 </ul>
             </div>
         </div>

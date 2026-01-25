@@ -30,7 +30,7 @@ VIII. [ License](#-license)
 
 v-chatgpt-social-status-feeds is a modular PHP application for managing, scheduling, and distributing social media status updates. It features user authentication, account management, status scheduling, and real-time RSS feeds, all with a focus on security and extensibility. Scheduled posts are recorded in a compact `status_jobs` table and processed by purpose-built cron targets. Built for social media managers and developers, it streamlines multi-account status posting and automation.
 
-Application PHP source lives inside the `root` directory, primarily in `root/app` and `root/public`. Tooling, tests, and Composer metadata live at the repository root, while container setup sits in the `docker` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by Composer's `vendor/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
+Application PHP source lives inside the `root` directory, primarily in `root/app` and `root/public`. Runtime dependencies for the application are managed under `root/composer.json` and `root/vendor`, while tooling, tests, and repo-level Composer metadata live at the repository root. Container setup sits in the `docker` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by Composer's `vendor/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
 
 Version 3.0.0 introduces improvements such as dedicated classes for all database operations, a more intuitive user interface, and enhanced user settings for prompt customization. The API schema is now more structured, and the platform is more robust and user-friendly.
 
@@ -71,8 +71,12 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
     ├── composer.json
     ├── composer.lock
     ├── docker/
+    │   ├── Dockerfile
+    │   └── docker-compose.yml
     ├── root/
     │   ├── config.php
+    │   ├── composer.json
+    │   ├── composer.lock
     │   ├── cron.php
     │   ├── install.sql
     │   ├── upgrade.sql
@@ -81,12 +85,13 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
     │   │   ├── Controllers/
     │   │   ├── Models/
     │   │   └── Views/
-    │   └── public/
-    │       ├── assets/
-    │       ├── images/
-    │       ├── index.php
-    │       ├── install.php
-    │       └── upgrade.php
+    │   ├── public/
+    │   │   ├── assets/
+    │   │   ├── images/
+    │   │   ├── index.php
+    │   │   ├── install.php
+    │   │   └── upgrade.php
+    │   └── vendor/
     ├── tests/
     └── vendor/
 ```
