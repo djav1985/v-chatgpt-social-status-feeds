@@ -270,13 +270,13 @@ class AccountsController extends Controller
                 $timesStr = implode(', ', $times);
             }
 
-            $dataAttributes  = "data-account-name=\"{$accountName}\" ";
-            $dataAttributes .= "data-prompt=\"" . htmlspecialchars($account->prompt) . "\" ";
-            $dataAttributes .= "data-link=\"" . htmlspecialchars($account->link) . "\" ";
+            $dataAttributes  = "data-account-name=\"" . htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8') . "\" ";
+            $dataAttributes .= "data-prompt=\"" . htmlspecialchars($account->prompt, ENT_QUOTES, 'UTF-8') . "\" ";
+            $dataAttributes .= "data-link=\"" . htmlspecialchars($account->link, ENT_QUOTES, 'UTF-8') . "\" ";
             $dataAttributes .= "data-hashtags=\"" . ($account->hashtags ? '1' : '0') . "\" ";
-            $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $account->cron))) . "\" ";
-            $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $account->days))) . "\" ";
-            $dataAttributes .= "data-platform=\"" . htmlspecialchars($account->platform) . "\"";
+            $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $account->cron)), ENT_QUOTES, 'UTF-8') . "\" ";
+            $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $account->days)), ENT_QUOTES, 'UTF-8') . "\" ";
+            $dataAttributes .= "data-platform=\"" . htmlspecialchars($account->platform, ENT_QUOTES, 'UTF-8') . "\"";
 
             ob_start();
             $viewData = [

@@ -47,6 +47,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - `TOKENS` configuration from Docker-specific environment and config scaffolding.
 
 ### Fixed
+- Escaped CSRF token rendering, system message text, and account data attributes to harden HTML output against injection.
 - Added detection and handling for incomplete OpenAI API responses with `status: 'incomplete'` to provide clear error messages instead of failing silently when responses are truncated.
 - Increased `max_output_tokens` for status generation (512→1024 for most platforms, 256→512 for Twitter) to reduce likelihood of truncation errors.
 - Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.

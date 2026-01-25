@@ -31,27 +31,27 @@ final class MaintenanceServiceTest extends TestCase
     public function testConstructorWithNullJobType(): void
     {
         $service = new MaintenanceService();
-        
+
         $jobType = $this->getPrivateProperty($service, 'jobType');
-        
+
         $this->assertNull($jobType);
     }
 
     public function testJobTypeCanBeMonthly(): void
     {
         $service = new MaintenanceService('monthly');
-        
+
         $jobType = $this->getPrivateProperty($service, 'jobType');
-        
+
         $this->assertSame('monthly', $jobType);
     }
 
     public function testWorkerLockDefaultsToNull(): void
     {
         $service = new MaintenanceService();
-        
+
         $workerLock = $this->getPrivateProperty($service, 'workerLock');
-        
+
         $this->assertNull($workerLock);
     }
 
@@ -62,10 +62,10 @@ final class MaintenanceServiceTest extends TestCase
     {
         $daily = new MaintenanceService('daily');
         $monthly = new MaintenanceService('monthly');
-        
+
         $dailyJobType = $this->getPrivateProperty($daily, 'jobType');
         $monthlyJobType = $this->getPrivateProperty($monthly, 'jobType');
-        
+
         $this->assertSame('daily', $dailyJobType);
         $this->assertSame('monthly', $monthlyJobType);
         $this->assertNotEquals($dailyJobType, $monthlyJobType);
@@ -78,10 +78,10 @@ final class MaintenanceServiceTest extends TestCase
     {
         $service1 = new MaintenanceService('daily');
         $service2 = new MaintenanceService('monthly');
-        
+
         $lock1 = $this->getPrivateProperty($service1, 'workerLock');
         $lock2 = $this->getPrivateProperty($service2, 'workerLock');
-        
+
         $this->assertNull($lock1);
         $this->assertNull($lock2);
     }
@@ -92,11 +92,11 @@ final class MaintenanceServiceTest extends TestCase
     public function testVariousJobTypesCanBeInstantiated(): void
     {
         $jobTypes = ['daily', 'monthly', 'custom-job', null];
-        
+
         foreach ($jobTypes as $jobType) {
             $service = new MaintenanceService($jobType);
             $storedJobType = $this->getPrivateProperty($service, 'jobType');
-            
+
             $this->assertSame($jobType, $storedJobType);
         }
     }
@@ -107,7 +107,7 @@ final class MaintenanceServiceTest extends TestCase
     public function testDefaultConstructorWorks(): void
     {
         $service = new MaintenanceService();
-        
+
         $this->assertInstanceOf(MaintenanceService::class, $service);
     }
 
@@ -122,11 +122,11 @@ final class MaintenanceServiceTest extends TestCase
             'test-job' => 'test-job',
             '' => '',
         ];
-        
+
         foreach ($testCases as $input => $expected) {
             $service = new MaintenanceService($input);
             $jobType = $this->getPrivateProperty($service, 'jobType');
-            
+
             $this->assertSame($expected, $jobType);
         }
     }

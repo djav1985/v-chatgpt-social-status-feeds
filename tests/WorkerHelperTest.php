@@ -34,7 +34,7 @@ final class WorkerHelperTest extends TestCase
     public function testGetLockPathReturnsCorrectPath(): void
     {
         $lockPath = WorkerHelper::getLockPath('run-queue');
-        
+
         $this->assertStringContainsString('socialrss-worker-run-queue.lock', $lockPath);
         $this->assertStringStartsWith(sys_get_temp_dir(), $lockPath);
     }
@@ -163,12 +163,12 @@ final class WorkerHelperTest extends TestCase
     public function testClaimLockAndWritePidSucceeds(): void
     {
         $result = WorkerHelper::claimLockAndWritePid($this->testJobType);
-        
+
         $this->assertTrue($result);
-        
+
         $lockPath = WorkerHelper::getLockPath($this->testJobType);
         $this->assertFileExists($lockPath);
-        
+
         $contents = file_get_contents($lockPath);
         $pid = (int) trim($contents);
         $this->assertGreaterThan(0, $pid);
@@ -181,7 +181,7 @@ final class WorkerHelperTest extends TestCase
         file_put_contents($lockPath, (string) $pid);
 
         $result = WorkerHelper::claimLockAndWritePid($this->testJobType);
-        
+
         $this->assertFalse($result);
     }
 

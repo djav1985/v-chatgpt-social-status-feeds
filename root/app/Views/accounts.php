@@ -59,7 +59,7 @@ require 'partials/header.php';
                     <option value="0" selected>No</option>
                     <option value="1">Yes</option>
                 </select>
-                <input type="hidden" name="csrf_token" value="<?php echo App\Core\SessionManager::getInstance()->get('csrf_token'); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES, 'UTF-8'); ?>">
                 <button type="submit" class="btn btn-primary btn-lg" name="edit_account">Add/Update Account</button>
             </form>
             <?php
