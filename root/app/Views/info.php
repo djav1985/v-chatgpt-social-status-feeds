@@ -42,8 +42,8 @@
                 <!-- Goal input field -->
                 <label for="goal">Goal:</label>
                 <textarea class="form-input" rows="10" name="goal" id="goal" placeholder="Our goal is... (drive more sales)" maxlength="500" required></textarea>
-                <input name="csrf_token" type="hidden" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES); ?>">
-                <input name="accountOwner" type="hidden" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('username'), ENT_QUOTES); ?>">
+                <input name="csrf_token" type="hidden" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES, 'UTF-8'); ?>">
+                <input name="accountOwner" type="hidden" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('username'), ENT_QUOTES, 'UTF-8'); ?>">
                 <input class="btn btn-primary btn-lg" type="submit" name="update_profile">
             </form>
         </div>
@@ -55,7 +55,7 @@
             <form class="form-group" method="post">
                 <!-- Username input field (readonly) -->
                 <label for="username">Username:</label>
-                <input class="form-input" type="text" id="username" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('username'), ENT_QUOTES); ?>" readonly>
+                <input class="form-input" type="text" id="username" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('username'), ENT_QUOTES, 'UTF-8'); ?>" readonly>
                 <!-- New password input field -->
                 <label for="password">New Password:</label>
                 <input class="form-input" type="password" name="password" id="password" required>
@@ -63,7 +63,7 @@
                 <label for="password2">Confirm New Password:</label>
                 <input class="form-input" type="password" name="password2" id="password2" required>
                 <!-- CSRF token for security -->
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES, 'UTF-8'); ?>">
                 <input type="submit" class="btn btn-primary btn-lg" name="change_password">
             </form>
             <iframe style="margin: auto;" width="100%" height="340px" src="https://www.youtube.com/embed/Hj-XiPXyqCg?si=TPG2nQ_u1Iz3y_T1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
