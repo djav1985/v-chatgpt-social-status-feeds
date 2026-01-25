@@ -25,6 +25,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Aligned the PHP 8.2 requirement across Composer, Docker, and README prerequisites.
 - Documented the `processing` flag in the queue table schema.
 - Updated the README project structure overview to reflect top-level tooling, tests, and Docker layout.
+- Clarified the split between repo-level tooling and runtime Composer metadata in the README overview.
 - Queue worker invocations now use `php cron.php worker <task>` to acquire a PID lock before spawning the single-argument worker, ensuring only one queue runner is active at a time.
 - Worker locks are now tracked per job flag, preventing duplicate launches of the same task while allowing different cron workers to run in parallel.
 - `QueueService::runQueue()` loops with a fresh timestamp until no retry or pending jobs remain, draining any work that becomes due mid-run while continuing to prioritise retries.
@@ -48,6 +49,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ### Fixed
 - Escaped CSRF token rendering, system message text, and account data attributes to harden HTML output against injection.
+- Ensured view-layer output consistently escapes user-configurable fields with `ENT_QUOTES` in account and profile screens.
 - Added detection and handling for incomplete OpenAI API responses with `status: 'incomplete'` to provide clear error messages instead of failing silently when responses are truncated.
 - Increased `max_output_tokens` for status generation (512→1024 for most platforms, 256→512 for Twitter) to reduce likelihood of truncation errors.
 - Prevented HTML encoding of account identifiers before database lookups in `StatusService`, keeping special characters intact while securing image storage paths.

@@ -77,7 +77,23 @@
                     <h3 class="card-title">System Message</h3>
                 </div>
                 <div class="card-body">
-                    <p><?php echo $systemMsg; ?></p>
+                    <?php
+                        $systemMsgText = htmlspecialchars($systemMsg['systemMsg'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $who = htmlspecialchars($systemMsg['who'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $where = htmlspecialchars($systemMsg['where'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $what = htmlspecialchars($systemMsg['what'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $goal = htmlspecialchars($systemMsg['goal'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $hasProfile = !empty($systemMsg['hasProfile']);
+                    ?>
+                    <p>
+                        <span style="color: blue; font-weight: bold;"><?php echo $systemMsgText; ?></span>
+                        <?php if ($hasProfile) { ?>
+                            <span style="color: blue; font-weight: bold;">You work for</span> <?php echo $who; ?>
+                            <span style="color: blue; font-weight: bold;">located in</span> <?php echo $where; ?>.
+                            <?php echo $what; ?>
+                            <span style="color: blue; font-weight: bold;">Your goal is</span> <?php echo $goal; ?>.
+                        <?php } ?>
+                    </p>
                 </div>
             </div>
         </div>

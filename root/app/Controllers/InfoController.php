@@ -92,17 +92,26 @@ class InfoController extends Controller
      * Compose the system message shown on the profile page.
      *
      * @param string $username Username to build the message for
-     * @return string Formatted HTML message
+     * @return array{
+     *     systemMsg: string,
+     *     who: string,
+     *     where: string,
+     *     what: string,
+     *     goal: string,
+     *     hasProfile: bool
+     * }
      */
-    private static function buildSystemMessage(string $username): string
+    private static function buildSystemMessage(string $username): array
     {
         $userInfo = User::getUserInfo($username);
-        if ($userInfo) {
-            $systemMessage = "<span style=\"color: blue; font-weight: bold;\">" . htmlspecialchars(SYSTEM_MSG, ENT_QUOTES, 'UTF-8') . "</span>";
-            $systemMessage .= " <span style=\"color: blue; font-weight: bold;\">You work for</span> " . htmlspecialchars($userInfo->who, ENT_QUOTES, 'UTF-8') . " <span style=\"color: blue; font-weight: bold;\">located in</span> " . htmlspecialchars($userInfo->where, ENT_QUOTES, 'UTF-8') . ". " . htmlspecialchars($userInfo->what, ENT_QUOTES, 'UTF-8') . " <span style=\"color: blue; font-weight: bold;\">Your goal is</span> " . htmlspecialchars($userInfo->goal, ENT_QUOTES, 'UTF-8') . ".";
-            return $systemMessage;
-        }
-        return "<span style=\"color: blue; font-weight: bold;\">" . htmlspecialchars(SYSTEM_MSG, ENT_QUOTES, 'UTF-8') . "</span>";
+        return [
+            'systemMsg' => SYSTEM_MSG,
+            'who' => $userInfo ? (string) $userInfo->who : '',
+            'where' => $userInfo ? (string) $userInfo->where : '',
+            'what' => $userInfo ? (string) $userInfo->what : '',
+            'goal' => $userInfo ? (string) $userInfo->goal : '',
+            'hasProfile' => (bool) $userInfo,
+        ];
     }
 
     /**
