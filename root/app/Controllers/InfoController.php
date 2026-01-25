@@ -79,10 +79,10 @@ class InfoController extends Controller
     {
         $userInfo = User::getUserInfo($username);
         if ($userInfo) {
-            $data = "data-who=\"" . htmlspecialchars($userInfo->who, ENT_QUOTES, 'UTF-8') . "\" ";
-            $data .= "data-where=\"" . htmlspecialchars($userInfo->where, ENT_QUOTES, 'UTF-8') . "\" ";
-            $data .= "data-what=\"" . htmlspecialchars($userInfo->what, ENT_QUOTES, 'UTF-8') . "\" ";
-            $data .= "data-goal=\"" . htmlspecialchars($userInfo->goal, ENT_QUOTES, 'UTF-8') . "\"";
+            $data = "data-who=\"" . ValidationHelper::escapeOutput($userInfo->who) . "\" ";
+            $data .= "data-where=\"" . ValidationHelper::escapeOutput($userInfo->where) . "\" ";
+            $data .= "data-what=\"" . ValidationHelper::escapeOutput($userInfo->what) . "\" ";
+            $data .= "data-goal=\"" . ValidationHelper::escapeOutput($userInfo->goal) . "\"";
             return $data;
         }
         return '';
