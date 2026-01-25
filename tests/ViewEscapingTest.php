@@ -47,4 +47,17 @@ final class ViewEscapingTest extends TestCase
         $this->assertStringContainsString('htmlspecialchars($timesStr, ENT_QUOTES', $view);
         $this->assertStringContainsString('htmlspecialchars($accountData->link, ENT_QUOTES', $view);
     }
+
+    public function testAccountListItemUsesSecureTargetBlank(): void
+    {
+        $view = file_get_contents(__DIR__ . '/../root/app/Views/partials/account-list-item.php');
+
+        $this->assertNotFalse($view);
+        // Verify that links with target="_blank" also have rel="noopener noreferrer"
+        $this->assertMatchesRegularExpression(
+            '/target="_blank"\s+rel="noopener noreferrer"/',
+            $view,
+            'Links with target="_blank" must include rel="noopener noreferrer" to prevent reverse-tabnabbing'
+        );
+    }
 }
