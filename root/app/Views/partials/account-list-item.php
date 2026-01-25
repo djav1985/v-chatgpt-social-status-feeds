@@ -14,7 +14,7 @@
         <div class="card-body button-group">
             <button class="btn btn-primary" id="update-button" <?php echo $dataAttributes; ?>>Update</button>
             <form class="delete-account-form" action="/accounts" method="POST">
-                <input type="hidden" name="account" value="<?php echo htmlspecialchars($accountName); ?>">
+                <input type="hidden" name="account" value="<?php echo htmlspecialchars($accountName, ENT_QUOTES); ?>">
                 <?php
                 $csrfToken = htmlspecialchars(
                     App\Core\SessionManager::getInstance()->get('csrf_token'),
