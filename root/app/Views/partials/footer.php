@@ -15,10 +15,9 @@
 
 <footer class="columns">
     <div class="column col-12 text-center">
-        <p>&copy; 
-            <?php echo date("Y"); ?> 
-            <a href="https://vontainment.com">Vontainment.com</a> 
-            All Rights Reserved.
+        <p>&copy; 2026
+            <a href="https://vontainment.com">Vontainment.com</a>
+            All Rights Reserved | Current Time: <?php echo date("g:i:s a T"); ?>
         </p>
     </div>
 </footer>
