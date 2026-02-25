@@ -177,7 +177,7 @@ class FeedController extends Controller
 
         // Output RSS feed
         echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        echo '<rss version="2.0" xmlns:atom="https://www.w3.org/2005/Atom" xmlns:content="https://purl.org/rss/1.0/modules/content/">' . PHP_EOL;
+        echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">' . PHP_EOL;
         
         echo '<channel>' . PHP_EOL;
         echo '<title>' . $escapedAccountOwner . ' status feed</title>' . PHP_EOL;
