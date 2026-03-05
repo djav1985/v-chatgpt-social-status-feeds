@@ -12,10 +12,14 @@ use PHPUnit\Framework\TestCase;
 final class SessionManagerTest extends TestCase
 {
     private SessionManager $session;
+    private string|false $originalUserAgent;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Snapshot the user-agent so tests that overwrite it can't bleed into each other.
+        $this->originalUserAgent = $_SERVER['HTTP_USER_AGENT'] ?? false;
 
         // Clean up any existing session
         if (session_status() === PHP_SESSION_ACTIVE) {
@@ -28,6 +32,13 @@ final class SessionManagerTest extends TestCase
 
     protected function tearDown(): void
     {
+        // Restore the user-agent to prevent order-dependent test failures.
+        if ($this->originalUserAgent !== false) {
+            $_SERVER['HTTP_USER_AGENT'] = $this->originalUserAgent;
+        } else {
+            unset($_SERVER['HTTP_USER_AGENT']);
+        }
+
         $_SESSION = [];
         parent::tearDown();
     }
