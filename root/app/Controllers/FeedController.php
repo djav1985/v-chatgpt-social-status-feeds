@@ -81,7 +81,7 @@ class FeedController extends Controller
                 header('Content-Type: application/rss+xml; charset=UTF-8');
                 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
                 header('Pragma: no-cache');
-                header('Expires: 0');
+                header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
                 ini_set('zlib.output_compression', 'Off');
                 
                 if (ob_get_level() > 0) {
