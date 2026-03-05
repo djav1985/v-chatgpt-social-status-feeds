@@ -139,11 +139,14 @@ class SessionManager
 
     /**
      * Enforce that the current request comes from an authenticated user.
-     * Redirects to the login page or exits on failure.
      *
-     * @return void
+     * Returns true when the session is valid and the user is authenticated.
+     * Returns false when the session is invalid (caller should redirect to login).
+     * Calls exit() immediately when the remote IP is blacklisted (403 Forbidden).
+     *
+     * @return bool True if authenticated, false if not.
      */
-    public function requireAuth(): void
+    public function requireAuth(): bool
     {
         $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
         if ($ip && BlacklistModel::isBlacklisted($ip)) {
@@ -152,9 +155,6 @@ class SessionManager
             exit();
         }
 
-        if (!$this->isValid()) {
-            header('Location: /login');
-            exit();
-        }
+        return $this->isValid();
     }
 }

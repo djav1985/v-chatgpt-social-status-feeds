@@ -30,10 +30,7 @@ class Router
     {
         $this->dispatcher = simpleDispatcher(function (RouteCollector $r): void {
             // Redirect the root URL to the home page for convenience
-            $r->addRoute('GET', '/', function (): void {
-                header('Location: /home');
-                exit();
-            });
+            $r->addRoute('GET', '/', fn() => Response::redirect('/home'));
 
             // Register routes for GET and POST requests separately
             $r->addRoute('GET', '/login', [\App\Controllers\LoginController::class, 'handleRequest']);
@@ -71,38 +68,95 @@ class Router
     /**
      * Dispatches the request to the appropriate controller action.
      *
+     * The URI is normalised before dispatch: any query string is stripped so
+     * that e.g. /home?foo=bar dispatches to /home.
+     *
+     * If a controller action returns a Response instance the Router emits it
+     * via sendResponse(). Actions that handle output themselves (header/echo/exit)
+     * continue to work unchanged.
+     *
      * @param string $method HTTP method of the incoming request.
-     * @param string $uri The requested URI path.
+     * @param string $uri    The requested URI path (may include query string).
      */
     public function dispatch(string $method, string $uri): void
     {
-        $routeInfo = $this->dispatcher->dispatch($method, $uri);
+        // Strip the query string so /path?foo=bar dispatches as /path.
+        $route = strtok($uri, '?') ?: $uri;
+
+        $routeInfo = $this->dispatcher->dispatch($method, $route);
 
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                header('HTTP/1.0 404 Not Found');
-                require __DIR__ . '/../Views/404.php';
+                $this->sendResponse((new Response(404))->withView('404'));
                 break;
+
             case Dispatcher::METHOD_NOT_ALLOWED:
-                header('HTTP/1.0 405 Method Not Allowed');
+                $this->sendResponse(new Response(405));
                 break;
+
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
-                $vars = $routeInfo[2];
-                if ($handler instanceof \Closure) {
-                    // Directly call the closure
-                    call_user_func_array($handler, $vars);
-                } elseif (is_array($handler) && count($handler) === 2) {
+                $vars    = $routeInfo[2];
+
+                if (is_array($handler) && count($handler) === 2) {
                     [$class, $action] = $handler;
-                    $isFeed = function_exists('str_starts_with')
-                        ? str_starts_with($uri, '/feeds/')
-                        : (preg_match('/^\/feeds\//', $uri) === 1);
-                    if ($uri !== '/login' && !$isFeed) {
-                        SessionManager::getInstance()->requireAuth();
+
+                    // Feed routes are publicly accessible; everything else requires auth.
+                    // str_starts_with() is available on PHP 8.0+ (project requires ^8.2).
+                    $isFeed = str_starts_with($route, '/feeds/');
+                    if ($route !== '/login' && !$isFeed) {
+                        if (!SessionManager::getInstance()->requireAuth()) {
+                            $this->sendResponse(Response::redirect('/login'));
+                            return;
+                        }
                     }
-                    call_user_func_array([new $class(), $action], $vars);
+
+                    $result = call_user_func_array([new $class(), $action], $vars);
+                    if ($result instanceof Response) {
+                        $this->sendResponse($result);
+                    }
+                } elseif (is_callable($handler)) {
+                    $result = call_user_func_array($handler, $vars);
+                    if ($result instanceof Response) {
+                        $this->sendResponse($result);
+                    }
                 }
                 break;
         }
+    }
+
+    /**
+     * Emit a Response to the client.
+     *
+     * Handles three output modes in order of priority:
+     *  1. View  — requires the named view file and extracts view data into scope.
+     *  2. File  — delegates to Response::send() which calls readfile().
+     *  3. Body  — delegates to Response::send() which echoes the body string.
+     *
+     * @param Response $response The response to emit.
+     */
+    private function sendResponse(Response $response): void
+    {
+        if ($response->getView() !== null) {
+            if (!headers_sent()) {
+                http_response_code($response->getStatusCode());
+
+                foreach ($response->getHeaders() as $name => $values) {
+                    $replace = true;
+                    foreach ($values as $value) {
+                        header($name . ': ' . $value, $replace);
+                        $replace = false;
+                    }
+                }
+            }
+
+            $data = $response->getViewData();
+            extract($data);
+            require __DIR__ . '/../Views/' . $response->getView() . '.php';
+            return;
+        }
+
+        // File streaming and plain body output are both handled by send().
+        $response->send();
     }
 }

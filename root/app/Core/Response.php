@@ -38,6 +38,29 @@ class Response
     /** @var string */
     private string $body;
 
+    /**
+     * Optional view name to render (relative to the Views directory, without .php).
+     * When set, Router::sendResponse() renders the view instead of echoing the body.
+     *
+     * @var string|null
+     */
+    private ?string $view = null;
+
+    /**
+     * Variables made available inside the rendered view via extract().
+     *
+     * @var array<string, mixed>
+     */
+    private array $viewData = [];
+
+    /**
+     * Absolute path to a file whose contents should be streamed to the client.
+     * When set, send() streams the file instead of echoing the body.
+     *
+     * @var string|null
+     */
+    private ?string $file = null;
+
     /** @var array<int, string> */
     private static array $reasonPhrases = [
         200 => 'OK',
@@ -149,6 +172,32 @@ class Response
         return $this->body;
     }
 
+    /**
+     * Return the view name to render, or null when no view is set.
+     */
+    public function getView(): ?string
+    {
+        return $this->view;
+    }
+
+    /**
+     * Return the data array to be extracted inside the rendered view.
+     *
+     * @return array<string, mixed>
+     */
+    public function getViewData(): array
+    {
+        return $this->viewData;
+    }
+
+    /**
+     * Return the absolute file path to stream, or null when no file is set.
+     */
+    public function getFile(): ?string
+    {
+        return $this->file;
+    }
+
     // -------------------------------------------------------------------------
     // Immutable-style mutators  (return a new instance)
     // -------------------------------------------------------------------------
@@ -212,12 +261,46 @@ class Response
         return $clone;
     }
 
+    /**
+     * Return a new instance that renders the named view (without .php extension).
+     * When the Router calls sendResponse(), it will require the view file and
+     * extract $data into the view's scope instead of echoing the body.
+     *
+     * @param string               $view View name relative to the Views directory.
+     * @param array<string, mixed> $data Variables to extract inside the view.
+     */
+    public function withView(string $view, array $data = []): self
+    {
+        $clone = clone $this;
+        $clone->view     = $view;
+        $clone->viewData = $data;
+        return $clone;
+    }
+
+    /**
+     * Return a new instance that streams the given file.
+     * When send() is called, the file contents are streamed to the client
+     * instead of echoing the body string.
+     *
+     * @param string $filePath Absolute path to the file to stream.
+     */
+    public function withFile(string $filePath): self
+    {
+        $clone = clone $this;
+        $clone->file = $filePath;
+        return $clone;
+    }
+
     // -------------------------------------------------------------------------
     // Emit
     // -------------------------------------------------------------------------
 
     /**
-     * Send the response: emit the status line, headers, and body to the client.
+     * Send the response: emit the status code, headers, and body (or file) to the client.
+     *
+     * Note: view-based responses are handled by Router::sendResponse(), which requires
+     * knowledge of the Views directory path. Calling send() on a view response will
+     * emit the status and headers but output nothing (the body is empty by default).
      *
      * Should be called only once, and only when no output has already been sent.
      */
@@ -233,6 +316,11 @@ class Response
                     $replace = false; // subsequent values for same name must not replace
                 }
             }
+        }
+
+        if ($this->file !== null) {
+            readfile($this->file);
+            return;
         }
 
         echo $this->body;
@@ -285,6 +373,33 @@ class Response
         // returns false regardless of what the caller passes in $flags.
         $body = json_encode($data, $flags | JSON_THROW_ON_ERROR);
         return new self($statusCode, ['Content-Type' => 'application/json; charset=UTF-8'], $body);
+    }
+
+    /**
+     * Create a view response.
+     *
+     * The Router's sendResponse() will render the named view file, extracting
+     * $data into its scope. Nothing is echoed if send() is called directly.
+     *
+     * @param string               $view       View name relative to the Views directory (no .php).
+     * @param array<string, mixed> $data       Variables to extract inside the view.
+     * @param int                  $statusCode HTTP status code (default 200).
+     */
+    public static function view(string $view, array $data = [], int $statusCode = 200): self
+    {
+        return (new self($statusCode))->withView($view, $data);
+    }
+
+    /**
+     * Create a file-streaming response.
+     *
+     * @param string $filePath    Absolute path to the file to stream.
+     * @param string $contentType MIME type sent as Content-Type header.
+     * @param int    $statusCode  HTTP status code (default 200).
+     */
+    public static function file(string $filePath, string $contentType = 'application/octet-stream', int $statusCode = 200): self
+    {
+        return (new self($statusCode, ['Content-Type' => $contentType]))->withFile($filePath);
     }
 
     // -------------------------------------------------------------------------

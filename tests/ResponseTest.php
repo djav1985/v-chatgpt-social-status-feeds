@@ -229,6 +229,152 @@ final class ResponseTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // view / viewData / file properties
+    // -------------------------------------------------------------------------
+
+    public function testGetViewReturnsNullByDefault(): void
+    {
+        $response = new Response();
+
+        $this->assertNull($response->getView());
+    }
+
+    public function testGetViewDataReturnsEmptyArrayByDefault(): void
+    {
+        $response = new Response();
+
+        $this->assertSame([], $response->getViewData());
+    }
+
+    public function testGetFileReturnsNullByDefault(): void
+    {
+        $response = new Response();
+
+        $this->assertNull($response->getFile());
+    }
+
+    public function testWithViewReturnsNewInstance(): void
+    {
+        $original = new Response();
+        $modified = $original->withView('home');
+
+        $this->assertNotSame($original, $modified);
+        $this->assertNull($original->getView());
+        $this->assertSame('home', $modified->getView());
+    }
+
+    public function testWithViewStoresData(): void
+    {
+        $data     = ['user' => 'alice', 'count' => 3];
+        $response = (new Response())->withView('dashboard', $data);
+
+        $this->assertSame('dashboard', $response->getView());
+        $this->assertSame($data, $response->getViewData());
+    }
+
+    public function testWithViewDefaultDataIsEmpty(): void
+    {
+        $response = (new Response())->withView('home');
+
+        $this->assertSame([], $response->getViewData());
+    }
+
+    public function testWithFileReturnsNewInstance(): void
+    {
+        $original = new Response();
+        $modified = $original->withFile('/tmp/test.png');
+
+        $this->assertNotSame($original, $modified);
+        $this->assertNull($original->getFile());
+        $this->assertSame('/tmp/test.png', $modified->getFile());
+    }
+
+    public function testViewFactoryCreatesViewResponse(): void
+    {
+        $response = Response::view('home', ['foo' => 'bar'], 200);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('home', $response->getView());
+        $this->assertSame(['foo' => 'bar'], $response->getViewData());
+    }
+
+    public function testViewFactoryDefaultsTo200(): void
+    {
+        $response = Response::view('login');
+
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
+    public function testFileFactorySetsFileAndContentType(): void
+    {
+        $response = Response::file('/tmp/image.png', 'image/png', 200);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('/tmp/image.png', $response->getFile());
+        $this->assertSame('image/png', $response->getHeaderLine('Content-Type'));
+    }
+
+    public function testFileFactoryDefaultContentType(): void
+    {
+        $response = Response::file('/tmp/data.bin');
+
+        $this->assertSame('application/octet-stream', $response->getHeaderLine('Content-Type'));
+    }
+
+    public function testSendStreamsFileContents(): void
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'response_test_');
+        file_put_contents($tmpFile, 'file contents here');
+
+        try {
+            $response = (new Response())->withFile($tmpFile);
+
+            ob_start();
+            $response->send();
+            $output = ob_get_clean();
+
+            $this->assertSame('file contents here', $output);
+        } finally {
+            unlink($tmpFile);
+        }
+    }
+
+    public function testSendDoesNotEchoBodyWhenFileIsSet(): void
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'response_test_');
+        file_put_contents($tmpFile, 'from file');
+
+        try {
+            $response = (new Response(200, [], 'body text'))->withFile($tmpFile);
+
+            ob_start();
+            $response->send();
+            $output = ob_get_clean();
+
+            $this->assertSame('from file', $output);
+            $this->assertStringNotContainsString('body text', $output);
+        } finally {
+            unlink($tmpFile);
+        }
+    }
+
+    public function testViewPreservedThroughStatusChange(): void
+    {
+        $response = (new Response())->withView('error')->withStatus(500);
+
+        $this->assertSame('error', $response->getView());
+        $this->assertSame(500, $response->getStatusCode());
+    }
+
+    public function testFilePreservedThroughHeaderChange(): void
+    {
+        $response = (new Response())->withFile('/tmp/f.txt')->withHeader('X-Foo', 'bar');
+
+        $this->assertSame('/tmp/f.txt', $response->getFile());
+        $this->assertSame('bar', $response->getHeaderLine('X-Foo'));
+    }
+
+    // -------------------------------------------------------------------------
     // Static factories
     // -------------------------------------------------------------------------
 
