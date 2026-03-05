@@ -82,7 +82,7 @@ class Status
         }
     }
 
-    public static function saveStatus(string $accountName, string $accountOwner, string $status_content, string $image_name): bool
+    public static function saveStatus(string $accountName, string $accountOwner, string $statusContent, string $imageName): bool
     {
         try {
             $db = DatabaseManager::getInstance();
@@ -90,8 +90,8 @@ class Status
             $db->query($sql);
             $db->bind(':username', $accountOwner);
             $db->bind(':account', $accountName);
-            $db->bind(':status', $status_content);
-            $db->bind(':status_image', $image_name);
+            $db->bind(':status', $statusContent);
+            $db->bind(':status_image', $imageName);
             $db->execute();
             
             self::clearStatusCache($accountOwner, $accountName);

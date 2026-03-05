@@ -35,14 +35,14 @@ class AccountsController extends Controller
         $cronOptions = self::generateCronOptions();
         $accountList = self::generateAccountList();
         $calendarOverview = self::generateCalendarOverview();
-            $userStats = self::buildUserStats();
+        $userStats = self::buildUserStats();
 
         $this->render('accounts', [
             'daysOptions' => $daysOptions,
             'cronOptions' => $cronOptions,
             'accountList' => $accountList,
             'calendarOverview' => $calendarOverview,
-                'userStats' => $userStats,
+            'userStats' => $userStats,
         ]);
     }
 

@@ -34,11 +34,11 @@ class Blacklist
             if ($result) {
                 $result = (object)$result;
                 $attempts = $result->login_attempts + 1;
-                $is_blacklisted = ($attempts >= 3);
-                $timestamp = ($is_blacklisted) ? time() : $result->timestamp;
+                $isBlacklisted = ($attempts >= 3);
+                $timestamp = ($isBlacklisted) ? time() : $result->timestamp;
                 $db->query("UPDATE ip_blacklist SET login_attempts = :attempts, blacklisted = :blacklisted, timestamp = :timestamp WHERE ip_address = :ip");
                 $db->bind(':attempts', $attempts);
-                $db->bind(':blacklisted', $is_blacklisted);
+                $db->bind(':blacklisted', $isBlacklisted);
                 $db->bind(':timestamp', $timestamp);
                 $db->bind(':ip', $ip);
             } else {
