@@ -17,8 +17,8 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Mailer;
 use App\Services\StatusService;
-use App\Models\User;
-use App\Models\Status;
+use App\Models\UserModel;
+use App\Models\StatusModel;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
@@ -36,13 +36,13 @@ class HomeController extends Controller
 
 
         $accountOwner = SessionManager::getInstance()->get('username');
-        $accounts = \App\Models\Account::getAllUserAccts($accountOwner);
+        $accounts = \App\Models\AccountModel::getAllUserAccts($accountOwner);
         $accountsData = [];
         foreach ($accounts as $account) {
             $account = (object)$account;
             $name = $account->account;
-            $acctInfo = \App\Models\Account::getAcctInfo($accountOwner, $name);
-            $statuses = Status::getStatusInfo($accountOwner, $name);
+            $acctInfo = \App\Models\AccountModel::getAcctInfo($accountOwner, $name);
+            $statuses = StatusModel::getStatusInfo($accountOwner, $name);
             $statusList = [];
             foreach ($statuses as $status) {
                 $status = (object)$status;
@@ -171,7 +171,7 @@ class HomeController extends Controller
             exit;
         }
         try {
-            $statusImagePath = Status::getStatusImagePath($statusId, $accountName, $accountOwner);
+            $statusImagePath = StatusModel::getStatusImagePath($statusId, $accountName, $accountOwner);
             if ($statusImagePath) {
                 $baseDir = realpath(__DIR__ . '/../../public/images');
                 $safeOwner = preg_replace('/[^a-zA-Z0-9_-]/', '', $accountOwner);
@@ -183,7 +183,7 @@ class HomeController extends Controller
                     unlink($realImagePath);
                 }
             }
-            Status::deleteStatus($statusId, $accountName, $accountOwner);
+            StatusModel::deleteStatus($statusId, $accountName, $accountOwner);
             MessageHelper::addMessage('Successfully deleted status.');
         } catch (\Exception $e) {
             MessageHelper::addMessage('Failed to delete status: ' . $e->getMessage());
@@ -213,7 +213,7 @@ class HomeController extends Controller
             exit;
         }
         try {
-            $userInfo = User::getUserInfo($accountOwner);
+            $userInfo = UserModel::getUserInfo($accountOwner);
             if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
                 MessageHelper::addMessage('Sorry, your available API calls have run out.');
                 if (!$userInfo->limit_email_sent) {
@@ -223,7 +223,7 @@ class HomeController extends Controller
                         'api_limit_reached',
                         ['username' => $userInfo->username]
                     );
-                    User::setLimitEmailSent($accountOwner, true);
+                    UserModel::setLimitEmailSent($accountOwner, true);
                 }
             } else {
                 $statusResult = StatusService::generateStatus($accountName, $accountOwner);
@@ -231,7 +231,7 @@ class HomeController extends Controller
                     MessageHelper::addMessage('Failed to generate status: ' . $statusResult['error']);
                 } else {
                     $userInfo->used_api_calls += 1;
-                    User::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
+                    UserModel::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
                     MessageHelper::addMessage('Successfully generated status.');
                 }
             }

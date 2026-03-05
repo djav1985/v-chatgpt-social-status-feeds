@@ -4,10 +4,10 @@
 namespace App\Services;
 
 use App\Core\ErrorManager;
-use App\Models\User;
-use App\Models\Status;
+use App\Models\UserModel;
+use App\Models\StatusModel;
 use App\Core\Mailer;
-use App\Models\Blacklist;
+use App\Models\BlacklistModel;
 use App\Helpers\WorkerHelper;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -68,7 +68,7 @@ class MaintenanceService
      */
     public function purgeStatuses(): bool
     {
-        $overLimitAccounts = Status::getOverLimitAccounts(MAX_STATUSES);
+        $overLimitAccounts = StatusModel::getOverLimitAccounts(MAX_STATUSES);
 
         if (empty($overLimitAccounts)) {
             return true;
@@ -89,7 +89,7 @@ class MaintenanceService
                 continue;
             }
 
-            if (!Status::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
+            if (!StatusModel::deleteOldStatuses($accountName, $accountOwner, $deleteCount)) {
                 return false;
             }
         }
@@ -140,10 +140,10 @@ class MaintenanceService
      */
     public function resetApi(): bool
     {
-        if (!User::resetAllApiUsage()) {
+        if (!UserModel::resetAllApiUsage()) {
             return false;
         }
-        $users = User::getAllUsers();
+        $users = UserModel::getAllUsers();
         foreach ($users as $user) {
             $user = (object)$user;
             Mailer::sendTemplate(
@@ -161,7 +161,7 @@ class MaintenanceService
      */
     public function purgeIps(): bool
     {
-        return Blacklist::clearIpBlacklist();
+        return BlacklistModel::clearIpBlacklist();
     }
 
     private function claimWorkerLock(): bool

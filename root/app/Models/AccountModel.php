@@ -8,7 +8,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: Account.php
+ * File: AccountModel.php
  * Description: AI Social Status Generator
  */
 
@@ -19,7 +19,7 @@ use App\Core\DatabaseManager;
 use App\Core\ErrorManager;
 use App\Services\CacheService;
 
-class Account
+class AccountModel
 {
     /**
      * Cached account lookups keyed by "username|account" (L1 cache - in-memory).

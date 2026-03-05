@@ -8,7 +8,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: User.php
+ * File: UserModel.php
  * Description: AI Social Status Generator
  */
 
@@ -19,7 +19,7 @@ use App\Core\DatabaseManager;
 use App\Core\ErrorManager;
 use App\Services\CacheService;
 
-class User
+class UserModel
 {
     /**
      * Cached user lookups keyed by username (L1 cache - in-memory).
@@ -129,7 +129,7 @@ class User
             $db->commit();
 
             self::clearUserCacheEntry($username);
-            Account::clearAccountCache($username);
+            AccountModel::clearAccountCache($username);
 
             return true;
         } catch (Exception $e) {

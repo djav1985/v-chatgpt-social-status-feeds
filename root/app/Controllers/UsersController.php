@@ -16,7 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Mailer;
-use App\Models\User;
+use App\Models\UserModel;
 use function random_bytes;
 use App\Core\SessionManager;
 use Respect\Validation\Validator;
@@ -92,7 +92,7 @@ class UsersController extends Controller
      */
     private static function generateUserList(): string
     {
-        $users = User::getAllUsers();
+        $users = UserModel::getAllUsers();
         $output = '';
         foreach ($users as $user) {
             $user = (object)$user;
@@ -152,7 +152,7 @@ class UsersController extends Controller
         }
 
         try {
-            $userExists = User::userExists($username);
+            $userExists = UserModel::userExists($username);
             if (!$userExists && empty($password)) {
                 MessageHelper::addMessage('Password is required for new users.');
                 header('Location: /users');
@@ -164,7 +164,7 @@ class UsersController extends Controller
                 $password = $userExists->password;
             }
             $isUpdate = $userExists !== null;
-            $result = User::updateUser(
+            $result = UserModel::updateUser(
                 $username,
                 $password,
                 $email,
@@ -221,7 +221,7 @@ class UsersController extends Controller
             MessageHelper::addMessage("Sorry, you can't delete your own account.");
         } else {
             try {
-                User::deleteUser($username);
+                UserModel::deleteUser($username);
                 MessageHelper::addMessage('User Deleted');
             } catch (\Exception $e) {
                 MessageHelper::addMessage('Failed to delete user: ' . $e->getMessage());
@@ -241,7 +241,7 @@ class UsersController extends Controller
         $session = SessionManager::getInstance();
         $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
         try {
-            $user = User::getUserInfo($username);
+            $user = UserModel::getUserInfo($username);
             if ($user) {
                 if (!$session->get('isReally')) {
                     $session->set('isReally', $session->get('username'));

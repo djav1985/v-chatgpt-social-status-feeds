@@ -8,7 +8,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: Status.php
+ * File: StatusModel.php
  * Description: AI Social Status Generator
  */
 
@@ -20,7 +20,7 @@ use App\Core\DatabaseManager;
 use App\Core\ErrorManager;
 use App\Services\CacheService;
 
-class Status
+class StatusModel
 {
     public static function getStatusImagePath(int $statusId, string $accountName, string $accountOwner): ?string
     {

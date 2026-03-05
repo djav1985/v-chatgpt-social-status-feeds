@@ -15,7 +15,7 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Models\User;
+use App\Models\UserModel;
 use Respect\Validation\Validator;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
@@ -77,7 +77,7 @@ class InfoController extends Controller
      */
     private static function generateProfileDataAttributes(string $username): string
     {
-        $userInfo = User::getUserInfo($username);
+        $userInfo = UserModel::getUserInfo($username);
         if ($userInfo) {
             $data = "data-who=\"" . ValidationHelper::escapeOutput($userInfo->who) . "\" ";
             $data .= "data-where=\"" . ValidationHelper::escapeOutput($userInfo->where) . "\" ";
@@ -103,7 +103,7 @@ class InfoController extends Controller
      */
     private static function buildSystemMessage(string $username): array
     {
-        $userInfo = User::getUserInfo($username);
+        $userInfo = UserModel::getUserInfo($username);
         return [
             'systemMsg' => SYSTEM_MSG,
             'who' => $userInfo ? (string) $userInfo->who : '',
@@ -147,7 +147,7 @@ class InfoController extends Controller
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         try {
-            User::updatePassword($username, $hashedPassword);
+            UserModel::updatePassword($username, $hashedPassword);
             MessageHelper::addMessage('Password Updated!');
         } catch (\Exception $e) {
             MessageHelper::addMessage('Password update failed: ' . $e->getMessage());
@@ -177,7 +177,7 @@ class InfoController extends Controller
         }
 
         try {
-            User::updateProfile($username, $who, $where, $what, $goal);
+            UserModel::updateProfile($username, $who, $where, $what, $goal);
             MessageHelper::addMessage('Profile Updated!');
         } catch (\Exception $e) {
             MessageHelper::addMessage('Profile update failed: ' . $e->getMessage());

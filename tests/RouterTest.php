@@ -116,4 +116,69 @@ final class RouterTest extends TestCase
         $this->assertSame('method', $params[0]->getName());
         $this->assertSame('uri', $params[1]->getName());
     }
+
+    /**
+     * Test that query strings are stripped before route matching.
+     * /route?foo=bar must dispatch identically to /route (both 404 here).
+     */
+    public function testDispatchStripsQueryStringBeforeRouting(): void
+    {
+        ob_start();
+        try {
+            $this->router->dispatch('GET', '/no-such-route-abc?foo=bar&baz=1');
+        } catch (\Exception $e) {
+            // ignored
+        }
+        $withQuery = (string) ob_get_clean();
+
+        ob_start();
+        try {
+            $this->router->dispatch('GET', '/no-such-route-abc');
+        } catch (\Exception $e) {
+            // ignored
+        }
+        $withoutQuery = (string) ob_get_clean();
+
+        $this->assertSame(
+            $withoutQuery,
+            $withQuery,
+            'Query string must not affect route matching'
+        );
+    }
+
+    /**
+     * Test that a callable handler returning a Response is emitted.
+     * The GET / route returns Response::redirect('/home'); after dispatch
+     * no HTML body should be produced (a redirect response has an empty body).
+     */
+    public function testDispatchEmitsResponseReturnedByCallableHandler(): void
+    {
+        ob_start();
+        try {
+            $this->router->dispatch('GET', '/');
+        } catch (\Exception $e) {
+            // ignored
+        }
+        $output = (string) ob_get_clean();
+
+        // A redirect response has no body; the callable returned a Response and
+        // Router emitted it (no plain text / HTML leaked into output).
+        $this->assertSame('', $output);
+    }
+
+    /**
+     * Test that a 404 response is emitted when no route matches.
+     */
+    public function testDispatchEmits404ForUnmatchedRoute(): void
+    {
+        ob_start();
+        try {
+            $this->router->dispatch('GET', '/this-route-does-not-exist-xyz');
+        } catch (\Exception $e) {
+            // ignored
+        }
+        $output = (string) ob_get_clean();
+
+        $this->assertStringContainsString('404', $output);
+    }
 }

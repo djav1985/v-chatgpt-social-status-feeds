@@ -8,7 +8,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: Blacklist.php
+ * File: BlacklistModel.php
  * Description: IP blacklist management
  */
 
@@ -18,7 +18,7 @@ use Exception;
 use App\Core\DatabaseManager;
 use App\Core\ErrorManager;
 
-class Blacklist
+class BlacklistModel
 {
     /**
      * Update the failed login attempts for an IP address.

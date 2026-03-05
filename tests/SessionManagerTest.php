@@ -12,10 +12,14 @@ use PHPUnit\Framework\TestCase;
 final class SessionManagerTest extends TestCase
 {
     private SessionManager $session;
+    private string|false $originalUserAgent;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Snapshot the user-agent so tests that overwrite it can't bleed into each other.
+        $this->originalUserAgent = $_SERVER['HTTP_USER_AGENT'] ?? false;
 
         // Clean up any existing session
         if (session_status() === PHP_SESSION_ACTIVE) {
@@ -28,6 +32,13 @@ final class SessionManagerTest extends TestCase
 
     protected function tearDown(): void
     {
+        // Restore the user-agent to prevent order-dependent test failures.
+        if ($this->originalUserAgent !== false) {
+            $_SERVER['HTTP_USER_AGENT'] = $this->originalUserAgent;
+        } else {
+            unset($_SERVER['HTTP_USER_AGENT']);
+        }
+
         $_SESSION = [];
         parent::tearDown();
     }
@@ -218,5 +229,54 @@ final class SessionManagerTest extends TestCase
         $result = $this->session->get('complex');
         
         $this->assertSame($complexData, $result);
+    }
+
+    // -------------------------------------------------------------------------
+    // requireAuth() — returns bool, no longer calls exit() on unauthenticated
+    // -------------------------------------------------------------------------
+
+    public function testRequireAuthReturnsTrueWhenLoggedIn(): void
+    {
+        $_SESSION['logged_in'] = true;
+        $_SESSION['timeout']   = time();
+        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+        $result = $this->session->requireAuth();
+
+        $this->assertTrue($result);
+    }
+
+    public function testRequireAuthReturnsFalseWhenNotLoggedIn(): void
+    {
+        $_SESSION['logged_in'] = false;
+        $_SESSION['timeout']   = time();
+        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+        $result = $this->session->requireAuth();
+
+        $this->assertFalse($result);
+    }
+
+    public function testRequireAuthReturnsFalseWhenSessionExpired(): void
+    {
+        $_SESSION['logged_in'] = true;
+        $_SESSION['timeout']   = time() - 2000; // exceeds the 1800 s default
+        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+        $result = $this->session->requireAuth();
+
+        $this->assertFalse($result);
+    }
+
+    public function testRequireAuthReturnsFalseWhenUserAgentMismatch(): void
+    {
+        $_SESSION['logged_in']  = true;
+        $_SESSION['timeout']    = time();
+        $_SESSION['user_agent'] = 'OldAgent/1.0';
+        $_SERVER['HTTP_USER_AGENT'] = 'NewAgent/2.0';
+
+        $result = $this->session->requireAuth();
+
+        $this->assertFalse($result);
     }
 }

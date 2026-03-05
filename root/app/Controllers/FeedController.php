@@ -15,8 +15,8 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Models\Account;
-use App\Models\Status;
+use App\Models\AccountModel;
+use App\Models\StatusModel;
 use App\Core\ErrorManager;
 use App\Services\CacheService;
 
@@ -101,7 +101,7 @@ class FeedController extends Controller
 
         // Fetch statuses for all accounts if 'all' is specified
         if ($isAllAccounts) {
-            $accounts = Account::getAllUserAccts($accountOwner);
+            $accounts = AccountModel::getAllUserAccts($accountOwner);
 
             foreach ($accounts as $account) {
                 $account = (object)$account;
@@ -112,10 +112,10 @@ class FeedController extends Controller
                 $currentAccountName = (string)$account->account;
 
                 // Retrieve account link
-                $accountLink = Account::getAccountLink($accountOwner, $currentAccountName);
+                $accountLink = AccountModel::getAccountLink($accountOwner, $currentAccountName);
 
                 // Retrieve status updates for the account
-                $statusInfo = Status::getStatusUpdates($accountOwner, $currentAccountName);
+                $statusInfo = StatusModel::getStatusUpdates($accountOwner, $currentAccountName);
 
                 foreach ($statusInfo as $status) {
                     $status = (object)$status;
@@ -136,10 +136,10 @@ class FeedController extends Controller
             );
         } else {
             // Retrieve account link
-            $accountLink = Account::getAccountLink($accountOwner, $accountName);
+            $accountLink = AccountModel::getAccountLink($accountOwner, $accountName);
 
             // Retrieve status updates for the account
-            $statuses = Status::getStatusUpdates($accountOwner, $accountName);
+            $statuses = StatusModel::getStatusUpdates($accountOwner, $accountName);
 
             foreach ($statuses as &$status) {
                 $status = (object)$status;
