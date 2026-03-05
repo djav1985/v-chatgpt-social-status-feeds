@@ -79,10 +79,9 @@ class FeedController extends Controller
             $cachedXml = CacheService::getInstance()->get($cacheKey);
             if ($cachedXml !== null) {
                 header('Content-Type: application/rss+xml; charset=UTF-8');
-                // Fix: Use appropriate cache headers for RSS feeds
-                header('Cache-Control: public, max-age=' . $ttl);
-                header('Pragma:');
-                header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $ttl) . ' GMT');
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Pragma: no-cache');
+                header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
                 ini_set('zlib.output_compression', 'Off');
                 
                 if (ob_get_level() > 0) {

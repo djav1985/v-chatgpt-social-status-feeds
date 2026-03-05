@@ -125,7 +125,7 @@ class UsersController extends Controller
     {
         $session = SessionManager::getInstance();
         $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
-        $password = ValidationHelper::sanitizeString($_POST['password'] ?? '');
+        $password = (string) ($_POST['password'] ?? '');
         $plainPassword = $password;
         $email = ValidationHelper::sanitizeString($_POST['email'] ?? '');
         // Fix: Handle null returns with default values
