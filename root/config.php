@@ -80,17 +80,17 @@ define('CACHE_TTL_FEED', getenv('CACHE_TTL_FEED') !== false ? (int)getenv('CACHE
 
 
 // Validate required configuration constants
-$required_constants = ['DB_HOST', 'DB_USER', 'DB_NAME', 'API_KEY'];
-$missing_config = [];
+$requiredConstants = ['DB_HOST', 'DB_USER', 'DB_NAME', 'API_KEY'];
+$missingConfig = [];
 
-foreach ($required_constants as $constant) {
+foreach ($requiredConstants as $constant) {
     if (!defined($constant) || empty(constant($constant))) {
-        $missing_config[] = $constant;
+        $missingConfig[] = $constant;
     }
 }
 
-if (!empty($missing_config)) {
-    error_log("Missing required configuration: " . implode(', ', $missing_config));
+if (!empty($missingConfig)) {
+    error_log("Missing required configuration: " . implode(', ', $missingConfig));
     if (php_sapi_name() !== 'cli') {
         http_response_code(500);
         die("Configuration error: Missing required settings. Please check server logs.");
