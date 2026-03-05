@@ -151,8 +151,16 @@ class Router
             }
 
             $data = $response->getViewData();
-            extract($data);
-            require __DIR__ . '/../Views/' . $response->getView() . '.php';
+            if (is_array($data)) {
+                extract($data, EXTR_SKIP);
+            }
+
+            $view = $response->getView();
+            if (!is_string($view) || !preg_match('/^[A-Za-z0-9_\/-]+$/', $view) || str_contains($view, '..')) {
+                throw new \RuntimeException('Invalid view name');
+            }
+
+            require __DIR__ . '/../Views/' . $view . '.php';
             return;
         }
 
