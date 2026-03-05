@@ -14,9 +14,9 @@
 
 namespace App\Services;
 
-use App\Models\Account;
-use App\Models\User;
-use App\Models\Status;
+use App\Models\AccountModel;
+use App\Models\UserModel;
+use App\Models\StatusModel;
 use function random_bytes;
 use App\Core\ErrorManager;
 use GuzzleHttp\Client as GuzzleClient;
@@ -50,8 +50,8 @@ class StatusService
         }
 
         $systemMessage = SYSTEM_MSG;
-        $accountInfo = Account::getAcctInfo($accountOwner, $accountName);
-        $userInfo = User::getUserInfo($accountOwner);
+        $accountInfo = AccountModel::getAcctInfo($accountOwner, $accountName);
+        $userInfo = UserModel::getUserInfo($accountOwner);
 
         if (!$accountInfo || !$userInfo) {
             $error = sprintf(
@@ -164,7 +164,7 @@ class StatusService
         }
 
         $imageName = $imageResponse['image_name'];
-        Status::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
+        StatusModel::saveStatus($accountName, $accountOwner, $finalStatus, $imageName);
 
         return ['success' => true];
     }

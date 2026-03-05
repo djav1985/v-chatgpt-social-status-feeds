@@ -5,10 +5,10 @@ namespace App\Services;
 
 use App\Core\ErrorManager;
 use App\Services\StatusService;
-use App\Models\Account;
-use App\Models\StatusJob;
+use App\Models\AccountModel;
+use App\Models\StatusJobModel;
 use function random_bytes;
-use App\Models\User;
+use App\Models\UserModel;
 use App\Core\Mailer;
 use App\Helpers\WorkerHelper;
 use DateTimeImmutable;
@@ -49,7 +49,7 @@ class QueueService
                 continue;
             }
 
-            if (StatusJob::exists($username, $account, $scheduledAt)) {
+            if (StatusJobModel::exists($username, $account, $scheduledAt)) {
                 continue;
             }
 
@@ -59,12 +59,12 @@ class QueueService
 
     public function removeFutureJobs(string $username, string $account): void
     {
-        StatusJob::deleteFutureJobs($username, $account, time());
+        StatusJobModel::deleteFutureJobs($username, $account, time());
     }
 
     public function removeAllJobs(string $username, string $account): void
     {
-        StatusJob::deleteAllForAccount($username, $account);
+        StatusJobModel::deleteAllForAccount($username, $account);
     }
 
     public function rescheduleAccountJobs(string $username, string $account, string $cron, string $days): void
@@ -85,7 +85,7 @@ class QueueService
         try {
             // Since we have the worker lock, no other worker can be running.
             // Reset all processing flags from any previously crashed/interrupted workers.
-            $count = StatusJob::resetAllProcessingFlags();
+            $count = StatusJobModel::resetAllProcessingFlags();
             if ($count > 0) {
                 ErrorManager::getInstance()->log(
                     sprintf('[QueueService] Reset %d stuck processing flag(s) from previous worker run.', $count),
@@ -146,8 +146,8 @@ class QueueService
         }
 
         try {
-            StatusJob::clearAllPendingJobs();
-            $accounts = Account::getAllAccounts();
+            StatusJobModel::clearAllPendingJobs();
+            $accounts = AccountModel::getAllAccounts();
             $now = time();
 
             foreach ($accounts as $account) {
@@ -171,7 +171,7 @@ class QueueService
                         continue;
                     }
 
-                    if (StatusJob::exists($username, $acct, $scheduledAt)) {
+                    if (StatusJobModel::exists($username, $acct, $scheduledAt)) {
                         continue;
                     }
 
@@ -220,12 +220,12 @@ class QueueService
         $this->releaseStaleProcessingJobs($now);
 
         // First, get candidate job IDs for specific status
-        $candidates = StatusJob::fetchDueJobsByStatus($now, $status);
+        $candidates = StatusJobModel::fetchDueJobsByStatus($now, $status);
 
         // Atomically claim each job individually by setting processing = TRUE
         foreach ($candidates as $candidate) {
             // Try to atomically claim this specific job
-            if (StatusJob::claimJob($candidate['id'])) {
+            if (StatusJobModel::claimJob($candidate['id'])) {
                 $candidate['processing'] = true;
                 $claimedJobs[] = $candidate;
             }
@@ -237,7 +237,7 @@ class QueueService
     private function releaseStaleProcessingJobs(int $now): int
     {
         $timeout = defined('STATUS_JOB_STALE_AFTER') ? (int) constant('STATUS_JOB_STALE_AFTER') : 3600;
-        return StatusJob::releaseStaleJobs($now, $timeout);
+        return StatusJobModel::releaseStaleJobs($now, $timeout);
     }
 
     private function generateStatusesForJob(array $job, int $count): void
@@ -263,7 +263,7 @@ class QueueService
             if ($maxApiCalls > 0 && $usedApiCalls >= $maxApiCalls) {
                 if (!$limitEmailSent) {
                     $this->sendLimitEmail($user);
-                    User::setLimitEmailSent($username, true);
+                    UserModel::setLimitEmailSent($username, true);
                     $limitEmailSent = true;
                 }
 
@@ -276,7 +276,7 @@ class QueueService
             }
 
             $usedApiCalls++;
-            User::updateUsedApiCalls($username, $usedApiCalls);
+            UserModel::updateUsedApiCalls($username, $usedApiCalls);
 
             if (property_exists($user, 'used_api_calls')) {
                 $user->used_api_calls = $usedApiCalls;
@@ -294,7 +294,7 @@ class QueueService
      */
     private function getUserInfo(string $username): ?object
     {
-        $info = User::getUserInfo($username);
+        $info = UserModel::getUserInfo($username);
 
         if ($info === null) {
             return null;
@@ -361,13 +361,13 @@ class QueueService
 
             $status = strtolower((string) ($job['status'] ?? 'pending'));
             if ($status !== 'pending' && $status !== 'retry') {
-                StatusJob::deleteById($job['id']);
+                StatusJobModel::deleteById($job['id']);
                 continue;
             }
 
             try {
                 $this->processJobPayload($job);
-                StatusJob::deleteById($job['id']);
+                StatusJobModel::deleteById($job['id']);
             } catch (\Throwable $e) {
                 // On failure, reset processing flag and handle retry logic
                 ErrorManager::getInstance()->log(
@@ -384,10 +384,10 @@ class QueueService
                 
                 if ($isRetryBatch || $status === 'retry') {
                     // Retry jobs that fail should be deleted
-                    StatusJob::deleteById($job['id']);
+                    StatusJobModel::deleteById($job['id']);
                 } else {
                     // Pending jobs that fail should be marked for retry
-                    StatusJob::markStatusAndProcessing($job['id'], 'retry', false);
+                    StatusJobModel::markStatusAndProcessing($job['id'], 'retry', false);
                 }
 
                 // Add 10-second backoff after failed status generation to avoid tight retry loops
@@ -398,7 +398,7 @@ class QueueService
 
     private function storeJob(string $username, string $account, int $scheduledAt, string $status): void
     {
-        StatusJob::insert($this->generateJobId(), $username, $account, $scheduledAt, $status);
+        StatusJobModel::insert($this->generateJobId(), $username, $account, $scheduledAt, $status);
     }
 
     /**

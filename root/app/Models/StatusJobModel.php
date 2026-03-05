@@ -8,7 +8,7 @@
  * Link:    https://vontainment.com
  * Version: 3.0.0
  *
- * File: StatusJob.php
+ * File: StatusJobModel.php
  * Description: Model for status job queue operations
  */
 
@@ -18,7 +18,7 @@ use App\Core\DatabaseManager;
 use App\Core\ErrorManager;
 use Exception;
 
-class StatusJob
+class StatusJobModel
 {
     /**
      * Clear all pending jobs from the queue.

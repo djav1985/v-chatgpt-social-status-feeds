@@ -14,8 +14,8 @@
 
 namespace App\Controllers;
 
-use App\Models\User;
-use App\Models\Blacklist;
+use App\Models\UserModel;
+use App\Models\BlacklistModel;
 use function random_bytes;
 use App\Core\ErrorManager;
 use App\Core\Controller;
@@ -103,12 +103,12 @@ class LoginController extends Controller
             }
 
             $ip = $_SERVER['REMOTE_ADDR'];
-            if (Blacklist::isBlacklisted($ip)) {
+            if (BlacklistModel::isBlacklisted($ip)) {
                 $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
                 ErrorManager::getInstance()->log($error);
                 MessageHelper::addMessage($error);
             } else {
-                Blacklist::updateFailedAttempts($ip);
+                BlacklistModel::updateFailedAttempts($ip);
                 $error = 'Invalid username or password.';
                 ErrorManager::getInstance()->log($error);
                 MessageHelper::addMessage($error);
@@ -127,7 +127,7 @@ class LoginController extends Controller
      */
     private static function validateCredentials(string $username, string $password): ?object
     {
-        $userInfo = User::getUserInfo($username);
+        $userInfo = UserModel::getUserInfo($username);
 
         if ($userInfo && isset($userInfo->password) && password_verify($password, (string) $userInfo->password)) {
             return $userInfo;

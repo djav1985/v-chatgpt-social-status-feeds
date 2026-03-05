@@ -15,8 +15,8 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Models\Account;
-use App\Models\User;
+use App\Models\AccountModel;
+use App\Models\UserModel;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
@@ -85,7 +85,7 @@ class AccountsController extends Controller
         $username = $session->get('username');
         $accounts = array_map(
             fn($account) => self::hydrateAccountRow($account),
-            User::getAllUserAccts($username)
+            UserModel::getAllUserAccts($username)
         );
 
         $daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -233,7 +233,7 @@ class AccountsController extends Controller
         $username = $session->get('username');
         $accounts = array_map(
             fn($account) => self::hydrateAccountRow($account),
-            User::getAllUserAccts($username)
+            UserModel::getAllUserAccts($username)
         );
         $output = '';
         foreach ($accounts as $account) {
@@ -332,8 +332,8 @@ class AccountsController extends Controller
         $session = SessionManager::getInstance();
         $username = $session->get('username');
 
-        $userInfo = User::getUserInfo($username);
-        $accountCount = count(User::getAllUserAccts($username));
+        $userInfo = UserModel::getUserInfo($username);
+        $accountCount = count(UserModel::getAllUserAccts($username));
 
         $maxApiCallsRaw = $userInfo->max_api_calls ?? null;
         $usedApiCalls = (int) ($userInfo->used_api_calls ?? 0);
@@ -471,17 +471,17 @@ class AccountsController extends Controller
 
         try {
             $queue = new QueueService();
-            if (Account::accountExists($accountOwner, $accountName)) {
-                $oldInfo = Account::getAcctInfo($accountOwner, $accountName);
+            if (AccountModel::accountExists($accountOwner, $accountName)) {
+                $oldInfo = AccountModel::getAcctInfo($accountOwner, $accountName);
                 if (is_array($oldInfo)) {
                     $oldInfo = (object)$oldInfo;
                 }
-                Account::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                AccountModel::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
                 if ($oldInfo && ($oldInfo->cron !== $cron || $oldInfo->days !== $days)) {
                     $queue->rescheduleAccountJobs($accountOwner, $accountName, $cron, $days);
                 }
             } else {
-                Account::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                AccountModel::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
                 $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
                 if (!file_exists($acctImagePath)) {
                     mkdir(
@@ -516,7 +516,7 @@ class AccountsController extends Controller
         $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
         $accountOwner = $session->get('username');
         try {
-            Account::deleteAccount($accountOwner, $accountName);
+            AccountModel::deleteAccount($accountOwner, $accountName);
             $queueService = new QueueService();
             $queueService->removeAllJobs($accountOwner, $accountName);
             MessageHelper::addMessage('Account Deleted.');
