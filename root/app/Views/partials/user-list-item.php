@@ -1,5 +1,6 @@
 <?php
 // phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+// phpcs:ignoreFile Generic.Files.LineLength.TooLong
 
 /**
  * Project: SocialRSS
