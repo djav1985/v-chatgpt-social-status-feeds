@@ -15,6 +15,7 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\Response;
 use App\Models\AccountModel;
 use App\Models\StatusModel;
 use App\Core\ErrorManager;
@@ -27,15 +28,15 @@ class FeedController extends Controller
      *
      * @param string $user    Account owner username
      * @param string $account Account name or "all"
-     * @return void
+     * @return Response
      */
-    public function index(string $user, string $account): void
+    public function index(string $user, string $account): Response
     {
         try {
-            self::outputRssFeed($account, $user);
+            return self::outputRssFeed($account, $user);
         } catch (\Exception $e) {
             ErrorManager::getInstance()->log('RSS feed generation failed: ' . $e->getMessage(), 'error');
-            echo 'Error: ' . $e->getMessage();
+            return Response::text('Error: ' . $e->getMessage(), 500);
         }
     }
 
@@ -44,17 +45,15 @@ class FeedController extends Controller
      *
      * @param string|null $user    Owner username
      * @param string|null $account Account name or "all"
-     * @return void
+     * @return Response
      */
-    public function handleRequest(?string $user = null, ?string $account = null): void
+    public function handleRequest(?string $user = null, ?string $account = null): Response
     {
         if (!$user || !$account) {
-            http_response_code(400);
-            echo 'Bad Request: Missing user or account parameter.';
-            return;
+            return Response::text('Bad Request: Missing user or account parameter.', 400);
         }
 
-        $this->index($user, $account);
+        return $this->index($user, $account);
     }
 
 
@@ -63,9 +62,9 @@ class FeedController extends Controller
      *
      * @param string $accountName  Account name or "all"
      * @param string $accountOwner Username owning the account(s)
-     * @return void
+     * @return Response
      */
-    protected static function outputRssFeed(string $accountName, string $accountOwner): void
+    protected static function outputRssFeed(string $accountName, string $accountOwner): Response
     {
         // Sanitize input to prevent XSS attacks while preserving characters for lookups
         $accountName = trim(strip_tags($accountName));
@@ -74,26 +73,10 @@ class FeedController extends Controller
         // Check cache for complete RSS XML output
         if (defined('CACHE_ENABLED') && CACHE_ENABLED) {
             $cacheKey = "rss:xml:{$accountOwner}:{$accountName}";
-            $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 180;
-            
             $cachedXml = CacheService::getInstance()->get($cacheKey);
             if ($cachedXml !== null) {
-                header('Content-Type: application/rss+xml; charset=UTF-8');
-                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-                header('Pragma: no-cache');
-                header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
-                ini_set('zlib.output_compression', 'Off');
-                
-                if (ob_get_level() > 0) {
-                    ob_clean();
-                }
-                
-                echo $cachedXml;
-                return;
+                return self::buildRssResponse($cachedXml);
             }
-            
-            // Start output buffering to capture XML
-            ob_start();
         }
 
         $statuses = [];
@@ -151,46 +134,27 @@ class FeedController extends Controller
             unset($status);
         }
 
-        // Set the content type to RSS XML
-        // Force correct content type + charset
-        header('Content-Type: application/rss+xml; charset=UTF-8');
-        
-        // Kill caching (IFTTT poison-cache prevention)
-        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-        header('Pragma: no-cache');
-        header('Expires: 0');
-
-    
-        // Disable compression at PHP level
-        ini_set('zlib.output_compression', 'Off');
-        
-        // Defensive: clear any existing buffer content without discarding the active buffer
-        if (ob_get_level() > 0) {
-            ob_clean();
-        }
-
         $rssUrl = DOMAIN . '/feeds/' . urlencode($accountOwner) . '/' . ($isAllAccounts ? 'all' : urlencode($accountName));
         $escapedRssUrl = htmlspecialchars($rssUrl, ENT_QUOTES, 'UTF-8');
         $escapedAccountOwner = htmlspecialchars($accountOwner, ENT_QUOTES, 'UTF-8');
         $escapedAccountName = htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8');
 
-        // Output RSS feed
-        echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">' . PHP_EOL;
-        
-        echo '<channel>' . PHP_EOL;
-        echo '<title>' . $escapedAccountOwner . ' status feed</title>' . PHP_EOL;
-        
-        echo '<link>' . $escapedRssUrl . '</link>' . PHP_EOL;
-        echo '<atom:link href="' . $escapedRssUrl . '" rel="self" type="application/rss+xml" />' . PHP_EOL;
-        
-        echo '<description>Status feed for ' . $escapedAccountName . '</description>' . PHP_EOL;
-        echo '<language>en-us</language>' . PHP_EOL;
-        
+        $xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+        $xmlOutput .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">' . PHP_EOL;
+
+        $xmlOutput .= '<channel>' . PHP_EOL;
+        $xmlOutput .= '<title>' . $escapedAccountOwner . ' status feed</title>' . PHP_EOL;
+
+        $xmlOutput .= '<link>' . $escapedRssUrl . '</link>' . PHP_EOL;
+        $xmlOutput .= '<atom:link href="' . $escapedRssUrl . '" rel="self" type="application/rss+xml" />' . PHP_EOL;
+
+        $xmlOutput .= '<description>Status feed for ' . $escapedAccountName . '</description>' . PHP_EOL;
+        $xmlOutput .= '<language>en-us</language>' . PHP_EOL;
+
         // Strongly recommended for IFTTT stability
-        echo '<generator>Vontainment Feed Engine</generator>' . PHP_EOL;
-        echo '<lastBuildDate>' . gmdate(DATE_RSS) . '</lastBuildDate>' . PHP_EOL;
-        echo '<ttl>10</ttl>' . PHP_EOL;
+        $xmlOutput .= '<generator>Vontainment Feed Engine</generator>' . PHP_EOL;
+        $xmlOutput .= '<lastBuildDate>' . gmdate(DATE_RSS) . '</lastBuildDate>' . PHP_EOL;
+        $xmlOutput .= '<ttl>10</ttl>' . PHP_EOL;
 
         // Output each status as an RSS item
         foreach ($statuses as $status) {
@@ -214,36 +178,46 @@ class FeedController extends Controller
             }
 
             $description = htmlspecialchars((string)$status->status, ENT_QUOTES, 'UTF-8');
-            echo '<item>' . PHP_EOL;
+            $xmlOutput .= '<item>' . PHP_EOL;
             $guidSource = isset($status->id)
                 ? 'status:' . (string)$status->id
                 : ($status->account ?? '') . '|' . ($status->created_at ?? '') . '|' . ($status->status ?? '');
             $escapedGuid = htmlspecialchars((string)$guidSource, ENT_QUOTES, 'UTF-8');
 
-            echo '<guid isPermaLink="false">' . $escapedGuid . '</guid>' . PHP_EOL;
-            echo '<pubDate>' . date('r', strtotime($status->created_at)) . '</pubDate>' . PHP_EOL;
-            echo '<title>' . $escapedStatusAccount . '</title>' . PHP_EOL;
-            echo '<link>' . $escapedAccountLink . '</link>' . PHP_EOL;
-            echo '<description><![CDATA[' . $description . ']]></description>' . PHP_EOL;
-            echo '<content:encoded><![CDATA[' . $description . ']]></content:encoded>' . PHP_EOL;
-            echo $enclosureTag;
-            echo '<category>' . $escapedStatusAccount . '</category>' . PHP_EOL;
-            echo '</item>' . PHP_EOL;
+            $xmlOutput .= '<guid isPermaLink="false">' . $escapedGuid . '</guid>' . PHP_EOL;
+            $xmlOutput .= '<pubDate>' . date('r', strtotime($status->created_at)) . '</pubDate>' . PHP_EOL;
+            $xmlOutput .= '<title>' . $escapedStatusAccount . '</title>' . PHP_EOL;
+            $xmlOutput .= '<link>' . $escapedAccountLink . '</link>' . PHP_EOL;
+            $xmlOutput .= '<description><![CDATA[' . $description . ']]></description>' . PHP_EOL;
+            $xmlOutput .= '<content:encoded><![CDATA[' . $description . ']]></content:encoded>' . PHP_EOL;
+            $xmlOutput .= $enclosureTag;
+            $xmlOutput .= '<category>' . $escapedStatusAccount . '</category>' . PHP_EOL;
+            $xmlOutput .= '</item>' . PHP_EOL;
         }
 
-        echo '</channel>' . PHP_EOL;
-        echo '</rss>';
-        
+        $xmlOutput .= '</channel>' . PHP_EOL;
+        $xmlOutput .= '</rss>';
+
         // Store XML output in cache
         if (defined('CACHE_ENABLED') && CACHE_ENABLED) {
-            $xmlOutput = ob_get_clean();
-            
             $cacheKey = "rss:xml:{$accountOwner}:{$accountName}";
             $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 180;
             CacheService::getInstance()->set($cacheKey, $xmlOutput, $ttl);
-            
-            echo $xmlOutput;
         }
+
+        return self::buildRssResponse($xmlOutput);
+    }
+
+    /**
+     * Build a standardized RSS XML response.
+     */
+    private static function buildRssResponse(string $xml): Response
+    {
+        return (new Response(200, [], $xml))
+            ->withHeader('Content-Type', 'application/rss+xml; charset=UTF-8')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->withHeader('Pragma', 'no-cache')
+            ->withHeader('Expires', '0');
     }
 
     /**

@@ -68,26 +68,26 @@ class Router
     /**
      * Dispatches the request to the appropriate controller action.
      *
-     * The URI is normalised before dispatch: any query string is stripped so
-     * that e.g. /home?foo=bar dispatches to /home.
+     * The caller (e.g., index.php) is responsible for parsing the URI path
+     * from REQUEST_URI and passing only the path component (no query string).
      *
      * If a controller action returns a Response instance the Router emits it
      * via sendResponse(). Actions that handle output themselves (header/echo/exit)
      * continue to work unchanged.
      *
      * @param string $method HTTP method of the incoming request.
-     * @param string $uri    The requested URI path (may include query string).
+     * @param string $uri    The requested URI path (query string should be pre-parsed by caller).
      */
     public function dispatch(string $method, string $uri): void
     {
-        // Strip the query string so /path?foo=bar dispatches as /path.
-        $route = strtok($uri, '?') ?: $uri;
+        // Router receives already-parsed path; use as-is.
+        $route = $uri;
 
         $routeInfo = $this->dispatcher->dispatch($method, $route);
 
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                $this->sendResponse((new Response(404))->withView('404'));
+                $this->sendResponse(Response::view('404', [], 404));
                 break;
 
             case Dispatcher::METHOD_NOT_ALLOWED:

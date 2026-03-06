@@ -16,10 +16,10 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\BlacklistModel;
-use function random_bytes;
 use App\Core\ErrorManager;
 use App\Core\Controller;
 use App\Core\SessionManager;
+use App\Core\Response;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
 
@@ -28,94 +28,80 @@ class LoginController extends Controller
     /**
      * Show the login form when the user is not already authenticated.
      *
-     * @return void
+     * @return Response
      */
-    public function handleRequest(): void
+    public function handleRequest(): Response
     {
         $session = SessionManager::getInstance();
         if ($session->get('logged_in') === true) {
-            header('Location: /');
-            exit();
+            return Response::redirect('/');
         }
 
-        $this->render('login', []);
+        return Response::view('login');
     }
 
     /**
      * Handle login form submission and logout actions.
      *
-     * @return void
+     * @return Response
      */
-    public function handleSubmission(): void
+    public function handleSubmission(): Response
     {
         $session = SessionManager::getInstance();
-        if ($session->get('logged_in') === true && isset($_POST['logout'])) {
-            if (ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
-                SessionManager::getInstance()->destroy();
-                header('Location: /login');
-                exit();
-            } else {
-                MessageHelper::addMessage('Invalid CSRF token. Please try again.');
-                header('Location: /login');
-                exit();
-            }
-        }
 
+        // Redirect already-logged-in users away from login form
         if ($session->get('logged_in') === true && !isset($_POST['logout'])) {
-            header('Location: /');
-            exit();
+            return Response::redirect('/');
         }
 
+        // Handle logout
+        if ($session->get('logged_in') === true && isset($_POST['logout'])) {
+            if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
+                MessageHelper::addMessage('Invalid CSRF token. Please try again.');
+                return Response::redirect('/login');
+            }
+            return self::logoutUser();
+        }
+
+        // Validate CSRF token
         if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
             $error = 'Invalid CSRF token. Please try again.';
             ErrorManager::getInstance()->log($error);
             MessageHelper::addMessage($error);
-        } else {
-            $username = trim($_POST['username'] ?? '');
-            $password = trim($_POST['password'] ?? '');
-
-            // Centralized login validation
-            $loginErrors = \App\Helpers\ValidationHelper::validateLogin([
-                'username' => $username,
-                'password' => $password,
-            ]);
-
-            if (!empty($loginErrors)) {
-                foreach ($loginErrors as $err) {
-                    MessageHelper::addMessage($err);
-                }
-                $this->render('login', []);
-                return;
-            }
-
-            $userInfo = self::validateCredentials($username, $password);
-
-            if ($userInfo) {
-                $session->set('logged_in', true);
-                $session->set('username', $userInfo->username);
-                $session->set('user_agent', $_SERVER['HTTP_USER_AGENT']);
-                $session->set('csrf_token', bin2hex(\random_bytes(32)));
-                $session->set('is_admin', $userInfo->admin);
-                $session->set('timeout', time());
-                $session->regenerate();
-                header('Location: /');
-                exit();
-            }
-
-            $ip = $_SERVER['REMOTE_ADDR'];
-            if (BlacklistModel::isBlacklisted($ip)) {
-                $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
-                ErrorManager::getInstance()->log($error);
-                MessageHelper::addMessage($error);
-            } else {
-                BlacklistModel::updateFailedAttempts($ip);
-                $error = 'Invalid username or password.';
-                ErrorManager::getInstance()->log($error);
-                MessageHelper::addMessage($error);
-            }
+            return Response::view('login');
         }
 
-        $this->render('login', []);
+        // Trim and validate input
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+
+        // Validate credentials
+        $userInfo = self::validateCredentials($username, $password);
+        if ($userInfo) {
+            $session->set('logged_in', true);
+            $session->set('username', $userInfo->username);
+            $session->set('user_agent', $_SERVER['HTTP_USER_AGENT']);
+            $session->set('csrf_token', \hash('sha256', \uniqid('', true)));
+            $session->set('is_admin', $userInfo->admin);
+            $session->set('timeout', time());
+            $session->regenerate();
+            return Response::redirect('/');
+        }
+
+        // Handle failed login attempt
+        $ip = $_SERVER['REMOTE_ADDR'];
+        if (BlacklistModel::isBlacklisted($ip)) {
+            $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
+            ErrorManager::getInstance()->log($error);
+            MessageHelper::addMessage($error);
+        } else {
+            BlacklistModel::updateFailedAttempts($ip);
+            $error = 'Invalid username or password.';
+            ErrorManager::getInstance()->log($error);
+            MessageHelper::addMessage($error);
+        }
+
+        return Response::view('login');
     }
 
     /**
@@ -134,5 +120,16 @@ class LoginController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Destroy the session and redirect to login page.
+     *
+     * @return Response
+     */
+    private static function logoutUser(): Response
+    {
+        SessionManager::getInstance()->destroy();
+        return Response::redirect('/login');
     }
 }

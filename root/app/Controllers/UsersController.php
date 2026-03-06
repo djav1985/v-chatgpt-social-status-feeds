@@ -16,10 +16,9 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Mailer;
+use App\Core\Response;
 use App\Models\UserModel;
-use function random_bytes;
 use App\Core\SessionManager;
-use Respect\Validation\Validator;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
 
@@ -28,21 +27,20 @@ class UsersController extends Controller
     /**
      * Display the user management page for administrators.
      *
-     * @return void
+     * @return Response
      */
-    public function handleRequest(): void
+    public function handleRequest(): Response
     {
 
         $session = SessionManager::getInstance();
         if (!$session->get('is_admin')) {
-            http_response_code(403);
-            exit('Forbidden');
+            return Response::text('Forbidden', 403);
         }
 
 
         $userList = self::generateUserList();
 
-        $this->render('users', [
+        return Response::view('users', [
             'userList' => $userList,
         ]);
     }
@@ -50,39 +48,38 @@ class UsersController extends Controller
     /**
      * Process create, delete and impersonation actions for users.
      *
-     * @return void
+     * @return Response
      */
-    public function handleSubmission(): void
+    public function handleSubmission(): Response
     {
         $session = SessionManager::getInstance();
         if (!$session->get('is_admin')) {
-            http_response_code(403);
-            exit('Forbidden');
+            return Response::text('Forbidden', 403);
         }
 
         if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
             MessageHelper::addMessage('Invalid CSRF token. Please try again.');
-            header('Location: /users');
-            exit;
+            return Response::redirect('/users');
         }
 
         if (isset($_POST['edit_users'])) {
             self::editUsers();
-            return;
+            return Response::redirect('/users');
         }
 
         if (isset($_POST['delete_user']) && isset($_POST['username'])) {
             self::deleteUser();
-            return;
+            return Response::redirect('/users');
         }
 
         if (isset($_POST['login_as']) && isset($_POST['username'])) {
-            self::loginAs();
-            return;
+            if (self::loginAs()) {
+                return Response::redirect('/home');
+            }
+            return Response::redirect('/users');
         }
 
-        header('Location: /users');
-        exit;
+        return Response::redirect('/users');
     }
 
     /**
@@ -147,16 +144,14 @@ class UsersController extends Controller
         }
 
         if (!empty($session->get('messages'))) {
-            header('Location: /users');
-            exit;
+            return;
         }
 
         try {
             $userExists = UserModel::userExists($username);
             if (!$userExists && empty($password)) {
                 MessageHelper::addMessage('Password is required for new users.');
-                header('Location: /users');
-                exit;
+                return;
             }
             if (!empty($password) && (!$userExists || !password_verify($password, $userExists->password))) {
                 $password = password_hash($password, PASSWORD_DEFAULT);
@@ -204,8 +199,6 @@ class UsersController extends Controller
         } catch (\Exception $e) {
             MessageHelper::addMessage('Failed to create or modify user: ' . $e->getMessage());
         }
-        header('Location: /users');
-        exit;
     }
 
     /**
@@ -227,16 +220,14 @@ class UsersController extends Controller
                 MessageHelper::addMessage('Failed to delete user: ' . $e->getMessage());
             }
         }
-        header('Location: /users');
-        exit;
     }
 
     /**
      * Log in as another user for administrative impersonation.
      *
-     * @return void
+     * @return bool True when impersonation succeeded, otherwise false
      */
-    private static function loginAs(): void
+    private static function loginAs(): bool
     {
         $session = SessionManager::getInstance();
         $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
@@ -249,19 +240,18 @@ class UsersController extends Controller
                 $session->set('username', $user->username);
                 $session->set('logged_in', true);
                 $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
-                $session->set('csrf_token', bin2hex(\random_bytes(32)));
+                $session->set('csrf_token', \hash('sha256', \uniqid('', true)));
                 $session->set('is_admin', $user->admin);
                 $session->set('timeout', time());
                 $session->regenerate();
-                header('Location: /home');
-                exit;
+                return true;
             } else {
                 MessageHelper::addMessage('Failed to login as user.');
             }
         } catch (\Exception $e) {
             MessageHelper::addMessage('Failed to login as user: ' . $e->getMessage());
         }
-        header('Location: /users');
-        exit;
+
+        return false;
     }
 }

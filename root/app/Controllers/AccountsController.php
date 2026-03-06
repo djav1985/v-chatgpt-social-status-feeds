@@ -15,6 +15,7 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\Response;
 use App\Models\AccountModel;
 use App\Models\UserModel;
 use App\Core\SessionManager;
@@ -27,9 +28,9 @@ class AccountsController extends Controller
     /**
      * Show the accounts management page with schedule overview.
      *
-     * @return void
+     * @return Response
      */
-    public function handleRequest(): void
+    public function handleRequest(): Response
     {
         $daysOptions = self::generateDaysOptions();
         $cronOptions = self::generateCronOptions();
@@ -37,7 +38,7 @@ class AccountsController extends Controller
         $calendarOverview = self::generateCalendarOverview();
         $userStats = self::buildUserStats();
 
-        $this->render('accounts', [
+        return Response::view('accounts', [
             'daysOptions' => $daysOptions,
             'cronOptions' => $cronOptions,
             'accountList' => $accountList,
@@ -49,29 +50,26 @@ class AccountsController extends Controller
     /**
      * Handle create/update and delete account form submissions.
      *
-     * @return void
+     * @return Response
      */
-    public function handleSubmission(): void
+    public function handleSubmission(): Response
     {
-        $session = SessionManager::getInstance();
         if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
             MessageHelper::addMessage('Invalid CSRF token. Please try again.');
-            header('Location: /accounts');
-            exit;
+            return Response::redirect('/accounts');
         }
 
         if (isset($_POST['edit_account'])) {
             self::createOrUpdateAccount();
-            return;
+            return Response::redirect('/accounts');
         }
 
         if (isset($_POST['delete_account'])) {
             self::deleteAccount();
-            return;
+            return Response::redirect('/accounts');
         }
 
-        header('Location: /accounts');
-        exit;
+        return Response::redirect('/accounts');
     }
 
     /**
@@ -465,8 +463,7 @@ class AccountsController extends Controller
         }
 
         if (!empty($session->get('messages'))) {
-            header('Location: /accounts');
-            exit;
+            return;
         }
 
         try {
@@ -501,8 +498,6 @@ class AccountsController extends Controller
         } catch (\Exception $e) {
             MessageHelper::addMessage('Failed to create or modify account: ' . $e->getMessage());
         }
-        header('Location: /accounts');
-        exit;
     }
 
     /**
@@ -523,7 +518,5 @@ class AccountsController extends Controller
         } catch (\Exception $e) {
             MessageHelper::addMessage('Failed to delete account: ' . $e->getMessage());
         }
-        header('Location: /accounts');
-        exit;
     }
 }

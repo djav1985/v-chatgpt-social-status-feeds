@@ -16,6 +16,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Mailer;
+use App\Core\Response;
 use App\Services\StatusService;
 use App\Models\UserModel;
 use App\Models\StatusModel;
@@ -28,13 +29,10 @@ class HomeController extends Controller
     /**
      * Display the dashboard showing accounts and recent statuses.
      *
-     * @return void
+     * @return Response
      */
-    public function handleRequest(): void
+    public function handleRequest(): Response
     {
-
-
-
         $accountOwner = SessionManager::getInstance()->get('username');
         $accounts = \App\Models\AccountModel::getAllUserAccts($accountOwner);
         $accountsData = [];
@@ -68,7 +66,7 @@ class HomeController extends Controller
             ];
         }
 
-        $this->render('home', [
+        return Response::view('home', [
             'accountOwner' => $accountOwner,
             'accountsData' => $accountsData,
         ]);
@@ -77,29 +75,26 @@ class HomeController extends Controller
     /**
      * Process requests to generate or delete statuses.
      *
-     * @return void
+     * @return Response
      */
-    public function handleSubmission(): void
+    public function handleSubmission(): Response
     {
-        $session = SessionManager::getInstance();
         if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
             MessageHelper::addMessage('Invalid CSRF token. Please try again.');
-            header('Location: /home');
-            exit;
+            return Response::redirect('/home');
         }
 
         if (isset($_POST['delete_status'])) {
             self::deleteStatus();
-            return;
+            return Response::redirect('/home');
         }
 
         if (isset($_POST['generate_status'])) {
             self::generateStatus();
-            return;
+            return Response::redirect('/home');
         }
 
-        header('Location: /home');
-        exit;
+        return Response::redirect('/home');
     }
 
     /**
@@ -155,20 +150,17 @@ class HomeController extends Controller
         $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
         if (empty($accountName)) {
             MessageHelper::addMessage('Invalid account name.');
-            header('Location: /home');
-            exit;
+            return;
         }
         $accountOwner = $session->get('username');
         if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
             MessageHelper::addMessage('Username mismatch.');
-            header('Location: /home');
-            exit;
+            return;
         }
         $statusId = ValidationHelper::validateInteger($_POST['id'] ?? '');
         if ($statusId === null) {
             MessageHelper::addMessage('Invalid status ID.');
-            header('Location: /home');
-            exit;
+            return;
         }
         try {
             $statusImagePath = StatusModel::getStatusImagePath($statusId, $accountName, $accountOwner);
@@ -188,8 +180,6 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             MessageHelper::addMessage('Failed to delete status: ' . $e->getMessage());
         }
-        header('Location: /home');
-        exit;
     }
 
     /**
@@ -203,14 +193,12 @@ class HomeController extends Controller
         $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
         if (empty($accountName)) {
             MessageHelper::addMessage('Invalid account name.');
-            header('Location: /home');
-            exit;
+            return;
         }
         $accountOwner = $session->get('username');
         if (isset($_POST['username']) && $accountOwner !== trim($_POST['username'])) {
             MessageHelper::addMessage('Username mismatch.');
-            header('Location: /home');
-            exit;
+            return;
         }
         try {
             $userInfo = UserModel::getUserInfo($accountOwner);
@@ -238,7 +226,5 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             MessageHelper::addMessage('Failed to generate status: ' . $e->getMessage());
         }
-        header('Location: /home');
-        exit;
     }
 }

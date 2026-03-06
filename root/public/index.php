@@ -12,8 +12,8 @@
  * Description: AI Social Status Generator
  */
 
-require_once '../config.php';
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Core\Router;
 use App\Core\ErrorManager;

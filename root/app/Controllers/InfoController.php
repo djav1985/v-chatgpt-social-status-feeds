@@ -15,8 +15,8 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\Response;
 use App\Models\UserModel;
-use Respect\Validation\Validator;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
@@ -26,15 +26,15 @@ class InfoController extends Controller
     /**
      * Display user profile information and system message.
      *
-     * @return void
+     * @return Response
      */
-    public function handleRequest(): void
+    public function handleRequest(): Response
     {
         $session = SessionManager::getInstance();
         $profileData = self::generateProfileDataAttributes($session->get('username'));
         $systemMsg = self::buildSystemMessage($session->get('username'));
 
-        $this->render('info', [
+        return Response::view('info', [
             'profileData' => $profileData,
             'systemMsg' => $systemMsg,
         ]);
@@ -43,30 +43,28 @@ class InfoController extends Controller
     /**
      * Handle profile update and password change requests.
      *
-     * @return void
+     * @return Response
      */
-    public function handleSubmission(): void
+    public function handleSubmission(): Response
     {
         $token = $_POST['csrf_token'] ?? '';
         $session = SessionManager::getInstance();
         if (!ValidationHelper::validateCsrfToken($token)) {
             MessageHelper::addMessage('Invalid CSRF token. Please try again.');
-            header('Location: /info');
-            exit;
+            return Response::redirect('/info');
         }
 
         if (isset($_POST['change_password'])) {
             self::processPasswordChange();
-            return;
+            return Response::redirect('/info');
         }
 
         if (isset($_POST['update_profile'])) {
             self::processProfileUpdate();
-            return;
+            return Response::redirect('/info');
         }
 
-        header('Location: /info');
-        exit;
+        return Response::redirect('/info');
     }
 
     /**
@@ -141,8 +139,7 @@ class InfoController extends Controller
         }
 
         if (!empty($session->get('messages'))) {
-            header('Location: /info');
-            exit;
+            return;
         }
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -152,8 +149,6 @@ class InfoController extends Controller
         } catch (\Exception $e) {
             MessageHelper::addMessage('Password update failed: ' . $e->getMessage());
         }
-        header('Location: /info');
-        exit;
     }
 
     /**
@@ -172,8 +167,7 @@ class InfoController extends Controller
 
         if (empty($who) || empty($where) || empty($what) || empty($goal)) {
             MessageHelper::addMessage('All fields are required.');
-            header('Location: /info');
-            exit;
+            return;
         }
 
         try {
@@ -182,7 +176,5 @@ class InfoController extends Controller
         } catch (\Exception $e) {
             MessageHelper::addMessage('Profile update failed: ' . $e->getMessage());
         }
-        header('Location: /info');
-        exit;
     }
 }
