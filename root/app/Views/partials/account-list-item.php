@@ -1,3 +1,17 @@
+<?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: account-list-item.php
+ * Description: View partial for rendering a single account list card.
+ */
+?>
 <div class="column col-6 col-xl-6 col-md-12 col-sm-12">
     <div class="card account-list-card">
         <div class="card-header account-card">

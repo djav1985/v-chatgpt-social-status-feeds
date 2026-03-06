@@ -1,3 +1,17 @@
+<?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: new_user.php
+ * Description: Email template partial for new user welcome message.
+ */
+?>
 <p>Welcome to SocialRSS!</p>
 <p>Your account details are below. Please keep them safe:</p>
 <table style="border-collapse:collapse;">

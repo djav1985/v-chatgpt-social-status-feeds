@@ -1,4 +1,18 @@
-<?php // phpcs:ignoreFile Generic.Files.LineLength.TooLong -- HTML template with long lines for markup convenience ?>
+<?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+// phpcs:ignoreFile Generic.Files.LineLength.TooLong
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: user-list-item.php
+ * Description: View partial for rendering a single user list card.
+ */
+?>
 <div class="column col-6 col-xl-12 col-md-12 col-sm-12">
     <div class="card account-list-card">
         <div class="card-header account-card">
