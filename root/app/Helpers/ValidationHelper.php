@@ -1,5 +1,17 @@
 <?php
 // phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: ValidationHelper.php
+ * Description: Input validation helper methods for users, accounts, and status fields.
+ */
+
 // SuppressWarnings(PHPMD.TooManyPublicMethods) - Helper class with multiple validation utilities
 // SuppressWarnings(PHPMD.TooManyMethods) - Helper class with multiple validation utilities
 

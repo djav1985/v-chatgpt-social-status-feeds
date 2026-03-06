@@ -1,4 +1,17 @@
-<?php // phpcs:ignoreFile Internal.NoCodeFound -- HTML template, no PHP code required ?>
+<?php
+// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: email_header.php
+ * Description: Email template header partial with HTML structure and styles.
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
