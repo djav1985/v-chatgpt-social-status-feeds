@@ -72,8 +72,16 @@ class LoginController extends Controller
         }
 
         // Sanitize and validate input
-        $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
+        $username = trim($_POST['username'] ?? '');
         $password = trim($_POST['password'] ?? '');
+
+        // Validate username format without mutating the identifier
+        if (!ValidationHelper::validateLogin($username)) {
+            $error = 'Invalid username format.';
+            ErrorManager::getInstance()->log($error);
+            MessageHelper::addMessage($error);
+            return Response::redirect('/login');
+        }
 
         // Validate credentials
         $userInfo = self::validateCredentials($username, $password);
