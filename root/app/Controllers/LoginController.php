@@ -68,19 +68,27 @@ class LoginController extends Controller
             $error = 'Invalid CSRF token. Please try again.';
             ErrorManager::getInstance()->log($error);
             MessageHelper::addMessage($error);
-            return Response::view('login');
+            return Response::redirect('/login');
         }
 
-        // Trim and validate input
+        // Sanitize and validate input
         $username = trim($_POST['username'] ?? '');
         $password = trim($_POST['password'] ?? '');
+
+        // Validate username format without mutating the identifier
+        if (!ValidationHelper::validateLogin($username)) {
+            $error = 'Invalid username format.';
+            ErrorManager::getInstance()->log($error);
+            MessageHelper::addMessage($error);
+            return Response::redirect('/login');
+        }
 
         // Validate credentials
         $userInfo = self::validateCredentials($username, $password);
         if ($userInfo) {
             $session->set('logged_in', true);
             $session->set('username', $userInfo->username);
-            $session->set('user_agent', $_SERVER['HTTP_USER_AGENT']);
+            $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
             $session->set('csrf_token', \hash('sha256', \uniqid('', true)));
             $session->set('is_admin', $userInfo->admin);
             $session->set('timeout', time());
@@ -89,7 +97,7 @@ class LoginController extends Controller
         }
 
         // Handle failed login attempt
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
         if (BlacklistModel::isBlacklisted($ip)) {
             $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
             ErrorManager::getInstance()->log($error);
@@ -101,7 +109,7 @@ class LoginController extends Controller
             MessageHelper::addMessage($error);
         }
 
-        return Response::view('login');
+        return Response::redirect('/login');
     }
 
     /**

@@ -134,7 +134,7 @@ class FeedController extends Controller
             unset($status);
         }
 
-        $rssUrl = DOMAIN . '/feeds/' . urlencode($accountOwner) . '/' . ($isAllAccounts ? 'all' : urlencode($accountName));
+        $rssUrl = DOMAIN . '/feeds/' . rawurlencode($accountOwner) . '/' . ($isAllAccounts ? 'all' : rawurlencode($accountName));
         $escapedRssUrl = htmlspecialchars($rssUrl, ENT_QUOTES, 'UTF-8');
         $escapedAccountOwner = htmlspecialchars($accountOwner, ENT_QUOTES, 'UTF-8');
         $escapedAccountName = htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8');
