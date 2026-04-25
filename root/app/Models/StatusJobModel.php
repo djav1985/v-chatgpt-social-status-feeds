@@ -21,6 +21,40 @@ use Exception;
 class StatusJobModel
 {
     /**
+     * Generate a UUID v4-like job ID for queued status jobs.
+     *
+     * @return string
+     */
+    public static function generateJobId(): string
+    {
+        $data = random_bytes(16);
+        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+    /**
+     * Queue a new pending job for immediate processing by the next cron run.
+     *
+     * If an identical job already exists for the same timestamp, this returns
+     * false so the caller can treat it as already queued.
+     *
+     * @param string $username Account owner.
+     * @param string $account Account name.
+     * @param int $scheduledAt Scheduled timestamp.
+     * @return bool True when a new job was queued, false when it already existed.
+     */
+    public static function queuePendingJob(string $username, string $account, int $scheduledAt): bool
+    {
+        if (self::exists($username, $account, $scheduledAt)) {
+            return false;
+        }
+
+        return self::insert(self::generateJobId(), $username, $account, $scheduledAt, 'pending');
+    }
+
+    /**
      * Clear all pending jobs from the queue.
      *
      * @return bool True on success.

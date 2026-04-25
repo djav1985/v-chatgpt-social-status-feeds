@@ -178,14 +178,24 @@ class StatusService
             self::$client = OpenAI::factory()
                 ->withApiKey(API_KEY)
                 ->withBaseUri(rtrim(API_ENDPOINT, '/'))
-                ->withHttpClient(new GuzzleClient([
-                    'timeout' => 30,
-                    'connect_timeout' => 10,
-                ]))
+                ->withHttpClient(new GuzzleClient(self::getImageClientTimeouts()))
                 ->make();
         }
 
         return self::$client;
+    }
+
+    /**
+     * Return the HTTP timeout settings used for image generation requests.
+     *
+     * @return array<string, int>
+     */
+    private static function getImageClientTimeouts(): array
+    {
+        return [
+            'timeout' => 120,
+            'connect_timeout' => 20,
+        ];
     }
 
     /**
@@ -381,11 +391,11 @@ class StatusService
     private static function generateSocialImage(string $imagePrompt, string $accountName, string $accountOwner): array
     {
         $data = [
-            'model' => 'dall-e-3',
+            'model' => IMAGE_MODEL,
             'prompt' => $imagePrompt,
             'n' => 1,
-            'quality' => 'standard',
-            'size' => '1792x1024',
+            'quality' => IMAGE_QUALITY,
+            'size' => IMAGE_SIZE,
         ];
 
         $client = self::getClient();
@@ -403,18 +413,28 @@ class StatusService
             return ['error' => $errorMessage];
         }
 
-        if (isset($responseArr['error']) || !isset($responseArr['data'][0]['url'])) {
+        if (isset($responseArr['error'])) {
             $errorMessage = sprintf(
                 'Error generating image for owner "%s" and account "%s": %s',
                 $accountOwner,
                 $accountName,
-                isset($responseArr['error']) ? $responseArr['error'] : 'No image URL returned.'
+                $responseArr['error']
             );
             ErrorManager::getInstance()->log($errorMessage, 'error');
             return ['error' => $errorMessage];
         }
 
-        $imageUrl = $responseArr['data'][0]['url'];
+        $imageContent = self::extractImageBytes($responseArr);
+        if ($imageContent === null) {
+            $errorMessage = sprintf(
+                'Error generating image for owner "%s" and account "%s": No image data returned.',
+                $accountOwner,
+                $accountName
+            );
+            ErrorManager::getInstance()->log($errorMessage, 'error');
+
+            return ['error' => $errorMessage];
+        }
 
         try {
             $imageDirectory = self::buildImageDirectory($accountOwner, $accountName);
@@ -445,18 +465,6 @@ class StatusService
 
         $imagePath = $imageDirectory . DIRECTORY_SEPARATOR . $fileName;
 
-        $imageContent = @file_get_contents($imageUrl);
-        if ($imageContent === false || $imageContent === '') {
-            $errorMessage = sprintf(
-                'Failed to download image for owner "%s" and account "%s".',
-                $accountOwner,
-                $accountName
-            );
-            ErrorManager::getInstance()->log($errorMessage, 'error');
-
-            return ['error' => $errorMessage];
-        }
-
         if (file_put_contents($imagePath, $imageContent) === false) {
             $errorMessage = sprintf(
                 'Failed to save image for owner "%s" and account "%s".',
@@ -469,6 +477,35 @@ class StatusService
         }
 
         return ['image_name' => $fileName];
+    }
+
+    /**
+     * Extract image bytes from an OpenAI image response.
+     *
+     * Prefers base64 payloads returned by GPT Image models and falls back to
+     * downloading from a URL when present.
+     *
+     * @param array<string, mixed> $responseArr
+     * @return string|null
+     */
+    private static function extractImageBytes(array $responseArr): ?string
+    {
+        $imageData = $responseArr['data'][0] ?? null;
+        if (!is_array($imageData)) {
+            return null;
+        }
+
+        if (isset($imageData['b64_json']) && is_string($imageData['b64_json']) && $imageData['b64_json'] !== '') {
+            $decoded = base64_decode($imageData['b64_json'], true);
+            return is_string($decoded) && $decoded !== '' ? $decoded : null;
+        }
+
+        if (isset($imageData['url']) && is_string($imageData['url']) && $imageData['url'] !== '') {
+            $imageContent = @file_get_contents($imageData['url']);
+            return ($imageContent === false || $imageContent === '') ? null : $imageContent;
+        }
+
+        return null;
     }
 
     /**

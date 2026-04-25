@@ -508,7 +508,7 @@ class AccountsController extends Controller
     private static function deleteAccount(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '', 'alphanumeric-dash');
         $accountOwner = $session->get('username');
         try {
             AccountModel::deleteAccount($accountOwner, $accountName);

@@ -22,6 +22,11 @@ define('API_ENDPOINT', getenv('API_ENDPOINT'));
 // Model identifier for the AI (e.g., GPT-3.5 or GPT-4)
 define('MODEL', getenv('MODEL'));
 
+// Image generation model and rendering options
+define('IMAGE_MODEL', getenv('IMAGE_MODEL') ?: 'gpt-image-2');
+define('IMAGE_QUALITY', getenv('IMAGE_QUALITY') ?: 'low');
+define('IMAGE_SIZE', getenv('IMAGE_SIZE') ?: '1536x1024');
+
 // Temperature setting for the AI's creativity (0 to 2 where higher values mean more creative responses)
 define('TEMPERATURE', getenv('TEMPERATURE'));
 

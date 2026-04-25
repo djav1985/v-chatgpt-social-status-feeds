@@ -17,7 +17,8 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Mailer;
 use App\Core\Response;
-use App\Services\StatusService;
+use App\Models\AccountModel;
+use App\Models\StatusJobModel;
 use App\Models\UserModel;
 use App\Models\StatusModel;
 use App\Core\SessionManager;
@@ -147,7 +148,7 @@ class HomeController extends Controller
     private static function deleteStatus(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '', 'alphanumeric-dash');
         if (empty($accountName)) {
             MessageHelper::addMessage('Invalid account name.');
             return;
@@ -190,7 +191,7 @@ class HomeController extends Controller
     private static function generateStatus(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '');
+        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '', 'alphanumeric-dash');
         if (empty($accountName)) {
             MessageHelper::addMessage('Invalid account name.');
             return;
@@ -201,8 +202,19 @@ class HomeController extends Controller
             return;
         }
         try {
+            $accountInfo = AccountModel::getAcctInfo($accountOwner, $accountName);
             $userInfo = UserModel::getUserInfo($accountOwner);
-            if ($userInfo && $userInfo->used_api_calls >= $userInfo->max_api_calls) {
+
+            if (!$accountInfo || !$userInfo) {
+                MessageHelper::addMessage(sprintf(
+                    'Error: Account or user not found for owner "%s" and account "%s".',
+                    $accountOwner,
+                    $accountName
+                ));
+                return;
+            }
+
+            if ($userInfo->used_api_calls >= $userInfo->max_api_calls) {
                 MessageHelper::addMessage('Sorry, your available API calls have run out.');
                 if (!$userInfo->limit_email_sent) {
                     Mailer::sendTemplate(
@@ -214,13 +226,13 @@ class HomeController extends Controller
                     UserModel::setLimitEmailSent($accountOwner, true);
                 }
             } else {
-                $statusResult = StatusService::generateStatus($accountName, $accountOwner);
-                if (isset($statusResult['error'])) {
-                    MessageHelper::addMessage('Failed to generate status: ' . $statusResult['error']);
+                $scheduledAt = time();
+                $queued = StatusJobModel::queuePendingJob($accountOwner, $accountName, $scheduledAt);
+
+                if ($queued) {
+                    MessageHelper::addMessage('Status generation queued. It will complete in the background.');
                 } else {
-                    $userInfo->used_api_calls += 1;
-                    UserModel::updateUsedApiCalls($accountOwner, $userInfo->used_api_calls);
-                    MessageHelper::addMessage('Successfully generated status.');
+                    MessageHelper::addMessage('Status generation is already queued and will complete in the background.');
                 }
             }
         } catch (\Exception $e) {

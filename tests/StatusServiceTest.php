@@ -47,6 +47,40 @@ final class StatusServiceTest extends TestCase
         $this->assertMatchesRegularExpression('/^[a-f0-9]{32}\\.png$/', $result);
     }
 
+    public function testGetImageClientTimeoutsUsesLongerTimeouts(): void
+    {
+        $result = $this->invokePrivateMethod('getImageClientTimeouts');
+
+        $this->assertSame([
+            'timeout' => 120,
+            'connect_timeout' => 20,
+        ], $result);
+    }
+
+    public function testExtractImageBytesPrefersBase64Payload(): void
+    {
+        $payload = base64_encode('image-bytes');
+
+        $result = $this->invokePrivateMethod('extractImageBytes', [
+            'data' => [
+                [
+                    'b64_json' => $payload,
+                ],
+            ],
+        ]);
+
+        $this->assertSame('image-bytes', $result);
+    }
+
+    public function testExtractImageBytesReturnsNullWhenNoImageDataExists(): void
+    {
+        $result = $this->invokePrivateMethod('extractImageBytes', [
+            'data' => [],
+        ]);
+
+        $this->assertNull($result);
+    }
+
     public function testRepairTruncatedJsonAppendsOnlyClosingBrace(): void
     {
         $input = '{"status":"Great day"';

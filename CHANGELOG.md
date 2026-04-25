@@ -48,6 +48,10 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - `TOKENS` configuration from Docker-specific environment and config scaffolding.
 
 ### Fixed
+- Manual status generation now queues a due job for the next cron run instead of waiting inline, while still blocking requests that have already hit the API quota.
+- Increased the OpenAI image-generation HTTP timeout to reduce cURL timeout failures during slower GPT Image requests.
+- Status image generation now decodes GPT Image `b64_json` responses directly, with URL fallback retained for compatibility.
+- Login submission now passes username/password as an array into `ValidationHelper::validateLogin()`, and the controller correctly handles returned validation errors instead of treating the helper like a boolean.
 - **Security**: Added `rel="noopener noreferrer"` to external links with `target="_blank"` in account-list-item.php to prevent reverse-tabnabbing attacks.
 - Added regression test in `ViewEscapingTest.php` to ensure all external links with `target="_blank"` include the secure `rel` attribute.
 - Escaped CSRF token rendering, system message text, and account data attributes to harden HTML output against injection.

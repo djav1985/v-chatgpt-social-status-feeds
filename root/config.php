@@ -21,6 +21,11 @@ define('API_ENDPOINT', 'https://api.openai.com/v1/');
 // Model identifier for the AI (e.g., GPT-3.5 or GPT-4)
 define('MODEL', 'gpt-5-nano');
 
+// Image generation model and rendering options
+define('IMAGE_MODEL', getenv('IMAGE_MODEL') !== false ? getenv('IMAGE_MODEL') : 'gpt-image-2');
+define('IMAGE_QUALITY', getenv('IMAGE_QUALITY') !== false ? getenv('IMAGE_QUALITY') : 'low');
+define('IMAGE_SIZE', getenv('IMAGE_SIZE') !== false ? getenv('IMAGE_SIZE') : '1536x1024');
+
 // Temperature setting for the AI's creativity
 define('TEMPERATURE', 1);
 

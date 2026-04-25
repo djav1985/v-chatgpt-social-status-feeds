@@ -75,9 +75,9 @@ class LoginController extends Controller
         $username = trim($_POST['username'] ?? '');
         $password = trim($_POST['password'] ?? '');
 
-        // Validate username format without mutating the identifier
-        if (!ValidationHelper::validateLogin($username)) {
-            $error = 'Invalid username format.';
+        $loginErrors = self::validateLoginInput($username, $password);
+        if (!empty($loginErrors)) {
+            $error = $loginErrors[0];
             ErrorManager::getInstance()->log($error);
             MessageHelper::addMessage($error);
             return Response::redirect('/login');
@@ -128,6 +128,21 @@ class LoginController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Validate login form input before checking credentials.
+     *
+     * @param string $username Submitted username
+     * @param string $password Submitted password
+     * @return string[] Validation errors, if any
+     */
+    private static function validateLoginInput(string $username, string $password): array
+    {
+        return ValidationHelper::validateLogin([
+            'username' => $username,
+            'password' => $password,
+        ]);
     }
 
     /**
