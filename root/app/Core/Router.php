@@ -16,17 +16,17 @@ namespace App\Core;
 
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
+use App\Models\BlacklistModel;
 use function FastRoute\simpleDispatcher;
 
 class Router
 {
     private Dispatcher $dispatcher;
-    private static ?Router $instance = null;
 
     /**
      * Builds the route dispatcher and registers application routes.
      */
-    private function __construct()
+    public function __construct()
     {
         $this->dispatcher = simpleDispatcher(function (RouteCollector $r): void {
             // Redirect the root URL to the home page for convenience
@@ -54,45 +54,31 @@ class Router
     }
 
     /**
-     * Returns the shared Router instance.
+     * Dispatches the request to the appropriate controller action and returns the Response.
+     *
+     * Actions that handle output themselves (header/echo/exit) and return nothing
+     * yield an empty 200 Response.
+     *
+     * @param Request $request The incoming request.
      */
-    public static function getInstance(): Router
+    public function dispatch(Request $request): Response
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
+        if (BlacklistModel::isCurrentRequestIpBlacklisted()) {
+            return new Response(403);
         }
 
-        return self::$instance;
-    }
+        SessionManager::getInstance()->ensureCsrfToken();
 
-    /**
-     * Dispatches the request to the appropriate controller action.
-     *
-     * The caller (e.g., index.php) is responsible for parsing the URI path
-     * from REQUEST_URI and passing only the path component (no query string).
-     *
-     * If a controller action returns a Response instance the Router emits it
-     * via sendResponse(). Actions that handle output themselves (header/echo/exit)
-     * continue to work unchanged.
-     *
-     * @param string $method HTTP method of the incoming request.
-     * @param string $uri    The requested URI path (query string should be pre-parsed by caller).
-     */
-    public function dispatch(string $method, string $uri): void
-    {
-        // Router receives already-parsed path; use as-is.
-        $route = $uri;
+        $route = $request->path;
 
-        $routeInfo = $this->dispatcher->dispatch($method, $route);
+        $routeInfo = $this->dispatcher->dispatch($request->method, $route);
 
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                $this->sendResponse(Response::view('404', [], 404));
-                break;
+                return Response::view('404', [], 404);
 
             case Dispatcher::METHOD_NOT_ALLOWED:
-                $this->sendResponse(new Response(405));
-                break;
+                return new Response(405);
 
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
@@ -102,69 +88,21 @@ class Router
                     [$class, $action] = $handler;
 
                     // Feed routes are publicly accessible; everything else requires auth.
-                    // str_starts_with() is available on PHP 8.0+ (project requires ^8.2).
                     $isFeed = str_starts_with($route, '/feeds/');
-                    if ($route !== '/login' && !$isFeed) {
-                        if (!SessionManager::getInstance()->requireAuth()) {
-                            $this->sendResponse(Response::redirect('/login'));
-                            return;
-                        }
+                    if ($route !== '/login' && !$isFeed && !SessionManager::getInstance()->requireAuth()) {
+                        return Response::redirect('/login');
                     }
 
                     $result = call_user_func_array([new $class(), $action], $vars);
-                    if ($result instanceof Response) {
-                        $this->sendResponse($result);
-                    }
                 } elseif (is_callable($handler)) {
                     $result = call_user_func_array($handler, $vars);
-                    if ($result instanceof Response) {
-                        $this->sendResponse($result);
-                    }
+                } else {
+                    $result = null;
                 }
-                break;
-        }
-    }
 
-    /**
-     * Emit a Response to the client.
-     *
-     * Handles three output modes in order of priority:
-     *  1. View  — requires the named view file and extracts view data into scope.
-     *  2. File  — delegates to Response::send() which calls readfile().
-     *  3. Body  — delegates to Response::send() which echoes the body string.
-     *
-     * @param Response $response The response to emit.
-     */
-    private function sendResponse(Response $response): void
-    {
-        if ($response->getView() !== null) {
-            if (!headers_sent()) {
-                http_response_code($response->getStatusCode());
-
-                foreach ($response->getHeaders() as $name => $values) {
-                    $replace = true;
-                    foreach ($values as $value) {
-                        header($name . ': ' . $value, $replace);
-                        $replace = false;
-                    }
-                }
-            }
-
-            $data = $response->getViewData();
-            if (is_array($data)) {
-                extract($data, EXTR_SKIP);
-            }
-
-            $view = $response->getView();
-            if (!is_string($view) || !preg_match('/^[A-Za-z0-9_\/-]+$/', $view) || str_contains($view, '..')) {
-                throw new \RuntimeException('Invalid view name');
-            }
-
-            require __DIR__ . '/../Views/' . $view . '.php';
-            return;
+                return $result instanceof Response ? $result : new Response();
         }
 
-        // File streaming and plain body output are both handled by send().
-        $response->send();
+        return new Response(500);
     }
 }

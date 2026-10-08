@@ -201,7 +201,6 @@ class StatusService
     /**
      * Makes an HTTP request to the OpenAI API.
      *
-     * @param string $endpoint The API endpoint to call.
      * @param array<string, mixed> $data Optional data to send in the request body.
      * @return array<string, mixed> Returns the API response as an associative array.
      */

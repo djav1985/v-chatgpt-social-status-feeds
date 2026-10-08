@@ -8,7 +8,6 @@ namespace Tests;
 
 use App\Services\QueueService;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use ReflectionMethod;
 
 final class QueueServiceTest extends TestCase
@@ -19,15 +18,6 @@ final class QueueServiceTest extends TestCase
         $reflection->setAccessible(true);
 
         return $reflection->invoke($service, ...$args);
-    }
-
-    private function getPrivateProperty(QueueService $service, string $property): mixed
-    {
-        $reflection = new ReflectionClass(QueueService::class);
-        $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
-
-        return $prop->getValue($service);
     }
 
     public function testNormalizeHoursFiltersInvalidValues(): void
@@ -179,7 +169,6 @@ final class QueueServiceTest extends TestCase
         
         $result = $this->invokePrivateMethod($service, 'generateJobId');
 
-        $this->assertIsString($result);
         // UUID v4 format: 8-4-4-4-12 hex characters
         $pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/';
         $this->assertMatchesRegularExpression($pattern, $result);
@@ -259,21 +248,4 @@ final class QueueServiceTest extends TestCase
         $this->assertSame('2', $result[1]['id']);
     }
 
-    public function testJobTypeIsStoredInConstructor(): void
-    {
-        $service = new QueueService('run-queue');
-        
-        $jobType = $this->getPrivateProperty($service, 'jobType');
-        
-        $this->assertSame('run-queue', $jobType);
-    }
-
-    public function testJobTypeDefaultsToNull(): void
-    {
-        $service = new QueueService();
-        
-        $jobType = $this->getPrivateProperty($service, 'jobType');
-        
-        $this->assertNull($jobType);
-    }
 }

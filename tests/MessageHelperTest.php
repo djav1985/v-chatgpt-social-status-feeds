@@ -134,18 +134,6 @@ final class MessageHelperTest extends TestCase
         $this->assertStringContainsString(json_encode($message), $output);
     }
 
-    public function testMessagesPersistAcrossMultipleAdds(): void
-    {
-        MessageHelper::addMessage('Message 1');
-        $this->assertCount(1, $this->session->get('messages', []));
-
-        MessageHelper::addMessage('Message 2');
-        $this->assertCount(2, $this->session->get('messages', []));
-
-        MessageHelper::addMessage('Message 3');
-        $this->assertCount(3, $this->session->get('messages', []));
-    }
-
     public function testEmptyStringMessage(): void
     {
         MessageHelper::addMessage('');

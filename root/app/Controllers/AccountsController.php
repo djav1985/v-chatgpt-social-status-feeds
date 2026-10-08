@@ -14,7 +14,6 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
 use App\Core\Response;
 use App\Models\AccountModel;
 use App\Models\UserModel;
@@ -23,7 +22,7 @@ use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
 use App\Services\QueueService;
 
-class AccountsController extends Controller
+class AccountsController
 {
     /**
      * Show the accounts management page with schedule overview.

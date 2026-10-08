@@ -11,6 +11,9 @@
  *
  * File: user-list-item.php
  * Description: View partial for rendering a single user list card.
+ *
+ * @var object{username: string, email: string, max_api_calls: int|string, used_api_calls: int|string, expires: string} $user User data.
+ * @var string $dataAttributes Escaped user data attributes.
  */
 ?>
 <div class="column col-6 col-xl-12 col-md-12 col-sm-12">

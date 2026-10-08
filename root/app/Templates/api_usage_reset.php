@@ -10,6 +10,8 @@
  *
  * File: api_usage_reset.php
  * Description: Email template partial for API usage reset notification.
+ *
+ * @var string $username Recipient's username, extracted by Mailer::sendTemplate().
  */
 ?>
 <p>Hi <?= htmlspecialchars($username) ?>,</p>

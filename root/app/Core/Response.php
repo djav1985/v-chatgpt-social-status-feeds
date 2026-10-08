@@ -39,7 +39,7 @@ class Response
 
     /**
      * Optional view name to render (relative to the Views directory, without .php).
-     * When set, Router::sendResponse() renders the view instead of echoing the body.
+     * When set, send() renders the view instead of echoing the body.
      *
      * @var string|null
      */
@@ -262,7 +262,7 @@ class Response
 
     /**
      * Return a new instance that renders the named view (without .php extension).
-     * When the Router calls sendResponse(), it will require the view file and
+     * When send() is called, it will require the view file and
      * extract $data into the view's scope instead of echoing the body.
      *
      * @param string               $view View name relative to the Views directory.
@@ -297,9 +297,7 @@ class Response
     /**
      * Send the response: emit the status code, headers, and body (or file) to the client.
      *
-     * Note: view-based responses are handled by Router::sendResponse(), which requires
-     * knowledge of the Views directory path. Calling send() on a view response will
-     * emit the status and headers but output nothing (the body is empty by default).
+     * View responses are rendered from the Views directory after headers are emitted.
      *
      * Should be called only once, and only when no output has already been sent.
      */
@@ -317,12 +315,32 @@ class Response
             }
         }
 
+        if ($this->view !== null) {
+            self::renderView($this->view, $this->viewData);
+            return;
+        }
+
         if ($this->file !== null) {
             readfile($this->file);
             return;
         }
 
         echo $this->body;
+    }
+
+    /**
+     * Require a view file with the given data extracted into its scope.
+     *
+     * @param array<string, mixed> $data
+     */
+    private static function renderView(string $view, array $data): void
+    {
+        if (!preg_match('/^[A-Za-z0-9_\/-]+$/', $view)) {
+            throw new \RuntimeException('Invalid view name');
+        }
+
+        extract($data, EXTR_SKIP);
+        require __DIR__ . '/../Views/' . $view . '.php';
     }
 
     // -------------------------------------------------------------------------
@@ -377,8 +395,7 @@ class Response
     /**
      * Create a view response.
      *
-     * The Router's sendResponse() will render the named view file, extracting
-     * $data into its scope. Nothing is echoed if send() is called directly.
+     * send() will render the named view file, extracting $data into its scope.
      *
      * @param string               $view       View name relative to the Views directory (no .php).
      * @param array<string, mixed> $data       Variables to extract inside the view.

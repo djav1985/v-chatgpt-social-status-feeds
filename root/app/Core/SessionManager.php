@@ -14,9 +14,6 @@
 
 namespace App\Core;
 
-use App\Models\BlacklistModel;
-use App\Core\ErrorManager;
-
 class SessionManager
 {
     /**
@@ -45,33 +42,24 @@ class SessionManager
     }
 
     /**
-     * Start the session with secure cookie parameters.
-     *
-     * @return void
-     */
-    public function start(): void
-    {
-        $secureFlag = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-        session_set_cookie_params([
-            'path'     => '/',
-            'httponly' => true,
-            'secure'   => $secureFlag,
-            'samesite' => 'Lax',
-        ]);
-
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-    }
-
-    /**
-     * Destroy the current session and its data.
+     * Destroy the current session, its data and the session cookie.
      *
      * @return void
      */
     public function destroy(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
+            if (!headers_sent()) {
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', [
+                    'expires'  => time() - 42000,
+                    'path'     => $params['path'],
+                    'domain'   => $params['domain'],
+                    'secure'   => $params['secure'],
+                    'httponly' => $params['httponly'],
+                    'samesite' => $params['samesite'],
+                ]);
+            }
             $_SESSION = [];
             session_destroy();
         }
@@ -84,6 +72,7 @@ class SessionManager
      */
     public function regenerate(): void
     {
+        $this->initialize();
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_regenerate_id(true);
         }
@@ -98,6 +87,7 @@ class SessionManager
      */
     public function get(string $key, mixed $default = null): mixed
     {
+        $this->initialize();
         return $_SESSION[$key] ?? $default;
     }
 
@@ -110,6 +100,7 @@ class SessionManager
      */
     public function set(string $key, mixed $value): void
     {
+        $this->initialize();
         $_SESSION[$key] = $value;
     }
 
@@ -138,23 +129,44 @@ class SessionManager
     }
 
     /**
-     * Enforce that the current request comes from an authenticated user.
-     *
-     * Returns true when the session is valid and the user is authenticated.
-     * Returns false when the session is invalid (caller should redirect to login).
-     * Calls exit() immediately when the remote IP is blacklisted (403 Forbidden).
+     * Create the CSRF token when the session has none.
+     */
+    public function ensureCsrfToken(): void
+    {
+        if (!$this->get('csrf_token')) {
+            $this->set('csrf_token', bin2hex(random_bytes(32)));
+        }
+    }
+
+    /**
+     * Whether the current request comes from an authenticated user.
      *
      * @return bool True if authenticated, false if not.
      */
     public function requireAuth(): bool
     {
-        $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
-        if ($ip && BlacklistModel::isBlacklisted($ip)) {
-            http_response_code(403);
-            ErrorManager::getInstance()->log("Blacklisted IP attempted access: $ip", 'error');
-            exit();
+        return $this->isValid();
+    }
+
+    /**
+     * Start the session on demand with strict mode and secure cookie parameters.
+     */
+    private function initialize(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE || headers_sent()) {
+            return;
         }
 
-        return $this->isValid();
+        $secureFlag = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+
+        ini_set('session.use_strict_mode', '1');
+        session_set_cookie_params([
+            'path'     => '/',
+            'httponly' => true,
+            'secure'   => $secureFlag,
+            'samesite' => 'Lax',
+        ]);
+
+        session_start();
     }
 }

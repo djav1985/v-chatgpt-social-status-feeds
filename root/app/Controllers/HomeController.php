@@ -14,7 +14,6 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
 use App\Core\Mailer;
 use App\Core\Response;
 use App\Models\AccountModel;
@@ -25,7 +24,7 @@ use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
 
-class HomeController extends Controller
+class HomeController
 {
     /**
      * Display the dashboard showing accounts and recent statuses.

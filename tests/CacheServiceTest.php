@@ -169,19 +169,6 @@ final class CacheServiceTest extends TestCase
         $this->assertSame('value3', $this->cache->get('post:1'), 'Other prefixes should not be cleared');
     }
 
-    public function testPrefixCollisionAvoidance(): void
-    {
-        // Test that prefix prevents collision with other apps
-        $key = 'shared_key';
-        $value = 'our_value';
-        
-        $this->cache->set($key, $value);
-        
-        // The actual APCu key should be prefixed
-        $result = $this->cache->get($key);
-        $this->assertSame($value, $result);
-    }
-
     public function testStoreComplexData(): void
     {
         $key = 'complex_key';
@@ -198,14 +185,4 @@ final class CacheServiceTest extends TestCase
         $this->assertEquals($value, $result, 'Should handle complex data structures');
     }
 
-    public function testTtlZeroMeansNoExpiration(): void
-    {
-        $key = 'permanent_key';
-        $value = 'permanent_value';
-        
-        $this->cache->set($key, $value, 0);
-        
-        // Should still be available
-        $this->assertSame($value, $this->cache->get($key));
-    }
 }

@@ -21,34 +21,48 @@ use App\Core\ErrorManager;
 class BlacklistModel
 {
     /**
+     * Determine whether the current request originates from a blacklisted IP.
+     */
+    public static function isCurrentRequestIpBlacklisted(): bool
+    {
+        $ip = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP);
+        if (!$ip) {
+            return false;
+        }
+
+        if (self::isBlacklisted($ip)) {
+            ErrorManager::log("Blacklisted IP attempted access: $ip", 'error');
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Update the failed login attempts for an IP address.
+     *
+     * Uses a single atomic upsert so concurrent requests cannot race.
      */
     public static function updateFailedAttempts(string $ip): void
     {
         try {
+            $now = time();
             $db = DatabaseManager::getInstance();
-            $db->query("SELECT * FROM ip_blacklist WHERE ip_address = :ip");
+            // MariaDB evaluates SET assignments left to right, so blacklisted sees the new count.
+            $db->query(
+                "INSERT INTO ip_blacklist (ip_address, login_attempts, blacklisted, timestamp)
+                 VALUES (:ip, 1, FALSE, :ts)
+                 ON DUPLICATE KEY UPDATE
+                     login_attempts = login_attempts + 1,
+                     blacklisted = IF(login_attempts >= 3, TRUE, blacklisted),
+                     timestamp = :ts2"
+            );
             $db->bind(':ip', $ip);
-            $result = $db->single();
-
-            if ($result) {
-                $result = (object)$result;
-                $attempts = $result->login_attempts + 1;
-                $isBlacklisted = ($attempts >= 3);
-                $timestamp = ($isBlacklisted) ? time() : $result->timestamp;
-                $db->query("UPDATE ip_blacklist SET login_attempts = :attempts, blacklisted = :blacklisted, timestamp = :timestamp WHERE ip_address = :ip");
-                $db->bind(':attempts', $attempts);
-                $db->bind(':blacklisted', $isBlacklisted);
-                $db->bind(':timestamp', $timestamp);
-                $db->bind(':ip', $ip);
-            } else {
-                $db->query("INSERT INTO ip_blacklist (ip_address, login_attempts, blacklisted, timestamp) VALUES (:ip, 1, FALSE, :timestamp)");
-                $db->bind(':ip', $ip);
-                $db->bind(':timestamp', time());
-            }
+            $db->bind(':ts', $now);
+            $db->bind(':ts2', $now);
             $db->execute();
         } catch (Exception $e) {
-            ErrorManager::getInstance()->log('Error updating failed attempts: ' . $e->getMessage(), 'error');
+            ErrorManager::log('Error updating failed attempts: ' . $e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -70,7 +84,8 @@ class BlacklistModel
 
             $result = (object)$result;
             if (time() - $result->timestamp > (3 * 24 * 60 * 60)) {
-                $db->query("UPDATE ip_blacklist SET blacklisted = FALSE WHERE ip_address = :ip");
+                $db->query("UPDATE ip_blacklist SET blacklisted = FALSE, login_attempts = 0, timestamp = :now WHERE ip_address = :ip");
+                $db->bind(':now', time());
                 $db->bind(':ip', $ip);
                 $db->execute();
                 return false;

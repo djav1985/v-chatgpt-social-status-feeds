@@ -10,6 +10,12 @@
  *
  * File: account-list-item.php
  * Description: View partial for rendering a single account list card.
+ *
+ * @var string $accountName Account name.
+ * @var object{prompt: string, link: string} $accountData Account details.
+ * @var string $daysStr Formatted scheduled days.
+ * @var string $timesStr Formatted scheduled times.
+ * @var string $dataAttributes Escaped account data attributes.
  */
 ?>
 <div class="column col-6 col-xl-6 col-md-12 col-sm-12">

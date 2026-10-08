@@ -1,9 +1,2 @@
-runtimes:
-    - python@3.11.11
-    - java@17.0.10
-    - node@22.2.0
 tools:
     - eslint@8.57.0
-    - pmd@6.55.0
-    - trivy@0.69.1
-    - lizard@1.17.31

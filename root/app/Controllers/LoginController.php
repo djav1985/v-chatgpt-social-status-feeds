@@ -17,13 +17,12 @@ namespace App\Controllers;
 use App\Models\UserModel;
 use App\Models\BlacklistModel;
 use App\Core\ErrorManager;
-use App\Core\Controller;
 use App\Core\SessionManager;
 use App\Core\Response;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
 
-class LoginController extends Controller
+class LoginController
 {
     /**
      * Show the login form when the user is not already authenticated.

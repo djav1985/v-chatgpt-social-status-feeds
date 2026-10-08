@@ -14,6 +14,9 @@
 namespace App\Core;
 
 use ErrorException;
+use Psr\Log\AbstractLogger;
+use Psr\Log\LoggerInterface;
+use Stringable;
 use Throwable;
 
 class ErrorManager
@@ -23,17 +26,13 @@ class ErrorManager
      */
     private static ?self $instance = null;
 
-    /**
-     * Log file location.
-     */
-    private string $logFile;
+    private static ?LoggerInterface $psrLogger = null;
 
     /**
      * Private constructor registers PHP error and exception handlers.
      */
     private function __construct()
     {
-        $this->logFile = __DIR__ . '/../../php_app.log';
         set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
         register_shutdown_function([$this, 'handleShutdown']);
@@ -66,12 +65,47 @@ class ErrorManager
 
     /**
      * Log a message to the application log.
+     *
+     * @param array<string, mixed> $context Optional context data appended as JSON.
      */
-    public function log(string $message, string $type = 'error'): void
+    public static function log(string $message, string $type = 'error', array $context = []): void
     {
-        $timestamp = date('Y-m-d H:i:s');
-        $logMessage = "[$timestamp] [$type]: $message\n";
-        error_log($logMessage, 3, $this->logFile);
+        $line = '[' . date('Y-m-d H:i:s') . "] [$type]: $message";
+
+        if ($context !== []) {
+            $encoded = json_encode($context);
+            if ($encoded !== false) {
+                $line .= ' ' . $encoded;
+            }
+        }
+
+        error_log($line . "\n", 3, self::resolveLogFile());
+    }
+
+    /**
+     * Return a PSR-3 logger backed by ErrorManager::log().
+     */
+    public static function logger(): LoggerInterface
+    {
+        return self::$psrLogger ??= new class () extends AbstractLogger {
+            public function log($level, string|Stringable $message, array $context = []): void
+            {
+                ErrorManager::log((string) $message, (string) $level, $context);
+            }
+        };
+    }
+
+    /**
+     * Resolve the log file path (LOG_FILE constant overrides the default).
+     */
+    private static function resolveLogFile(): string
+    {
+        $configured = defined('LOG_FILE') ? constant('LOG_FILE') : null;
+        if (is_string($configured) && $configured !== '') {
+            return $configured;
+        }
+
+        return __DIR__ . '/../../php_app.log';
     }
 
     /**

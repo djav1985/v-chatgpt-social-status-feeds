@@ -10,6 +10,8 @@
  *
  * File: api_limit_reached.php
  * Description: Email template partial for API call limit notification.
+ *
+ * @var string $username Recipient's username, extracted by Mailer::sendTemplate().
  */
 ?>
 <p>Hi <?= htmlspecialchars($username) ?>,</p>

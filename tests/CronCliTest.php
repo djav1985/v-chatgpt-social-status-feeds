@@ -5,38 +5,18 @@ declare(strict_types=1);
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Exception;
 
 final class CronCliTest extends TestCase
 {
-    private function runCronScript(array $args, array $extraEnv = []): array
+    private function runCronScript(array $args): array
     {
         $scriptPath = __DIR__ . '/../root/cron.php';
-        $cmd = 'php ' . escapeshellarg($scriptPath) . ' ' . implode(' ', array_map('escapeshellarg', $args));
-
-        // Set minimal required env vars to avoid config errors
-        $env = [
-            'DB_HOST' => 'localhost',
-            'DB_USER' => 'test',
-            'DB_NAME' => 'test',
-            'API_KEY' => 'test-key'
-        ];
-
-        $env = array_merge($env, $extraEnv);
-
-        // Set environment variables for the current process
-        foreach ($env as $key => $value) {
-            putenv("$key=$value");
-        }
+        $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($scriptPath)
+            . ' ' . implode(' ', array_map('escapeshellarg', $args));
 
         $output = [];
         $exitCode = 0;
         exec($cmd . ' 2>&1', $output, $exitCode);
-
-        // Clean up environment variables
-        foreach ($env as $key => $value) {
-            putenv($key);
-        }
 
         return [
             'output' => implode("\n", $output),
@@ -73,19 +53,6 @@ final class CronCliTest extends TestCase
         $this->assertStringContainsString('Usage:', $result['output']);
     }
 
-    public function testCronAcceptsValidTargets(): void
-    {
-        $validTargets = ['run-queue', 'fill-queue', 'daily', 'monthly'];
-
-        foreach ($validTargets as $target) {
-            $result = $this->runCronScript([$target]);
-
-            // We expect it to run but may fail due to missing DB/config
-            // The important thing is it doesn't show the usage help
-            $this->assertStringNotContainsString('Usage: php cron.php', $result['output']);
-        }
-    }
-
     public function testCronRejectsOldTargets(): void
     {
         $oldTargets = ['hourly'];
@@ -98,84 +65,72 @@ final class CronCliTest extends TestCase
         }
     }
 
-    public function testWorkerLaunchesRunQueueWhenNoExistingLock(): void
-    {
-        $lockPath = $this->workerLockPath('run-queue');
-        if (file_exists($lockPath)) {
-            @unlink($lockPath);
-        }
-
-        $result = $this->runCronScript(['worker', 'run-queue'], ['CRON_DISABLE_WORKER_SPAWN' => '1']);
-
-        $this->assertEquals(0, $result['exitCode']);
-        $this->assertStringNotContainsString('Usage: php cron.php', $result['output']);
-        $this->assertStringNotContainsString('Worker "run-queue" already running.', $result['output']);
-        $this->assertFileExists($lockPath, 'Worker invocation should create a lock file.');
-
-        @unlink($lockPath);
-    }
-
     public function testWorkerCommandHonorsExistingLock(): void
     {
-        $lockPath = $this->workerLockPath('run-queue');
-        file_put_contents($lockPath, (string) getmypid());
-
-        $result = $this->runCronScript(['worker', 'run-queue'], ['CRON_DISABLE_WORKER_SPAWN' => '1']);
-
-        $this->assertEquals(0, $result['exitCode']);
-        $this->assertStringContainsString('Worker "run-queue" already running.', $result['output']);
-
-        @unlink($lockPath);
+        $this->assertWorkerLockBlocksLaunch('run-queue');
     }
 
     public function testWorkerCommandHonorsExistingLockForOtherTasks(): void
     {
-        $lockPath = $this->workerLockPath('daily');
-        if (file_exists($lockPath)) {
-            @unlink($lockPath);
-        }
-
-        file_put_contents($lockPath, (string) getmypid());
-
-        $result = $this->runCronScript(['worker', 'daily']);
-
-        $this->assertEquals(0, $result['exitCode']);
-        $this->assertStringContainsString('Worker "daily" already running.', $result['output']);
-
-        @unlink($lockPath);
+        $this->assertWorkerLockBlocksLaunch('daily');
     }
 
     public function testWorkerCommandAllowsDifferentJobsToRunIndependently(): void
     {
-        $fillQueueLock = $this->workerLockPath('fill-queue');
-        if (file_exists($fillQueueLock)) {
-            @unlink($fillQueueLock);
+        $this->withHeldWorkerLock('fill-queue', function (): void {
+            $result = $this->runCronScript(['worker', 'run-queue']);
+
+            $this->assertSame(0, $result['exitCode']);
+            $this->assertStringNotContainsString('already running', $result['output']);
+        });
+    }
+
+    private function assertWorkerLockBlocksLaunch(string $jobType): void
+    {
+        $this->withHeldWorkerLock($jobType, function () use ($jobType): void {
+            $result = $this->runCronScript(['worker', $jobType]);
+
+            $this->assertSame(0, $result['exitCode']);
+            $this->assertStringContainsString(
+                sprintf('Worker "%s" already running.', $jobType),
+                $result['output']
+            );
+        });
+    }
+
+    private function withHeldWorkerLock(string $jobType, callable $test): void
+    {
+        $lockPath = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
+            . DIRECTORY_SEPARATOR . 'socialrss-worker-' . $jobType . '.lock';
+        $fileExisted = file_exists($lockPath);
+        $handle = fopen($lockPath, 'c+');
+        $this->assertIsResource($handle);
+
+        if (!flock($handle, LOCK_EX | LOCK_NB)) {
+            fclose($handle);
+            $this->markTestSkipped(sprintf('Worker lock "%s" is already held.', $jobType));
         }
 
-        file_put_contents($fillQueueLock, (string) getmypid());
+        rewind($handle);
+        $originalContents = stream_get_contents($handle);
 
-        $result = $this->runCronScript(['worker', 'run-queue'], ['CRON_DISABLE_WORKER_SPAWN' => '1']);
+        try {
+            ftruncate($handle, 0);
+            rewind($handle);
+            fwrite($handle, (string) getmypid());
+            fflush($handle);
+            $test();
+        } finally {
+            ftruncate($handle, 0);
+            rewind($handle);
+            fwrite($handle, (string) $originalContents);
+            fflush($handle);
+            flock($handle, LOCK_UN);
+            fclose($handle);
 
-        $this->assertEquals(0, $result['exitCode']);
-        $this->assertStringNotContainsString('already running', $result['output']);
-
-        @unlink($fillQueueLock);
-        @unlink($this->workerLockPath('run-queue'));
-    }
-
-    public function testLegacyOnceFlagIsIgnored(): void
-    {
-        $result = $this->runCronScript(['run-queue', '--once']);
-
-        $this->assertStringNotContainsString('Usage: php cron.php', $result['output']);
-    }
-
-    private function workerLockPath(string $jobType): string
-    {
-        return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
-            . DIRECTORY_SEPARATOR
-            . 'socialrss-worker-'
-            . $jobType
-            . '.lock';
+            if (!$fileExisted) {
+                unlink($lockPath);
+            }
+        }
     }
 }

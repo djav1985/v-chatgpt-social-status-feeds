@@ -30,7 +30,7 @@ VIII. [ License](#-license)
 
 v-chatgpt-social-status-feeds is a modular PHP application for managing, scheduling, and distributing social media status updates. It features user authentication, account management, status scheduling, and real-time RSS feeds, all with a focus on security and extensibility. Scheduled posts are recorded in a compact `status_jobs` table and processed by purpose-built cron targets. Built for social media managers and developers, it streamlines multi-account status posting and automation.
 
-Application PHP source lives inside the `root` directory, primarily in `root/app` and `root/public`. Runtime dependencies for the application are managed under `root/composer.json` and `root/vendor`, while tooling, tests, and repo-level Composer metadata live at the repository root. Container setup sits in the `docker` directory. The code uses a lightweight MVC approach with controllers, models, and views organized under `root/app`. Bootstrapping is handled by Composer's `vendor/autoload.php` and `root/config.php`. For an easy local setup, the repository includes a `docker` folder containing a `Dockerfile` and `docker-compose.yml` that provision Apache and MariaDB.
+Application PHP source lives inside `root/`, primarily in `root/app/` and `root/public/`. Runtime dependencies are managed under `root/composer.json` and `root/vendor/`, while development tooling, tests, and the root Composer manifest live at the repository root. Container setup is in `docker/`; its Compose file provisions Apache and MariaDB. The application uses an MVC structure with controllers, models, services, helpers, and views. The front controller builds an HTTP `Request`, dispatches it through `Router`, and sends the resulting `Response`.
 
 Version 3.0.0 introduces improvements such as dedicated classes for all database operations, a more intuitive user interface, and enhanced user settings for prompt customization. The API schema is now more structured, and the platform is more robust and user-friendly.
 
@@ -43,7 +43,8 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 - **Safe Media Storage:** Generates images using sanitized filesystem paths while preserving original account identifiers for database access.
 - **Efficient Database Queries:** Uses optimized SQL queries and indexing to ensure fast data retrieval.
 - **Two-Tier APCu Caching:** High-performance caching layer (L1: in-memory static, L2: APCu persistent) dramatically reduces database queries and filesystem I/O. Models cache user info, account data, and status feeds. RSS feed XML output is cached for instant delivery. Image metadata is cached to eliminate up to 99% of filesystem operations. Fully configurable via `CACHE_ENABLED` and `CACHE_TTL_*` constants.
-- **Modular Classes:** Core logic is organized into classes such as DatabaseManager, User, Account, StatusService, FeedController, CacheService, and ErrorManager for maintainability and scalability.
+- **Modular Classes:** Core logic is organized into classes such as `DatabaseManager`, `UserModel`, `AccountModel`, `StatusModel`, `StatusService`, `FeedController`, `CacheService`, and `ErrorManager`.
+- **Request/Response Handling:** `Request` captures HTTP method, path, query, form, and server data; `Router` dispatches routes and the front controller sends the resulting `Response`.
 - **Global Error Handling:** Centralized logging and exception management via the `ErrorManager` singleton.
 - **Accessible Dashboard UI:** Collapsible status feeds expose synchronized ARIA states, scoped form controls, and responsive footer spacing so navigation and content remain usable across assistive technologies and compact screens.
 
@@ -52,10 +53,10 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 
 |     |      Feature      | Summary |
 | :-- | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ⚙️  | **Architecture**  | <ul><li>Modular structure with dedicated classes: <code>DatabaseManager</code>, <code>User</code>, <code>Account</code>, <code>StatusService</code>, <code>FeedController</code>, <code>CacheService</code>, and the singleton <code>ErrorManager</code> (see <code>root/app/</code>).</li><li>Two-tier caching with APCu for persistent cross-request data and in-memory arrays for single-request optimization.</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Autoloading handled by Composer via <code>vendor/autoload.php</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
-| 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using Doctrine DBAL in <code>DatabaseManager.php</code>.</li><li>Robust error handling via the <code>ErrorManager</code> singleton.</li><li>Clean inline documentation throughout core files.</li></ul> |
+| ⚙️  | **Architecture**  | <ul><li>MVC structure with controllers, models, services, helpers, and views under <code>root/app/</code>.</li><li>Two-tier caching with APCu for persistent cross-request data and in-memory arrays for single-request optimization.</li><li>Configuration centralized in <code>root/config.php</code>.</li><li>Application dependencies are loaded by Composer from <code>root/vendor/autoload.php</code>; root-level Composer metadata provides development tooling.</li><li>HTTP requests are represented by <code>Request</code>, dispatched by <code>Router</code>, and returned as <code>Response</code>.</li><li>Cron automation managed via <code>root/cron.php</code>.</li></ul> |
+| 🔩  | **Code Quality**  | <ul><li>Follows PHP best practices and design patterns.</li><li>Centralized database operations using Doctrine DBAL in <code>DatabaseManager.php</code>.</li><li>Robust error handling via the <code>ErrorManager</code> singleton.</li></ul> |
 | 📄  | **Documentation** | <ul><li>Includes install and usage steps.</li><li>Written in <code>PHP</code>, <code>SQL</code>, and <code>text</code> formats.</li><li>Simple onboarding for developers and admins.</li></ul> |
-| 🔌  | **Integrations**  | <ul><li>Posts to social platforms via <code>StatusService.php</code>.</li><li>Real-time RSS feed generation using <code>FeedController::outputRssFeed()</code>.</li><li>Secure login and session control via the MVC controllers.</li><li>Email notifications powered by PHPMailer with customizable templates.</li></ul> |
+| 🔌  | **Integrations**  | <ul><li>Generates status content using OpenAI through <code>StatusService.php</code>.</li><li>Publishes RSS feeds through <code>FeedController</code> for integrations such as IFTTT.</li><li>Secure login and session control via the MVC controllers.</li><li>Email notifications powered by PHPMailer with customizable templates.</li></ul> |
 | 🧩  |  **Modularity**   | <ul><li>All logic encapsulated in single-purpose classes.</li><li>Autoloading supports scalability and clean structure.</li><li>Code reuse across handlers and views.</li></ul> |
 | 🔒  |   **Security**    | <ul><li>Full CSRF protection on form actions.</li><li>Strict input validation and sanitization.</li><li>Session hardening and IP blacklisting to block abuse.</li></ul> |
                                                                                                                                                         |
@@ -66,7 +67,6 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
 ```sh
 └── /
     ├── CHANGELOG.md
-    ├── MIGRATION.md
     ├── README.md
     ├── composer.json
     ├── composer.lock
@@ -83,7 +83,10 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
     │   ├── app/
     │   │   ├── Core/
     │   │   ├── Controllers/
+    │   │   ├── Helpers/
     │   │   ├── Models/
+    │   │   ├── Services/
+    │   │   ├── Templates/
     │   │   └── Views/
     │   ├── public/
     │   │   ├── assets/
@@ -95,7 +98,7 @@ Version 3.0.0 introduces improvements such as dedicated classes for all database
     ├── tests/
     └── vendor/
 ```
-The code under `root/app` follows an MVC pattern with `Controllers`, `Models`, and `Views`. Shared framework classes live in the `Core` directory.
+The code under `root/app/` follows an MVC pattern. Shared request, response, routing, database, session, and error-handling components live in `Core`; reusable helpers and business logic live in `Helpers` and `Services`.
 
 ## Usage
 
@@ -107,17 +110,20 @@ use App\Core\DatabaseManager;
 $db = DatabaseManager::getInstance();
 ```
 
-### Routing
+### Request Routing
 
-The router is exposed as a singleton. Use the shared instance to dispatch requests:
+The front controller creates the router and dispatches a request built from PHP's globals:
 
 ```php
+use App\Core\Request;
 use App\Core\Router;
 
-Router::getInstance()->dispatch($method, $uri);
+$router = new Router();
+$response = $router->dispatch(Request::fromGlobals());
+$response->send();
 ```
 
-This ensures the underlying FastRoute dispatcher is constructed only once.
+The router registers the application routes and returns a `Response` for the front controller to send.
 
 ### Session Management
 
@@ -127,13 +133,12 @@ Manage sessions through the `SessionManager` singleton:
 use App\Core\SessionManager;
 
 $session = SessionManager::getInstance();
-$session->start();           // Start or resume a session
 $session->set('name', 'value');
 $value = $session->get('name');
-$session->regenerate();      // Regenerate ID after login
+$session->regenerate();      // Initialize or resume the session and regenerate its ID
 ```
 
-Call `$session->destroy();` to end the session during logout.
+Session initialization is lazy. Call `$session->destroy();` to end the session during logout.
 
 ---
 
@@ -180,9 +185,10 @@ Install the project using the following steps:
 5. **Default Login:**
 
    - Use the default login credentials: `admin` for both username and password.
+   - Change the default password immediately after the first login, before exposing the application to other users or the internet.
 
 6. **Set Up Cron Jobs:**
-  - Configure cron to call the guarded worker entry points (all four tasks also support the single-argument form if you prefer direct execution):
+  - Configure cron to call the guarded worker entry points (all four tasks also support the single-argument form for direct execution):
     ```sh
     0 0 * * * /usr/bin/php /PATH-TO-APP/cron.php worker daily
     5 0 * * * /usr/bin/php /PATH-TO-APP/cron.php worker fill-queue
@@ -193,7 +199,7 @@ Install the project using the following steps:
    - The `worker` prefix acquires a PID-based lock for the specific task being launched. That guarantees only one instance of a given job flag runs at once while still allowing the other workers to execute concurrently. When the guard succeeds, `run-queue` is spawned as a background process so the cron entry returns immediately.
    - On hosts that cannot spawn background processes, call the single-argument form directly (for example, `php cron.php run-queue`). `run-queue` still respects its per-flag lock when invoked inline and drains all due jobs before exiting.
    - **daily:** runs cleanup tasks (purge statuses, images, IPs)
-  - **fill-queue:** clears queued jobs and adds all scheduled job slots for the current day
+  - **fill-queue:** replaces pending jobs with scheduled slots for the current day; retry jobs are retained
    - **run-queue:** executes due jobs (`scheduled_at <= now`) and enforces a single retry before permanent failure
    - **monthly:** resets API usage counters (run on the 1st of each month)
 
@@ -214,7 +220,7 @@ CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status);
 CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at);
 ```
 
-- **fill-queue** runs once daily to clear existing rows and append the current day's scheduled work, including hours earlier in the day.
+- **fill-queue** runs once daily to replace pending rows with the configured schedule for the current day. Retry rows are retained.
 - **run-queue** runs frequently to process records where `scheduled_at <= NOW()`. Each invocation drains all due retry jobs before moving to pending jobs and repeats until neither queue has work remaining. Successful jobs are deleted. A first failure updates the row to `status = 'retry'`; a second failure deletes the job permanently.
 - `status` only tracks whether the job is on its original attempt (`pending`) or retrying (`retry`). There is no long-lived worker loop—cron cadence controls execution.
 - `processing` is flipped to `true` when a worker claims a job and reset to `false` when work completes or a stale job is released, preventing duplicate workers from acting on the same row.
@@ -246,33 +252,19 @@ Statuses are generated on schedule and added to the respective account feed and 
 
 ## Docker
 
-The **docker** directory contains a `Dockerfile` and `docker-compose.yml` for running the project locally. Start the containers with:
+From the repository root, build and start the application and database with:
 
 ```sh
-docker compose up
+docker compose -f docker/docker-compose.yml up --build
 ```
 
-This launches an Apache web server and MariaDB instance with configuration values taken from the compose file. Adjust the environment variables there to set API keys and database credentials.
-
-The `db` service allows an empty MariaDB root password by setting `MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: '1'`. If you want a password instead, set `MYSQL_ROOT_PASSWORD` and update `DB_PASSWORD` in the `web` service.
+This launches Apache and MariaDB using the settings in the Compose file. Replace the example API and database settings with values appropriate for your environment before exposing the service publicly.
 
 ---
 
 ## Changelog
 
-### 2025-07-05
-
-- Switched feed URLs to `/feeds/{user}/{account}` and `/feeds/{user}/all`.
-- Added rewrite for new feed paths under `/feeds/{user}/{account}`.
-- Updated navigation links to use the new structure.
-
-### 2025-07-04
-
-- Moved RSS feed generation into `FeedController` and removed `rss-lib.php`.
-- Added type hints across the codebase and improved error propagation.
-- Improved error logging for RSS feed generation.
-- Refactored API interactions into `StatusService`.
-- Various security fixes and bug improvements.
+See [CHANGELOG.md](./CHANGELOG.md) for the release history and current unreleased changes.
 
 ---
 

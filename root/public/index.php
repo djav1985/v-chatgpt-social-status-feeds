@@ -15,18 +15,16 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Core\Router;
 use App\Core\ErrorManager;
-use App\Core\SessionManager;
-use function random_bytes;
-
-$session = SessionManager::getInstance();
-$session->start();
-if (!$session->get('csrf_token')) {
-    $session->set('csrf_token', bin2hex(\random_bytes(32)));
-}
+use App\Core\Request;
+use App\Core\Router;
 
 ErrorManager::handle(function (): void {
-    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    Router::getInstance()->dispatch($_SERVER['REQUEST_METHOD'], $uri);
+    // Build router
+    $router = new Router();
+
+    // Dispatch request through router
+    $request = Request::fromGlobals();
+    $response = $router->dispatch($request);
+    $response->send();
 });

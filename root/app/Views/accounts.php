@@ -10,6 +10,12 @@
  *
  * File: accounts.php
  * Description: AI Social Status Generator
+ *
+ * @var string $daysOptions Rendered day selection options.
+ * @var string $cronOptions Rendered schedule selection options.
+ * @var string $accountList Rendered account cards.
+ * @var string $calendarOverview Rendered schedule overview.
+ * @var array<string, mixed> $userStats Account and usage summary.
  */
 
 

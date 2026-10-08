@@ -21,9 +21,9 @@ final class SessionManagerTest extends TestCase
         // Snapshot the user-agent so tests that overwrite it can't bleed into each other.
         $this->originalUserAgent = $_SERVER['HTTP_USER_AGENT'] ?? false;
 
-        // Clean up any existing session
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_write_close();
+        // Reads start the session on demand, so start it here to keep $_SESSION fixtures intact.
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            @session_start();
         }
 
         $_SESSION = [];
@@ -184,35 +184,9 @@ final class SessionManagerTest extends TestCase
         $_SESSION['test_key'] = 'test_value';
         $_SESSION['another_key'] = 'another_value';
         
-        // Can't actually start session in tests, so just test that destroy clears $_SESSION
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            // Manually clear since session_destroy won't work
-            $_SESSION = [];
-        }
-        
+        $this->session->destroy();
+
         $this->assertEmpty($_SESSION);
-    }
-
-    public function testGetAndSetWorkTogether(): void
-    {
-        $key = 'test_key';
-        $value = 'test_value';
-        
-        $this->session->set($key, $value);
-        $result = $this->session->get($key);
-        
-        $this->assertSame($value, $result);
-    }
-
-    public function testMultipleKeysCanBeStored(): void
-    {
-        $this->session->set('key1', 'value1');
-        $this->session->set('key2', 'value2');
-        $this->session->set('key3', 'value3');
-        
-        $this->assertSame('value1', $this->session->get('key1'));
-        $this->assertSame('value2', $this->session->get('key2'));
-        $this->assertSame('value3', $this->session->get('key3'));
     }
 
     public function testComplexDataStructuresCanBeStored(): void

@@ -14,14 +14,13 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
 use App\Core\Response;
 use App\Models\UserModel;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
 use App\Helpers\ValidationHelper;
 
-class InfoController extends Controller
+class InfoController
 {
     /**
      * Display user profile information and system message.

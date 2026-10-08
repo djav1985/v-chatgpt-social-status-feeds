@@ -9,11 +9,12 @@ use App\Helpers\WorkerHelper;
 
 final class WorkerHelperTest extends TestCase
 {
-    private string $testJobType = 'test-worker';
+    private string $testJobType;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->testJobType = 'test-worker-' . bin2hex(random_bytes(8));
         $this->cleanupLockFile();
     }
 
@@ -61,20 +62,17 @@ final class WorkerHelperTest extends TestCase
         $this->assertFalse(WorkerHelper::isProcessRunning(-999));
     }
 
-    public function testIsProcessRunningReturnsTrueForCurrentProcess(): void
+    public function testIsProcessRunningReturnsTrueForWorkerProcess(): void
     {
-        $pid = getmypid();
-        if ($pid === false) {
-            $this->markTestSkipped('Unable to get current process PID');
-        }
-
-        $this->assertTrue(WorkerHelper::isProcessRunning($pid));
+        $this->withRunningWorkerProcess(function (int $pid): void {
+            $this->assertTrue(WorkerHelper::isProcessRunning($pid));
+        });
     }
 
     public function testIsProcessRunningReturnsFalseForNonExistentProcess(): void
     {
         // Use a very high PID that's unlikely to exist
-        $nonExistentPid = 999999;
+        $nonExistentPid = PHP_INT_MAX;
         $this->assertFalse(WorkerHelper::isProcessRunning($nonExistentPid));
     }
 
@@ -85,18 +83,18 @@ final class WorkerHelperTest extends TestCase
 
     public function testCanLaunchReturnsFalseWhenLockExistsWithRunningProcess(): void
     {
-        $lockPath = WorkerHelper::getLockPath($this->testJobType);
-        $pid = getmypid();
-        file_put_contents($lockPath, (string) $pid);
+        $this->withRunningWorkerProcess(function (int $pid): void {
+            file_put_contents(WorkerHelper::getLockPath($this->testJobType), (string) $pid);
 
-        $this->assertFalse(WorkerHelper::canLaunch($this->testJobType));
+            $this->assertFalse(WorkerHelper::canLaunch($this->testJobType));
+        });
     }
 
     public function testCanLaunchReturnsTrueWhenLockExistsWithDeadProcess(): void
     {
         $lockPath = WorkerHelper::getLockPath($this->testJobType);
         // Use a PID that's very unlikely to be running
-        file_put_contents($lockPath, '999999');
+        file_put_contents($lockPath, (string) PHP_INT_MAX);
 
         $this->assertTrue(WorkerHelper::canLaunch($this->testJobType));
         // Stale lock should be cleaned up
@@ -132,8 +130,8 @@ final class WorkerHelperTest extends TestCase
         $lockInfo = WorkerHelper::claimLock($this->testJobType);
         $this->assertIsArray($lockInfo);
 
-        $lockPath = $lockInfo['path'];
-        $contents = file_get_contents($lockPath);
+        rewind($lockInfo['handle']);
+        $contents = stream_get_contents($lockInfo['handle']);
         $pid = (int) trim($contents);
 
         $this->assertGreaterThan(0, $pid);
@@ -155,9 +153,9 @@ final class WorkerHelperTest extends TestCase
 
     public function testReleaseLockHandlesNullLockInfo(): void
     {
-        // Should not throw any errors
+        $this->expectNotToPerformAssertions();
+
         WorkerHelper::releaseLock(null);
-        $this->assertTrue(true);
     }
 
     public function testClaimLockAndWritePidSucceeds(): void
@@ -176,21 +174,20 @@ final class WorkerHelperTest extends TestCase
 
     public function testClaimLockAndWritePidFailsWhenLockAlreadyClaimedByRunningProcess(): void
     {
-        $lockPath = WorkerHelper::getLockPath($this->testJobType);
-        $pid = getmypid();
-        file_put_contents($lockPath, (string) $pid);
+        $this->withRunningWorkerProcess(function (int $pid): void {
+            file_put_contents(WorkerHelper::getLockPath($this->testJobType), (string) $pid);
 
-        $result = WorkerHelper::claimLockAndWritePid($this->testJobType);
-
-        $this->assertFalse($result);
+            $this->assertFalse(WorkerHelper::claimLockAndWritePid($this->testJobType));
+        });
     }
 
     public function testDifferentJobTypesCanRunSimultaneously(): void
     {
-        $runQueueLock = WorkerHelper::claimLock('run-queue');
-        $fillQueueLock = WorkerHelper::claimLock('fill-queue');
-        $dailyLock = WorkerHelper::claimLock('daily');
-        $monthlyLock = WorkerHelper::claimLock('monthly');
+        $suffix = bin2hex(random_bytes(8));
+        $runQueueLock = WorkerHelper::claimLock('run-queue-' . $suffix);
+        $fillQueueLock = WorkerHelper::claimLock('fill-queue-' . $suffix);
+        $dailyLock = WorkerHelper::claimLock('daily-' . $suffix);
+        $monthlyLock = WorkerHelper::claimLock('monthly-' . $suffix);
 
         $this->assertIsArray($runQueueLock);
         $this->assertIsArray($fillQueueLock);
@@ -205,18 +202,62 @@ final class WorkerHelperTest extends TestCase
 
     public function testSameJobTypeCannotRunSimultaneously(): void
     {
-        $lock1 = WorkerHelper::claimLock('run-queue');
+        $lock1 = WorkerHelper::claimLock($this->testJobType);
         $this->assertIsArray($lock1);
 
-        $lock2 = WorkerHelper::claimLock('run-queue');
+        $lock2 = WorkerHelper::claimLock($this->testJobType);
         $this->assertNull($lock2);
 
         WorkerHelper::releaseLock($lock1);
 
         // After releasing, should be able to claim again
-        $lock3 = WorkerHelper::claimLock('run-queue');
+        $lock3 = WorkerHelper::claimLock($this->testJobType);
         $this->assertIsArray($lock3);
 
         WorkerHelper::releaseLock($lock3);
+    }
+
+    private function withRunningWorkerProcess(callable $test): void
+    {
+        if (!function_exists('posix_kill') && !is_dir('/proc')) {
+            $this->markTestSkipped('Process liveness checks are not supported on this platform.');
+        }
+
+        $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR
+            . 'socialrss-test-worker-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($directory));
+        $script = $directory . DIRECTORY_SEPARATOR . 'cron.php';
+        file_put_contents($script, "<?php sleep(30);");
+
+        $process = proc_open(
+            escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script),
+            [
+                0 => ['pipe', 'r'],
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w'],
+            ],
+            $pipes
+        );
+
+        if (!is_resource($process)) {
+            unlink($script);
+            rmdir($directory);
+            $this->fail('Unable to start a process for the liveness check.');
+        }
+
+        try {
+            $status = proc_get_status($process);
+            $this->assertTrue($status['running']);
+            $this->assertIsInt($status['pid']);
+            $test($status['pid']);
+        } finally {
+            proc_terminate($process);
+            foreach ($pipes as $pipe) {
+                fclose($pipe);
+            }
+            proc_close($process);
+            unlink($script);
+            rmdir($directory);
+        }
     }
 }

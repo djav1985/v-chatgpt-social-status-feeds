@@ -10,6 +10,9 @@
  *
  * File: info.php
  * Description: AI Social Status Generator
+ *
+ * @var string $profileData Escaped HTML data attributes for the profile form.
+ * @var array{systemMsg?: string, who?: string, where?: string, what?: string, goal?: string, hasProfile?: bool} $systemMsg Profile data used to build the system message.
  */
 
 

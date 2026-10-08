@@ -10,6 +10,9 @@
  *
  * File: new_user.php
  * Description: Email template partial for new user welcome message.
+ *
+ * @var string $username New user's username, extracted by Mailer::sendTemplate().
+ * @var string $password New user's temporary password, extracted by Mailer::sendTemplate().
  */
 ?>
 <p>Welcome to SocialRSS!</p>

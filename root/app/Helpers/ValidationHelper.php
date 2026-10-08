@@ -260,7 +260,7 @@ class ValidationHelper
     public static function validateCsrfToken(string $token): bool
     {
         $sessionToken = SessionManager::getInstance()->get('csrf_token');
-        return is_string($sessionToken) && hash_equals($sessionToken, $token);
+        return is_string($sessionToken) && $sessionToken !== '' && hash_equals($sessionToken, $token);
     }
 
     /**

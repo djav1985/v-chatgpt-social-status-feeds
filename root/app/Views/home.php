@@ -10,6 +10,9 @@
  *
  * File: home.php
  * Description: AI Social Status Generator
+ *
+ * @var string $accountOwner Current account owner's username.
+ * @var list<array{name: string, info: mixed, statuses: list<array<string, mixed>>, feedUrl: string}> $accountsData Account data for dashboard rendering.
  */
 
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ## Unreleased
+### Changed
+- Standardized HTTP handling around `Request` and `Response`: the front controller builds a request from PHP globals, and an instance of `Router` dispatches it before the response is sent.
+- Reworked route dispatch and removed the shared base controller; routing now returns explicit responses for access control, missing routes, and unsupported methods.
+- Session initialization is lazy and configures strict mode plus `HttpOnly`, HTTPS-aware `Secure`, and `SameSite=Lax` cookie attributes.
+
 ### Added
 - **APCu Caching Infrastructure**: Implemented comprehensive two-tier caching system (L1: in-memory static, L2: APCu persistent) across all Models and Controllers
 - **Code Quality Improvements**: Refactored class methods to follow PHP standards and improve maintainability
@@ -14,8 +19,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
   - Cache configuration via environment variables or config.php constants: `CACHE_ENABLED`, `CACHE_TTL_USER`, `CACHE_TTL_ACCOUNT`, `CACHE_TTL_STATUS`, `CACHE_TTL_FEED`
 - Simplified `status_jobs` schema with `scheduled_at`, `account`, `username`, and a lightweight `status` enum for retry tracking.
 - Queue tests covering the new retry lifecycle and fill-queue scheduling rules.
-- Separate installation and upgrade paths: `install.php`/`install.sql` for fresh installs and `upgrade.php`/`upgrade.sql` for schema migrations.
-- `MIGRATION.md` documentation file detailing the migration process and schema changes.
+- Separate installation and upgrade paths: `install.php`/`install.sql` for fresh installs and `upgrade.php`/`upgrade.sql` for schema migrations, with setup guidance in the README.
 - Regression coverage for next-day scheduling, stale job recovery, quota enforcement, and image purge edge cases.
 
 ### Changed

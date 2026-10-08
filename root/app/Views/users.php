@@ -10,6 +10,8 @@
  *
  * File: users.php
  * Description: AI Social Status Generator
+ *
+ * @var string $userList Rendered user list cards.
  */
 
 

@@ -14,14 +14,13 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
 use App\Core\Response;
 use App\Models\AccountModel;
 use App\Models\StatusModel;
 use App\Core\ErrorManager;
 use App\Services\CacheService;
 
-class FeedController extends Controller
+class FeedController
 {
     /**
      * Entry point for RSS feed display for the given account.
