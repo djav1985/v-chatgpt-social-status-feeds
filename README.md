@@ -222,6 +222,7 @@ CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_
 
 - **fill-queue** runs once daily to replace pending rows with the configured schedule for the current day. Retry rows are retained.
 - **run-queue** runs frequently to process records where `scheduled_at <= NOW()`. Each invocation drains all due retry jobs before moving to pending jobs and repeats until neither queue has work remaining. Successful jobs are deleted. A first failure updates the row to `status = 'retry'`; a second failure deletes the job permanently.
+- Clicking **Generate Status** queues an immediately due job; it does not start a worker in the web request. The status is generated on the next `run-queue` cron run (every 10 minutes in the example above).
 - `status` only tracks whether the job is on its original attempt (`pending`) or retrying (`retry`). There is no long-lived worker loop—cron cadence controls execution.
 - `processing` is flipped to `true` when a worker claims a job and reset to `false` when work completes or a stale job is released, preventing duplicate workers from acting on the same row.
 

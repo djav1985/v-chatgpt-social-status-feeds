@@ -1,0 +1,1558 @@
+{
+  "version": 1,
+  "metadata": {
+    "source": "remote",
+    "provider": "gh",
+    "organization": "djav1985",
+    "repositoryId": "699782",
+    "repositoryName": "v-chatgpt-social-status-feeds",
+    "createdAt": "2026-10-23T11:18:15.755Z",
+    "updatedAt": "2026-10-23T11:18:15.755Z",
+    "languages": [
+      "CSS",
+      "Dockerfile",
+      "HTML",
+      "Javascript",
+      "JSON",
+      "Markdown",
+      "PHP",
+      "Shell",
+      "SQL",
+      "TypeScript",
+      "XML",
+      "YAML"
+    ]
+  },
+  "tools": [
+    {
+      "toolId": "Agentlinter",
+      "patterns": []
+    },
+    {
+      "toolId": "phpmd",
+      "patterns": [
+        {
+          "patternId": "rulesets-design.xml-EmptyCatchBlock"
+        },
+        {
+          "patternId": "rulesets-design.xml-CountInLoopExpression"
+        },
+        {
+          "patternId": "rulesets-unusedcode.xml-UnusedFormalParameter"
+        },
+        {
+          "patternId": "rulesets-unusedcode.xml-UnusedPrivateMethod"
+        },
+        {
+          "patternId": "rulesets-unusedcode.xml-UnusedLocalVariable"
+        },
+        {
+          "patternId": "rulesets-unusedcode.xml-UnusedPrivateField"
+        },
+        {
+          "patternId": "rulesets-design.xml-CouplingBetweenObjects",
+          "parameters": {
+            "maximum": "13"
+          }
+        },
+        {
+          "patternId": "rulesets-design.xml-DepthOfInheritance",
+          "parameters": {
+            "minimum": "6"
+          }
+        },
+        {
+          "patternId": "rulesets-design.xml-NumberOfChildren",
+          "parameters": {
+            "minimum": "15"
+          }
+        },
+        {
+          "patternId": "rulesets-design.xml-GotoStatement"
+        },
+        {
+          "patternId": "rulesets-design.xml-EvalExpression"
+        },
+        {
+          "patternId": "rulesets-design.xml-ExitExpression"
+        },
+        {
+          "patternId": "rulesets-codesize.xml-ExcessiveClassComplexity",
+          "parameters": {
+            "maximum": "50"
+          }
+        },
+        {
+          "patternId": "rulesets-codesize.xml-TooManyMethods",
+          "parameters": {
+            "maxmethods": "10"
+          }
+        },
+        {
+          "patternId": "rulesets-codesize.xml-TooManyFields",
+          "parameters": {
+            "maxfields": "15"
+          }
+        },
+        {
+          "patternId": "rulesets-codesize.xml-ExcessivePublicCount",
+          "parameters": {
+            "minimum": "45"
+          }
+        },
+        {
+          "patternId": "rulesets-codesize.xml-ExcessiveParameterList",
+          "parameters": {
+            "minimum": "10"
+          }
+        },
+        {
+          "patternId": "rulesets-codesize.xml-ExcessiveClassLength",
+          "parameters": {
+            "minimum": "1000"
+          }
+        },
+        {
+          "patternId": "rulesets-codesize.xml-ExcessiveMethodLength",
+          "parameters": {
+            "minimum": "100"
+          }
+        },
+        {
+          "patternId": "rulesets-codesize.xml-NPathComplexity",
+          "parameters": {
+            "minimum": "200"
+          }
+        },
+        {
+          "patternId": "rulesets-codesize.xml-CyclomaticComplexity",
+          "parameters": {
+            "reportLevel": "10",
+            "showClassesComplexity": "true",
+            "showMethodsComplexity": "true"
+          }
+        }
+      ]
+    },
+    {
+      "toolId": "shellcheck",
+      "patterns": [
+        {
+          "patternId": "shellcheck_SC2223"
+        },
+        {
+          "patternId": "shellcheck_SC2156"
+        },
+        {
+          "patternId": "shellcheck_SC2092"
+        },
+        {
+          "patternId": "shellcheck_SC2091"
+        },
+        {
+          "patternId": "shellcheck_SC2086"
+        },
+        {
+          "patternId": "shellcheck_SC2148"
+        },
+        {
+          "patternId": "shellcheck_SC2029"
+        },
+        {
+          "patternId": "shellcheck_SC2024"
+        },
+        {
+          "patternId": "shellcheck_SC2028"
+        },
+        {
+          "patternId": "shellcheck_SC2002"
+        },
+        {
+          "patternId": "shellcheck_SC2026"
+        },
+        {
+          "patternId": "shellcheck_SC2033"
+        },
+        {
+          "patternId": "shellcheck_SC2015"
+        },
+        {
+          "patternId": "shellcheck_SC2034"
+        },
+        {
+          "patternId": "shellcheck_SC2020"
+        },
+        {
+          "patternId": "shellcheck_SC2027"
+        },
+        {
+          "patternId": "shellcheck_SC2036"
+        },
+        {
+          "patternId": "shellcheck_SC2031"
+        },
+        {
+          "patternId": "shellcheck_SC2022"
+        }
+      ]
+    },
+    {
+      "toolId": "PHPCS",
+      "useLocalConfigurationFile": true,
+      "patterns": []
+    },
+    {
+      "toolId": "Stylelint",
+      "localConfigurationFile": ".stylelintrc.json",
+      "useLocalConfigurationFile": true,
+      "patterns": []
+    },
+    {
+      "toolId": "Hadolint",
+      "patterns": [
+        {
+          "patternId": "Hadolint_DL3061"
+        },
+        {
+          "patternId": "Hadolint_DL3058"
+        },
+        {
+          "patternId": "Hadolint_DL3056"
+        },
+        {
+          "patternId": "Hadolint_DL3055"
+        },
+        {
+          "patternId": "Hadolint_DL3054"
+        },
+        {
+          "patternId": "Hadolint_DL3053"
+        },
+        {
+          "patternId": "Hadolint_DL3052"
+        },
+        {
+          "patternId": "Hadolint_DL3051"
+        },
+        {
+          "patternId": "Hadolint_DL3046"
+        },
+        {
+          "patternId": "Hadolint_DL3045"
+        },
+        {
+          "patternId": "Hadolint_DL3044"
+        },
+        {
+          "patternId": "Hadolint_DL3043"
+        },
+        {
+          "patternId": "Hadolint_DL3042"
+        },
+        {
+          "patternId": "Hadolint_DL3041"
+        },
+        {
+          "patternId": "Hadolint_DL3040"
+        },
+        {
+          "patternId": "Hadolint_DL3038"
+        },
+        {
+          "patternId": "Hadolint_DL3037"
+        },
+        {
+          "patternId": "Hadolint_DL3036"
+        },
+        {
+          "patternId": "Hadolint_DL3035"
+        },
+        {
+          "patternId": "Hadolint_DL3034"
+        },
+        {
+          "patternId": "Hadolint_DL3033"
+        },
+        {
+          "patternId": "Hadolint_DL3032"
+        },
+        {
+          "patternId": "Hadolint_DL3030"
+        },
+        {
+          "patternId": "Hadolint_DL3029"
+        },
+        {
+          "patternId": "Hadolint_DL3028"
+        },
+        {
+          "patternId": "Hadolint_DL3027"
+        },
+        {
+          "patternId": "Hadolint_DL3021"
+        },
+        {
+          "patternId": "Hadolint_DL3025"
+        },
+        {
+          "patternId": "Hadolint_DL3018"
+        },
+        {
+          "patternId": "Hadolint_DL3026"
+        },
+        {
+          "patternId": "Hadolint_DL3024"
+        },
+        {
+          "patternId": "Hadolint_DL3023"
+        },
+        {
+          "patternId": "Hadolint_DL4006"
+        },
+        {
+          "patternId": "Hadolint_DL3022"
+        },
+        {
+          "patternId": "Hadolint_DL3016"
+        },
+        {
+          "patternId": "Hadolint_DL4003"
+        },
+        {
+          "patternId": "Hadolint_DL3006"
+        },
+        {
+          "patternId": "Hadolint_DL3007"
+        },
+        {
+          "patternId": "Hadolint_DL3014"
+        },
+        {
+          "patternId": "Hadolint_DL3008"
+        },
+        {
+          "patternId": "Hadolint_DL3012"
+        },
+        {
+          "patternId": "Hadolint_DL3002"
+        },
+        {
+          "patternId": "Hadolint_DL3020"
+        },
+        {
+          "patternId": "Hadolint_DL4004"
+        },
+        {
+          "patternId": "Hadolint_DL4001"
+        },
+        {
+          "patternId": "Hadolint_DL3003"
+        },
+        {
+          "patternId": "Hadolint_DL3004"
+        },
+        {
+          "patternId": "Hadolint_DL4000"
+        },
+        {
+          "patternId": "Hadolint_DL3000"
+        },
+        {
+          "patternId": "Hadolint_DL3011"
+        },
+        {
+          "patternId": "Hadolint_DL4005"
+        },
+        {
+          "patternId": "Hadolint_DL3013"
+        },
+        {
+          "patternId": "Hadolint_DL3015"
+        }
+      ]
+    },
+    {
+      "toolId": "jackson",
+      "patterns": [
+        {
+          "patternId": "jackson_duplicate-keys"
+        },
+        {
+          "patternId": "jackson_parse-error"
+        }
+      ]
+    },
+    {
+      "toolId": "Lizard",
+      "patterns": [
+        {
+          "patternId": "Lizard_file-nloc-medium",
+          "parameters": {
+            "threshold": "500"
+          }
+        },
+        {
+          "patternId": "Lizard_parameter-count-medium",
+          "parameters": {
+            "threshold": "8"
+          }
+        },
+        {
+          "patternId": "Lizard_nloc-medium",
+          "parameters": {
+            "threshold": "50"
+          }
+        },
+        {
+          "patternId": "Lizard_ccn-medium",
+          "parameters": {
+            "threshold": "8"
+          }
+        }
+      ]
+    },
+    {
+      "toolId": "SQLint",
+      "patterns": [
+        {
+          "patternId": "SQLint_allIssues"
+        }
+      ]
+    },
+    {
+      "toolId": "PMD",
+      "useLocalConfigurationFile": true,
+      "patterns": []
+    },
+    {
+      "toolId": "TSQLLint",
+      "patterns": [
+        {
+          "patternId": "TSQLLint_update-where"
+        },
+        {
+          "patternId": "TSQLLint_duplicate-go"
+        },
+        {
+          "patternId": "TSQLLint_duplicate-empty-line"
+        },
+        {
+          "patternId": "TSQLLint_delete-where"
+        },
+        {
+          "patternId": "TSQLLint_count-star"
+        },
+        {
+          "patternId": "TSQLLint_case-sensitive-variables"
+        },
+        {
+          "patternId": "TSQLLint_information-schema"
+        },
+        {
+          "patternId": "TSQLLint_full-text"
+        },
+        {
+          "patternId": "TSQLLint_upper-lower"
+        },
+        {
+          "patternId": "TSQLLint_schema-qualify"
+        },
+        {
+          "patternId": "TSQLLint_unicode-string"
+        },
+        {
+          "patternId": "TSQLLint_data-type-length"
+        },
+        {
+          "patternId": "TSQLLint_linked-server"
+        },
+        {
+          "patternId": "TSQLLint_data-compression"
+        },
+        {
+          "patternId": "TSQLLint_multi-table-alias"
+        },
+        {
+          "patternId": "TSQLLint_keyword-capitalization"
+        },
+        {
+          "patternId": "TSQLLint_object-property"
+        },
+        {
+          "patternId": "TSQLLint_set-quoted-identifier"
+        },
+        {
+          "patternId": "TSQLLint_cross-database-transaction"
+        },
+        {
+          "patternId": "TSQLLint_conditional-begin-end"
+        },
+        {
+          "patternId": "TSQLLint_select-star"
+        },
+        {
+          "patternId": "TSQLLint_set-nocount"
+        },
+        {
+          "patternId": "TSQLLint_named-constraint"
+        },
+        {
+          "patternId": "TSQLLint_set-variable"
+        },
+        {
+          "patternId": "TSQLLint_non-sargable"
+        },
+        {
+          "patternId": "TSQLLint_set-ansi"
+        },
+        {
+          "patternId": "TSQLLint_set-transaction-isolation-level"
+        },
+        {
+          "patternId": "TSQLLint_semicolon-termination"
+        },
+        {
+          "patternId": "TSQLLint_print-statement"
+        },
+        {
+          "patternId": "TSQLLint_disallow-cursors"
+        }
+      ]
+    },
+    {
+      "toolId": "Trivy",
+      "patterns": [
+        {
+          "patternId": "Trivy_malicious_packages"
+        },
+        {
+          "patternId": "Trivy_vulnerability_high"
+        },
+        {
+          "patternId": "Trivy_vulnerability_critical"
+        },
+        {
+          "patternId": "Trivy_vulnerability_minor"
+        },
+        {
+          "patternId": "Trivy_vulnerability_medium"
+        },
+        {
+          "patternId": "Trivy_secret"
+        }
+      ]
+    },
+    {
+      "toolId": "markdownlint",
+      "patterns": []
+    },
+    {
+      "toolId": "ESLint8",
+      "localConfigurationFile": ".eslintrc.json",
+      "useLocalConfigurationFile": true,
+      "patterns": []
+    }
+  ],
+  "exclude": [
+    "root/vendor/autoload.php",
+    "root/vendor/composer/autoload_classmap.php",
+    "root/vendor/composer/autoload_files.php",
+    "root/vendor/composer/autoload_namespaces.php",
+    "root/vendor/composer/autoload_psr4.php",
+    "root/vendor/composer/autoload_real.php",
+    "root/vendor/composer/autoload_static.php",
+    "root/vendor/composer/ClassLoader.php",
+    "root/vendor/composer/installed.json",
+    "root/vendor/composer/installed.php",
+    "root/vendor/composer/InstalledVersions.php",
+    "root/vendor/composer/platform_check.php",
+    "root/vendor/doctrine/dbal/bin/doctrine-dbal.php",
+    "root/vendor/doctrine/dbal/composer.json",
+    "root/vendor/doctrine/dbal/CONTRIBUTING.md",
+    "root/vendor/doctrine/dbal/README.md",
+    "root/vendor/doctrine/dbal/src/ArrayParameters/Exception/MissingNamedParameter.php",
+    "root/vendor/doctrine/dbal/src/ArrayParameters/Exception/MissingPositionalParameter.php",
+    "root/vendor/doctrine/dbal/src/ArrayParameters/Exception.php",
+    "root/vendor/doctrine/dbal/src/ArrayParameterType.php",
+    "root/vendor/doctrine/dbal/src/Cache/ArrayResult.php",
+    "root/vendor/doctrine/dbal/src/Cache/CacheException.php",
+    "root/vendor/doctrine/dbal/src/Cache/QueryCacheProfile.php",
+    "root/vendor/doctrine/dbal/src/ColumnCase.php",
+    "root/vendor/doctrine/dbal/src/Configuration.php",
+    "root/vendor/doctrine/dbal/src/ConnectionException.php",
+    "root/vendor/doctrine/dbal/src/Connection.php",
+    "root/vendor/doctrine/dbal/src/Connections/PrimaryReadReplicaConnection.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractDB2Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractException.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractMySQLDriver.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractOracleDriver/EasyConnectString.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractOracleDriver.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractPostgreSQLDriver.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractSQLiteDriver/Middleware/EnableForeignKeys.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractSQLiteDriver.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractSQLServerDriver/Exception/PortWithoutHost.php",
+    "root/vendor/doctrine/dbal/src/Driver/AbstractSQLServerDriver.php",
+    "root/vendor/doctrine/dbal/src/Driver/API/ExceptionConverter.php",
+    "root/vendor/doctrine/dbal/src/Driver/API/IBMDB2/ExceptionConverter.php",
+    "root/vendor/doctrine/dbal/src/Driver/API/MySQL/ExceptionConverter.php",
+    "root/vendor/doctrine/dbal/src/Driver/API/OCI/ExceptionConverter.php",
+    "root/vendor/doctrine/dbal/src/Driver/API/PostgreSQL/ExceptionConverter.php",
+    "root/vendor/doctrine/dbal/src/Driver/API/SQLite/ExceptionConverter.php",
+    "root/vendor/doctrine/dbal/src/Driver/API/SQLite/UserDefinedFunctions.php",
+    "root/vendor/doctrine/dbal/src/Driver/API/SQLSrv/ExceptionConverter.php",
+    "root/vendor/doctrine/dbal/src/Driver/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/Exception.php",
+    "root/vendor/doctrine/dbal/src/Driver/Exception/UnknownParameterType.php",
+    "root/vendor/doctrine/dbal/src/Driver/FetchUtils.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/DataSourceName.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Exception/CannotCopyStreamToStream.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Exception/CannotCreateTemporaryFile.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Exception/ConnectionError.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Exception/ConnectionFailed.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Exception/Factory.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Exception/PrepareFailed.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Exception/StatementError.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Result.php",
+    "root/vendor/doctrine/dbal/src/Driver/IBMDB2/Statement.php",
+    "root/vendor/doctrine/dbal/src/DriverManager.php",
+    "root/vendor/doctrine/dbal/src/Driver/Middleware/AbstractConnectionMiddleware.php",
+    "root/vendor/doctrine/dbal/src/Driver/Middleware/AbstractDriverMiddleware.php",
+    "root/vendor/doctrine/dbal/src/Driver/Middleware/AbstractResultMiddleware.php",
+    "root/vendor/doctrine/dbal/src/Driver/Middleware/AbstractStatementMiddleware.php",
+    "root/vendor/doctrine/dbal/src/Driver/Middleware.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Exception/ConnectionError.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Exception/ConnectionFailed.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Exception/FailedReadingStreamOffset.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Exception/HostRequired.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Exception/InvalidCharset.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Exception/InvalidOption.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Exception/NonStreamResourceUsedAsLargeObject.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Exception/StatementError.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Initializer/Charset.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Initializer/Options.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Initializer.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Initializer/Secure.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Result.php",
+    "root/vendor/doctrine/dbal/src/Driver/Mysqli/Statement.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/ConvertPositionalToNamedPlaceholders.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Exception/ConnectionFailed.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Exception/Error.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Exception/InvalidConfiguration.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Exception/NonTerminatedStringLiteral.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Exception/SequenceDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Exception/UnknownParameterIndex.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/ExecutionMode.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Middleware/InitializeSession.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Result.php",
+    "root/vendor/doctrine/dbal/src/Driver/OCI8/Statement.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/Exception.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/MySQL/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/OCI/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/ParameterTypeMap.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/PDOConnect.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/PDOException.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/PgSQL/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/Result.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/SQLite/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/SQLSrv/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/SQLSrv/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/SQLSrv/Statement.php",
+    "root/vendor/doctrine/dbal/src/Driver/PDO/Statement.php",
+    "root/vendor/doctrine/dbal/src/Driver/PgSQL/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/PgSQL/ConvertParameters.php",
+    "root/vendor/doctrine/dbal/src/Driver/PgSQL/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/PgSQL/Exception.php",
+    "root/vendor/doctrine/dbal/src/Driver/PgSQL/Exception/UnexpectedValue.php",
+    "root/vendor/doctrine/dbal/src/Driver/PgSQL/Exception/UnknownParameter.php",
+    "root/vendor/doctrine/dbal/src/Driver/PgSQL/Result.php",
+    "root/vendor/doctrine/dbal/src/Driver/PgSQL/Statement.php",
+    "root/vendor/doctrine/dbal/src/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/Result.php",
+    "root/vendor/doctrine/dbal/src/Driver/ServerInfoAwareConnection.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLite3/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLite3/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLite3/Exception.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLite3/Result.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLite3/Statement.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLSrv/Connection.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLSrv/Driver.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLSrv/Exception/Error.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLSrv/Result.php",
+    "root/vendor/doctrine/dbal/src/Driver/SQLSrv/Statement.php",
+    "root/vendor/doctrine/dbal/src/Driver/Statement.php",
+    "root/vendor/doctrine/dbal/src/Event/ConnectionEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/Listeners/OracleSessionInit.php",
+    "root/vendor/doctrine/dbal/src/Event/Listeners/SQLiteSessionInit.php",
+    "root/vendor/doctrine/dbal/src/Event/Listeners/SQLSessionInit.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaAlterTableAddColumnEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaAlterTableChangeColumnEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaAlterTableEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaAlterTableRemoveColumnEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaAlterTableRenameColumnEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaColumnDefinitionEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaCreateTableColumnEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaCreateTableEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaDropTableEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/SchemaIndexDefinitionEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Events.php",
+    "root/vendor/doctrine/dbal/src/Event/TransactionBeginEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/TransactionCommitEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/TransactionEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Event/TransactionRollBackEventArgs.php",
+    "root/vendor/doctrine/dbal/src/Exception/ConnectionException.php",
+    "root/vendor/doctrine/dbal/src/Exception/ConnectionLost.php",
+    "root/vendor/doctrine/dbal/src/Exception/ConstraintViolationException.php",
+    "root/vendor/doctrine/dbal/src/Exception/DatabaseDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Exception/DatabaseObjectExistsException.php",
+    "root/vendor/doctrine/dbal/src/Exception/DatabaseObjectNotFoundException.php",
+    "root/vendor/doctrine/dbal/src/Exception/DatabaseRequired.php",
+    "root/vendor/doctrine/dbal/src/Exception/DeadlockException.php",
+    "root/vendor/doctrine/dbal/src/Exception/DriverException.php",
+    "root/vendor/doctrine/dbal/src/Exception/ForeignKeyConstraintViolationException.php",
+    "root/vendor/doctrine/dbal/src/Exception/InvalidArgumentException.php",
+    "root/vendor/doctrine/dbal/src/Exception/InvalidFieldNameException.php",
+    "root/vendor/doctrine/dbal/src/Exception/InvalidLockMode.php",
+    "root/vendor/doctrine/dbal/src/Exception/LockWaitTimeoutException.php",
+    "root/vendor/doctrine/dbal/src/Exception/MalformedDsnException.php",
+    "root/vendor/doctrine/dbal/src/Exception/NoKeyValue.php",
+    "root/vendor/doctrine/dbal/src/Exception/NonUniqueFieldNameException.php",
+    "root/vendor/doctrine/dbal/src/Exception/NotNullConstraintViolationException.php",
+    "root/vendor/doctrine/dbal/src/Exception.php",
+    "root/vendor/doctrine/dbal/src/Exception/ReadOnlyException.php",
+    "root/vendor/doctrine/dbal/src/Exception/RetryableException.php",
+    "root/vendor/doctrine/dbal/src/Exception/SchemaDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Exception/ServerException.php",
+    "root/vendor/doctrine/dbal/src/Exception/SyntaxErrorException.php",
+    "root/vendor/doctrine/dbal/src/Exception/TableExistsException.php",
+    "root/vendor/doctrine/dbal/src/Exception/TableNotFoundException.php",
+    "root/vendor/doctrine/dbal/src/Exception/TransactionRolledBack.php",
+    "root/vendor/doctrine/dbal/src/Exception/UniqueConstraintViolationException.php",
+    "root/vendor/doctrine/dbal/src/ExpandArrayParameters.php",
+    "root/vendor/doctrine/dbal/src/FetchMode.php",
+    "root/vendor/doctrine/dbal/src/Id/TableGenerator.php",
+    "root/vendor/doctrine/dbal/src/Id/TableGeneratorSchemaVisitor.php",
+    "root/vendor/doctrine/dbal/src/LockMode.php",
+    "root/vendor/doctrine/dbal/src/Logging/Connection.php",
+    "root/vendor/doctrine/dbal/src/Logging/DebugStack.php",
+    "root/vendor/doctrine/dbal/src/Logging/Driver.php",
+    "root/vendor/doctrine/dbal/src/Logging/LoggerChain.php",
+    "root/vendor/doctrine/dbal/src/Logging/Middleware.php",
+    "root/vendor/doctrine/dbal/src/Logging/SQLLogger.php",
+    "root/vendor/doctrine/dbal/src/Logging/Statement.php",
+    "root/vendor/doctrine/dbal/src/ParameterType.php",
+    "root/vendor/doctrine/dbal/src/Platforms/AbstractMySQLPlatform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/AbstractPlatform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/DateIntervalUnit.php",
+    "root/vendor/doctrine/dbal/src/Platforms/DB2111Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/DB2Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/DB2Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/KeywordList.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/MariaDb102Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/MariaDb117Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/MariaDBKeywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/MySQL57Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/MySQL80Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/MySQL84Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/MySQLKeywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/OracleKeywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/PostgreSQL100Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/PostgreSQL94Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/PostgreSQLKeywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/ReservedKeywordsValidator.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/SQLiteKeywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/SQLServer2012Keywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/Keywords/SQLServerKeywords.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MariaDb1010Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MariaDb1027Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MariaDb1043Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MariaDb1052Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MariaDb1060Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MariaDb110700Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MariaDBPlatform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MySQL57Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MySQL80Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MySQL84Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MySQL/CollationMetadataProvider/CachingCollationMetadataProvider.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MySQL/CollationMetadataProvider/ConnectionCollationMetadataProvider.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MySQL/CollationMetadataProvider.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MySQL/Comparator.php",
+    "root/vendor/doctrine/dbal/src/Platforms/MySQLPlatform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/OraclePlatform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/PostgreSQL100Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/PostgreSQL120Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/PostgreSQL94Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/PostgreSQLPlatform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/SQLite/Comparator.php",
+    "root/vendor/doctrine/dbal/src/Platforms/SqlitePlatform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/SQLServer2012Platform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/SQLServer/Comparator.php",
+    "root/vendor/doctrine/dbal/src/Platforms/SQLServerPlatform.php",
+    "root/vendor/doctrine/dbal/src/Platforms/SQLServer/SQL/Builder/SQLServerSelectSQLBuilder.php",
+    "root/vendor/doctrine/dbal/src/Platforms/TrimMode.php",
+    "root/vendor/doctrine/dbal/src/Portability/Connection.php",
+    "root/vendor/doctrine/dbal/src/Portability/Converter.php",
+    "root/vendor/doctrine/dbal/src/Portability/Driver.php",
+    "root/vendor/doctrine/dbal/src/Portability/Middleware.php",
+    "root/vendor/doctrine/dbal/src/Portability/OptimizeFlags.php",
+    "root/vendor/doctrine/dbal/src/Portability/Result.php",
+    "root/vendor/doctrine/dbal/src/Portability/Statement.php",
+    "root/vendor/doctrine/dbal/src/Query/Expression/CompositeExpression.php",
+    "root/vendor/doctrine/dbal/src/Query/Expression/ExpressionBuilder.php",
+    "root/vendor/doctrine/dbal/src/Query/ForUpdate/ConflictResolutionMode.php",
+    "root/vendor/doctrine/dbal/src/Query/ForUpdate.php",
+    "root/vendor/doctrine/dbal/src/Query/Limit.php",
+    "root/vendor/doctrine/dbal/src/Query.php",
+    "root/vendor/doctrine/dbal/src/Query/QueryBuilder.php",
+    "root/vendor/doctrine/dbal/src/Query/QueryException.php",
+    "root/vendor/doctrine/dbal/src/Query/SelectQuery.php",
+    "root/vendor/doctrine/dbal/src/Result.php",
+    "root/vendor/doctrine/dbal/src/Schema/AbstractAsset.php",
+    "root/vendor/doctrine/dbal/src/Schema/AbstractSchemaManager.php",
+    "root/vendor/doctrine/dbal/src/Schema/ColumnDiff.php",
+    "root/vendor/doctrine/dbal/src/Schema/Column.php",
+    "root/vendor/doctrine/dbal/src/Schema/Comparator.php",
+    "root/vendor/doctrine/dbal/src/Schema/Constraint.php",
+    "root/vendor/doctrine/dbal/src/Schema/DB2SchemaManager.php",
+    "root/vendor/doctrine/dbal/src/Schema/DefaultSchemaManagerFactory.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/ColumnAlreadyExists.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/ColumnDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/ForeignKeyDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/IndexAlreadyExists.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/IndexDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/IndexNameInvalid.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/InvalidTableName.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/NamedForeignKeyRequired.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/NamespaceAlreadyExists.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/SequenceAlreadyExists.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/SequenceDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/TableAlreadyExists.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/TableDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/UniqueConstraintDoesNotExist.php",
+    "root/vendor/doctrine/dbal/src/Schema/Exception/UnknownColumnOption.php",
+    "root/vendor/doctrine/dbal/src/Schema/ForeignKeyConstraint.php",
+    "root/vendor/doctrine/dbal/src/Schema/Identifier.php",
+    "root/vendor/doctrine/dbal/src/Schema/Index.php",
+    "root/vendor/doctrine/dbal/src/Schema/LegacySchemaManagerFactory.php",
+    "root/vendor/doctrine/dbal/src/Schema/MySQLSchemaManager.php",
+    "root/vendor/doctrine/dbal/src/Schema/OracleSchemaManager.php",
+    "root/vendor/doctrine/dbal/src/Schema/PostgreSQLSchemaManager.php",
+    "root/vendor/doctrine/dbal/src/Schema/SchemaConfig.php",
+    "root/vendor/doctrine/dbal/src/Schema/SchemaDiff.php",
+    "root/vendor/doctrine/dbal/src/Schema/SchemaException.php",
+    "root/vendor/doctrine/dbal/src/Schema/SchemaManagerFactory.php",
+    "root/vendor/doctrine/dbal/src/Schema/Schema.php",
+    "root/vendor/doctrine/dbal/src/Schema/Sequence.php",
+    "root/vendor/doctrine/dbal/src/Schema/SqliteSchemaManager.php",
+    "root/vendor/doctrine/dbal/src/Schema/SQLServerSchemaManager.php",
+    "root/vendor/doctrine/dbal/src/Schema/TableDiff.php",
+    "root/vendor/doctrine/dbal/src/Schema/Table.php",
+    "root/vendor/doctrine/dbal/src/Schema/UniqueConstraint.php",
+    "root/vendor/doctrine/dbal/src/Schema/View.php",
+    "root/vendor/doctrine/dbal/src/Schema/Visitor/AbstractVisitor.php",
+    "root/vendor/doctrine/dbal/src/Schema/Visitor/CreateSchemaSqlCollector.php",
+    "root/vendor/doctrine/dbal/src/Schema/Visitor/DropSchemaSqlCollector.php",
+    "root/vendor/doctrine/dbal/src/Schema/Visitor/Graphviz.php",
+    "root/vendor/doctrine/dbal/src/Schema/Visitor/NamespaceVisitor.php",
+    "root/vendor/doctrine/dbal/src/Schema/Visitor/RemoveNamespacedAssets.php",
+    "root/vendor/doctrine/dbal/src/Schema/Visitor/Visitor.php",
+    "root/vendor/doctrine/dbal/src/SQL/Builder/CreateSchemaObjectsSQLBuilder.php",
+    "root/vendor/doctrine/dbal/src/SQL/Builder/DefaultSelectSQLBuilder.php",
+    "root/vendor/doctrine/dbal/src/SQL/Builder/DropSchemaObjectsSQLBuilder.php",
+    "root/vendor/doctrine/dbal/src/SQL/Builder/SelectSQLBuilder.php",
+    "root/vendor/doctrine/dbal/src/SQL/Parser/Exception.php",
+    "root/vendor/doctrine/dbal/src/SQL/Parser/Exception/RegularExpressionError.php",
+    "root/vendor/doctrine/dbal/src/SQL/Parser.php",
+    "root/vendor/doctrine/dbal/src/SQL/Parser/Visitor.php",
+    "root/vendor/doctrine/dbal/src/Statement.php",
+    "root/vendor/doctrine/dbal/src/Tools/Console/Command/CommandCompatibility.php",
+    "root/vendor/doctrine/dbal/src/Tools/Console/Command/ReservedWordsCommand.php",
+    "root/vendor/doctrine/dbal/src/Tools/Console/Command/RunSqlCommand.php",
+    "root/vendor/doctrine/dbal/src/Tools/Console/ConnectionNotFound.php",
+    "root/vendor/doctrine/dbal/src/Tools/Console/ConnectionProvider.php",
+    "root/vendor/doctrine/dbal/src/Tools/Console/ConnectionProvider/SingleConnectionProvider.php",
+    "root/vendor/doctrine/dbal/src/Tools/Console/ConsoleRunner.php",
+    "root/vendor/doctrine/dbal/src/Tools/DsnParser.php",
+    "root/vendor/doctrine/dbal/src/TransactionIsolationLevel.php",
+    "root/vendor/doctrine/dbal/src/Types/ArrayType.php",
+    "root/vendor/doctrine/dbal/src/Types/AsciiStringType.php",
+    "root/vendor/doctrine/dbal/src/Types/BigIntType.php",
+    "root/vendor/doctrine/dbal/src/Types/BinaryType.php",
+    "root/vendor/doctrine/dbal/src/Types/BlobType.php",
+    "root/vendor/doctrine/dbal/src/Types/BooleanType.php",
+    "root/vendor/doctrine/dbal/src/Types/ConversionException.php",
+    "root/vendor/doctrine/dbal/src/Types/DateImmutableType.php",
+    "root/vendor/doctrine/dbal/src/Types/DateIntervalType.php",
+    "root/vendor/doctrine/dbal/src/Types/DateTimeImmutableType.php",
+    "root/vendor/doctrine/dbal/src/Types/DateTimeType.php",
+    "root/vendor/doctrine/dbal/src/Types/DateTimeTzImmutableType.php",
+    "root/vendor/doctrine/dbal/src/Types/DateTimeTzType.php",
+    "root/vendor/doctrine/dbal/src/Types/DateType.php",
+    "root/vendor/doctrine/dbal/src/Types/DecimalType.php",
+    "root/vendor/doctrine/dbal/src/Types/FloatType.php",
+    "root/vendor/doctrine/dbal/src/Types/GuidType.php",
+    "root/vendor/doctrine/dbal/src/Types/IntegerType.php",
+    "root/vendor/doctrine/dbal/src/Types/JsonType.php",
+    "root/vendor/doctrine/dbal/src/Types/ObjectType.php",
+    "root/vendor/doctrine/dbal/src/Types/PhpDateTimeMappingType.php",
+    "root/vendor/doctrine/dbal/src/Types/PhpIntegerMappingType.php",
+    "root/vendor/doctrine/dbal/src/Types/SimpleArrayType.php",
+    "root/vendor/doctrine/dbal/src/Types/SmallIntType.php",
+    "root/vendor/doctrine/dbal/src/Types/StringType.php",
+    "root/vendor/doctrine/dbal/src/Types/TextType.php",
+    "root/vendor/doctrine/dbal/src/Types/TimeImmutableType.php",
+    "root/vendor/doctrine/dbal/src/Types/TimeType.php",
+    "root/vendor/doctrine/dbal/src/Types/Type.php",
+    "root/vendor/doctrine/dbal/src/Types/TypeRegistry.php",
+    "root/vendor/doctrine/dbal/src/Types/Types.php",
+    "root/vendor/doctrine/dbal/src/Types/VarDateTimeImmutableType.php",
+    "root/vendor/doctrine/dbal/src/Types/VarDateTimeType.php",
+    "root/vendor/doctrine/dbal/src/VersionAwarePlatformDriver.php",
+    "root/vendor/doctrine/deprecations/composer.json",
+    "root/vendor/doctrine/deprecations/README.md",
+    "root/vendor/doctrine/deprecations/src/Deprecation.php",
+    "root/vendor/doctrine/deprecations/src/PHPUnit/VerifyDeprecations.php",
+    "root/vendor/doctrine/event-manager/composer.json",
+    "root/vendor/doctrine/event-manager/psalm-baseline.xml",
+    "root/vendor/doctrine/event-manager/README.md",
+    "root/vendor/doctrine/event-manager/src/EventArgs.php",
+    "root/vendor/doctrine/event-manager/src/EventManager.php",
+    "root/vendor/doctrine/event-manager/src/EventSubscriber.php",
+    "root/vendor/doctrine/event-manager/UPGRADE.md",
+    "root/vendor/guzzlehttp/guzzle/CHANGELOG.md",
+    "root/vendor/guzzlehttp/guzzle/composer.json",
+    "root/vendor/guzzlehttp/guzzle/package-lock.json",
+    "root/vendor/guzzlehttp/guzzle/README.md",
+    "root/vendor/guzzlehttp/guzzle/src/BodySummarizerInterface.php",
+    "root/vendor/guzzlehttp/guzzle/src/BodySummarizer.php",
+    "root/vendor/guzzlehttp/guzzle/src/ClientInterface.php",
+    "root/vendor/guzzlehttp/guzzle/src/Client.php",
+    "root/vendor/guzzlehttp/guzzle/src/ClientTrait.php",
+    "root/vendor/guzzlehttp/guzzle/src/Cookie/CookieJarInterface.php",
+    "root/vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php",
+    "root/vendor/guzzlehttp/guzzle/src/Cookie/FileCookieJar.php",
+    "root/vendor/guzzlehttp/guzzle/src/Cookie/SessionCookieJar.php",
+    "root/vendor/guzzlehttp/guzzle/src/Cookie/SetCookie.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/BadResponseException.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/ClientException.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/ConnectException.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/GuzzleException.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/InvalidArgumentException.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/RequestException.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/ServerException.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/TooManyRedirectsException.php",
+    "root/vendor/guzzlehttp/guzzle/src/Exception/TransferException.php",
+    "root/vendor/guzzlehttp/guzzle/src/functions_include.php",
+    "root/vendor/guzzlehttp/guzzle/src/functions.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/CurlFactoryInterface.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/CurlFactory.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/CurlHandler.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/CurlMultiHandler.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/EasyHandle.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/HeaderProcessor.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/MockHandler.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/Proxy.php",
+    "root/vendor/guzzlehttp/guzzle/src/HandlerStack.php",
+    "root/vendor/guzzlehttp/guzzle/src/Handler/StreamHandler.php",
+    "root/vendor/guzzlehttp/guzzle/src/MessageFormatterInterface.php",
+    "root/vendor/guzzlehttp/guzzle/src/MessageFormatter.php",
+    "root/vendor/guzzlehttp/guzzle/src/Middleware.php",
+    "root/vendor/guzzlehttp/guzzle/src/Pool.php",
+    "root/vendor/guzzlehttp/guzzle/src/PrepareBodyMiddleware.php",
+    "root/vendor/guzzlehttp/guzzle/src/RedirectMiddleware.php",
+    "root/vendor/guzzlehttp/guzzle/src/RequestOptions.php",
+    "root/vendor/guzzlehttp/guzzle/src/RetryMiddleware.php",
+    "root/vendor/guzzlehttp/guzzle/src/TransferStats.php",
+    "root/vendor/guzzlehttp/guzzle/src/Utils.php",
+    "root/vendor/guzzlehttp/guzzle/UPGRADING.md",
+    "root/vendor/guzzlehttp/promises/CHANGELOG.md",
+    "root/vendor/guzzlehttp/promises/composer.json",
+    "root/vendor/guzzlehttp/promises/README.md",
+    "root/vendor/guzzlehttp/promises/src/AggregateException.php",
+    "root/vendor/guzzlehttp/promises/src/CancellationException.php",
+    "root/vendor/guzzlehttp/promises/src/Coroutine.php",
+    "root/vendor/guzzlehttp/promises/src/Create.php",
+    "root/vendor/guzzlehttp/promises/src/Each.php",
+    "root/vendor/guzzlehttp/promises/src/EachPromise.php",
+    "root/vendor/guzzlehttp/promises/src/FulfilledPromise.php",
+    "root/vendor/guzzlehttp/promises/src/Is.php",
+    "root/vendor/guzzlehttp/promises/src/PromiseInterface.php",
+    "root/vendor/guzzlehttp/promises/src/Promise.php",
+    "root/vendor/guzzlehttp/promises/src/PromisorInterface.php",
+    "root/vendor/guzzlehttp/promises/src/RejectedPromise.php",
+    "root/vendor/guzzlehttp/promises/src/RejectionException.php",
+    "root/vendor/guzzlehttp/promises/src/TaskQueueInterface.php",
+    "root/vendor/guzzlehttp/promises/src/TaskQueue.php",
+    "root/vendor/guzzlehttp/promises/src/Utils.php",
+    "root/vendor/guzzlehttp/psr7/CHANGELOG.md",
+    "root/vendor/guzzlehttp/psr7/composer.json",
+    "root/vendor/guzzlehttp/psr7/README.md",
+    "root/vendor/guzzlehttp/psr7/src/AppendStream.php",
+    "root/vendor/guzzlehttp/psr7/src/BufferStream.php",
+    "root/vendor/guzzlehttp/psr7/src/CachingStream.php",
+    "root/vendor/guzzlehttp/psr7/src/DroppingStream.php",
+    "root/vendor/guzzlehttp/psr7/src/Exception/MalformedUriException.php",
+    "root/vendor/guzzlehttp/psr7/src/FnStream.php",
+    "root/vendor/guzzlehttp/psr7/src/Header.php",
+    "root/vendor/guzzlehttp/psr7/src/HttpFactory.php",
+    "root/vendor/guzzlehttp/psr7/src/InflateStream.php",
+    "root/vendor/guzzlehttp/psr7/src/LazyOpenStream.php",
+    "root/vendor/guzzlehttp/psr7/src/LimitStream.php",
+    "root/vendor/guzzlehttp/psr7/src/Message.php",
+    "root/vendor/guzzlehttp/psr7/src/MessageTrait.php",
+    "root/vendor/guzzlehttp/psr7/src/MimeType.php",
+    "root/vendor/guzzlehttp/psr7/src/MultipartStream.php",
+    "root/vendor/guzzlehttp/psr7/src/NoSeekStream.php",
+    "root/vendor/guzzlehttp/psr7/src/PumpStream.php",
+    "root/vendor/guzzlehttp/psr7/src/Query.php",
+    "root/vendor/guzzlehttp/psr7/src/Request.php",
+    "root/vendor/guzzlehttp/psr7/src/Response.php",
+    "root/vendor/guzzlehttp/psr7/src/Rfc7230.php",
+    "root/vendor/guzzlehttp/psr7/src/ServerRequest.php",
+    "root/vendor/guzzlehttp/psr7/src/StreamDecoratorTrait.php",
+    "root/vendor/guzzlehttp/psr7/src/Stream.php",
+    "root/vendor/guzzlehttp/psr7/src/StreamWrapper.php",
+    "root/vendor/guzzlehttp/psr7/src/UploadedFile.php",
+    "root/vendor/guzzlehttp/psr7/src/UriComparator.php",
+    "root/vendor/guzzlehttp/psr7/src/UriNormalizer.php",
+    "root/vendor/guzzlehttp/psr7/src/Uri.php",
+    "root/vendor/guzzlehttp/psr7/src/UriResolver.php",
+    "root/vendor/guzzlehttp/psr7/src/Utils.php",
+    "root/vendor/nikic/fast-route/composer.json",
+    "root/vendor/nikic/fast-route/phpunit.xml",
+    "root/vendor/nikic/fast-route/psalm.xml",
+    "root/vendor/nikic/fast-route/README.md",
+    "root/vendor/nikic/fast-route/src/BadRouteException.php",
+    "root/vendor/nikic/fast-route/src/bootstrap.php",
+    "root/vendor/nikic/fast-route/src/DataGenerator/CharCountBased.php",
+    "root/vendor/nikic/fast-route/src/DataGenerator/GroupCountBased.php",
+    "root/vendor/nikic/fast-route/src/DataGenerator/GroupPosBased.php",
+    "root/vendor/nikic/fast-route/src/DataGenerator/MarkBased.php",
+    "root/vendor/nikic/fast-route/src/DataGenerator.php",
+    "root/vendor/nikic/fast-route/src/DataGenerator/RegexBasedAbstract.php",
+    "root/vendor/nikic/fast-route/src/Dispatcher/CharCountBased.php",
+    "root/vendor/nikic/fast-route/src/Dispatcher/GroupCountBased.php",
+    "root/vendor/nikic/fast-route/src/Dispatcher/GroupPosBased.php",
+    "root/vendor/nikic/fast-route/src/Dispatcher/MarkBased.php",
+    "root/vendor/nikic/fast-route/src/Dispatcher.php",
+    "root/vendor/nikic/fast-route/src/Dispatcher/RegexBasedAbstract.php",
+    "root/vendor/nikic/fast-route/src/functions.php",
+    "root/vendor/nikic/fast-route/src/RouteCollector.php",
+    "root/vendor/nikic/fast-route/src/RouteParser.php",
+    "root/vendor/nikic/fast-route/src/RouteParser/Std.php",
+    "root/vendor/nikic/fast-route/src/Route.php",
+    "root/vendor/nikic/fast-route/test/bootstrap.php",
+    "root/vendor/nikic/fast-route/test/Dispatcher/CharCountBasedTest.php",
+    "root/vendor/nikic/fast-route/test/Dispatcher/DispatcherTest.php",
+    "root/vendor/nikic/fast-route/test/Dispatcher/GroupCountBasedTest.php",
+    "root/vendor/nikic/fast-route/test/Dispatcher/GroupPosBasedTest.php",
+    "root/vendor/nikic/fast-route/test/Dispatcher/MarkBasedTest.php",
+    "root/vendor/nikic/fast-route/test/HackTypechecker/fixtures/all_options.php",
+    "root/vendor/nikic/fast-route/test/HackTypechecker/fixtures/empty_options.php",
+    "root/vendor/nikic/fast-route/test/HackTypechecker/fixtures/no_options.php",
+    "root/vendor/nikic/fast-route/test/HackTypechecker/HackTypecheckerTest.php",
+    "root/vendor/nikic/fast-route/test/RouteCollectorTest.php",
+    "root/vendor/nikic/fast-route/test/RouteParser/StdTest.php",
+    "root/vendor/nikic/fast-route/.travis.yml",
+    "root/vendor/nyholm/psr7/CHANGELOG.md",
+    "root/vendor/nyholm/psr7/composer.json",
+    "root/vendor/nyholm/psr7/README.md",
+    "root/vendor/nyholm/psr7/src/Factory/HttplugFactory.php",
+    "root/vendor/nyholm/psr7/src/Factory/Psr17Factory.php",
+    "root/vendor/nyholm/psr7/src/MessageTrait.php",
+    "root/vendor/nyholm/psr7/src/Request.php",
+    "root/vendor/nyholm/psr7/src/RequestTrait.php",
+    "root/vendor/nyholm/psr7/src/Response.php",
+    "root/vendor/nyholm/psr7/src/ServerRequest.php",
+    "root/vendor/nyholm/psr7/src/Stream.php",
+    "root/vendor/nyholm/psr7/src/StreamTrait.php",
+    "root/vendor/nyholm/psr7/src/UploadedFile.php",
+    "root/vendor/nyholm/psr7/src/Uri.php",
+    "root/vendor/openai-php/client/composer.json",
+    "root/vendor/openai-php/client/LICENSE.md",
+    "root/vendor/openai-php/client/src/Actions/Conversations/ItemObjects.php",
+    "root/vendor/openai-php/client/src/Actions/Responses/ItemObjects.php",
+    "root/vendor/openai-php/client/src/Actions/Responses/OutputObjects.php",
+    "root/vendor/openai-php/client/src/Actions/Responses/OutputText.php",
+    "root/vendor/openai-php/client/src/Actions/Responses/ToolChoiceObjects.php",
+    "root/vendor/openai-php/client/src/Actions/Responses/ToolObjects.php",
+    "root/vendor/openai-php/client/src/Client.php",
+    "root/vendor/openai-php/client/src/Contracts/ClientContract.php",
+    "root/vendor/openai-php/client/src/Contracts/MetaInformationContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/AssistantsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/AudioContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/BatchesContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ChatContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/CompletionsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ContainerFileContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ContainersContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ConversationsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ConversationsItemsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/EditsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/EmbeddingsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/FilesContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/FineTunesContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/FineTuningContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ImagesContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ModelsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ModerationsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/RealtimeContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ResponsesContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ThreadsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ThreadsMessagesContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ThreadsRunsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/ThreadsRunsStepsContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/VectorStoresContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/VectorStoresFileBatchesContract.php",
+    "root/vendor/openai-php/client/src/Contracts/Resources/VectorStoresFilesContract.php",
+    "root/vendor/openai-php/client/src/Contracts/ResponseContract.php",
+    "root/vendor/openai-php/client/src/Contracts/ResponseHasMetaInformationContract.php",
+    "root/vendor/openai-php/client/src/Contracts/ResponseStreamContract.php",
+    "root/vendor/openai-php/client/src/Contracts/StringableContract.php",
+    "root/vendor/openai-php/client/src/Contracts/TransporterContract.php",
+    "root/vendor/openai-php/client/src/Enums/FineTuning/FineTuningEventLevel.php",
+    "root/vendor/openai-php/client/src/Enums/Moderations/CategoryAppliedInputType.php",
+    "root/vendor/openai-php/client/src/Enums/Moderations/Category.php",
+    "root/vendor/openai-php/client/src/Enums/Transporter/ContentType.php",
+    "root/vendor/openai-php/client/src/Enums/Transporter/Method.php",
+    "root/vendor/openai-php/client/src/Exceptions/ErrorException.php",
+    "root/vendor/openai-php/client/src/Exceptions/InvalidArgumentException.php",
+    "root/vendor/openai-php/client/src/Exceptions/RateLimitException.php",
+    "root/vendor/openai-php/client/src/Exceptions/TransporterException.php",
+    "root/vendor/openai-php/client/src/Exceptions/UnknownEventException.php",
+    "root/vendor/openai-php/client/src/Exceptions/UnserializableResponse.php",
+    "root/vendor/openai-php/client/src/Factory.php",
+    "root/vendor/openai-php/client/src/OpenAI.php",
+    "root/vendor/openai-php/client/src/Resources/Assistants.php",
+    "root/vendor/openai-php/client/src/Resources/Audio.php",
+    "root/vendor/openai-php/client/src/Resources/Batches.php",
+    "root/vendor/openai-php/client/src/Resources/Chat.php",
+    "root/vendor/openai-php/client/src/Resources/Completions.php",
+    "root/vendor/openai-php/client/src/Resources/Concerns/Streamable.php",
+    "root/vendor/openai-php/client/src/Resources/Concerns/Transportable.php",
+    "root/vendor/openai-php/client/src/Resources/ContainerFile.php",
+    "root/vendor/openai-php/client/src/Resources/Containers.php",
+    "root/vendor/openai-php/client/src/Resources/ConversationsItems.php",
+    "root/vendor/openai-php/client/src/Resources/Conversations.php",
+    "root/vendor/openai-php/client/src/Resources/Edits.php",
+    "root/vendor/openai-php/client/src/Resources/Embeddings.php",
+    "root/vendor/openai-php/client/src/Resources/Files.php",
+    "root/vendor/openai-php/client/src/Resources/FineTunes.php",
+    "root/vendor/openai-php/client/src/Resources/FineTuning.php",
+    "root/vendor/openai-php/client/src/Resources/Images.php",
+    "root/vendor/openai-php/client/src/Resources/Models.php",
+    "root/vendor/openai-php/client/src/Resources/Moderations.php",
+    "root/vendor/openai-php/client/src/Resources/Realtime.php",
+    "root/vendor/openai-php/client/src/Resources/Responses.php",
+    "root/vendor/openai-php/client/src/Resources/ThreadsMessages.php",
+    "root/vendor/openai-php/client/src/Resources/Threads.php",
+    "root/vendor/openai-php/client/src/Resources/ThreadsRuns.php",
+    "root/vendor/openai-php/client/src/Resources/ThreadsRunsSteps.php",
+    "root/vendor/openai-php/client/src/Resources/VectorStoresFileBatches.php",
+    "root/vendor/openai-php/client/src/Resources/VectorStoresFiles.php",
+    "root/vendor/openai-php/client/src/Resources/VectorStores.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantDeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseResponseFormat.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseResponseFormatText.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseToolCodeInterpreter.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseToolFileSearch.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseToolFunctionFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseToolFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseToolResourceCodeInterpreter.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseToolResourceFileSearch.php",
+    "root/vendor/openai-php/client/src/Responses/Assistants/AssistantResponseToolResources.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/SpeechStreamResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/Streaming/Logprobs.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/Streaming/TranscriptTextDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/Streaming/TranscriptTextDone.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/TranscriptionResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/TranscriptionResponseSegment.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/TranscriptionResponseWord.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/TranscriptionStreamResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/TranslationResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Audio/TranslationResponseSegment.php",
+    "root/vendor/openai-php/client/src/Responses/Batches/BatchListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Batches/BatchResponseErrorsData.php",
+    "root/vendor/openai-php/client/src/Responses/Batches/BatchResponseErrors.php",
+    "root/vendor/openai-php/client/src/Responses/Batches/BatchResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Batches/BatchResponseRequestCounts.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseChoiceAnnotations.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseChoiceAnnotationsUrlCitations.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseChoiceAudio.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseChoiceLogprobsContent.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseChoiceLogprobs.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseChoice.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseFunctionCall.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseMessage.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseToolCallFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseUsageCompletionTokensDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseUsage.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateResponseUsagePromptTokensDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateStreamedResponseChoice.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateStreamedResponseDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateStreamedResponseFunctionCall.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateStreamedResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateStreamedResponseToolCallFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Chat/CreateStreamedResponseToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Completions/CreateResponseChoiceLogprobs.php",
+    "root/vendor/openai-php/client/src/Responses/Completions/CreateResponseChoice.php",
+    "root/vendor/openai-php/client/src/Responses/Completions/CreateResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Completions/CreateResponseUsage.php",
+    "root/vendor/openai-php/client/src/Responses/Completions/CreateStreamedResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Concerns/ArrayAccessible.php",
+    "root/vendor/openai-php/client/src/Responses/Concerns/HasMetaInformation.php",
+    "root/vendor/openai-php/client/src/Responses/Containers/CreateContainer.php",
+    "root/vendor/openai-php/client/src/Responses/Containers/DeleteContainer.php",
+    "root/vendor/openai-php/client/src/Responses/Containers/Files/ContainerFileDeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Containers/Files/ContainerFileListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Containers/Files/ContainerFileResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Containers/ListContainers.php",
+    "root/vendor/openai-php/client/src/Responses/Containers/Objects/ExpiresAfter.php",
+    "root/vendor/openai-php/client/src/Responses/Containers/RetrieveContainer.php",
+    "root/vendor/openai-php/client/src/Responses/Conversations/ConversationDeletedResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Conversations/ConversationItemList.php",
+    "root/vendor/openai-php/client/src/Responses/Conversations/ConversationItem.php",
+    "root/vendor/openai-php/client/src/Responses/Conversations/ConversationResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Conversations/Objects/Message.php",
+    "root/vendor/openai-php/client/src/Responses/Conversations/Objects/MessageTypes/ComputerScreenshotContent.php",
+    "root/vendor/openai-php/client/src/Responses/Conversations/Objects/MessageTypes/SummaryText.php",
+    "root/vendor/openai-php/client/src/Responses/Conversations/Objects/MessageTypes/TextContent.php",
+    "root/vendor/openai-php/client/src/Responses/Edits/CreateResponseChoice.php",
+    "root/vendor/openai-php/client/src/Responses/Edits/CreateResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Edits/CreateResponseUsage.php",
+    "root/vendor/openai-php/client/src/Responses/Embeddings/CreateResponseEmbedding.php",
+    "root/vendor/openai-php/client/src/Responses/Embeddings/CreateResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Embeddings/CreateResponseUsage.php",
+    "root/vendor/openai-php/client/src/Responses/Files/CreateResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Files/DeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Files/ListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Files/RetrieveResponse.php",
+    "root/vendor/openai-php/client/src/Responses/FineTunes/ListEventsResponse.php",
+    "root/vendor/openai-php/client/src/Responses/FineTunes/ListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/FineTunes/RetrieveResponseEvent.php",
+    "root/vendor/openai-php/client/src/Responses/FineTunes/RetrieveResponseFile.php",
+    "root/vendor/openai-php/client/src/Responses/FineTunes/RetrieveResponseHyperparams.php",
+    "root/vendor/openai-php/client/src/Responses/FineTunes/RetrieveResponse.php",
+    "root/vendor/openai-php/client/src/Responses/FineTunes/RetrieveStreamedResponseEvent.php",
+    "root/vendor/openai-php/client/src/Responses/FineTuning/ListJobEventsResponseEventData.php",
+    "root/vendor/openai-php/client/src/Responses/FineTuning/ListJobEventsResponseEvent.php",
+    "root/vendor/openai-php/client/src/Responses/FineTuning/ListJobEventsResponse.php",
+    "root/vendor/openai-php/client/src/Responses/FineTuning/ListJobsResponse.php",
+    "root/vendor/openai-php/client/src/Responses/FineTuning/RetrieveJobResponseError.php",
+    "root/vendor/openai-php/client/src/Responses/FineTuning/RetrieveJobResponseHyperparameters.php",
+    "root/vendor/openai-php/client/src/Responses/FineTuning/RetrieveJobResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Images/CreateResponseData.php",
+    "root/vendor/openai-php/client/src/Responses/Images/CreateResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Images/EditResponseData.php",
+    "root/vendor/openai-php/client/src/Responses/Images/EditResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Images/ImageResponseUsageInputTokensDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Images/ImageResponseUsage.php",
+    "root/vendor/openai-php/client/src/Responses/Images/VariationResponseData.php",
+    "root/vendor/openai-php/client/src/Responses/Images/VariationResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Meta/MetaInformationCustom.php",
+    "root/vendor/openai-php/client/src/Responses/Meta/MetaInformationOpenAI.php",
+    "root/vendor/openai-php/client/src/Responses/Meta/MetaInformation.php",
+    "root/vendor/openai-php/client/src/Responses/Meta/MetaInformationRateLimit.php",
+    "root/vendor/openai-php/client/src/Responses/Models/DeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Models/ListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Models/RetrieveResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Moderations/CreateResponseCategory.php",
+    "root/vendor/openai-php/client/src/Responses/Moderations/CreateResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Moderations/CreateResponseResult.php",
+    "root/vendor/openai-php/client/src/Responses/Realtime/Session/ClientSecret.php",
+    "root/vendor/openai-php/client/src/Responses/Realtime/Session/InputAudioTranscription.php",
+    "root/vendor/openai-php/client/src/Responses/Realtime/SessionResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Realtime/Session/TurnDetection.php",
+    "root/vendor/openai-php/client/src/Responses/Realtime/Tools/FunctionTool.php",
+    "root/vendor/openai-php/client/src/Responses/Realtime/TranscriptionSession/InputAudioTranscription.php",
+    "root/vendor/openai-php/client/src/Responses/Realtime/TranscriptionSessionResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/CreateResponseFormat.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/CreateResponseIncompleteDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/CreateResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/CreateResponseReasoning.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/CreateResponseUsageInputTokenDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/CreateResponseUsageOutputTokenDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/CreateResponseUsage.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/CreateStreamedResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/DeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Format/JsonObjectFormat.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Format/JsonSchemaFormat.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Format/TextFormat.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/GenericResponseError.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/AcknowledgedSafetyCheck.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/ComputerToolCallOutput.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/ComputerToolCallOutputScreenshot.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/CustomToolCallOutput.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/FunctionToolCallOutput.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/InputMessageContentInputFile.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/InputMessageContentInputImage.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/InputMessageContentInputText.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/InputMessage.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/LocalShellCallOutput.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Input/McpApprovalResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/ListInputItems.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/McpGenericResponseError.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/CodeInterpreter/CodeFileObject.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/CodeInterpreter/CodeFileOutput.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/CodeInterpreter/CodeTextOutput.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionClick.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionDoubleClick.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionDrag.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionKeyPress.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionMove.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionScreenshot.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionScroll.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionType.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerActionWait.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerDragPath.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/ComputerAction/OutputComputerPendingSafetyCheck.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputCodeInterpreterToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputComputerToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputCustomToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputFileSearchToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputFileSearchToolCallResult.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputFunctionToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputImageGenerationToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputLocalShellCallAction.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputLocalShellCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMcpApprovalRequest.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMcpCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMcpListTools.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMcpListToolsTool.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMessageContentOutputTextAnnotationsContainerFile.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMessageContentOutputTextAnnotationsFileCitation.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMessageContentOutputTextAnnotationsFilePath.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMessageContentOutputTextAnnotationsUrlCitation.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMessageContentOutputText.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMessageContentRefusal.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputMessage.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputReasoning.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputReasoningSummary.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Output/OutputWebSearchToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/ReferencePromptObject.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/RetrieveResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/CodeInterpreterCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/CodeInterpreterCodeDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/CodeInterpreterCodeDone.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/ContentPart.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/Error.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/FileSearchCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/FunctionCallArgumentsDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/FunctionCallArgumentsDone.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/ImageGenerationPartialImage.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/ImageGenerationPart.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/McpCallArgumentsDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/McpCallArgumentsDone.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/McpCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/McpListToolsInProgress.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/McpListTools.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/OutputItem.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/OutputTextAnnotationAdded.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/OutputTextDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/OutputTextDone.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/ReasoningSummaryPart.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/ReasoningSummaryTextDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/ReasoningSummaryTextDone.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/ReasoningTextDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/ReasoningTextDone.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/RefusalDelta.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/RefusalDone.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Streaming/WebSearchCall.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/ToolChoice/FunctionToolChoice.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/ToolChoice/HostedToolChoice.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/CodeInterpreterContainerAuto.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/CodeInterpreterTool.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/ComputerUseTool.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/FileSearchComparisonFilter.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/FileSearchCompoundFilter.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/FileSearchRankingOption.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/FileSearchTool.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/FunctionTool.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/ImageGenerationInputImageMask.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/ImageGenerationTool.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/McpToolNamesFilter.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/RemoteMcpTool.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/WebSearchTool.php",
+    "root/vendor/openai-php/client/src/Responses/Responses/Tool/WebSearchUserLocation.php",
+    "root/vendor/openai-php/client/src/Responses/StreamResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/Delta/ThreadMessageDeltaObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/Delta/ThreadMessageDeltaResponseContentImageFileObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/Delta/ThreadMessageDeltaResponseContentTextObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/Delta/ThreadMessageDeltaResponseContentText.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/Delta/ThreadMessageDeltaResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageDeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseAttachmentCodeInterpreterTool.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseAttachmentFileSearchTool.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseAttachment.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentImageFileObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentImageFile.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentImageUrlObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentImageUrl.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentTextAnnotationFileCitationObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentTextAnnotationFileCitation.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentTextAnnotationFilePathObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentTextAnnotationFilePath.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentTextObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseContentText.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponseIncompleteDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Messages/ThreadMessageResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/Delta/ThreadRunStepDeltaObject.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/Delta/ThreadRunStepDeltaResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseCodeInterpreterOutputImageImage.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseCodeInterpreterOutputImage.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseCodeInterpreterOutputLogs.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseCodeInterpreter.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseCodeToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseFileSearchToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseFunctionToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseMessageCreation.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseMessageCreationStepDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseToolCallsStepDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/Steps/ThreadRunStepResponseUsage.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseFileSearch.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseIncompleteDetails.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseLastError.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseRequiredActionFunctionToolCallFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseRequiredActionFunctionToolCall.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseRequiredAction.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseRequiredActionSubmitToolOutputs.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseToolChoiceFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseToolChoice.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseToolCodeInterpreter.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseToolFunctionFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseToolFunction.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseTruncationStrategy.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunResponseUsage.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/Runs/ThreadRunStreamResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/ThreadDeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/Threads/ThreadResponse.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/FileBatches/VectorStoreFileBatchResponse.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Files/VectorStoreFileDeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Files/VectorStoreFileListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Files/VectorStoreFileResponseChunkingStrategyOther.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Files/VectorStoreFileResponseChunkingStrategyStatic.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Files/VectorStoreFileResponseLastError.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Files/VectorStoreFileResponse.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Search/VectorStoreSearchResponseContent.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Search/VectorStoreSearchResponseFile.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/Search/VectorStoreSearchResponse.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/VectorStoreDeleteResponse.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/VectorStoreListResponse.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/VectorStoreResponseExpiresAfter.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/VectorStoreResponseFileCounts.php",
+    "root/vendor/openai-php/client/src/Responses/VectorStores/VectorStoreResponse.php",
+    "root/vendor/openai-php/client/src/Testing/ClientFake.php",
+    "root/vendor/openai-php/client/src/Testing/Enums/OverrideStrategy.php",
+    "root/vendor/openai-php/client/src/Testing/Requests/TestRequest.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/AssistantsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/AudioTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/BatchesTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ChatTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/CompletionsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/Concerns/Testable.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ContainerFileTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ContainersTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ConversationsItemsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ConversationsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/EditsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/EmbeddingsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/FilesTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/FineTunesTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/FineTuningTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ImagesTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ModelsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ModerationsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/RealtimeTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ResponsesTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ThreadsMessagesTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ThreadsRunsStepsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ThreadsRunsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/ThreadsTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/VectorStoresFileBatchesTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/VectorStoresFilesTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Resources/VectorStoresTestResource.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Concerns/FakeableForStreamedResponse.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Concerns/Fakeable.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Assistants/AssistantDeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Assistants/AssistantListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Assistants/AssistantResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Audio/TranscriptionResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Audio/TranslationResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Batches/BatchListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Batches/BatchResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Chat/CreateResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Completions/CreateResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Containers/CreateContainerFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Containers/DeleteContainerFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Containers/Files/ContainerFileDeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Containers/Files/ContainerFileListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Containers/Files/ContainerFileResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Containers/ListContainersFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Containers/RetrieveContainerFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Conversations/ConversationDeletedResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Conversations/ConversationItemFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Conversations/ConversationItemListFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Conversations/ConversationResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Edits/CreateResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Embeddings/CreateResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Files/CreateResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Files/DeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Files/ListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Files/RetrieveResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/FineTunes/ListEventsResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/FineTunes/ListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/FineTunes/RetrieveResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/FineTuning/ListJobEventsResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/FineTuning/ListJobsResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/FineTuning/RetrieveJobResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Images/CreateResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Images/EditResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Images/VariationResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Models/DeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Models/ListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Models/RetrieveResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Moderations/CreateResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Realtime/SessionResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Realtime/TranscriptionSessionResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Responses/CancelResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Responses/CreateResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Responses/DeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Responses/ListInputItemsFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Responses/ResponseObjectFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Responses/RetrieveResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/Messages/ThreadMessageDeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/Messages/ThreadMessageListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/Messages/ThreadMessageResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/Runs/Steps/ThreadRunStepListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/Runs/Steps/ThreadRunStepResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/Runs/ThreadRunListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/Runs/ThreadRunResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/ThreadDeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/Threads/ThreadResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/VectorStores/Files/VectorStoreFileDeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/VectorStores/Files/VectorStoreFileListResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/VectorStores/Files/VectorStoreFileResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/VectorStores/Search/VectorStoreSearchResponseContentFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/VectorStores/Search/VectorStoreSearchResponseFileFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/VectorStores/Search/VectorStoreSearchResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/VectorStores/VectorStoreDeleteResponseFixture.php",
+    "root/vendor/openai-php/client/src/Testing/Responses/Fixtures/VectorStores/VectorStoreListResponseFixture.php"
+  ]
+}

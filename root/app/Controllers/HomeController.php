@@ -229,9 +229,9 @@ class HomeController
                 $queued = StatusJobModel::queuePendingJob($accountOwner, $accountName, $scheduledAt);
 
                 if ($queued) {
-                    MessageHelper::addMessage('Status generation queued. It will complete in the background.');
+                    MessageHelper::addMessage('Status generation queued. It will run on the next scheduled queue worker.');
                 } else {
-                    MessageHelper::addMessage('Status generation is already queued and will complete in the background.');
+                    MessageHelper::addMessage('Status generation is already queued for the next scheduled queue worker.');
                 }
             }
         } catch (\Exception $e) {

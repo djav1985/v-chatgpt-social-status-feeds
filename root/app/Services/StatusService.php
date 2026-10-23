@@ -26,6 +26,8 @@ use RuntimeException;
 
 class StatusService
 {
+    private const REASONING_EFFORT = 'low';
+
     /** @var \OpenAI\Client|null */
     private static $client = null;
 
@@ -45,6 +47,7 @@ class StatusService
         if ($accountName === '' || $accountOwner === '') {
             $error = 'Account owner and account name are required to generate a status.';
             ErrorManager::getInstance()->log($error, 'error');
+
 
             return ['error' => $error];
         }
@@ -197,7 +200,6 @@ class StatusService
             'connect_timeout' => 20,
         ];
     }
-
     /**
      * Makes an HTTP request to the OpenAI API.
      *
@@ -245,6 +247,7 @@ class StatusService
                 ],
                 "image_prompt" => [
                     "type" => "string",
+                    "minLength" => 1,
                     "description" => "Describe an image idea that matches the status."
                 ],
             ],
@@ -280,7 +283,7 @@ class StatusService
             "input" => "Create a status: $prompt (Must be under $totalCharacters characters. Do NOT exceed this limit. $platformDescription.)",
             "max_output_tokens" => $statusTokens,
             "reasoning" => [
-                "effort" => "minimal"
+                "effort" => self::REASONING_EFFORT
             ],
             "text" => [
                 "format" => [
@@ -389,6 +392,17 @@ class StatusService
      */
     private static function generateSocialImage(string $imagePrompt, string $accountName, string $accountOwner): array
     {
+        if (trim($imagePrompt) === '') {
+            $errorMessage = sprintf(
+                'Error generating image for owner "%s" and account "%s": Image prompt cannot be empty.',
+                $accountOwner,
+                $accountName
+            );
+            ErrorManager::getInstance()->log($errorMessage, 'error');
+
+            return ['error' => $errorMessage];
+        }
+
         $data = [
             'model' => IMAGE_MODEL,
             'prompt' => $imagePrompt,

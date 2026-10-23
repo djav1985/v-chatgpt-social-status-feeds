@@ -73,3 +73,4 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - Account schedule updates now clear queued jobs before re-enqueuing, and queue scheduling skips past hours instead of rescheduling them.
 - **Reduced APCu logging noise**: CacheService now logs "APCu not available" message only once per process instead of on every instantiation, eliminating redundant I/O overhead.
 - **Added queue processing backoff**: QueueService now includes a 10-second pause after failed status generation and a 5-second idle sleep when no jobs are claimed, preventing tight retry loops and reducing CPU usage during OpenAI API failures or idle periods.
+- Status generation now uses a Responses API-supported reasoning effort, rejects empty image prompts locally, and clarifies that manual generation is handled by the next scheduled queue worker.

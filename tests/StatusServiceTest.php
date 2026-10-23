@@ -57,6 +57,29 @@ final class StatusServiceTest extends TestCase
         ], $result);
     }
 
+    public function testReasoningEffortUsesAValueSupportedByTheResponsesApi(): void
+    {
+        $constant = (new \ReflectionClass(StatusService::class))
+            ->getReflectionConstant('REASONING_EFFORT');
+
+        $this->assertNotFalse($constant);
+        $this->assertContains($constant->getValue(), ['none', 'low', 'medium', 'high', 'xhigh']);
+    }
+
+    public function testGenerateSocialImageRejectsAnEmptyPromptBeforeCallingTheApi(): void
+    {
+        $result = $this->invokePrivateMethod('generateSocialImage', '   ', 'test-account', 'test-owner');
+
+        $this->assertSame([
+            'error' => sprintf(
+                'Error generating image for owner "%s" and account "%s": ' .
+                'Image prompt cannot be empty.',
+                'test-owner',
+                'test-account'
+            ),
+        ], $result);
+    }
+
     public function testExtractImageBytesPrefersBase64Payload(): void
     {
         $payload = base64_encode('image-bytes');
