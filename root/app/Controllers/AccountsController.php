@@ -392,7 +392,8 @@ class AccountsController
         $rawAccountName = $_POST['account'] ?? '';
         $normalizedAccountName = str_replace(' ', '-', $rawAccountName);
         $accountName = ValidationHelper::sanitizeString($normalizedAccountName, 'alphanumeric-dash');
-        $prompt = ValidationHelper::sanitizeString($_POST['prompt'] ?? '');
+        // Preserve spaces and punctuation in the user-authored prompt.
+        $prompt = trim((string) ($_POST['prompt'] ?? ''));
         $platform = ValidationHelper::sanitizeString($_POST['platform'] ?? '');
         // Fix: Handle null return from validateInteger
         $hashtags = ValidationHelper::validateInteger($_POST['hashtags'] ?? 0);
