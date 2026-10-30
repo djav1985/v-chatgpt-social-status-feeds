@@ -123,7 +123,8 @@ class UsersController
         $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
         $password = (string) ($_POST['password'] ?? '');
         $plainPassword = $password;
-        $email = ValidationHelper::sanitizeString($_POST['email'] ?? '');
+        // Email addresses contain punctuation that the generic sanitizer would strip.
+        $email = trim((string) ($_POST['email'] ?? ''));
         // Fix: Handle null returns with default values
         $totalAccounts = ValidationHelper::validateInteger($_POST['total-accounts'] ?? 0, 0) ?? 0;
         $maxApiCalls = ValidationHelper::validateInteger($_POST['max-api-calls'] ?? 0, 0) ?? 0;

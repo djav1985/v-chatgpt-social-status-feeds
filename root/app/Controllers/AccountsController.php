@@ -400,7 +400,8 @@ class AccountsController
             $hashtags = 0;
             MessageHelper::addMessage('Invalid hashtags value supplied. Defaulting to 0.');
         }
-        $link = ValidationHelper::sanitizeString($_POST['link'] ?? '');
+        // URLs contain punctuation that the generic sanitizer would strip.
+        $link = trim((string) ($_POST['link'] ?? ''));
         
         // Validate cron array and process if valid
         $cronErrors = ValidationHelper::validateCronArray($_POST['cron'] ?? []);
