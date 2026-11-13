@@ -1,15 +1,15 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 // Copyright (c) https://publicsuffix.org
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 return [
     '5G.IN',
     '6G.IN',
     'AC.IN',
+    'AERO.IN',
     'AI.IN',
+    'ALUMNI.IN',
     'AM.IN',
+    'BANK.IN',
     'BIHAR.IN',
     'BIZ.IN',
     'BUSINESS.IN',
@@ -23,6 +23,7 @@ return [
     'DR.IN',
     'EDU.IN',
     'ER.IN',
+    'FIN.IN',
     'FIRM.IN',
     'GEN.IN',
     'GOV.IN',
@@ -41,8 +42,10 @@ return [
     'POST.IN',
     'PRO.IN',
     'RES.IN',
+    'SCHOOL.IN',
     'TRAVEL.IN',
     'TV.IN',
+    'UB.IN',
     'UK.IN',
     'UP.IN',
     'US.IN',

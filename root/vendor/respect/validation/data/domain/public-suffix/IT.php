@@ -1,7 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 // Copyright (c) https://publicsuffix.org
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 return [
@@ -26,7 +23,6 @@ return [
     'AOSTE.IT',
     'AP.IT',
     'AQ.IT',
-    'AQUILA.IT',
     'AR.IT',
     'AREZZO.IT',
     'ASCOLI-PICENO.IT',
@@ -290,6 +286,9 @@ return [
     'SP.IT',
     'SR.IT',
     'SS.IT',
+    'SU.IT',
+    'SUD-SARDEGNA.IT',
+    'SUDSARDEGNA.IT',
     'SUEDTIROL.IT',
     'SV.IT',
     'TA.IT',
@@ -334,7 +333,6 @@ return [
     'TRENTINOS-TIROL.IT',
     'TRENTINOSTIROL.IT',
     'TRENTINOSUD-TIROL.IT',
-    'TRENTINOSUDTIROL.IT',
     'TRENTINOSUED-TIROL.IT',
     'TRENTINOSUEDTIROL.IT',
     'TRENTINSUD-TIROL.IT',
@@ -358,7 +356,6 @@ return [
     'VAL-D-AOSTA.IT',
     'VAL-DAOSTA.IT',
     'VALD-AOSTA.IT',
-    'VALDAOSTA.IT',
     'VALLE-AOSTA.IT',
     'VALLE-D-AOSTA.IT',
     'VALLE-DAOSTA.IT',
@@ -380,6 +377,7 @@ return [
     'VENEZIA.IT',
     'VENICE.IT',
     'VERBANIA.IT',
+    'VERBANO-CUSIO-OSSOLA.IT',
     'VERCELLI.IT',
     'VERONA.IT',
     'VI.IT',

@@ -1,7 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 // Copyright (c) https://publicsuffix.org
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 return [
@@ -35,7 +32,7 @@ return [
     'ASKOY.NO',
     'ASKVOLL.NO',
     'ASNES.NO',
-    'AUDNEDALN.NO',
+    'AUDNEDAL.NO',
     'AUKRA.NO',
     'AURE.NO',
     'AURLAND.NO',
@@ -65,7 +62,6 @@ return [
     'BIEVAT.NO',
     'BINDAL.NO',
     'BIRKENES.NO',
-    'BJARKOY.NO',
     'BJERKREIM.NO',
     'BJUGN.NO',
     'BO.NORDLAND.NO',
@@ -136,7 +132,6 @@ return [
     'FOSNES.NO',
     'FRANA.NO',
     'FREDRIKSTAD.NO',
-    'FREI.NO',
     'FROGN.NO',
     'FROLAND.NO',
     'FROSTA.NO',
@@ -153,6 +148,7 @@ return [
     'GAULAR.NO',
     'GAUSDAL.NO',
     'GIEHTAVUOATNA.NO',
+    'GIELDA.NO',
     'GILDESKAL.NO',
     'GISKE.NO',
     'GJEMNES.NO',
@@ -336,7 +332,6 @@ return [
     'MOSJOEN.NO',
     'MOSKENES.NO',
     'MOSS.NO',
-    'MOSVIK.NO',
     'MR.NO',
     'MUOSAT.NO',
     'MUSEUM.NO',
@@ -410,6 +405,7 @@ return [
     'RANA.NO',
     'RANDABERG.NO',
     'RAUMA.NO',
+    'RE.NO',
     'RENDALEN.NO',
     'RENNEBU.NO',
     'RENNESOY.NO',
@@ -512,6 +508,7 @@ return [
     'SULDAL.NO',
     'SUND.NO',
     'SUNNDAL.NO',
+    'SUOHKAN.NO',
     'SURNADAL.NO',
     'SVALBARD.NO',
     'SVEIO.NO',
@@ -523,6 +520,7 @@ return [
     'TINGVOLL.NO',
     'TINN.NO',
     'TJELDSUND.NO',
+    'TJIELTE.NO',
     'TJOME.NO',
     'TM.NO',
     'TOKKE.NO',
@@ -545,8 +543,10 @@ return [
     'TYSFJORD.NO',
     'TYSNES.NO',
     'TYSVAR.NO',
+    'UENORGE.NO',
     'ULLENSAKER.NO',
     'ULLENSVANG.NO',
+    'ULSTEIN.NO',
     'ULVIK.NO',
     'UNJARGA.NO',
     'UTSIRA.NO',
@@ -599,7 +599,6 @@ return [
     'XN--BHCCAVUOTNA-K7A.NO',
     'XN--BIDR-5NAC.NO',
     'XN--BIEVT-0QA.NO',
-    'XN--BJARKY-FYA.NO',
     'XN--BJDDAR-PTA.NO',
     'XN--BLT-ELAB.NO',
     'XN--BMLO-GRA.NO',
@@ -626,6 +625,7 @@ return [
     'XN--GJVIK-WUA.NO',
     'XN--GLS-ELAC.NO',
     'XN--H-2FA.NO',
+    'XN--HAMARY-FYA.NO',
     'XN--HBMER-XQA.NO',
     'XN--HCESUOLO-7YA35B.NO',
     'XN--HERY-IRA.NORDLAND.NO',
@@ -641,6 +641,7 @@ return [
     'XN--INDERY-FYA.NO',
     'XN--JLSTER-BYA.NO',
     'XN--JRPELAND-54A.NO',
+    'XN--KARLSY-FYA.NO',
     'XN--KARMY-YUA.NO',
     'XN--KFJORD-IUA.NO',
     'XN--KLBU-WOA.NO',

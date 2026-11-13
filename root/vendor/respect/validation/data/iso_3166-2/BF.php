@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Burkina Faso",
   "subdivisions" => [

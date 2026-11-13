@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Taiwan, Province of China",
   "subdivisions" => [

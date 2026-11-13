@@ -1,7 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 // Copyright (c) https://publicsuffix.org
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 return [
@@ -42,7 +39,6 @@ return [
     'CC.MS.US',
     'CC.MT.US',
     'CC.NC.US',
-    'CC.ND.US',
     'CC.NE.US',
     'CC.NH.US',
     'CC.NJ.US',
@@ -164,10 +160,8 @@ return [
     'LIB.MI.US',
     'LIB.MN.US',
     'LIB.MO.US',
-    'LIB.MS.US',
     'LIB.MT.US',
     'LIB.NC.US',
-    'LIB.ND.US',
     'LIB.NE.US',
     'LIB.NH.US',
     'LIB.NJ.US',

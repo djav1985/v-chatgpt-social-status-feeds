@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\DBAL\Driver\AbstractOracleDriver;
 
+use Doctrine\Deprecations\Deprecation;
+
 use function implode;
 use function is_array;
 use function sprintf;
@@ -15,11 +17,8 @@ use function sprintf;
  */
 final class EasyConnectString
 {
-    private string $string;
-
-    private function __construct(string $string)
+    private function __construct(private readonly string $string)
     {
-        $this->string = $string;
     }
 
     public function __toString(): string
@@ -49,21 +48,49 @@ final class EasyConnectString
         }
 
         if (! isset($params['host'])) {
+            Deprecation::trigger(
+                'doctrine/dbal',
+                'https://github.com/doctrine/dbal/pull/7244',
+                'Not specifying either of the "host" and "connectstring" parameters is deprecated.',
+            );
+
             return new self($params['dbname'] ?? '');
         }
 
         $connectData = [];
 
+        if (isset($params['service'])) {
+            Deprecation::trigger(
+                'doctrine/dbal',
+                'https://github.com/doctrine/dbal/pull/7042',
+                'Using the "service" parameter to indicate that the value of the "dbname" parameter is the'
+                    . ' service name is deprecated. Use the "servicename" parameter instead.',
+            );
+        }
+
+        if (isset($params['dbname'])) {
+            Deprecation::trigger(
+                'doctrine/dbal',
+                'https://github.com/doctrine/dbal/pull/7239',
+                'Using the "dbname" parameter is deprecated. Use "servicename", "sid" or "connectstring"'
+                    . ' instead.',
+            );
+        }
+
         if (isset($params['servicename']) || isset($params['dbname'])) {
             $serviceKey = 'SID';
 
-            if (isset($params['service'])) {
+            if (isset($params['service']) || isset($params['servicename'])) {
                 $serviceKey = 'SERVICE_NAME';
             }
 
             $serviceName = $params['servicename'] ?? $params['dbname'];
 
             $connectData[$serviceKey] = $serviceName;
+        }
+
+        if (isset($params['sid'])) {
+            $connectData['SID'] = $params['sid'];
         }
 
         if (isset($params['instancename'])) {
@@ -77,7 +104,7 @@ final class EasyConnectString
         return self::fromArray([
             'DESCRIPTION' => [
                 'ADDRESS' => [
-                    'PROTOCOL' => 'TCP',
+                    'PROTOCOL' => $params['driverOptions']['protocol'] ?? 'TCP',
                     'HOST' => $params['host'],
                     'PORT' => $params['port'] ?? 1521,
                 ],
@@ -94,18 +121,15 @@ final class EasyConnectString
         foreach ($params as $key => $value) {
             $string = self::renderValue($value);
 
-            if ($string === '') {
-                continue;
+            if ($string !== '') {
+                $chunks[] = sprintf('(%s=%s)', $key, $string);
             }
-
-            $chunks[] = sprintf('(%s=%s)', $key, $string);
         }
 
         return implode('', $chunks);
     }
 
-    /** @param mixed $value */
-    private static function renderValue($value): string
+    private static function renderValue(mixed $value): string
     {
         if (is_array($value)) {
             return self::renderParams($value);

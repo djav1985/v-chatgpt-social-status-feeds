@@ -1,48 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\DBAL\Driver\Mysqli;
 
+use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
+use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Driver\Mysqli\Exception\ConnectionError;
-use Doctrine\DBAL\Driver\Result as ResultInterface;
-use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
-use Doctrine\DBAL\Driver\Statement as DriverStatement;
-use Doctrine\DBAL\ParameterType;
-use Doctrine\Deprecations\Deprecation;
 use mysqli;
 use mysqli_sql_exception;
 
-final class Connection implements ServerInfoAwareConnection
+use function assert;
+
+final class Connection implements ConnectionInterface
 {
     /**
      * Name of the option to set connection flags
      */
     public const OPTION_FLAGS = 'flags';
 
-    private mysqli $connection;
-
     /** @internal The connection can be only instantiated by its driver. */
-    public function __construct(mysqli $connection)
+    public function __construct(private readonly mysqli $connection)
     {
-        $this->connection = $connection;
-    }
-
-    /**
-     * Retrieves mysqli native resource handle.
-     *
-     * Could be used if part of your application is not using DBAL.
-     *
-     * @deprecated Call {@see getNativeConnection()} instead.
-     */
-    public function getWrappedResourceHandle(): mysqli
-    {
-        Deprecation::trigger(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/5037',
-            '%s is deprecated, call getNativeConnection() instead.',
-            __METHOD__,
-        );
-
-        return $this->getNativeConnection();
     }
 
     public function getServerVersion(): string
@@ -50,7 +29,7 @@ final class Connection implements ServerInfoAwareConnection
         return $this->connection->get_server_info();
     }
 
-    public function prepare(string $sql): DriverStatement
+    public function prepare(string $sql): Statement
     {
         try {
             $stmt = $this->connection->prepare($sql);
@@ -58,79 +37,72 @@ final class Connection implements ServerInfoAwareConnection
             throw ConnectionError::upcast($e);
         }
 
-        if ($stmt === false) {
-            throw ConnectionError::new($this->connection);
-        }
+        assert($stmt !== false);
 
         return new Statement($stmt);
     }
 
-    public function query(string $sql): ResultInterface
+    public function query(string $sql): Result
     {
         return $this->prepare($sql)->execute();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function quote($value, $type = ParameterType::STRING)
+    public function quote(string $value): string
     {
         return "'" . $this->connection->escape_string($value) . "'";
     }
 
-    public function exec(string $sql): int
+    public function exec(string $sql): int|string
     {
         try {
-            $result = $this->connection->query($sql);
+            $this->connection->query($sql);
         } catch (mysqli_sql_exception $e) {
             throw ConnectionError::upcast($e);
-        }
-
-        if ($result === false) {
-            throw ConnectionError::new($this->connection);
         }
 
         return $this->connection->affected_rows;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function lastInsertId($name = null)
+    public function lastInsertId(): int|string
     {
-        if ($name !== null) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/dbal',
-                'https://github.com/doctrine/dbal/issues/4687',
-                'The usage of Connection::lastInsertId() with a sequence name is deprecated.',
-            );
+        $lastInsertId = $this->connection->insert_id;
+
+        if ($lastInsertId === 0) {
+            throw Exception\NoIdentityValue::new();
         }
 
         return $this->connection->insert_id;
     }
 
-    public function beginTransaction(): bool
-    {
-        $this->connection->begin_transaction();
-
-        return true;
-    }
-
-    public function commit(): bool
+    public function beginTransaction(): void
     {
         try {
-            return $this->connection->commit();
+            // Prior to PHP 8.5.2, PHP 8.4.17 and PHP 8.3.30, mysqli::begin_transaction() didn't respect error reporting
+            // configuration and reported failure as false return value
+            // See: https://github.com/php/php-src/commit/dbf56e0eba68c61385e9a2d15a3e3f5066f80ec4
+            if (! $this->connection->begin_transaction()) {
+                throw ConnectionError::new($this->connection);
+            }
         } catch (mysqli_sql_exception $e) {
-            return false;
+            throw ConnectionError::upcast($e);
         }
     }
 
-    public function rollBack(): bool
+    public function commit(): void
     {
         try {
-            return $this->connection->rollback();
+            $this->connection->commit();
         } catch (mysqli_sql_exception $e) {
-            return false;
+            throw ConnectionError::upcast($e);
+        }
+    }
+
+    public function rollBack(): void
+    {
+        try {
+            $this->connection->rollback();
+        } catch (mysqli_sql_exception $e) {
+            throw ConnectionError::upcast($e);
         }
     }
 

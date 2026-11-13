@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\DBAL\SQL;
 
-use Doctrine\DBAL\SQL\Parser\Exception;
 use Doctrine\DBAL\SQL\Parser\Exception\RegularExpressionError;
 use Doctrine\DBAL\SQL\Parser\Visitor;
 
@@ -39,8 +40,8 @@ final class Parser
     private const SPECIAL              = '[' . self::SPECIAL_CHARS . ']';
     private const OTHER                = '[^' . self::SPECIAL_CHARS . ']+';
 
-    private string $sqlPattern;
-    private string $tokenPattern;
+    private readonly string $sqlPattern;
+    private readonly string $tokenPattern;
 
     public function __construct(bool $mySQLStringEscaping)
     {
@@ -75,8 +76,6 @@ final class Parser
 
     /**
      * Parses the given SQL statement
-     *
-     * @throws Exception
      */
     public function parse(string $sql, Visitor $visitor): void
     {

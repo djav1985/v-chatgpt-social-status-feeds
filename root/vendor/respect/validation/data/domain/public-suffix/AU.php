@@ -1,7 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 // Copyright (c) https://publicsuffix.org
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 return [
@@ -27,7 +24,6 @@ return [
     'SA.AU',
     'SA.EDU.AU',
     'SA.GOV.AU',
-    'SCHOOLS.NSW.EDU.AU',
     'TAS.AU',
     'TAS.EDU.AU',
     'TAS.GOV.AU',

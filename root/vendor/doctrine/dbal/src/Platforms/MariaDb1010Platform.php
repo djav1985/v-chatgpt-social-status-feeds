@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\DBAL\Platforms;
 
 use Doctrine\DBAL\SQL\Builder\SelectSQLBuilder;
@@ -9,13 +11,14 @@ use function implode;
 /**
  * Provides the behavior, features and SQL dialect of the MariaDB 10.10 database platform.
  */
-class MariaDb1010Platform extends MariaDb1060Platform
+class MariaDB1010Platform extends MariaDB1060Platform
 {
     public function createSelectSQLBuilder(): SelectSQLBuilder
     {
         return AbstractPlatform::createSelectSQLBuilder();
     }
 
+    /** @internal The method should be only used from within the {@see MySQLSchemaManager} class hierarchy. */
     public function fetchTableOptionsByTable(bool $includeTableName): string
     {
         // MariaDB-10.10.1 added FULL_COLLATION_NAME to the information_schema.COLLATION_CHARACTER_SET_APPLICABILITY.

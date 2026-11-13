@@ -1,7 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 // Copyright (c) https://publicsuffix.org
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 return [
@@ -15,6 +12,7 @@ return [
     'FIRM.VE',
     'GOB.VE',
     'GOV.VE',
+    'IA.VE',
     'INFO.VE',
     'INT.VE',
     'MIL.VE',

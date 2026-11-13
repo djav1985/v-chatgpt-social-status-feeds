@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Timor-Leste",
   "subdivisions" => [

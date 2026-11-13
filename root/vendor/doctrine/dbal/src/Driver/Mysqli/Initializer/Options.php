@@ -12,18 +12,16 @@ use function mysqli_options;
 
 final class Options implements Initializer
 {
-    /** @var array<int,mixed> */
-    private array $options;
-
     /** @param array<int,mixed> $options */
-    public function __construct(array $options)
+    public function __construct(private readonly array $options)
     {
-        $this->options = $options;
     }
 
     public function initialize(mysqli $connection): void
     {
         foreach ($this->options as $option => $value) {
+            // mysqli::options() doesn't respect error reporting configuration and reports failure as false return value
+            // See: https://github.com/php/php-src/issues/20968
             if (! mysqli_options($connection, $option, $value)) {
                 throw InvalidOption::fromOption($option, $value);
             }

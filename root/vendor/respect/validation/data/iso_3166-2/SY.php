@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Syrian Arab Republic",
   "subdivisions" => [

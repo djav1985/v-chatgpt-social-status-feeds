@@ -1,5 +1,4 @@
 <?php
-
 return [
   "country" => "Lao People's Democratic Republic",
   "subdivisions" => [

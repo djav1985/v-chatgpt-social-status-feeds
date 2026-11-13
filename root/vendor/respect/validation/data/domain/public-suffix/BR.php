@@ -1,7 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
+<?php declare(strict_types=1);
 // Copyright (c) https://publicsuffix.org
 // SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
 return [
@@ -18,6 +15,7 @@ return [
     'ANANI.BR',
     'AP.GOV.BR',
     'APARECIDA.BR',
+    'API.BR',
     'APP.BR',
     'ARQ.BR',
     'ART.BR',
@@ -80,6 +78,7 @@ return [
     'GOIANIA.BR',
     'GOV.BR',
     'GRU.BR',
+    'IA.BR',
     'IMB.BR',
     'IND.BR',
     'INF.BR',
@@ -156,6 +155,7 @@ return [
     'SJC.BR',
     'SLG.BR',
     'SLZ.BR',
+    'SOCIAL.BR',
     'SOROCABA.BR',
     'SP.GOV.BR',
     'SRV.BR',
@@ -174,5 +174,6 @@ return [
     'VIX.BR',
     'VLOG.BR',
     'WIKI.BR',
+    'XYZ.BR',
     'ZLG.BR',
 ];
