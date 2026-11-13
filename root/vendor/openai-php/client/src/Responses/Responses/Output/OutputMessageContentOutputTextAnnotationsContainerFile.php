@@ -31,8 +31,7 @@ final class OutputMessageContentOutputTextAnnotationsContainerFile implements Re
         public readonly ?string $text,
         public readonly ?int $startIndex,
         public readonly ?int $endIndex,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ContainerFileType  $attributes

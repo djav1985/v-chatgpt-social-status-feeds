@@ -61,7 +61,11 @@ final readonly class ForeignKeyConstraintColumnMetadataProcessor
     public function applyRow(ForeignKeyConstraintEditor $editor, ForeignKeyConstraintColumnMetadataRow $row): void
     {
         $editor
-            ->addQuotedReferencingColumnName($row->getReferencingColumnName())
-            ->addQuotedReferencedColumnName($row->getReferencedColumnName());
+            ->addReferencingColumnName(
+                UnqualifiedName::quoted($row->getReferencingColumnName()),
+            )
+            ->addReferencedColumnName(
+                UnqualifiedName::quoted($row->getReferencedColumnName()),
+            );
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\DBAL\SQL\Builder;
 
-use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Query\CommonTableExpression;
 
 use function array_merge;
@@ -13,7 +12,6 @@ use function implode;
 
 final class WithSQLBuilder
 {
-    /** @throws Exception */
     public function buildSQL(CommonTableExpression $firstExpression, CommonTableExpression ...$otherExpressions): string
     {
         $cteParts = [];

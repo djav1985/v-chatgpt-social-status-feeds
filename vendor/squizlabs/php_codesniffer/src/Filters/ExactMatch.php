@@ -1,5 +1,4 @@
 <?php
-
 /**
  * An abstract filter class for checking files and folders against exact matches.
  *
@@ -7,7 +6,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Filters;
@@ -16,6 +15,7 @@ use PHP_CodeSniffer\Util\Common;
 
 abstract class ExactMatch extends Filter
 {
+
     /**
      * A list of files to exclude.
      *
@@ -77,6 +77,7 @@ abstract class ExactMatch extends Filter
         }
 
         return isset($this->allowedFiles[$filePath]);
+
     }//end accept()
 
 
@@ -94,6 +95,7 @@ abstract class ExactMatch extends Filter
         $children->disallowedFiles = $this->disallowedFiles;
         $children->allowedFiles    = $this->allowedFiles;
         return $children;
+
     }//end getChildren()
 
 
@@ -133,6 +135,7 @@ abstract class ExactMatch extends Filter
     protected function getDisallowedFiles()
     {
         return null;
+
     }//end getDisallowedFiles()
 
 
@@ -146,5 +149,8 @@ abstract class ExactMatch extends Filter
     protected function getAllowedFiles()
     {
         return null;
+
     }//end getAllowedFiles()
+
+
 }//end class

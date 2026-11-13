@@ -28,8 +28,7 @@ final class FunctionToolChoice implements ResponseContract
     private function __construct(
         public readonly string $name,
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  FunctionToolChoiceType  $attributes

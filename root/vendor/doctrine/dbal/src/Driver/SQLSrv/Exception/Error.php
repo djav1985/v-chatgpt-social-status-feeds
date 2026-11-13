@@ -24,9 +24,11 @@ final class Error extends AbstractException
             $message   .= 'SQLSTATE [' . $error['SQLSTATE'] . ', ' . $error['code'] . ']: ' . $error['message'] . "\n";
             $sqlState ??= $error['SQLSTATE'];
 
-            if ($code === 0) {
-                $code = $error['code'];
+            if ($code !== 0) {
+                continue;
             }
+
+            $code = $error['code'];
         }
 
         if ($message === '') {

@@ -33,8 +33,7 @@ final class OutputTextDelta implements ResponseContract, ResponseHasMetaInformat
         public readonly int $outputIndex,
         public readonly int $sequenceNumber,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  OutputTextType  $attributes

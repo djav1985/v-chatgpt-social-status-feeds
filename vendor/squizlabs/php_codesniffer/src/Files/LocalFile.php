@@ -1,11 +1,10 @@
 <?php
-
 /**
  * A local file represents a chunk of text has a file system location.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Files;
@@ -17,6 +16,8 @@ use PHP_CodeSniffer\Util\Common;
 
 class LocalFile extends File
 {
+
+
     /**
      * Creates a LocalFile object and sets the content.
      *
@@ -47,8 +48,7 @@ class LocalFile extends File
                 $firstContent .= fgets($handle);
                 fclose($handle);
 
-                if (
-                    strpos($firstContent, '@codingStandardsIgnoreFile') !== false
+                if (strpos($firstContent, '@codingStandardsIgnoreFile') !== false
                     || stripos($firstContent, 'phpcs:ignorefile') !== false
                 ) {
                     // We are ignoring the whole file.
@@ -61,6 +61,7 @@ class LocalFile extends File
         $this->reloadContent();
 
         parent::__construct($this->path, $ruleset, $config);
+
     }//end __construct()
 
 
@@ -72,6 +73,7 @@ class LocalFile extends File
     public function reloadContent()
     {
         $this->setContent(file_get_contents($this->path));
+
     }//end reloadContent()
 
 
@@ -110,8 +112,7 @@ class LocalFile extends File
                 $this->fixableCount = $cache['fixableCount'];
             }
 
-            if (
-                PHP_CODESNIFFER_VERBOSITY > 0
+            if (PHP_CODESNIFFER_VERBOSITY > 0
                 || (PHP_CODESNIFFER_CBF === true && empty($this->config->files) === false)
             ) {
                 echo "[loaded from cache]... ";
@@ -148,6 +149,7 @@ class LocalFile extends File
             $this->replayErrors($this->errors, $this->warnings);
             $this->configCache['cache'] = true;
         }
+
     }//end process()
 
 
@@ -158,8 +160,8 @@ class LocalFile extends File
      * and then errors and warnings to be reapplied with the new rules. This is
      * particularly useful while caching.
      *
-     * @param array $errors   The list of errors to replay.
-     * @param array $warnings The list of warnings to replay.
+     * @param array<int, array<int, array<string, mixed>>> $errors   The list of errors to replay.
+     * @param array<int, array<int, array<string, mixed>>> $warnings The list of warnings to replay.
      *
      * @return void
      */
@@ -210,5 +212,8 @@ class LocalFile extends File
         }
 
         $this->replayingErrors = false;
+
     }//end replayErrors()
+
+
 }//end class

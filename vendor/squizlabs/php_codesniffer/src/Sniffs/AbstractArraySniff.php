@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Processes single and multi-line arrays.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Sniffs;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 abstract class AbstractArraySniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -26,6 +27,7 @@ abstract class AbstractArraySniff implements Sniff
             T_ARRAY,
             T_OPEN_SHORT_ARRAY,
         ];
+
     }//end register()
 
 
@@ -95,6 +97,7 @@ abstract class AbstractArraySniff implements Sniff
         } else {
             $this->processMultiLineArray($phpcsFile, $stackPtr, $arrayStart, $arrayEnd, $indices);
         }
+
     }//end process()
 
 
@@ -114,14 +117,13 @@ abstract class AbstractArraySniff implements Sniff
         while ($ptr < $arrayEnd) {
             if (isset($tokens[$ptr]['scope_closer']) === true) {
                 $ptr = $tokens[$ptr]['scope_closer'];
-            } elseif (isset($tokens[$ptr]['parenthesis_closer']) === true) {
+            } else if (isset($tokens[$ptr]['parenthesis_closer']) === true) {
                 $ptr = $tokens[$ptr]['parenthesis_closer'];
-            } elseif (isset($tokens[$ptr]['bracket_closer']) === true) {
+            } else if (isset($tokens[$ptr]['bracket_closer']) === true) {
                 $ptr = $tokens[$ptr]['bracket_closer'];
             }
 
-            if (
-                $tokens[$ptr]['code'] === T_COMMA
+            if ($tokens[$ptr]['code'] === T_COMMA
                 || $tokens[$ptr]['code'] === T_DOUBLE_ARROW
             ) {
                 return $ptr;
@@ -131,6 +133,7 @@ abstract class AbstractArraySniff implements Sniff
         }
 
         return $ptr;
+
     }//end getNext()
 
 
@@ -164,4 +167,6 @@ abstract class AbstractArraySniff implements Sniff
      * @return void
      */
     abstract protected function processMultiLineArray($phpcsFile, $stackPtr, $arrayStart, $arrayEnd, $indices);
+
+
 }//end class

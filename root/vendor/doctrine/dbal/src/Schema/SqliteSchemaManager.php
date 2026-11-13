@@ -127,7 +127,7 @@ class SQLiteSchemaManager extends AbstractSchemaManager
             'scale'     => $scale,
         ];
 
-        $column = new Column($tableColumn['name'], $type, $options);
+        $column = new Column($tableColumn['name'], Type::getType($type), $options);
 
         if ($type === Types::STRING || $type === Types::TEXT) {
             $column->setPlatformOption('collation', $tableColumn['collation'] ?? 'BINARY');
@@ -176,9 +176,11 @@ class SQLiteSchemaManager extends AbstractSchemaManager
 
             $list[$id]['local'][] = $row['from'];
 
-            if ($row['to'] !== null) {
-                $list[$id]['foreign'][] = $row['to'];
+            if ($row['to'] === null) {
+                continue;
             }
+
+            $list[$id]['foreign'][] = $row['to'];
         }
 
         foreach ($list as $id => $value) {
@@ -254,15 +256,6 @@ CREATE\sTABLE' . $this->buildIdentifierPattern($table) . '
         $comment = preg_replace('{^\s*--}m', '', rtrim($match[1], "\n"));
 
         return $comment === '' ? null : $comment;
-    }
-
-    private function parseWithoutRowidFromSQL(string $sql): bool
-    {
-        if (preg_match('/\)[^)]*$/s', $sql, $match) !== 1) {
-            return false;
-        }
-
-        return preg_match('/\bWITHOUT\s+ROWID\b/i', $match[0]) === 1;
     }
 
     private function parseColumnCommentFromSQL(string $column, string $sql): string
@@ -474,9 +467,11 @@ SQL,
 
             $sqlByTable[$tableName] ??= $this->getCreateTableSQL($tableName);
 
-            if ($row['pk'] !== 0 && $row['pk'] !== '0') {
-                $pkColumnNamesByTable[$tableName][] = $row['name'];
+            if ($row['pk'] === 0 || $row['pk'] === '0' || $row['type'] !== 'INTEGER') {
+                continue;
             }
+
+            $pkColumnNamesByTable[$tableName][] = $row['name'];
         }
 
         foreach ($rows as $row) {
@@ -486,7 +481,7 @@ SQL,
 
             $result[] = array_merge($row, [
                 'autoincrement' => isset($pkColumnNamesByTable[$tableName])
-                    && $pkColumnNamesByTable[$tableName] === [$columnName] && $row['type'] === 'INTEGER',
+                    && $pkColumnNamesByTable[$tableName] === [$columnName],
                 'collation' => $this->parseColumnCollationFromSQL($columnName, $tableSQL),
                 'comment' => $this->parseColumnCommentFromSQL($columnName, $tableSQL),
             ]);
@@ -596,17 +591,13 @@ SQL,
 
         $tableOptions = [];
         foreach ($tables as $table) {
-            $createSQL = $this->getCreateTableSQL($table);
+            $comment = $this->parseTableCommentFromSQL($table, $this->getCreateTableSQL($table));
 
-            $comment = $this->parseTableCommentFromSQL($table, $createSQL);
-
-            if ($comment !== null) {
-                $tableOptions[$table]['comment'] = $comment;
+            if ($comment === null) {
+                continue;
             }
 
-            if ($this->parseWithoutRowidFromSQL($createSQL)) {
-                $tableOptions[$table]['without_rowid'] = true;
-            }
+            $tableOptions[$table]['comment'] = $comment;
         }
 
         /** @phpstan-ignore return.type */

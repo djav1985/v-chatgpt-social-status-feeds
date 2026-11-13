@@ -32,8 +32,7 @@ final class ReasoningSummaryTextDelta implements ResponseContract, ResponseHasMe
         public readonly int $outputIndex,
         public readonly int $summaryIndex,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ReasoningSummaryTextDeltaType  $attributes

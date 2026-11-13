@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Represents a PHP_CodeSniffer sniff for sniffing coding standards.
  *
@@ -10,7 +9,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Sniffs;
@@ -19,6 +18,8 @@ use PHP_CodeSniffer\Files\File;
 
 interface Sniff
 {
+
+
     /**
      * Registers the tokens that this sniff wants to listen for.
      *
@@ -74,4 +75,6 @@ interface Sniff
      *                  the rest of the file.
      */
     public function process(File $phpcsFile, $stackPtr);
+
+
 }//end interface

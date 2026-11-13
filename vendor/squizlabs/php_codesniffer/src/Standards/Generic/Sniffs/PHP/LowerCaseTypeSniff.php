@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that all PHP types are lowercase.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
@@ -17,6 +16,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class LowerCaseTypeSniff implements Sniff
 {
+
     /**
      * Native types supported by PHP.
      *
@@ -56,6 +56,7 @@ class LowerCaseTypeSniff implements Sniff
         $tokens[] = T_CLOSURE;
         $tokens[] = T_FN;
         return $tokens;
+
     }//end register()
 
 
@@ -96,8 +97,7 @@ class LowerCaseTypeSniff implements Sniff
 
             for ($i = ($tokens[$stackPtr]['scope_opener'] + 1); $i < $tokens[$stackPtr]['scope_closer']; $i++) {
                 // Skip over potentially large docblocks.
-                if (
-                    $tokens[$i]['code'] === T_DOC_COMMENT_OPEN_TAG
+                if ($tokens[$i]['code'] === T_DOC_COMMENT_OPEN_TAG
                     && isset($tokens[$i]['comment_closer']) === true
                 ) {
                     $i = $tokens[$i]['comment_closer'];
@@ -105,8 +105,7 @@ class LowerCaseTypeSniff implements Sniff
                 }
 
                 // Skip over function declarations and everything nested within.
-                if (
-                    $tokens[$i]['code'] === T_FUNCTION
+                if ($tokens[$i]['code'] === T_FUNCTION
                     && isset($tokens[$i]['scope_closer']) === true
                 ) {
                     $i = $tokens[$i]['scope_closer'];
@@ -188,7 +187,7 @@ class LowerCaseTypeSniff implements Sniff
                             $error,
                             $errorCode
                         );
-                    } elseif (isset($this->phpTypes[strtolower($type)]) === true) {
+                    } else if (isset($this->phpTypes[strtolower($type)]) === true) {
                         $this->processType($phpcsFile, $props['type_token'], $type, $error, $errorCode);
                     }
                 }
@@ -219,7 +218,7 @@ class LowerCaseTypeSniff implements Sniff
                     $error,
                     $errorCode
                 );
-            } elseif (isset($this->phpTypes[strtolower($returnType)]) === true) {
+            } else if (isset($this->phpTypes[strtolower($returnType)]) === true) {
                 $this->processType($phpcsFile, $props['return_type_token'], $returnType, $error, $errorCode);
             }
         }
@@ -250,11 +249,12 @@ class LowerCaseTypeSniff implements Sniff
                         $error,
                         $errorCode
                     );
-                } elseif (isset($this->phpTypes[strtolower($typeHint)]) === true) {
+                } else if (isset($this->phpTypes[strtolower($typeHint)]) === true) {
                     $this->processType($phpcsFile, $param['type_hint_token'], $typeHint, $error, $errorCode);
                 }
             }
         }//end foreach
+
     }//end process()
 
 
@@ -283,14 +283,12 @@ class LowerCaseTypeSniff implements Sniff
                 continue;
             }
 
-            if (
-                $tokens[$i]['code'] === T_TYPE_UNION
+            if ($tokens[$i]['code'] === T_TYPE_UNION
                 || $tokens[$i]['code'] === T_TYPE_INTERSECTION
                 || $tokens[$i]['code'] === T_TYPE_OPEN_PARENTHESIS
                 || $tokens[$i]['code'] === T_TYPE_CLOSE_PARENTHESIS
             ) {
-                if (
-                    $typeTokenCount === 1
+                if ($typeTokenCount === 1
                     && $type !== ''
                     && isset($this->phpTypes[strtolower($type)]) === true
                 ) {
@@ -314,13 +312,13 @@ class LowerCaseTypeSniff implements Sniff
         }//end for
 
         // Handle type at end of type string.
-        if (
-            $typeTokenCount === 1
+        if ($typeTokenCount === 1
             && $type !== ''
             && isset($this->phpTypes[strtolower($type)]) === true
         ) {
             $this->processType($phpcsFile, $typeStart, $type, $error, $errorCode);
         }
+
     }//end processUnionType()
 
 
@@ -359,5 +357,8 @@ class LowerCaseTypeSniff implements Sniff
         if ($fix === true) {
             $phpcsFile->fixer->replaceToken($stackPtr, $typeLower);
         }
+
     }//end processType()
+
+
 }//end class

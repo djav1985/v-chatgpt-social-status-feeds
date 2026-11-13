@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Bans the use of the backtick execution operator.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class BacktickOperatorSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -23,6 +24,7 @@ class BacktickOperatorSniff implements Sniff
     public function register()
     {
         return [T_BACKTICK];
+
     }//end register()
 
 
@@ -39,5 +41,8 @@ class BacktickOperatorSniff implements Sniff
     {
         $error = 'Use of the backtick operator is forbidden';
         $phpcsFile->addError($error, $stackPtr, 'Found');
+
     }//end process()
+
+
 }//end class

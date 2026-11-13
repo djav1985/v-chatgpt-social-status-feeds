@@ -30,8 +30,7 @@ final class TurnDetection implements ResponseContract
         public readonly int $silenceDurationMs,
         public readonly float $threshold,
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  TurnDetectionType  $attributes

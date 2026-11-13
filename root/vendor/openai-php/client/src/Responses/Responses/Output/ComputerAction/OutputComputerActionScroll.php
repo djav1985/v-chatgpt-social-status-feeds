@@ -31,8 +31,7 @@ final class OutputComputerActionScroll implements ResponseContract
         public readonly string $type,
         public readonly int $x,
         public readonly int $y,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ScrollType  $attributes

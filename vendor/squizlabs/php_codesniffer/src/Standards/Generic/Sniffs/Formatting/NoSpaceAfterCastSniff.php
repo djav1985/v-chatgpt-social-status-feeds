@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Ensures there is no space after cast tokens.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  *
  * @deprecated 3.4.0 Use the Generic.Formatting.SpaceAfterCast sniff with
  *                   the $spacing property set to 0 instead.
@@ -20,6 +19,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class NoSpaceAfterCastSniff implements Sniff, DeprecatedSniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -28,6 +29,7 @@ class NoSpaceAfterCastSniff implements Sniff, DeprecatedSniff
     public function register()
     {
         return Tokens::$castTokens;
+
     }//end register()
 
 
@@ -53,6 +55,7 @@ class NoSpaceAfterCastSniff implements Sniff, DeprecatedSniff
         if ($fix === true) {
             $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
         }
+
     }//end process()
 
 
@@ -64,6 +67,7 @@ class NoSpaceAfterCastSniff implements Sniff, DeprecatedSniff
     public function getDeprecationVersion()
     {
         return 'v3.4.0';
+
     }//end getDeprecationVersion()
 
 
@@ -75,6 +79,7 @@ class NoSpaceAfterCastSniff implements Sniff, DeprecatedSniff
     public function getRemovalVersion()
     {
         return 'v4.0.0';
+
     }//end getRemovalVersion()
 
 
@@ -86,5 +91,8 @@ class NoSpaceAfterCastSniff implements Sniff, DeprecatedSniff
     public function getDeprecationMessage()
     {
         return 'Use the Generic.Formatting.SpaceAfterCast sniff with the $spacing property set to 0 instead.';
+
     }//end getDeprecationMessage()
+
+
 }//end class

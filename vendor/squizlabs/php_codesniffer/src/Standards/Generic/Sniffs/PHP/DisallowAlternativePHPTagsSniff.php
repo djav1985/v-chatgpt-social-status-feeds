@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Verifies that no alternative PHP tags are used.
  *
@@ -7,7 +6,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
@@ -18,6 +17,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DisallowAlternativePHPTagsSniff implements Sniff
 {
+
     /**
      * Whether ASP tags are enabled or not.
      *
@@ -56,6 +56,7 @@ class DisallowAlternativePHPTagsSniff implements Sniff
             T_OPEN_TAG_WITH_ECHO,
             T_INLINE_HTML,
         ];
+
     }//end register()
 
 
@@ -83,7 +84,7 @@ class DisallowAlternativePHPTagsSniff implements Sniff
                 $error     = 'ASP style opening tag used; expected "<?php" but found "%s"';
                 $closer    = $this->findClosingTag($phpcsFile, $tokens, $stackPtr, '%>');
                 $errorCode = 'ASPOpenTagFound';
-            } elseif (strpos($content, '<script ') !== false) {
+            } else if (strpos($content, '<script ') !== false) {
                 $error     = 'Script style opening tag used; expected "<?php" but found "%s"';
                 $closer    = $this->findClosingTag($phpcsFile, $tokens, $stackPtr, '</script>');
                 $errorCode = 'ScriptOpenTagFound';
@@ -130,13 +131,12 @@ class DisallowAlternativePHPTagsSniff implements Sniff
         }//end if
 
         // Account for incorrect script open tags.
-        if (
-            $openTag['code'] === T_INLINE_HTML
+        if ($openTag['code'] === T_INLINE_HTML
             && preg_match('`(<script (?:[^>]+)?language=[\'"]?php[\'"]?(?:[^>]+)?>)`i', $content, $match) === 1
         ) {
             $error   = 'Script style opening tag used; expected "<?php" but found "%s"';
             $snippet = $this->getSnippet($content, $match[1]);
-            $data    = [$match[1] . $snippet];
+            $data    = [$match[1].$snippet];
 
             $phpcsFile->addError($error, $stackPtr, 'ScriptOpenTagFound', $data);
             return;
@@ -146,17 +146,18 @@ class DisallowAlternativePHPTagsSniff implements Sniff
             if (strpos($content, '<%=') !== false) {
                 $error   = 'Possible use of ASP style short opening tags detected; found: %s';
                 $snippet = $this->getSnippet($content, '<%=');
-                $data    = ['<%=' . $snippet];
+                $data    = ['<%='.$snippet];
 
                 $phpcsFile->addWarning($error, $stackPtr, 'MaybeASPShortOpenTagFound', $data);
-            } elseif (strpos($content, '<%') !== false) {
+            } else if (strpos($content, '<%') !== false) {
                 $error   = 'Possible use of ASP style opening tags detected; found: %s';
                 $snippet = $this->getSnippet($content, '<%');
-                $data    = ['<%' . $snippet];
+                $data    = ['<%'.$snippet];
 
                 $phpcsFile->addWarning($error, $stackPtr, 'MaybeASPOpenTagFound', $data);
             }
         }
+
     }//end process()
 
 
@@ -169,7 +170,7 @@ class DisallowAlternativePHPTagsSniff implements Sniff
      *
      * @return string
      */
-    protected function getSnippet($content, $start = '', $length = 40)
+    protected function getSnippet($content, $start='', $length=40)
     {
         $startPos = 0;
 
@@ -186,6 +187,7 @@ class DisallowAlternativePHPTagsSniff implements Sniff
         }
 
         return $snippet;
+
     }//end getSnippet()
 
 
@@ -209,6 +211,7 @@ class DisallowAlternativePHPTagsSniff implements Sniff
         }
 
         return false;
+
     }//end findClosingTag()
 
 
@@ -223,7 +226,7 @@ class DisallowAlternativePHPTagsSniff implements Sniff
      *
      * @return void
      */
-    protected function addChangeset(File $phpcsFile, $tokens, $openTagPointer, $closeTagPointer, $echo = false)
+    protected function addChangeset(File $phpcsFile, $tokens, $openTagPointer, $closeTagPointer, $echo=false)
     {
         // Build up the open tag replacement and make sure there's always whitespace behind it.
         $openReplacement = '<?php';
@@ -236,12 +239,15 @@ class DisallowAlternativePHPTagsSniff implements Sniff
         }
 
         // Make sure we don't remove any line breaks after the closing tag.
-        $regex            = '`' . preg_quote(trim($tokens[$closeTagPointer]['content'])) . '`';
+        $regex            = '`'.preg_quote(trim($tokens[$closeTagPointer]['content'])).'`';
         $closeReplacement = preg_replace($regex, '?>', $tokens[$closeTagPointer]['content']);
 
         $phpcsFile->fixer->beginChangeset();
         $phpcsFile->fixer->replaceToken($openTagPointer, $openReplacement);
         $phpcsFile->fixer->replaceToken($closeTagPointer, $closeReplacement);
         $phpcsFile->fixer->endChangeset();
+
     }//end addChangeset()
+
+
 }//end class

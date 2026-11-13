@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Platforms\PostgreSQL;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\JsonType;
@@ -16,8 +15,6 @@ use function array_map;
 use function assert;
 use function count;
 use function explode;
-use function func_get_arg;
-use function func_num_args;
 use function implode;
 use function is_string;
 use function preg_match;
@@ -36,14 +33,6 @@ use const CASE_LOWER;
  */
 class PostgreSQLSchemaManager extends AbstractSchemaManager
 {
-    public function createComparator(/* ComparatorConfig $config = new ComparatorConfig() */): Comparator
-    {
-        return new PostgreSQL\Comparator(
-            $this->platform,
-            func_num_args() > 0 ? func_get_arg(0) : new ComparatorConfig(),
-        );
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -285,13 +274,13 @@ SQL,
             $options['comment'] = $tableColumn['comment'];
         }
 
-        $column = new Column($tableColumn['field'], $type, $options);
+        $column = new Column($tableColumn['field'], Type::getType($type), $options);
 
         if (! empty($tableColumn['collation'])) {
             $column->setPlatformOption('collation', $tableColumn['collation']);
         }
 
-        if (Type::getType($column->getTypeName()) instanceof JsonType) {
+        if ($column->getType() instanceof JsonType) {
             $column->setPlatformOption('jsonb', $jsonb);
         }
 

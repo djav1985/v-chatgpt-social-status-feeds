@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\DBAL\Schema\Introspection\MetadataProcessor;
 
 use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\IndexEditor;
 use Doctrine\DBAL\Schema\Metadata\IndexColumnMetadataRow;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
@@ -29,6 +30,11 @@ final readonly class IndexColumnMetadataProcessor
 
     public function applyRow(IndexEditor $editor, IndexColumnMetadataRow $row): void
     {
-        $editor->addQuotedColumnName($row->getColumnName(), $row->getColumnLength());
+        $editor->addColumn(
+            new IndexedColumn(
+                UnqualifiedName::quoted($row->getColumnName()),
+                $row->getColumnLength(),
+            ),
+        );
     }
 }

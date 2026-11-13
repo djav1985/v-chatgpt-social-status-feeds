@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Warns about TODO comments.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Commenting;
@@ -16,6 +15,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class TodoSniff implements Sniff
 {
+
     /**
      * A list of tokenizers this sniff supports.
      *
@@ -35,6 +35,7 @@ class TodoSniff implements Sniff
     public function register()
     {
         return array_diff(Tokens::$commentTokens, Tokens::$phpcsCommentTokens);
+
     }//end register()
 
 
@@ -69,5 +70,8 @@ class TodoSniff implements Sniff
 
             $phpcsFile->addWarning($error, $stackPtr, $type, $data);
         }
+
     }//end process()
+
+
 }//end class

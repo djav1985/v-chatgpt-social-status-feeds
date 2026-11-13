@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Checks the cyclomatic complexity (McCabe) for functions.
  *
@@ -10,7 +9,7 @@
  * @author    Johann-Peter Hartmann <hartmann@mayflower.de>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2007-2014 Mayflower GmbH
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Metrics;
@@ -20,6 +19,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class CyclomaticComplexitySniff implements Sniff
 {
+
     /**
      * A complexity higher than this value will throw a warning.
      *
@@ -43,6 +43,7 @@ class CyclomaticComplexitySniff implements Sniff
     public function register()
     {
         return [T_FUNCTION];
+
     }//end register()
 
 
@@ -101,7 +102,7 @@ class CyclomaticComplexitySniff implements Sniff
                 $this->absoluteComplexity,
             ];
             $phpcsFile->addError($error, $stackPtr, 'MaxExceeded', $data);
-        } elseif ($complexity > $this->complexity) {
+        } else if ($complexity > $this->complexity) {
             $warning = 'Function\'s cyclomatic complexity (%s) exceeds %s; consider refactoring the function';
             $data    = [
                 $complexity,
@@ -109,5 +110,8 @@ class CyclomaticComplexitySniff implements Sniff
             ];
             $phpcsFile->addWarning($warning, $stackPtr, 'TooHigh', $data);
         }
+
     }//end process()
+
+
 }//end class

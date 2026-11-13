@@ -1,11 +1,10 @@
 <?php
-
 /**
  * An interface that PHP_CodeSniffer reports must implement.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Reports;
@@ -14,6 +13,8 @@ use PHP_CodeSniffer\Files\File;
 
 interface Report
 {
+
+
     /**
      * Generate a partial report for a single processed file.
      *
@@ -51,7 +52,7 @@ interface Report
      *
      * @return bool
      */
-    public function generateFileReport($report, File $phpcsFile, $showSources = false, $width = 80);
+    public function generateFileReport($report, File $phpcsFile, $showSources=false, $width=80);
 
 
     /**
@@ -76,9 +77,11 @@ interface Report
         $totalErrors,
         $totalWarnings,
         $totalFixable,
-        $showSources = false,
-        $width = 80,
-        $interactive = false,
-        $toScreen = true
+        $showSources=false,
+        $width=80,
+        $interactive=false,
+        $toScreen=true
     );
+
+
 }//end interface

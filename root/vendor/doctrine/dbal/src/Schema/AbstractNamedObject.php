@@ -10,8 +10,6 @@ use Doctrine\DBAL\Schema\Exception\InvalidState;
 /**
  * An abstract {@see NamedObject}.
  *
- * @internal since doctrine/dbal 4.5, use {@see NamedObject} instead.
- *
  * @template N of Name
  * @extends AbstractAsset<N>
  * @implements NamedObject<N>

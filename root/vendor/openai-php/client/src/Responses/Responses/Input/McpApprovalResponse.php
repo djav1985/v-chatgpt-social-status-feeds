@@ -31,8 +31,7 @@ final class McpApprovalResponse implements ResponseContract
         public readonly string $id,
         public readonly string $type,
         public readonly ?string $reason = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  McpApprovalResponseType  $attributes

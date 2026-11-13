@@ -31,8 +31,7 @@ final class OutputMessageContentOutputTextAnnotationsUrlCitation implements Resp
         public readonly string $title,
         public readonly string $type,
         public readonly string $url,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  UrlCitationType  $attributes

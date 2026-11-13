@@ -6,9 +6,10 @@
     "php": "^8.2"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "^3.10",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
-    "phpunit/phpunit": "^10.0"
+    "squizlabs/php_codesniffer": "^3.13.6",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.2.1",
+    "phpunit/phpunit": "^11.5.58",
+    "phpstan/phpstan": "^2.3.5"
   },
   "autoload": {
     "psr-4": {
@@ -28,7 +29,7 @@
   "scripts": {
     "phpcs": "phpcs --standard=phpcs.xml --extensions=php root/",
     "phpcbf": "phpcbf --standard=phpcs.xml --extensions=php root/",
-    "phpstan": "phpstan analyse --no-progress --memory-limit=1G --autoload-file .github/phpstan-bootstrap.php",
+    "phpstan": "phpstan analyse --no-progress --memory-limit=1G",
     "test": "phpunit"
   }
 }

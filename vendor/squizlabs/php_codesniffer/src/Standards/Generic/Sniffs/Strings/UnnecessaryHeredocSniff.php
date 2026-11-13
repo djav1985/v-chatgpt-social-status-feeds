@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Prefer the use of nowdoc over heredoc.
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2024 PHPCSStandards and contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Strings;
@@ -15,6 +14,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class UnnecessaryHeredocSniff implements Sniff
 {
+
     /**
      * Escape chars which are supported in heredocs, but not in nowdocs.
      *
@@ -53,6 +53,7 @@ class UnnecessaryHeredocSniff implements Sniff
     public function register()
     {
         return [T_START_HEREDOC];
+
     }//end register()
 
 
@@ -89,8 +90,7 @@ class UnnecessaryHeredocSniff implements Sniff
                 continue;
             }
 
-            if (
-                $bodyToken[0] === T_DOLLAR_OPEN_CURLY_BRACES
+            if ($bodyToken[0] === T_DOLLAR_OPEN_CURLY_BRACES
                 || $bodyToken[0] === T_VARIABLE
             ) {
                 // Contains interpolation or expression.
@@ -98,8 +98,7 @@ class UnnecessaryHeredocSniff implements Sniff
                 return;
             }
 
-            if (
-                $bodyToken[0] === T_CURLY_OPEN
+            if ($bodyToken[0] === T_CURLY_OPEN
                 && is_array($tokenizedBody[($ptr + 1)]) === false
                 && $tokenizedBody[($ptr + 1)] === '$'
             ) {
@@ -125,7 +124,7 @@ class UnnecessaryHeredocSniff implements Sniff
             $phpcsFile->fixer->beginChangeset();
 
             $identifier  = trim(ltrim($tokens[$stackPtr]['content'], '<'));
-            $replaceWith = "'" . trim($identifier, '"') . "'";
+            $replaceWith = "'".trim($identifier, '"')."'";
             $replacement = str_replace($identifier, $replaceWith, $tokens[$stackPtr]['content']);
             $phpcsFile->fixer->replaceToken($stackPtr, $replacement);
 
@@ -139,5 +138,8 @@ class UnnecessaryHeredocSniff implements Sniff
 
             $phpcsFile->fixer->endChangeset();
         }
+
     }//end process()
+
+
 }//end class

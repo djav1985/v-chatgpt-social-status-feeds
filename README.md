@@ -21,8 +21,9 @@ III. [ Project Structure](#-project-structure)
 IV. [ Usage](#usage)
 V. [ Getting Started](#-getting-started)
 VI. [ Docker](#docker)
-VII. [ Changelog](#-changelog)
-VIII. [ License](#-license)
+VII. [ Development](#development)
+VIII. [ Changelog](#-changelog)
+IX. [ License](#-license)
 
 ---
 
@@ -250,6 +251,10 @@ Login as `admin` with the password `admin`. Follow these steps:
    - Click **Add/Update**.
 
 Statuses are generated on schedule and added to the respective account feed and the user's collective omni feed. Use the feed with tools like IFTTT to update social media.
+
+## Development
+
+The repository-root Composer and npm manifests manage development tools; `root/composer.json` manages production dependencies. Install the tools with `composer install` and `npm install` from the repository root. Run `composer test`, `composer phpcs`, or `composer phpstan` for PHP checks, and `npm run lint` for JavaScript and CSS checks. Development tooling requires PHP 8.2+ and Node.js 26+.
 
 ## Docker
 

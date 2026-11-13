@@ -1,12 +1,11 @@
 <?php
-
 /**
  * Ban the use of Yoda conditions.
  *
  * @author    Mponos George <gmponos@gmail.com>
  * @author    Mark Scherer <username@example.com>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\ControlStructures;
@@ -17,6 +16,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DisallowYodaConditionsSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -28,6 +29,7 @@ class DisallowYodaConditionsSniff implements Sniff
         unset($tokens[T_COALESCE]);
 
         return $tokens;
+
     }//end register()
 
 
@@ -108,10 +110,7 @@ class DisallowYodaConditionsSniff implements Sniff
                 if ($prev === false) {
                     return;
                 }
-            } elseif (
-                $tokens[$beforeOpeningParenthesisIndex]['code'] === T_ARRAY
-                && $this->isArrayStatic($phpcsFile, $beforeOpeningParenthesisIndex) === false
-            ) {
+            } else if ($this->isArrayStatic($phpcsFile, $beforeOpeningParenthesisIndex) === false) {
                 return;
             }//end if
         }//end if
@@ -121,6 +120,7 @@ class DisallowYodaConditionsSniff implements Sniff
             $stackPtr,
             'Found'
         );
+
     }//end process()
 
 
@@ -139,7 +139,7 @@ class DisallowYodaConditionsSniff implements Sniff
         if ($tokens[$arrayToken]['code'] === T_OPEN_SHORT_ARRAY) {
             $start = $arrayToken;
             $end   = $tokens[$arrayToken]['bracket_closer'];
-        } elseif ($tokens[$arrayToken]['code'] === T_ARRAY) {
+        } else if ($tokens[$arrayToken]['code'] === T_ARRAY) {
             $start = $tokens[$arrayToken]['parenthesis_opener'];
             $end   = $tokens[$arrayToken]['parenthesis_closer'];
         } else {
@@ -178,5 +178,8 @@ class DisallowYodaConditionsSniff implements Sniff
         }
 
         return true;
+
     }//end isArrayStatic()
+
+
 }//end class

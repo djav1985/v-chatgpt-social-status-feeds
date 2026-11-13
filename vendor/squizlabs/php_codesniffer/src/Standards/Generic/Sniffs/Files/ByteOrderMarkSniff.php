@@ -1,12 +1,11 @@
 <?php
-
 /**
  * A simple sniff for detecting a BOM definition that may corrupt application work.
  *
  * @author    Piotr Karas <office@mediaself.pl>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2010-2014 mediaSELF Sp. z o.o.
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Files;
@@ -16,6 +15,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ByteOrderMarkSniff implements Sniff
 {
+
     /**
      * List of supported BOM definitions.
      *
@@ -38,6 +38,7 @@ class ByteOrderMarkSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
+
     }//end register()
 
 
@@ -74,5 +75,8 @@ class ByteOrderMarkSniff implements Sniff
         $phpcsFile->recordMetric($stackPtr, 'Using byte order mark', 'no');
 
         return $phpcsFile->numTokens;
+
     }//end process()
+
+
 }//end class

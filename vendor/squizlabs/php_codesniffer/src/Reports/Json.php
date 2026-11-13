@@ -1,12 +1,11 @@
 <?php
-
 /**
  * JSON report for PHP_CodeSniffer.
  *
  * @author    Jeffrey Fisher <jeffslofish@gmail.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Reports;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Files\File;
 
 class Json implements Report
 {
+
+
     /**
      * Generate a partial report for a single processed file.
      *
@@ -30,13 +31,13 @@ class Json implements Report
      *
      * @return bool
      */
-    public function generateFileReport($report, File $phpcsFile, $showSources = false, $width = 80)
+    public function generateFileReport($report, File $phpcsFile, $showSources=false, $width=80)
     {
         $filename = str_replace('\\', '\\\\', $report['filename']);
         $filename = str_replace('"', '\"', $filename);
         $filename = str_replace('/', '\/', $filename);
-        echo '"' . $filename . '":{';
-        echo '"errors":' . $report['errors'] . ',"warnings":' . $report['warnings'] . ',"messages":[';
+        echo '"'.$filename.'":{';
+        echo '"errors":'.$report['errors'].',"warnings":'.$report['warnings'].',"messages":[';
 
         $messages = '';
         foreach ($report['messages'] as $line => $lineErrors) {
@@ -56,7 +57,7 @@ class Json implements Report
                     $messagesObject->column  = $column;
                     $messagesObject->fixable = $fixable;
 
-                    $messages .= json_encode($messagesObject) . ",";
+                    $messages .= json_encode($messagesObject).",";
                 }
             }
         }//end foreach
@@ -65,6 +66,7 @@ class Json implements Report
         echo ']},';
 
         return true;
+
     }//end generateFileReport()
 
 
@@ -90,13 +92,16 @@ class Json implements Report
         $totalErrors,
         $totalWarnings,
         $totalFixable,
-        $showSources = false,
-        $width = 80,
-        $interactive = false,
-        $toScreen = true
+        $showSources=false,
+        $width=80,
+        $interactive=false,
+        $toScreen=true
     ) {
-        echo '{"totals":{"errors":' . $totalErrors . ',"warnings":' . $totalWarnings . ',"fixable":' . $totalFixable . '},"files":{';
+        echo '{"totals":{"errors":'.$totalErrors.',"warnings":'.$totalWarnings.',"fixable":'.$totalFixable.'},"files":{';
         echo rtrim($cachedData, ',');
-        echo "}}" . PHP_EOL;
+        echo "}}".PHP_EOL;
+
     }//end generate()
+
+
 }//end class

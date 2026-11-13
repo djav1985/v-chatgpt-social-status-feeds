@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that all uses of true, false and null are lowercase.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
@@ -16,6 +15,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class LowerCaseConstantSniff implements Sniff
 {
+
     /**
      * A list of tokenizers this sniff supports.
      *
@@ -89,6 +89,7 @@ class LowerCaseConstantSniff implements Sniff
         $targets[] = T_CONST;
 
         return $targets;
+
     }//end register()
 
 
@@ -134,8 +135,7 @@ class LowerCaseConstantSniff implements Sniff
          * declarations, in which case, it is correct to skip over them.
          */
 
-        if (
-            isset(Tokens::$scopeModifiers[$tokens[$stackPtr]['code']]) === true
+        if (isset(Tokens::$scopeModifiers[$tokens[$stackPtr]['code']]) === true
             || $tokens[$stackPtr]['code'] === T_VAR
             || $tokens[$stackPtr]['code'] === T_STATIC
             || $tokens[$stackPtr]['code'] === T_READONLY
@@ -153,8 +153,7 @@ class LowerCaseConstantSniff implements Sniff
         }
 
         // Handle function declarations separately as they may contain the keywords in type declarations.
-        if (
-            $tokens[$stackPtr]['code'] === T_FUNCTION
+        if ($tokens[$stackPtr]['code'] === T_FUNCTION
             || $tokens[$stackPtr]['code'] === T_CLOSURE
             || $tokens[$stackPtr]['code'] === T_FN
         ) {
@@ -205,6 +204,7 @@ class LowerCaseConstantSniff implements Sniff
 
         // Handle everything else.
         $this->processConstant($phpcsFile, $stackPtr);
+
     }//end process()
 
 
@@ -243,5 +243,8 @@ class LowerCaseConstantSniff implements Sniff
         } else {
             $phpcsFile->recordMetric($stackPtr, 'PHP constant case', 'lower');
         }
+
     }//end processConstant()
+
+
 }//end class

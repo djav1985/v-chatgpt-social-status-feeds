@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Ensures each statement is on a line by itself.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DisallowMultipleStatementsSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -23,6 +24,7 @@ class DisallowMultipleStatementsSniff implements Sniff
     public function register()
     {
         return [T_SEMICOLON];
+
     }//end register()
 
 
@@ -43,8 +45,7 @@ class DisallowMultipleStatementsSniff implements Sniff
 
         do {
             $prev = $phpcsFile->findPrevious([T_SEMICOLON, T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_PHPCS_IGNORE], ($prev - 1));
-            if (
-                $prev === false
+            if ($prev === false
                 || $tokens[$prev]['code'] === T_OPEN_TAG
                 || $tokens[$prev]['code'] === T_OPEN_TAG_WITH_ECHO
             ) {
@@ -97,5 +98,8 @@ class DisallowMultipleStatementsSniff implements Sniff
         } else {
             $phpcsFile->recordMetric($stackPtr, 'Multiple statements on same line', 'no');
         }//end if
+
     }//end process()
+
+
 }//end class

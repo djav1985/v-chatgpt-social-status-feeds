@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that all file names are lowercased.
  *
  * @author    Andy Grunwald <andygrunwald@gmail.com>
  * @copyright 2010-2014 Andy Grunwald
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Files;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class LowercasedFilenameSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -26,6 +27,7 @@ class LowercasedFilenameSniff implements Sniff
             T_OPEN_TAG,
             T_OPEN_TAG_WITH_ECHO,
         ];
+
     }//end register()
 
 
@@ -61,5 +63,8 @@ class LowercasedFilenameSniff implements Sniff
 
         // Ignore the rest of the file.
         return $phpcsFile->numTokens;
+
     }//end process()
+
+
 }//end class

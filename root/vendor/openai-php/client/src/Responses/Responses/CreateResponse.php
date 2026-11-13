@@ -106,8 +106,7 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
         public readonly ?string $verbosity,
         public readonly array $metadata,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  CreateResponseType  $attributes

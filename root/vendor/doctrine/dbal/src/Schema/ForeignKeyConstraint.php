@@ -187,15 +187,6 @@ class ForeignKeyConstraint extends AbstractOptionallyNamedObject
         return Parsers::getUnqualifiedNameParser();
     }
 
-    public function getObjectName(): ?UnqualifiedName
-    {
-        if (! $this->isNameInitialized) {
-            throw InvalidState::objectNameNotInitialized();
-        }
-
-        return $this->name;
-    }
-
     /**
      * Returns the names of the referencing table columns the foreign key constraint is associated with.
      *
@@ -610,8 +601,10 @@ class ForeignKeyConstraint extends AbstractOptionallyNamedObject
 
     private function parseReferencedTableName(string $referencedTableName): ?OptionallyQualifiedName
     {
+        $parser = Parsers::getOptionallyQualifiedNameParser();
+
         try {
-            return Parsers::parseOptionallyQualifiedName($referencedTableName);
+            return $parser->parse($referencedTableName);
         } catch (Throwable $e) {
             Deprecation::trigger(
                 'doctrine/dbal',
@@ -631,9 +624,11 @@ class ForeignKeyConstraint extends AbstractOptionallyNamedObject
      */
     private function parseColumnNames(array $columnNames): array
     {
+        $parser = Parsers::getUnqualifiedNameParser();
+
         try {
             return array_map(
-                static fn (string $columnName) => Parsers::parseUnqualifiedName($columnName),
+                static fn (string $columnName) => $parser->parse($columnName),
                 $columnNames,
             );
         } catch (Throwable $e) {

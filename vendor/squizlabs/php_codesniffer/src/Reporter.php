@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Manages reporting of errors and warnings.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer;
@@ -18,6 +17,7 @@ use PHP_CodeSniffer\Util\Common;
 
 class Reporter
 {
+
     /**
      * The config data for the run.
      *
@@ -77,7 +77,7 @@ class Reporter
     /**
      * A cache of opened temporary files.
      *
-     * @var array
+     * @var array<string, string>
      */
     private $tmpFiles = [];
 
@@ -109,15 +109,15 @@ class Reporter
                 // This is a path to a custom report class.
                 $filename = realpath($type);
                 if ($filename === false) {
-                    $error = "ERROR: Custom report \"$type\" not found" . PHP_EOL;
+                    $error = "ERROR: Custom report \"$type\" not found".PHP_EOL;
                     throw new DeepExitException($error, 3);
                 }
 
                 $reportClassName = Autoload::loadFile($filename);
-            } elseif (class_exists('PHP_CodeSniffer\Reports\\' . ucfirst($type)) === true) {
+            } else if (class_exists('PHP_CodeSniffer\Reports\\'.ucfirst($type)) === true) {
                 // PHPCS native report.
-                $reportClassName = 'PHP_CodeSniffer\Reports\\' . ucfirst($type);
-            } elseif (class_exists($type) === true) {
+                $reportClassName = 'PHP_CodeSniffer\Reports\\'.ucfirst($type);
+            } else if (class_exists($type) === true) {
                 // FQN of a custom report.
                 $reportClassName = $type;
             } else {
@@ -130,21 +130,21 @@ class Reporter
                         continue;
                     }
 
-                    if (class_exists($nsPrefix . '\\' . $trimmedType) === true) {
-                        $reportClassName = $nsPrefix . '\\' . $trimmedType;
+                    if (class_exists($nsPrefix.'\\'.$trimmedType) === true) {
+                        $reportClassName = $nsPrefix.'\\'.$trimmedType;
                         break;
                     }
                 }
             }//end if
 
             if ($reportClassName === '') {
-                $error = "ERROR: Class file for report \"$type\" not found" . PHP_EOL;
+                $error = "ERROR: Class file for report \"$type\" not found".PHP_EOL;
                 throw new DeepExitException($error, 3);
             }
 
             $reportClass = new $reportClassName();
             if (($reportClass instanceof Report) === false) {
-                throw new RuntimeException('Class "' . $reportClassName . '" must implement the "PHP_CodeSniffer\Report" interface.');
+                throw new RuntimeException('Class "'.$reportClassName.'" must implement the "PHP_CodeSniffer\Report" interface.');
             }
 
             $this->reports[$type] = [
@@ -162,6 +162,7 @@ class Reporter
                 file_put_contents($output, '');
             }
         }//end foreach
+
     }//end __construct()
 
 
@@ -185,6 +186,7 @@ class Reporter
         }
 
         return $toScreen;
+
     }//end printReports()
 
 
@@ -242,7 +244,7 @@ class Reporter
                 echo $generatedReport;
             }
 
-            file_put_contents($reportFile, $generatedReport . PHP_EOL);
+            file_put_contents($reportFile, $generatedReport.PHP_EOL);
         } else {
             echo $generatedReport;
             if ($filename !== null && file_exists($filename) === true) {
@@ -250,6 +252,7 @@ class Reporter
                 unset($this->tmpFiles[$report]);
             }
         }
+
     }//end printReport()
 
 
@@ -317,6 +320,7 @@ class Reporter
                 $this->totalFixable += $reportData['fixable'];
             }
         }
+
     }//end cacheFileReport()
 
 
@@ -434,5 +438,8 @@ class Reporter
         ksort($errors);
         $report['messages'] = $errors;
         return $report;
+
     }//end prepareFileReport()
+
+
 }//end class

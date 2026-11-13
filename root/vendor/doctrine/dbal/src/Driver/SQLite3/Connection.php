@@ -72,17 +72,29 @@ final class Connection implements ConnectionInterface
 
     public function beginTransaction(): void
     {
-        $this->exec('BEGIN');
+        try {
+            $this->connection->exec('BEGIN');
+        } catch (\Exception $e) {
+            throw Exception::new($e);
+        }
     }
 
     public function commit(): void
     {
-        $this->exec('COMMIT');
+        try {
+            $this->connection->exec('COMMIT');
+        } catch (\Exception $e) {
+            throw Exception::new($e);
+        }
     }
 
     public function rollBack(): void
     {
-        $this->exec('ROLLBACK');
+        try {
+            $this->connection->exec('ROLLBACK');
+        } catch (\Exception $e) {
+            throw Exception::new($e);
+        }
     }
 
     public function getNativeConnection(): SQLite3

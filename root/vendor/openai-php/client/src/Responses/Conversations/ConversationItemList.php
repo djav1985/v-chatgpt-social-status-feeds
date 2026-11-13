@@ -40,8 +40,7 @@ final class ConversationItemList implements ResponseContract, ResponseHasMetaInf
         public readonly ?string $lastId,
         public readonly bool $hasMore,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ConversationItemListType  $attributes

@@ -277,9 +277,11 @@ class Connection implements ServerVersionProvider
         $this->autoCommit = $autoCommit;
 
         // Commit all currently active transactions if any when switching auto-commit mode.
-        if ($this->_conn !== null && $this->transactionNestingLevel !== 0) {
-            $this->commitAll();
+        if ($this->_conn === null || $this->transactionNestingLevel === 0) {
+            return;
         }
+
+        $this->commitAll();
     }
 
     /**
@@ -830,6 +832,7 @@ class Connection implements ServerVersionProvider
 
         [$cacheKey, $realKey] = $qcp->generateCacheKeys($sql, $params, $types, $connectionParams);
 
+        // @phpstan-ignore missingType.checkedException
         $item = $resultCache->getItem($cacheKey);
 
         if ($item->isHit()) {
@@ -1096,9 +1099,11 @@ class Connection implements ServerVersionProvider
             --$this->transactionNestingLevel;
         }
 
-        if ($this->autoCommit === false && $this->transactionNestingLevel === 0) {
-            $this->beginTransaction();
+        if ($this->autoCommit !== false || $this->transactionNestingLevel !== 0) {
+            return;
         }
+
+        $this->beginTransaction();
     }
 
     /**
@@ -1183,9 +1188,11 @@ class Connection implements ServerVersionProvider
             throw SavepointsNotSupported::new();
         }
 
-        if ($platform->supportsReleaseSavepoints()) {
-            $this->executeStatement($platform->releaseSavePoint($savepoint));
+        if (! $platform->supportsReleaseSavepoints()) {
+            return;
         }
+
+        $this->executeStatement($platform->releaseSavePoint($savepoint));
     }
 
     /**

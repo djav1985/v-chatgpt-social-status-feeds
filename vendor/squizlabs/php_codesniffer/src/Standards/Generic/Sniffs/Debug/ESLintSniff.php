@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Runs eslint on the file.
  *
  * @author    Ryan McCue <ryan+gh@hmn.md>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  *
  * @deprecated 3.9.0
  */
@@ -20,6 +19,7 @@ use PHP_CodeSniffer\Util\Common;
 
 class ESLintSniff implements Sniff, DeprecatedSniff
 {
+
     /**
      * A list of tokenizers this sniff supports.
      *
@@ -43,6 +43,7 @@ class ESLintSniff implements Sniff, DeprecatedSniff
     public function register()
     {
         return [T_OPEN_TAG];
+
     }//end register()
 
 
@@ -76,10 +77,10 @@ class ESLintSniff implements Sniff, DeprecatedSniff
 
         $eslintOptions = ['--format json'];
         if (empty($configFile) === false) {
-            $eslintOptions[] = '--config ' . escapeshellarg($configFile);
+            $eslintOptions[] = '--config '.escapeshellarg($configFile);
         }
 
-        $cmd = Common::escapeshellcmd(escapeshellarg($eslintPath) . ' ' . implode(' ', $eslintOptions) . ' ' . escapeshellarg($filename));
+        $cmd = Common::escapeshellcmd(escapeshellarg($eslintPath).' '.implode(' ', $eslintOptions).' '.escapeshellarg($filename));
 
         // Execute!
         exec($cmd, $stdout, $code);
@@ -98,7 +99,7 @@ class ESLintSniff implements Sniff, DeprecatedSniff
         // Data is a list of files, but we only pass a single one.
         $messages = $data[0]->messages;
         foreach ($messages as $error) {
-            $message = 'eslint says: ' . $error->message;
+            $message = 'eslint says: '.$error->message;
             if (empty($error->fatal) === false || $error->severity === 2) {
                 $phpcsFile->addErrorOnLine($message, $error->line, 'ExternalTool');
             } else {
@@ -108,6 +109,7 @@ class ESLintSniff implements Sniff, DeprecatedSniff
 
         // Ignore the rest of the file.
         return $phpcsFile->numTokens;
+
     }//end process()
 
 
@@ -119,6 +121,7 @@ class ESLintSniff implements Sniff, DeprecatedSniff
     public function getDeprecationVersion()
     {
         return 'v3.9.0';
+
     }//end getDeprecationVersion()
 
 
@@ -130,6 +133,7 @@ class ESLintSniff implements Sniff, DeprecatedSniff
     public function getRemovalVersion()
     {
         return 'v4.0.0';
+
     }//end getRemovalVersion()
 
 
@@ -141,5 +145,8 @@ class ESLintSniff implements Sniff, DeprecatedSniff
     public function getDeprecationMessage()
     {
         return 'Support for scanning JavaScript files will be removed completely in v4.0.0.';
+
     }//end getDeprecationMessage()
+
+
 }//end class

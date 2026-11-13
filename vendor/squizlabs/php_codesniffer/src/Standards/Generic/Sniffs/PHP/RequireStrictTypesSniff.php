@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that the strict_types has been declared.
  *
  * @author    Sertan Danis <sdanis@squiz.net>
  * @copyright 2006-2019 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
@@ -16,6 +15,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class RequireStrictTypesSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -24,6 +25,7 @@ class RequireStrictTypesSniff implements Sniff
     public function register()
     {
         return [T_OPEN_TAG];
+
     }//end register()
 
 
@@ -59,8 +61,7 @@ class RequireStrictTypesSniff implements Sniff
                     true
                 );
 
-                if (
-                    $next !== false
+                if ($next !== false
                     && $tokens[$next]['code'] === T_STRING
                     && strtolower($tokens[$next]['content']) === 'strict_types'
                 ) {
@@ -85,8 +86,7 @@ class RequireStrictTypesSniff implements Sniff
         $skip[]   = T_EQUAL;
         $valuePtr = $phpcsFile->findNext($skip, ($next + 1), null, true);
 
-        if (
-            $valuePtr !== false
+        if ($valuePtr !== false
             && $tokens[$valuePtr]['code'] === T_LNUMBER
             && $tokens[$valuePtr]['content'] === '0'
         ) {
@@ -101,5 +101,8 @@ class RequireStrictTypesSniff implements Sniff
         // Skip the rest of the file so we don't pick up additional
         // open tags, typically embedded in HTML.
         return $phpcsFile->numTokens;
+
     }//end process()
+
+
 }//end class

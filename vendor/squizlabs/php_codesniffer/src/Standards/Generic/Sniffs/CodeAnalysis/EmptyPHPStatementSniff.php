@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Checks against empty PHP statements.
  *
@@ -8,7 +7,7 @@
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2017 Juliette Reinders Folmer. All rights reserved.
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis;
@@ -19,6 +18,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class EmptyPHPStatementSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -30,6 +31,7 @@ class EmptyPHPStatementSniff implements Sniff
             T_SEMICOLON,
             T_CLOSE_TAG,
         ];
+
     }//end register()
 
 
@@ -51,6 +53,7 @@ class EmptyPHPStatementSniff implements Sniff
         } else {
             $this->processCloseTag($phpcsFile, $stackPtr);
         }
+
     }//end process()
 
 
@@ -68,8 +71,7 @@ class EmptyPHPStatementSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
-        if (
-            $tokens[$prevNonEmpty]['code'] !== T_SEMICOLON
+        if ($tokens[$prevNonEmpty]['code'] !== T_SEMICOLON
             && $tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG
             && $tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG_WITH_ECHO
         ) {
@@ -77,8 +79,7 @@ class EmptyPHPStatementSniff implements Sniff
                 return;
             }
 
-            if (
-                $tokens[$prevNonEmpty]['scope_opener'] !== $prevNonEmpty
+            if ($tokens[$prevNonEmpty]['scope_opener'] !== $prevNonEmpty
                 && $tokens[$prevNonEmpty]['code'] !== T_CLOSE_CURLY_BRACKET
             ) {
                 return;
@@ -95,8 +96,7 @@ class EmptyPHPStatementSniff implements Sniff
         if (isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
             $nested     = $tokens[$stackPtr]['nested_parenthesis'];
             $lastCloser = array_pop($nested);
-            if (
-                isset($tokens[$lastCloser]['parenthesis_owner']) === true
+            if (isset($tokens[$lastCloser]['parenthesis_owner']) === true
                 && $tokens[$tokens[$lastCloser]['parenthesis_owner']]['code'] === T_FOR
             ) {
                 // Empty for() condition.
@@ -113,8 +113,7 @@ class EmptyPHPStatementSniff implements Sniff
         if ($fix === true) {
             $phpcsFile->fixer->beginChangeset();
 
-            if (
-                $tokens[$prevNonEmpty]['code'] === T_OPEN_TAG
+            if ($tokens[$prevNonEmpty]['code'] === T_OPEN_TAG
                 || $tokens[$prevNonEmpty]['code'] === T_OPEN_TAG_WITH_ECHO
             ) {
                 // Check for superfluous whitespace after the semicolon which should be
@@ -127,8 +126,7 @@ class EmptyPHPStatementSniff implements Sniff
             }
 
             for ($i = $stackPtr; $i > $prevNonEmpty; $i--) {
-                if (
-                    $tokens[$i]['code'] !== T_SEMICOLON
+                if ($tokens[$i]['code'] !== T_SEMICOLON
                     && $tokens[$i]['code'] !== T_WHITESPACE
                 ) {
                     break;
@@ -139,6 +137,7 @@ class EmptyPHPStatementSniff implements Sniff
 
             $phpcsFile->fixer->endChangeset();
         }//end if
+
     }//end processSemicolon()
 
 
@@ -156,8 +155,7 @@ class EmptyPHPStatementSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         $prevNonEmpty = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        if (
-            $tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG
+        if ($tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG
             && $tokens[$prevNonEmpty]['code'] !== T_OPEN_TAG_WITH_ECHO
         ) {
             return;
@@ -178,5 +176,8 @@ class EmptyPHPStatementSniff implements Sniff
 
             $phpcsFile->fixer->endChangeset();
         }
+
     }//end processCloseTag()
+
+
 }//end class

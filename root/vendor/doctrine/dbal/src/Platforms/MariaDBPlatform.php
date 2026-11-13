@@ -69,9 +69,11 @@ class MariaDBPlatform extends AbstractMySQLPlatform
         $modifiedForeignKeys = $diff->getModifiedForeignKeys();
 
         foreach ($this->getRemainingForeignKeyConstraintsRequiringRenamedIndexes($diff) as $foreignKey) {
-            if (! in_array($foreignKey, $modifiedForeignKeys, true)) {
-                $sql[] = $this->getDropForeignKeySQL($foreignKey->getQuotedName($this), $tableName);
+            if (in_array($foreignKey, $modifiedForeignKeys, true)) {
+                continue;
             }
+
+            $sql[] = $this->getDropForeignKeySQL($foreignKey->getQuotedName($this), $tableName);
         }
 
         return $sql;
@@ -98,9 +100,11 @@ class MariaDBPlatform extends AbstractMySQLPlatform
         $modifiedForeignKeys = $diff->getModifiedForeignKeys();
 
         foreach ($this->getRemainingForeignKeyConstraintsRequiringRenamedIndexes($diff) as $foreignKey) {
-            if (! in_array($foreignKey, $modifiedForeignKeys, true)) {
-                $sql[] = $this->getCreateForeignKeySQL($foreignKey, $tableName);
+            if (in_array($foreignKey, $modifiedForeignKeys, true)) {
+                continue;
             }
+
+            $sql[] = $this->getCreateForeignKeySQL($foreignKey, $tableName);
         }
 
         return $sql;
@@ -149,10 +153,7 @@ class MariaDBPlatform extends AbstractMySQLPlatform
     {
         // MariaDb forces column collation to utf8mb4_bin where the column was declared as JSON so ignore
         // collation and character set for json columns as attempting to set them can cause an error.
-        if (
-            $this->getJsonTypeDeclarationSQL([]) === 'JSON'
-            && $this->getColumnTypeOrNull($column) instanceof JsonType
-        ) {
+        if ($this->getJsonTypeDeclarationSQL([]) === 'JSON' && ($column['type'] ?? null) instanceof JsonType) {
             unset($column['collation']);
             unset($column['charset']);
         }

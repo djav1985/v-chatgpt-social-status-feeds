@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that calls to methods and functions are spaced correctly.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Functions;
@@ -16,6 +15,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class FunctionCallArgumentSpacingSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -34,6 +35,7 @@ class FunctionCallArgumentSpacingSniff implements Sniff
             T_CLOSE_CURLY_BRACKET,
             T_CLOSE_PARENTHESIS,
         ];
+
     }//end register()
 
 
@@ -63,8 +65,7 @@ class FunctionCallArgumentSpacingSniff implements Sniff
             return;
         }
 
-        if (
-            $tokens[$stackPtr]['code'] === T_CLOSE_CURLY_BRACKET
+        if ($tokens[$stackPtr]['code'] === T_CLOSE_CURLY_BRACKET
             && isset($tokens[$stackPtr]['scope_condition']) === true
         ) {
             // Not a function call.
@@ -83,6 +84,7 @@ class FunctionCallArgumentSpacingSniff implements Sniff
         }
 
         $this->checkSpacing($phpcsFile, $stackPtr, $openBracket);
+
     }//end process()
 
 
@@ -114,20 +116,19 @@ class FunctionCallArgumentSpacingSniff implements Sniff
         ];
 
         while (($nextSeparator = $phpcsFile->findNext($find, ($nextSeparator + 1), $closeBracket)) !== false) {
-            if (
-                $tokens[$nextSeparator]['code'] === T_CLOSURE
+            if ($tokens[$nextSeparator]['code'] === T_CLOSURE
                 || $tokens[$nextSeparator]['code'] === T_ANON_CLASS
                 || $tokens[$nextSeparator]['code'] === T_MATCH
             ) {
                 // Skip closures, anon class declarations and match control structures.
                 $nextSeparator = $tokens[$nextSeparator]['scope_closer'];
                 continue;
-            } elseif ($tokens[$nextSeparator]['code'] === T_FN) {
+            } else if ($tokens[$nextSeparator]['code'] === T_FN) {
                 // Skip arrow functions, but don't skip the arrow function closer as it is likely to
                 // be the comma separating it from the next function call argument (or the parenthesis closer).
                 $nextSeparator = ($tokens[$nextSeparator]['scope_closer'] - 1);
                 continue;
-            } elseif ($tokens[$nextSeparator]['code'] === T_OPEN_SHORT_ARRAY) {
+            } else if ($tokens[$nextSeparator]['code'] === T_OPEN_SHORT_ARRAY) {
                 // Skips arrays using short notation.
                 $nextSeparator = $tokens[$nextSeparator]['bracket_closer'];
                 continue;
@@ -189,5 +190,8 @@ class FunctionCallArgumentSpacingSniff implements Sniff
                 }//end if
             }//end if
         }//end while
+
     }//end checkSpacing()
+
+
 }//end class

@@ -76,24 +76,6 @@ final class IndexEditor
         return $this;
     }
 
-    /**
-     * @param non-empty-string $name
-     * @param ?positive-int    $length
-     */
-    public function addUnquotedColumnName(string $name, ?int $length = null): self
-    {
-        return $this->addColumn(new IndexedColumn(UnqualifiedName::unquoted($name), $length));
-    }
-
-    /**
-     * @param non-empty-string $name
-     * @param ?positive-int    $length
-     */
-    public function addQuotedColumnName(string $name, ?int $length = null): self
-    {
-        return $this->addColumn(new IndexedColumn(UnqualifiedName::quoted($name), $length));
-    }
-
     public function setColumnNames(UnqualifiedName $firstColumnName, UnqualifiedName ...$otherColumnNames): self
     {
         $this->columns = array_map(
@@ -157,66 +139,23 @@ final class IndexEditor
             throw InvalidIndexDefinition::nameNotSet();
         }
 
-        [$columnNames, $flags, $options] = $this->toIndexParameters($this->name);
-
-        return new Index(
-            $this->name->toString(),
-            $columnNames,
-            $this->type === IndexType::UNIQUE,
-            false,
-            $flags,
-            $options,
-        );
-    }
-
-    /**
-     * Adds the index described by this editor to the given table, generating its name from the table when no name is
-     * set.
-     *
-     * @internal Used by {@link TableEditor} to add an editor-described index to a table.
-     */
-    public function addToTable(Table $table): void
-    {
-        [$columnNames, $flags, $options] = $this->toIndexParameters($this->name ?? UnqualifiedName::unquoted('index'));
-
-        $indexName = $this->name?->toString();
-
-        if ($this->type === IndexType::UNIQUE) {
-            $table->addUniqueIndex($columnNames, $indexName, $options);
-
-            return;
-        }
-
-        $table->addIndex($columnNames, $indexName, $flags, $options);
-    }
-
-    /**
-     * Maps the editor's columns, flags, and options to the arguments the {@see Index} constructor and the
-     * {@see Table} index methods expect.
-     *
-     * @return array{non-empty-list<string>, list<string>, array<string, mixed>} the column names, flags, and options
-     */
-    private function toIndexParameters(UnqualifiedName $name): array
-    {
         if (count($this->columns) < 1) {
-            throw InvalidIndexDefinition::columnsNotSet($name);
+            throw InvalidIndexDefinition::columnsNotSet($this->name);
         }
 
         $columnNames = $lengths = $options = $flags = [];
-        $hasLength   = false;
-
-        foreach ($this->columns as $column) {
+        foreach ($this->columns as $i => $column) {
             $columnNames[] = $column->getColumnName()->toString();
 
-            $length    = $column->getLength();
-            $lengths[] = $length;
-
-            if ($length !== null) {
-                $hasLength = true;
+            $length = $column->getLength();
+            if ($length === null) {
+                continue;
             }
+
+            $lengths[$i] = $column->getLength();
         }
 
-        if ($hasLength) {
+        if (count($lengths) !== 0) {
             $options['lengths'] = $lengths;
         }
 
@@ -234,6 +173,13 @@ final class IndexEditor
             $options['where'] = $this->predicate;
         }
 
-        return [$columnNames, $flags, $options];
+        return new Index(
+            $this->name->toString(),
+            $columnNames,
+            $this->type === IndexType::UNIQUE,
+            false,
+            $flags,
+            $options,
+        );
     }
 }

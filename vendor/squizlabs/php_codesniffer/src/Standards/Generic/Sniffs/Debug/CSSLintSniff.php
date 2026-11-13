@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Runs csslint on the file.
  *
  * @author    Roman Levishchenko <index.0h@gmail.com>
  * @copyright 2013-2014 Roman Levishchenko
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  *
  * @deprecated 3.9.0
  */
@@ -20,6 +19,7 @@ use PHP_CodeSniffer\Util\Common;
 
 class CSSLintSniff implements Sniff, DeprecatedSniff
 {
+
     /**
      * A list of tokenizers this sniff supports.
      *
@@ -36,6 +36,7 @@ class CSSLintSniff implements Sniff, DeprecatedSniff
     public function register()
     {
         return [T_OPEN_TAG];
+
     }//end register()
 
 
@@ -57,7 +58,7 @@ class CSSLintSniff implements Sniff, DeprecatedSniff
 
         $fileName = $phpcsFile->getFilename();
 
-        $cmd = Common::escapeshellcmd($csslintPath) . ' ' . escapeshellarg($fileName) . ' 2>&1';
+        $cmd = Common::escapeshellcmd($csslintPath).' '.escapeshellarg($fileName).' 2>&1';
         exec($cmd, $output, $retval);
 
         if (is_array($output) === false) {
@@ -79,7 +80,7 @@ class CSSLintSniff implements Sniff, DeprecatedSniff
             }
 
             $line    = (int) $matches[2];
-            $message = 'csslint says: ' . $output[($i + 1)];
+            $message = 'csslint says: '.$output[($i + 1)];
             // First line is message with error line and error code.
             // Second is error message.
             // Third is wrong line in file.
@@ -91,6 +92,7 @@ class CSSLintSniff implements Sniff, DeprecatedSniff
 
         // Ignore the rest of the file.
         return $phpcsFile->numTokens;
+
     }//end process()
 
 
@@ -102,6 +104,7 @@ class CSSLintSniff implements Sniff, DeprecatedSniff
     public function getDeprecationVersion()
     {
         return 'v3.9.0';
+
     }//end getDeprecationVersion()
 
 
@@ -113,6 +116,7 @@ class CSSLintSniff implements Sniff, DeprecatedSniff
     public function getRemovalVersion()
     {
         return 'v4.0.0';
+
     }//end getRemovalVersion()
 
 
@@ -124,5 +128,8 @@ class CSSLintSniff implements Sniff, DeprecatedSniff
     public function getDeprecationMessage()
     {
         return 'Support for scanning CSS files will be removed completely in v4.0.0.';
+
     }//end getDeprecationMessage()
+
+
 }//end class

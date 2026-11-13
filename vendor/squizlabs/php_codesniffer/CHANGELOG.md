@@ -6,6 +6,57 @@ The file documents changes to the PHP_CodeSniffer project.
 
 _Nothing yet._
 
+
+## [3.13.6] - 2026-08-06
+
+**This is a security release and all users are advised to update their install(s) as soon as possible.**
+
+### Changed
+- Various housekeeping, including improvements to the tests and documentation.
+    - Thanks to [Sergei Morozov][@morozov] and [Juliette Reinders Folmer][@jrfnl] for their contributions.
+
+### Fixed
+- **SECURITY FIX**: Running PHP_CodeSniffer over untrusted files, for example, in a CI pipeline that scans pull requests, or on a developer machine reviewing third-party code, could result in attacker-controlled shell commands being executed when the `Gitblame`, `Hgblame` or `Svnblame` report(s) would process a file whose name contains shell metacharacters. [#1473]
+    - Users using the default `Full` report, or any of the other non-*blame reports, are not affected.
+    - For more details, see the [security advisory][sec-1].
+    - Thanks go to [Faze-up][@Faze-up] and [Volker Dusch][@edorian] for responsibly disclosing the vulnerability.
+    - Additionally, thanks go to [Volker Dusch][@edorian], [Rodrigo Primo][@rodrigoprimo], [Dan Wallis][@fredden] and [Juliette Reinders Folmer][@jrfnl] for creating and testing the fix.
+
+### Other
+- The GPG signature for the PHAR files has been rotated. The new fingerprint is: 5CB4F778BF9BC4FB67AE511D96E91A992CF22FF4.
+
+[sec-1]: https://github.com/PHPCSStandards/PHP_CodeSniffer/security/advisories/GHSA-hmqg-cxww-wqhq
+
+[#1473]: https://github.com/PHPCSStandards/PHP_CodeSniffer/pull/1473
+
+
+## [3.13.5] - 2025-11-04
+
+### Added
+- Runtime support for PHP 8.5. All known PHP 8.5 deprecation notices have been fixed.
+    - Syntax support for new PHP 8.5 features will follow in a future release.
+    - If you find any PHP 8.5 deprecation notices which were missed, please report them.
+
+### Changed
+- Various housekeeping, including improvements to the tests and documentation.
+    - Thanks to [Rodrigo Primo][@rodrigoprimo] and [Juliette Reinders Folmer][@jrfnl] for their contributions.
+
+### Fixed
+- Fixed bug [#1216]: Tokenizer/PHP: added more defensive coding to prevent PHP 8.5 "Using null as an array offset" deprecation notices.
+    - Thanks to [Andrew Lyons][@andrewnicols] for the patch.
+- Fixed bug [#1279]: Tokenizer/PHP: on PHP < 8.0, an unclosed attribute (parse error) could end up removing some tokens from the token stream.
+    - This could lead to false positives and false negative from sniffs, but could also lead to incorrect fixes being made mangling the file under scan.
+    - Thanks to [Juliette Reinders Folmer](https://github.com/jrfnl) for the patch.
+
+### Other
+- Please be aware that the `master` branch has been renamed to `3.x` and the default branch has changed to the `4.x` branch.
+    - If you contribute to PHP_CodeSniffer, you will need to update your local git clone.
+    - If you develop against PHP_CodeSniffer and run your tests against dev branches of PHPCS, you will need to update your workflows.
+
+[#1216]: https://github.com/PHPCSStandards/PHP_CodeSniffer/issues/1216
+[#1279]: https://github.com/PHPCSStandards/PHP_CodeSniffer/issues/1279
+
+
 ## [3.13.4] - 2025-09-05
 
 ### Fixed
@@ -7743,7 +7794,9 @@ Additionally, thanks to [Alexander Turek][@derrabus] for consulting on the repo 
 === Link list for release links ====
 -->
 
-[Unreleased]: https://github.com/PHPCSStandards/PHP_CodeSniffer/compare/master...HEAD
+[Unreleased]: https://github.com/PHPCSStandards/PHP_CodeSniffer/compare/3.13.6...3.x
+[3.13.6]:     https://github.com/PHPCSStandards/PHP_CodeSniffer/compare/3.13.5...3.13.6
+[3.13.5]:     https://github.com/PHPCSStandards/PHP_CodeSniffer/compare/3.13.4...3.13.5
 [3.13.4]:     https://github.com/PHPCSStandards/PHP_CodeSniffer/compare/3.13.3...3.13.4
 [3.13.3]:     https://github.com/PHPCSStandards/PHP_CodeSniffer/compare/3.13.2...3.13.3
 [3.13.2]:     https://github.com/PHPCSStandards/PHP_CodeSniffer/compare/3.13.1...3.13.2
@@ -7871,6 +7924,7 @@ Additionally, thanks to [Alexander Turek][@derrabus] for consulting on the repo 
 [@anbuc]:               https://github.com/anbuc
 [@andrei-propertyguru]: https://github.com/andrei-propertyguru
 [@AndrewDawes]:         https://github.com/AndrewDawes
+[@andrewnicols]:        https://github.com/andrewnicols
 [@andygrunwald]:        https://github.com/andygrunwald
 [@andypost]:            https://github.com/andypost
 [@annechko]:            https://github.com/annechko
@@ -7933,6 +7987,7 @@ Additionally, thanks to [Alexander Turek][@derrabus] for consulting on the repo 
 [@exussum12]:           https://github.com/exussum12
 [@fabacino]:            https://github.com/fabacino
 [@fabre-thibaud]:       https://github.com/fabre-thibaud
+[@Faze-up]:             https://github.com/Faze-up
 [@fcool]:               https://github.com/fcool
 [@filips123]:           https://github.com/filips123
 [@Fischer-Bjoern]:      https://github.com/Fischer-Bjoern

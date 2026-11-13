@@ -21,8 +21,7 @@ final class MetaInformation implements MetaInformationContract
         public readonly ?MetaInformationRateLimit $requestLimit,
         public readonly ?MetaInformationRateLimit $tokenLimit,
         public readonly MetaInformationCustom $custom,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<string, array<int, string>>  $headers

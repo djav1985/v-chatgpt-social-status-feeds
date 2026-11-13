@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checkstyle report for PHP_CodeSniffer.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Reports;
@@ -16,6 +15,8 @@ use XMLWriter;
 
 class Checkstyle implements Report
 {
+
+
     /**
      * Generate a partial report for a single processed file.
      *
@@ -31,9 +32,9 @@ class Checkstyle implements Report
      *
      * @return bool
      */
-    public function generateFileReport($report, File $phpcsFile, $showSources = false, $width = 80)
+    public function generateFileReport($report, File $phpcsFile, $showSources=false, $width=80)
     {
-        $out = new XMLWriter();
+        $out = new XMLWriter;
         $out->openMemory();
         $out->setIndent(true);
 
@@ -68,6 +69,7 @@ class Checkstyle implements Report
         echo $out->flush();
 
         return true;
+
     }//end generateFileReport()
 
 
@@ -93,14 +95,17 @@ class Checkstyle implements Report
         $totalErrors,
         $totalWarnings,
         $totalFixable,
-        $showSources = false,
-        $width = 80,
-        $interactive = false,
-        $toScreen = true
+        $showSources=false,
+        $width=80,
+        $interactive=false,
+        $toScreen=true
     ) {
-        echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        echo '<checkstyle version="' . Config::VERSION . '">' . PHP_EOL;
+        echo '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
+        echo '<checkstyle version="'.Config::VERSION.'">'.PHP_EOL;
         echo $cachedData;
-        echo '</checkstyle>' . PHP_EOL;
+        echo '</checkstyle>'.PHP_EOL;
+
     }//end generate()
+
+
 }//end class

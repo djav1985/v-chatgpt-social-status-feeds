@@ -19,7 +19,6 @@ use Doctrine\DBAL\Schema\Metadata\MetadataProvider;
 use Doctrine\DBAL\Schema\Metadata\PrimaryKeyConstraintColumnRow;
 use Doctrine\DBAL\Schema\Metadata\TableColumnMetadataRow;
 use Doctrine\DBAL\Schema\Metadata\TableMetadataRow;
-use Doctrine\DBAL\Schema\Metadata\UniqueConstraintColumnMetadataRow;
 use Doctrine\DBAL\Schema\Metadata\ViewMetadataRow;
 use Doctrine\DBAL\Types\Exception\TypesException;
 use Doctrine\DBAL\Types\Types;
@@ -276,7 +275,7 @@ final readonly class Db2MetadataProvider implements MetadataProvider
                 schemaName: null,
                 tableName: $row[0],
                 indexName: $row[1],
-                type: $row[2] === 'D' ? IndexType::REGULAR : IndexType::UNIQUE,
+                type: $row[2] === 'U' ? IndexType::UNIQUE : IndexType::REGULAR,
                 isClustered: false,
                 predicate: null,
                 columnName: $row[3],
@@ -339,73 +338,6 @@ final readonly class Db2MetadataProvider implements MetadataProvider
                 constraintName: $row[1],
                 isClustered: true,
                 columnName: $row[2],
-            );
-        }
-    }
-
-    /**
-     * @return iterable<UniqueConstraintColumnMetadataRow>
-     *
-     * @throws Exception
-     */
-    public function getUniqueConstraintColumnsForAllTables(): iterable
-    {
-        return $this->getUniqueConstraintColumns(null);
-    }
-
-    /**
-     * @param ?non-empty-string $schemaName
-     * @param non-empty-string  $tableName
-     *
-     * @return iterable<UniqueConstraintColumnMetadataRow>
-     *
-     * @throws Exception
-     */
-    public function getUniqueConstraintColumnsForTable(?string $schemaName, string $tableName): iterable
-    {
-        if ($schemaName !== null) {
-            throw UnsupportedName::fromNonNullSchemaName($schemaName, __METHOD__);
-        }
-
-        return $this->getUniqueConstraintColumns($tableName);
-    }
-
-    /**
-     * @return iterable<UniqueConstraintColumnMetadataRow>
-     *
-     * @throws Exception
-     */
-    private function getUniqueConstraintColumns(?string $tableName): iterable
-    {
-        $params = [];
-
-        $sql = sprintf(
-            <<<'SQL'
-            SELECT TC.TABNAME,
-                   TC.CONSTNAME,
-                   KCU.COLNAME
-            FROM SYSCAT.TABCONST TC
-                     JOIN SYSCAT.KEYCOLUSE KCU
-                          ON KCU.TABSCHEMA = TC.TABSCHEMA
-                              AND KCU.TABNAME = TC.TABNAME
-                              AND KCU.CONSTNAME = TC.CONSTNAME
-            WHERE %s
-              AND TC.TYPE = 'U'
-            ORDER BY TC.TABNAME,
-                TC.CONSTNAME,
-                KCU.COLSEQ
-            SQL,
-            $this->buildTableQueryPredicate('TC', $tableName, $params),
-        );
-
-        foreach ($this->connection->iterateNumeric($sql, $params) as $row) {
-            yield new UniqueConstraintColumnMetadataRow(
-                schemaName: null,
-                tableName: $row[0],
-                id: null,
-                name: $row[1],
-                columnName: $row[2],
-                isClustered: false,
             );
         }
     }

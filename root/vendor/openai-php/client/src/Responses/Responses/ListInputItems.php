@@ -57,8 +57,7 @@ final class ListInputItems implements ResponseContract, ResponseHasMetaInformati
         public readonly string $lastId,
         public readonly bool $hasMore,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ListInputItemsType  $attributes

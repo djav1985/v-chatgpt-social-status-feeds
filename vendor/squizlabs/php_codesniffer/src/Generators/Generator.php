@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The base class for all PHP_CodeSniffer documentation generators.
  *
@@ -10,7 +9,7 @@
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
  * @copyright 2024 PHPCSStandards and contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Generators;
@@ -22,6 +21,7 @@ use PHP_CodeSniffer\Ruleset;
 
 abstract class Generator
 {
+
     /**
      * The ruleset used for the run.
      *
@@ -49,11 +49,11 @@ abstract class Generator
         $this->ruleset = $ruleset;
 
         $find    = [
-            DIRECTORY_SEPARATOR . 'Sniffs' . DIRECTORY_SEPARATOR,
+            DIRECTORY_SEPARATOR.'Sniffs'.DIRECTORY_SEPARATOR,
             'Sniff.php',
         ];
         $replace = [
-            DIRECTORY_SEPARATOR . 'Docs' . DIRECTORY_SEPARATOR,
+            DIRECTORY_SEPARATOR.'Docs'.DIRECTORY_SEPARATOR,
             'Standard.xml',
         ];
 
@@ -68,6 +68,7 @@ abstract class Generator
 
         // Always present the docs in a consistent alphabetical order.
         sort($this->docFiles, (SORT_NATURAL | SORT_FLAG_CASE));
+
     }//end __construct()
 
 
@@ -98,6 +99,7 @@ abstract class Generator
         }
 
         return $title;
+
     }//end getTitle()
 
 
@@ -119,6 +121,7 @@ abstract class Generator
             $documentation = $doc->getElementsByTagName('documentation')->item(0);
             $this->processSniff($documentation);
         }
+
     }//end generate()
 
 
@@ -135,4 +138,6 @@ abstract class Generator
      * @see    generate()
      */
     abstract protected function processSniff(DOMNode $doc);
+
+
 }//end class

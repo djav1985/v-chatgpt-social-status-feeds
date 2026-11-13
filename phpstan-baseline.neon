@@ -1,0 +1,145 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: root/app/Controllers/FeedController.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 2
+			path: root/app/Controllers/FeedController.php
+
+		-
+			message: '#^Parameter \#3 \$types of method Doctrine\\DBAL\\Connection\:\:executeQuery\(\) expects array\<int\<0, max\>\|string, Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|Doctrine\\DBAL\\Types\\Type\|string\>, array\<string, int\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: root/app/Core/DatabaseManager.php
+
+		-
+			message: '#^Parameter \#3 \$types of method Doctrine\\DBAL\\Connection\:\:executeStatement\(\) expects array\<int\<0, max\>\|string, Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|Doctrine\\DBAL\\Types\\Type\|string\>, array\<string, int\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: root/app/Core/DatabaseManager.php
+
+		-
+			message: '#^Parameter \#1 \$routeDefinitionCallback of function FastRoute\\simpleDispatcher expects callable\(FastRoute\\ConfigureRoutes\)\: void, Closure\(FastRoute\\RouteCollector\)\: void given\.$#'
+			identifier: argument.type
+			count: 1
+			path: root/app/Core/Router.php
+
+		-
+			message: '#^Method App\\Helpers\\ValidationHelper\:\:validateCronHours\(\) has parameter \$cron with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: root/app/Helpers/ValidationHelper.php
+
+		-
+			message: '#^Method App\\Helpers\\WorkerHelper\:\:claimLock\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: root/app/Helpers/WorkerHelper.php
+
+		-
+			message: '#^Method App\\Helpers\\WorkerHelper\:\:releaseLock\(\) has parameter \$lockInfo with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: root/app/Helpers/WorkerHelper.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 5
+			path: root/app/Models/AccountModel.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: root/app/Models/AccountModel.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 4
+			path: root/app/Models/StatusModel.php
+
+		-
+			message: '#^Parameter \#3 \$type of method App\\Core\\DatabaseManager\:\:bind\(\) expects int\|null, Doctrine\\DBAL\\ParameterType\:\:INTEGER given\.$#'
+			identifier: argument.type
+			count: 1
+			path: root/app/Models/StatusModel.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 3
+			path: root/app/Models/UserModel.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: root/app/Models/UserModel.php
+
+		-
+			message: '#^Property App\\Services\\MaintenanceService\:\:\$workerLock type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: root/app/Services/MaintenanceService.php
+
+		-
+			message: '#^Call to function is_object\(\) with object will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: root/app/Services/QueueService.php
+
+		-
+			message: '#^Method App\\Services\\QueueService\:\:generateStatusesForJob\(\) has parameter \$job with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: root/app/Services/QueueService.php
+
+		-
+			message: '#^Method App\\Services\\QueueService\:\:processJobBatch\(\) has parameter \$jobs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: root/app/Services/QueueService.php
+
+		-
+			message: '#^Property App\\Services\\QueueService\:\:\$workerLock type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: root/app/Services/QueueService.php
+
+		-
+			message: '#^Call to function method_exists\(\) with OpenAI\\Responses\\Images\\CreateResponse and ''toArray'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: root/app/Services/StatusService.php
+
+		-
+			message: '#^Offset ''error'' on array\{created\: int, data\: array\<int, array\{url\?\: string, b64_json\?\: string, revised_prompt\?\: string\}\>, usage\?\: array\{total_tokens\: int, input_tokens\: int\|null, output_tokens\: int\|null, input_tokens_details\: array\{text_tokens\: int, image_tokens\: int\}\|null\}\}\|array\{created\: int, data\: array\<int, OpenAI\\Responses\\Images\\CreateResponseData\>, ''\000OpenAI\\Responses\\Images\\CreateResponse\000meta''\: OpenAI\\Responses\\Meta\\MetaInformation, usage\: OpenAI\\Responses\\Images\\ImageResponseUsage\|null\} in isset\(\) does not exist\.$#'
+			identifier: isset.offset
+			count: 1
+			path: root/app/Services/StatusService.php
+
+		-
+			message: '#^Parameter \#1 \$config of class GuzzleHttp\\Client constructor expects array\{handler\?\: callable\(Psr\\Http\\Message\\RequestInterface, array\<mixed\>\)\: GuzzleHttp\\Promise\\PromiseInterface\<Psr\\Http\\Message\\ResponseInterface, mixed\>, base_uri\?\: Psr\\Http\\Message\\UriInterface\|string, transport_sharing\?\: string\|null, max_host_connections\?\: int\|null, max_idle_handles\?\: int\|null, max_total_connections\?\: int\|null, allow_redirects\?\: array\{max\?\: int, strict\?\: bool, referer\?\: bool, protocols\?\: non\-empty\-array\<string\>, on_redirect\?\: callable\(Psr\\Http\\Message\\RequestInterface, Psr\\Http\\Message\\ResponseInterface, Psr\\Http\\Message\\UriInterface\)\: mixed, track_redirects\?\: bool\}\|bool, auth\?\: array\{0\: string, 1\: string, 2\?\: string\|null\}\|string\|false\|null, \.\.\., \.\.\.\}, array\<string, int\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: root/app/Services/StatusService.php
+
+		-
+			message: '#^Variable \$userStats on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: root/app/Views/accounts.php
+
+		-
+			message: '#^Variable \$missingConfig in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: root/config.php

@@ -29,8 +29,7 @@ final class InputAudioTranscription implements ResponseContract
         public readonly string $language,
         public readonly string $model,
         public readonly string $prompt,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  InputAudioTranscriptionType  $attributes

@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that only one trait is declared per file.
  *
  * @author    Alexander Obuhovich <aik.bold@gmail.com>
  * @copyright 2010-2014 Alexander Obuhovich
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Files;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class OneTraitPerFileSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -23,6 +24,7 @@ class OneTraitPerFileSniff implements Sniff
     public function register()
     {
         return [T_TRAIT];
+
     }//end register()
 
 
@@ -48,5 +50,8 @@ class OneTraitPerFileSniff implements Sniff
             $error = 'Only one trait is allowed in a file';
             $phpcsFile->addError($error, $nextClass, 'MultipleFound');
         }
+
     }//end process()
+
+
 }//end class

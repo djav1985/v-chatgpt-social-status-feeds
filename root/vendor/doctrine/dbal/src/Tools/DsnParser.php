@@ -50,9 +50,11 @@ final class DsnParser
         }
 
         foreach ($url as $param => $value) {
-            if (is_string($value)) {
-                $url[$param] = rawurldecode($value);
+            if (! is_string($value)) {
+                continue;
             }
+
+            $url[$param] = rawurldecode($value);
         }
 
         $params = [];

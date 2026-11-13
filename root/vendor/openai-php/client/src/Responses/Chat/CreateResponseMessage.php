@@ -20,8 +20,7 @@ final class CreateResponseMessage
         public readonly array $toolCalls,
         public readonly ?CreateResponseFunctionCall $functionCall,
         public readonly ?CreateResponseChoiceAudio $audio = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{role: string, content: ?string, annotations?: array<int, array{type: string, url_citation: array{start_index: int, end_index: int, title: string, url: string}}>, function_call: ?array{name: string, arguments: string}, tool_calls: ?array<int, array{id: string, type: string, function: array{name: string, arguments: string}}>, audio?: CreateResponseChoiceAudioType}  $attributes

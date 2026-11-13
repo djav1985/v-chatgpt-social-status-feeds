@@ -40,12 +40,14 @@ final class Statement implements StatementInterface
     public function __destruct()
     {
         // @phpstan-ignore isset.initializedProperty
-        if (isset($this->connection)) {
-            @pg_query(
-                $this->connection,
-                'DEALLOCATE ' . pg_escape_identifier($this->connection, $this->name),
-            );
+        if (! isset($this->connection)) {
+            return;
         }
+
+        @pg_query(
+            $this->connection,
+            'DEALLOCATE ' . pg_escape_identifier($this->connection, $this->name),
+        );
     }
 
     /** {@inheritDoc} */

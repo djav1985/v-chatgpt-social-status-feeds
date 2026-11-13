@@ -150,15 +150,6 @@ class Index extends AbstractNamedObject
         return Parsers::getUnqualifiedNameParser();
     }
 
-    public function getObjectName(): UnqualifiedName
-    {
-        if (! $this->isNameInitialized) {
-            throw InvalidState::objectNameNotInitialized();
-        }
-
-        return $this->name;
-    }
-
     public function getType(): IndexType
     {
         if ($this->type === null) {
@@ -363,11 +354,13 @@ class Index extends AbstractNamedObject
 
         for ($i = 0; $i < $numberOfColumns; $i++) {
             if (
-                ! isset($columnNames[$i])
-                || $this->trimQuotes(strtolower($columns[$i])) !== $this->trimQuotes(strtolower($columnNames[$i]))
+                isset($columnNames[$i])
+                && $this->trimQuotes(strtolower($columns[$i])) === $this->trimQuotes(strtolower($columnNames[$i]))
             ) {
-                $sameColumns = false;
+                continue;
             }
+
+            $sameColumns = false;
         }
 
         return $sameColumns;
@@ -599,17 +592,19 @@ class Index extends AbstractNamedObject
         }
 
         if (
-            $this->predicate !== null
-            && ($this->hasFlag('fulltext')
-                || $this->hasFlag('spatial')
-                || $this->hasFlag('clustered'))
+            $this->predicate === null
+            || (! $this->hasFlag('fulltext')
+                && ! $this->hasFlag('spatial')
+                && ! $this->hasFlag('clustered'))
         ) {
-            Deprecation::trigger(
-                'doctrine/dbal',
-                'https://github.com/doctrine/dbal/pull/6886',
-                'A fulltext, spatial or clustered index cannot be partial.',
-            );
+            return;
         }
+
+        Deprecation::trigger(
+            'doctrine/dbal',
+            'https://github.com/doctrine/dbal/pull/6886',
+            'A fulltext, spatial or clustered index cannot be partial.',
+        );
     }
 
     private function inferType(): ?IndexType
@@ -656,9 +651,11 @@ class Index extends AbstractNamedObject
     {
         $columns = [];
 
+        $parser = Parsers::getUnqualifiedNameParser();
+
         foreach ($columnNames as $columnName) {
             try {
-                $parsedName = Parsers::parseUnqualifiedName($columnName);
+                $parsedName = $parser->parse($columnName);
             } catch (Throwable $e) {
                 Deprecation::trigger(
                     'doctrine/dbal',

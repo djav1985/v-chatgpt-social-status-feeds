@@ -1,11 +1,10 @@
 <?php
-
 /**
  * A filter to only include files that have been modified or added in a Git repository.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Filters;
@@ -14,6 +13,8 @@ use PHP_CodeSniffer\Util\Common;
 
 class GitModified extends ExactMatch
 {
+
+
     /**
      * Get a list of file paths to exclude.
      *
@@ -24,6 +25,7 @@ class GitModified extends ExactMatch
     protected function getDisallowedFiles()
     {
         return [];
+
     }//end getDisallowedFiles()
 
 
@@ -39,6 +41,7 @@ class GitModified extends ExactMatch
     protected function getBlacklist()
     {
         return $this->getDisallowedFiles();
+
     }//end getBlacklist()
 
 
@@ -53,7 +56,7 @@ class GitModified extends ExactMatch
     {
         $modified = [];
 
-        $cmd    = 'git ls-files -o -m --exclude-standard -- ' . escapeshellarg($this->basedir);
+        $cmd    = 'git ls-files -o -m --exclude-standard -- '.escapeshellarg($this->basedir);
         $output = $this->exec($cmd);
 
         $basedir = $this->basedir;
@@ -75,6 +78,7 @@ class GitModified extends ExactMatch
         }
 
         return $modified;
+
     }//end getAllowedFiles()
 
 
@@ -90,6 +94,7 @@ class GitModified extends ExactMatch
     protected function getWhitelist()
     {
         return $this->getAllowedFiles();
+
     }//end getWhitelist()
 
 
@@ -112,5 +117,8 @@ class GitModified extends ExactMatch
         }
 
         return $output;
+
     }//end exec()
+
+
 }//end class

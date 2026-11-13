@@ -20,6 +20,7 @@ use function sprintf;
 use function str_contains;
 use function strlen;
 use function strpos;
+use function strtolower;
 use function substr;
 use function substr_count;
 use function trim;
@@ -40,12 +41,12 @@ final class MockMethod
     use TemplateLoader;
 
     /**
-     * @psalm-var class-string
+     * @var class-string
      */
     private readonly string $className;
 
     /**
-     * @psalm-var non-empty-string
+     * @var non-empty-string
      */
     private readonly string $methodName;
     private readonly bool $cloneArguments;
@@ -59,12 +60,12 @@ final class MockMethod
     private readonly ?string $deprecation;
 
     /**
-     * @psalm-var array<int, mixed>
+     * @var array<int, mixed>
      */
     private readonly array $defaultParameterValues;
 
     /**
-     * @psalm-var non-negative-int
+     * @var non-negative-int
      */
     private readonly int $numberOfParameters;
 
@@ -142,10 +143,10 @@ final class MockMethod
     }
 
     /**
-     * @psalm-param class-string $className
-     * @psalm-param non-empty-string $methodName
-     * @psalm-param array<int, mixed> $defaultParameterValues
-     * @psalm-param non-negative-int $numberOfParameters
+     * @param class-string      $className
+     * @param non-empty-string  $methodName
+     * @param array<int, mixed> $defaultParameterValues
+     * @param non-negative-int  $numberOfParameters
      */
     private function __construct(string $className, string $methodName, bool $cloneArguments, string $modifier, string $argumentsForDeclaration, string $argumentsForCall, array $defaultParameterValues, int $numberOfParameters, Type $returnType, string $reference, bool $callOriginalMethod, bool $static, ?string $deprecation)
     {
@@ -165,7 +166,7 @@ final class MockMethod
     }
 
     /**
-     * @psalm-return non-empty-string
+     * @return non-empty-string
      */
     public function methodName(): string
     {
@@ -189,7 +190,7 @@ final class MockMethod
         $deprecation  = $this->deprecation;
         $returnResult = '';
 
-        if (!$this->returnType->isNever() && !$this->returnType->isVoid()) {
+        if (!$this->returnType->isNever() && !$this->returnType->isVoid() && !$this->mustNotReturnValue()) {
             $returnResult = <<<'EOT'
 
 
@@ -226,13 +227,13 @@ EOT;
                 'arguments_call'     => $this->argumentsForCall,
                 'return_declaration' => !empty($this->returnType->asString()) ? (': ' . $this->returnType->asString()) : '',
                 'return_type'        => $this->returnType->asString(),
-                'arguments_count'    => $argumentsCount,
+                'arguments_count'    => (string) $argumentsCount,
                 'class_name'         => $this->className,
                 'method_name'        => $this->methodName,
                 'modifier'           => $this->modifier,
                 'reference'          => $this->reference,
                 'clone_arguments'    => $this->cloneArguments ? 'true' : 'false',
-                'deprecation'        => $deprecation,
+                'deprecation'        => $deprecation ?? '',
                 'return_result'      => $returnResult,
             ],
         );
@@ -246,7 +247,7 @@ EOT;
     }
 
     /**
-     * @psalm-return array<int, mixed>
+     * @return array<int, mixed>
      */
     public function defaultParameterValues(): array
     {
@@ -254,11 +255,21 @@ EOT;
     }
 
     /**
-     * @psalm-return non-negative-int
+     * @return non-negative-int
      */
     public function numberOfParameters(): int
     {
         return $this->numberOfParameters;
+    }
+
+    /**
+     * @see https://wiki.php.net/rfc/deprecate-return-value-from-construct
+     */
+    private function mustNotReturnValue(): bool
+    {
+        $methodName = strtolower($this->methodName);
+
+        return $methodName === '__construct' || $methodName === '__destruct';
     }
 
     /**
@@ -377,7 +388,7 @@ EOT;
     }
 
     /**
-     * @psalm-return array<int, mixed>
+     * @return array<int, mixed>
      */
     private static function methodParametersDefaultValues(ReflectionMethod $method): array
     {

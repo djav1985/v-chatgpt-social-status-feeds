@@ -60,15 +60,33 @@ final class StringMatchesFormatDescription extends Constraint
         return 'string matches format description';
     }
 
+    /**
+     * Returns a cleaned up diff.
+     *
+     * The expected string can contain placeholders like %s and %d.
+     * By using 'diff' such placeholders compared to the real output will
+     * always be different, although we don't want to show them as different.
+     * This method removes the expected differences by figuring out if a difference
+     * is allowed by the use of a placeholder.
+     *
+     * The problem here are %A and %a multiline placeholders since we look at the
+     * expected and actual output line by line. If differences allowed by those placeholders
+     * stretch over multiple lines they will still end up in the final diff.
+     * And since they mess up the line sync between the expected and actual output
+     * all following allowed changes will not be detected/removed anymore.
+     */
     protected function additionalFailureDescription(mixed $other): string
     {
         $from = explode("\n", $this->formatDescription);
         $to   = explode("\n", $this->convertNewlines($other));
 
         foreach ($from as $index => $line) {
+            // is the expected output line different from the actual output line
             if (isset($to[$index]) && $line !== $to[$index]) {
                 $line = $this->regularExpressionForFormatDescription($line);
 
+                // if the difference is allowed by a placeholder
+                // overwrite the expected line with the actual line to prevent it from showing up in the diff
                 if (preg_match($line, $to[$index]) > 0) {
                     $from[$index] = $to[$index];
                 }
@@ -86,19 +104,19 @@ final class StringMatchesFormatDescription extends Constraint
         $string = strtr(
             preg_quote($string, '/'),
             [
-                '%%' => '%',
-                '%e' => preg_quote(DIRECTORY_SEPARATOR, '/'),
-                '%s' => '[^\r\n]+',
-                '%S' => '[^\r\n]*',
-                '%a' => '.+?',
-                '%A' => '.*?',
-                '%w' => '\s*',
-                '%i' => '[+-]?\d+',
-                '%d' => '\d+',
-                '%x' => '[0-9a-fA-F]+',
-                '%f' => '[+-]?(?:\d+|(?=\.\d))(?:\.\d+)?(?:[Ee][+-]?\d+)?',
-                '%c' => '.',
-                '%0' => '\x00',
+                '%%' => '%', // A literal percent character
+                '%e' => preg_quote(DIRECTORY_SEPARATOR, '/'), // a directory separator
+                '%s' => '[^\r\n]+', // One or more of anything except the end of line character
+                '%S' => '[^\r\n]*', // Zero or more of anything except the end of line character
+                '%a' => '.+?', // One or more of anything including the end of line character
+                '%A' => '.*?', // Zero or more of anything including the end of line character
+                '%w' => '\s*', // Zero or more white space characters
+                '%i' => '[+-]?\d+', // A signed integer value
+                '%d' => '\d+', // An unsigned integer value
+                '%x' => '[0-9a-fA-F]+', // One or more hexadecimal character
+                '%f' => '[+-]?(?:\d+|(?=\.\d))(?:\.\d+)?(?:[Ee][+-]?\d+)?', // A floating point number
+                '%c' => '.', // A single character of any sort
+                '%0' => '\x00', // A null byte
             ],
         );
 

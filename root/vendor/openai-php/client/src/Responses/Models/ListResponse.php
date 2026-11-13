@@ -31,8 +31,7 @@ final class ListResponse implements ResponseContract, ResponseHasMetaInformation
         public readonly string $object,
         public readonly array $data,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{object: string, data: array<int, array{id: string, object: string, created: ?int, created_at?: ?int, owned_by: ?string}>}  $attributes

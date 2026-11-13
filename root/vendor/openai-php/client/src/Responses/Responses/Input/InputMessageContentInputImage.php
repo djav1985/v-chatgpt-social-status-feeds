@@ -30,8 +30,7 @@ final class InputMessageContentInputImage implements ResponseContract
         public readonly string $detail,
         public readonly ?string $fileId,
         public readonly ?string $imageUrl,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ContentInputImageType  $attributes

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * A filter to only include files that have been staged for commit in a Git repository.
  *
@@ -7,7 +6,7 @@
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2018 Juliette Reinders Folmer. All rights reserved.
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Filters;
@@ -16,6 +15,8 @@ use PHP_CodeSniffer\Util\Common;
 
 class GitStaged extends ExactMatch
 {
+
+
     /**
      * Get a list of file paths to exclude.
      *
@@ -26,6 +27,7 @@ class GitStaged extends ExactMatch
     protected function getDisallowedFiles()
     {
         return [];
+
     }//end getDisallowedFiles()
 
 
@@ -41,6 +43,7 @@ class GitStaged extends ExactMatch
     protected function getBlacklist()
     {
         return $this->getDisallowedFiles();
+
     }//end getBlacklist()
 
 
@@ -55,7 +58,7 @@ class GitStaged extends ExactMatch
     {
         $modified = [];
 
-        $cmd    = 'git diff --cached --name-only -- ' . escapeshellarg($this->basedir);
+        $cmd    = 'git diff --cached --name-only -- '.escapeshellarg($this->basedir);
         $output = $this->exec($cmd);
 
         $basedir = $this->basedir;
@@ -77,6 +80,7 @@ class GitStaged extends ExactMatch
         }
 
         return $modified;
+
     }//end getAllowedFiles()
 
 
@@ -92,6 +96,7 @@ class GitStaged extends ExactMatch
     protected function getWhitelist()
     {
         return $this->getAllowedFiles();
+
     }//end getWhitelist()
 
 
@@ -114,5 +119,8 @@ class GitStaged extends ExactMatch
         }
 
         return $output;
+
     }//end exec()
+
+
 }//end class

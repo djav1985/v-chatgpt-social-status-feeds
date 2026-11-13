@@ -28,9 +28,11 @@ class Identifier extends AbstractNamedObject
     {
         parent::__construct($identifier);
 
-        if ($quote && ! $this->_quoted) {
-            $this->_setName('"' . $this->getName() . '"');
+        if (! $quote || $this->_quoted) {
+            return;
         }
+
+        $this->_setName('"' . $this->getName() . '"');
     }
 
     protected function getNameParser(): GenericNameParser

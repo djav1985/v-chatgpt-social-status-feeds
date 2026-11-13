@@ -30,10 +30,8 @@ class MySQLPlatform extends AbstractMySQLPlatform
      */
     public function getDefaultValueDeclarationSQL(array $column): string
     {
-        $type = $this->getColumnTypeOrNull($column);
-
-        if ($type instanceof TextType || $type instanceof BlobType) {
-            $column['default'] = null;
+        if ($column['type'] instanceof TextType || $column['type'] instanceof BlobType) {
+            unset($column['default']);
         }
 
         return parent::getDefaultValueDeclarationSQL($column);

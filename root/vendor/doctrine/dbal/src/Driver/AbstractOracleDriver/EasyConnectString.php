@@ -48,12 +48,6 @@ final class EasyConnectString
         }
 
         if (! isset($params['host'])) {
-            Deprecation::trigger(
-                'doctrine/dbal',
-                'https://github.com/doctrine/dbal/pull/7244',
-                'Not specifying either of the "host" and "connectstring" parameters is deprecated.',
-            );
-
             return new self($params['dbname'] ?? '');
         }
 
@@ -68,15 +62,6 @@ final class EasyConnectString
             );
         }
 
-        if (isset($params['dbname'])) {
-            Deprecation::trigger(
-                'doctrine/dbal',
-                'https://github.com/doctrine/dbal/pull/7239',
-                'Using the "dbname" parameter is deprecated. Use "servicename", "sid" or "connectstring"'
-                    . ' instead.',
-            );
-        }
-
         if (isset($params['servicename']) || isset($params['dbname'])) {
             $serviceKey = 'SID';
 
@@ -87,10 +72,6 @@ final class EasyConnectString
             $serviceName = $params['servicename'] ?? $params['dbname'];
 
             $connectData[$serviceKey] = $serviceName;
-        }
-
-        if (isset($params['sid'])) {
-            $connectData['SID'] = $params['sid'];
         }
 
         if (isset($params['instancename'])) {
@@ -121,9 +102,11 @@ final class EasyConnectString
         foreach ($params as $key => $value) {
             $string = self::renderValue($value);
 
-            if ($string !== '') {
-                $chunks[] = sprintf('(%s=%s)', $key, $string);
+            if ($string === '') {
+                continue;
             }
+
+            $chunks[] = sprintf('(%s=%s)', $key, $string);
         }
 
         return implode('', $chunks);

@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Ensures that variables are not passed by reference when calling a function.
  *
  * @author    Florian Grandel <jerico.dev@gmail.com>
  * @copyright 2009-2014 Florian Grandel
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  *
  * @deprecated 3.12.1
  */
@@ -19,6 +18,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class CallTimePassByReferenceSniff implements Sniff, DeprecatedSniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -34,6 +35,7 @@ class CallTimePassByReferenceSniff implements Sniff, DeprecatedSniff
             T_SELF,
             T_STATIC,
         ];
+
     }//end register()
 
 
@@ -135,6 +137,7 @@ class CallTimePassByReferenceSniff implements Sniff, DeprecatedSniff
                 $phpcsFile->addError($error, $tokenBefore, 'NotAllowed');
             }//end if
         }//end while
+
     }//end process()
 
 
@@ -146,6 +149,7 @@ class CallTimePassByReferenceSniff implements Sniff, DeprecatedSniff
     public function getDeprecationVersion()
     {
         return 'v3.12.1';
+
     }//end getDeprecationVersion()
 
 
@@ -157,6 +161,7 @@ class CallTimePassByReferenceSniff implements Sniff, DeprecatedSniff
     public function getRemovalVersion()
     {
         return 'v4.0.0';
+
     }//end getRemovalVersion()
 
 
@@ -168,5 +173,8 @@ class CallTimePassByReferenceSniff implements Sniff, DeprecatedSniff
     public function getDeprecationMessage()
     {
         return '';
+
     }//end getDeprecationMessage()
+
+
 }//end class

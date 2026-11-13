@@ -30,8 +30,7 @@ final class InputMessageContentInputFile implements ResponseContract
         public readonly string $fileData,
         public readonly string $fileId,
         public readonly string $filename,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ContentInputFileType  $attributes

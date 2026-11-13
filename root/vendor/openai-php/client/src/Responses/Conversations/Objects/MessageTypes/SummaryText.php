@@ -28,8 +28,7 @@ final class SummaryText implements ResponseContract
     private function __construct(
         public readonly string $text,
         public readonly string $type
-    ) {
-    }
+    ) {}
 
     /**
      * @param  SummaryTextType  $attributes

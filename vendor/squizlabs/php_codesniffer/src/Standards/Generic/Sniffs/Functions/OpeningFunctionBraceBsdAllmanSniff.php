@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that the opening brace of a function is on the line after the function declaration.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Functions;
@@ -16,6 +15,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class OpeningFunctionBraceBsdAllmanSniff implements Sniff
 {
+
     /**
      * Should this sniff check function braces?
      *
@@ -42,6 +42,7 @@ class OpeningFunctionBraceBsdAllmanSniff implements Sniff
             T_FUNCTION,
             T_CLOSURE,
         ];
+
     }//end register()
 
 
@@ -62,8 +63,7 @@ class OpeningFunctionBraceBsdAllmanSniff implements Sniff
             return;
         }
 
-        if (
-            ($tokens[$stackPtr]['code'] === T_FUNCTION
+        if (($tokens[$stackPtr]['code'] === T_FUNCTION
             && (bool) $this->checkFunctions === false)
             || ($tokens[$stackPtr]['code'] === T_CLOSURE
             && (bool) $this->checkClosures === false)
@@ -136,7 +136,7 @@ class OpeningFunctionBraceBsdAllmanSniff implements Sniff
             }//end if
 
             $phpcsFile->recordMetric($stackPtr, "$metricType opening brace placement", 'same line');
-        } elseif ($lineDifference > 1) {
+        } else if ($lineDifference > 1) {
             $error = 'Opening brace should be on the line after the declaration; found %s blank line(s)';
             $data  = [($lineDifference - 1)];
 
@@ -218,5 +218,8 @@ class OpeningFunctionBraceBsdAllmanSniff implements Sniff
         }//end if
 
         $phpcsFile->recordMetric($stackPtr, "$metricType opening brace placement", 'new line');
+
     }//end process()
+
+
 }//end class

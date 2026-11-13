@@ -5,23 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
-use Doctrine\DBAL\Schema\Exception\InvalidState;
 use Doctrine\DBAL\Schema\Exception\UnknownColumnOption;
 use Doctrine\DBAL\Schema\Name\Parser\UnqualifiedNameParser;
 use Doctrine\DBAL\Schema\Name\Parsers;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
-use Doctrine\DBAL\Types\Exception\TypesException;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
-use TypeError;
 
 use function array_merge;
-use function func_get_arg;
-use function func_num_args;
-use function get_debug_type;
-use function is_bool;
 use function method_exists;
-use function sprintf;
 
 /**
  * Object representation of a database column.
@@ -30,13 +22,12 @@ use function sprintf;
  * @extends AbstractNamedObject<UnqualifiedName>
  * @phpstan-type ColumnProperties = array{
  *     name: string,
- *     type?: Type,       // Deprecated; use typeName instead.
- *     typeName?: string, // Will be required in 5.0
- *     default?: mixed,
+ *     type: Type,
+ *     default: mixed,
  *     notnull?: bool,
- *     autoincrement?: bool,
- *     columnDefinition?: ?non-empty-string,
- *     comment?: string,
+ *     autoincrement: bool,
+ *     columnDefinition: ?non-empty-string,
+ *     comment: string,
  *     charset?: ?non-empty-string,
  *     collation?: ?non-empty-string,
  * }
@@ -51,10 +42,7 @@ use function sprintf;
  */
 class Column extends AbstractNamedObject
 {
-    /** @deprecated use {@see getType()} instead; not initialized when the column is built via {@see setTypeName()} */
     protected Type $_type;
-
-    private string $_typeName;
 
     protected ?int $_length = null;
 
@@ -87,29 +75,13 @@ class Column extends AbstractNamedObject
      * @internal Use {@link Column::editor()} to instantiate an editor and {@link ColumnEditor::create()} to create a
      *           column.
      *
-     * @param Type|string          $type    Passing a {@see Type} instance is deprecated; pass the type name instead.
      * @param array<string, mixed> $options
-     *
-     * @throws TypesException
      */
-    public function __construct(string $name, Type|string $type, array $options = [])
+    public function __construct(string $name, Type $type, array $options = [])
     {
         parent::__construct($name);
 
-        if ($type instanceof Type) {
-            Deprecation::trigger(
-                'doctrine/dbal',
-                'https://github.com/doctrine/dbal/pull/7490',
-                'Passing a %s instance to %s() is deprecated, pass the type name instead.',
-                Type::class,
-                __METHOD__,
-            );
-
-            $this->setType($type);
-        } else {
-            $this->setTypeName($type);
-        }
-
+        $this->setType($type);
         $this->setOptions($options);
     }
 
@@ -118,29 +90,9 @@ class Column extends AbstractNamedObject
         return Parsers::getUnqualifiedNameParser();
     }
 
-    public function getObjectName(): UnqualifiedName
-    {
-        if (! $this->isNameInitialized) {
-            throw InvalidState::objectNameNotInitialized();
-        }
-
-        return $this->name;
-    }
-
-    /**
-     * @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} instead.
-     *
-     * @param array<string, mixed> $options
-     */
+    /** @param array<string, mixed> $options */
     public function setOptions(array $options): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() instead.',
-            __METHOD__,
-        );
-
         foreach ($options as $name => $value) {
             $method = 'set' . $name;
 
@@ -154,160 +106,65 @@ class Column extends AbstractNamedObject
         return $this;
     }
 
-    /**
-     * @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setTypeName()} instead.
-     *
-     * @throws TypesException
-     */
     public function setType(Type $type): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setTypeName() instead.',
-            __METHOD__,
-        );
-
-        $this->_type     = $type;
-        $this->_typeName = Type::getTypeRegistry()->lookupName($type);
+        $this->_type = $type;
 
         return $this;
     }
 
-    public function setTypeName(string $typeName): self
-    {
-        $this->_typeName = $typeName;
-        unset($this->_type);
-
-        return $this;
-    }
-
-    /** @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setLength()} instead. */
     public function setLength(?int $length): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setLength() instead.',
-            __METHOD__,
-        );
-
         $this->_length = $length;
 
         return $this;
     }
 
-    /** @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setPrecision()} instead. */
     public function setPrecision(?int $precision): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setPrecision() instead.',
-            __METHOD__,
-        );
-
         $this->_precision = $precision;
 
         return $this;
     }
 
-    /** @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setScale()} instead. */
     public function setScale(int $scale): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setScale() instead.',
-            __METHOD__,
-        );
-
         $this->_scale = $scale;
 
         return $this;
     }
 
-    /** @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setUnsigned()} instead. */
     public function setUnsigned(bool $unsigned): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setUnsigned() instead.',
-            __METHOD__,
-        );
-
         $this->_unsigned = $unsigned;
 
         return $this;
     }
 
-    /** @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setFixed()} instead. */
     public function setFixed(bool $fixed): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setFixed() instead.',
-            __METHOD__,
-        );
-
         $this->_fixed = $fixed;
 
         return $this;
     }
 
-    /** @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setNotNull()} instead. */
     public function setNotnull(bool $notnull): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setNotNull() instead.',
-            __METHOD__,
-        );
-
         $this->_notnull = $notnull;
 
         return $this;
     }
 
-    /**
-     * @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setDefaultValue()}
-     *             instead.
-     */
     public function setDefault(mixed $default): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setDefaultValue() instead.',
-            __METHOD__,
-        );
-
         $this->_default = $default;
 
         return $this;
     }
 
-    /**
-     * @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and the option-specific {@see ColumnEditor}
-     *             methods ({@see ColumnEditor::setCharset()}, {@see ColumnEditor::setCollation()},
-     *             {@see ColumnEditor::setMinimumValue()}, {@see ColumnEditor::setMaximumValue()},
-     *             {@see ColumnEditor::setEnumType()}) instead.
-     *
-     * @param PlatformOptions $platformOptions
-     */
+    /** @param PlatformOptions $platformOptions */
     public function setPlatformOptions(array $platformOptions): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and the option-specific ColumnEditor methods'
-                . ' (setCharset(), setCollation(), setMinimumValue(), setMaximumValue(), setEnumType()) instead.',
-            __METHOD__,
-        );
-
         if (isset($platformOptions['jsonb']) && $platformOptions['jsonb']) {
             Deprecation::triggerIfCalledFromOutside(
                 'doctrine/dbal',
@@ -321,24 +178,9 @@ class Column extends AbstractNamedObject
         return $this;
     }
 
-    /**
-     * @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and the option-specific {@see ColumnEditor}
-     *             methods ({@see ColumnEditor::setCharset()}, {@see ColumnEditor::setCollation()},
-     *             {@see ColumnEditor::setMinimumValue()}, {@see ColumnEditor::setMaximumValue()},
-     *             {@see ColumnEditor::setEnumType()}) instead.
-     *
-     * @param key-of<PlatformOptions> $name
-     */
+    /** @param key-of<PlatformOptions> $name */
     public function setPlatformOption(string $name, mixed $value): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and the option-specific ColumnEditor methods'
-                . ' (setCharset(), setCollation(), setMinimumValue(), setMaximumValue(), setEnumType()) instead.',
-            __METHOD__,
-        );
-
         if ($name === 'jsonb' && (bool) $value === true) {
             Deprecation::triggerIfCalledFromOutside(
                 'doctrine/dbal',
@@ -352,52 +194,17 @@ class Column extends AbstractNamedObject
         return $this;
     }
 
-    /**
-     * @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setColumnDefinition()}
-     *             instead.
-     *
-     * @param ?non-empty-string $value
-     */
+    /** @param  ?non-empty-string $value */
     public function setColumnDefinition(?string $value): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setColumnDefinition() instead.',
-            __METHOD__,
-        );
-
         $this->_columnDefinition = $value;
 
         return $this;
     }
 
-    /**
-     * @deprecated Use {@see getTypeName()} to obtain the type name, or resolve the {@see Type}
-     *             instance from the type registry when needed.
-     *
-     * @throws TypesException
-     */
     public function getType(): Type
     {
-        // Called from toArray() when $skipType is false, which already triggers its own
-        // deprecation, so triggering unconditionally here would report the same call twice.
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7490',
-            '%s is deprecated. Use Column::getTypeName() instead.',
-            __METHOD__,
-        );
-
-        return Type::getType($this->_typeName);
-    }
-
-    /**
-     * Returns the name of the DBAL type of this column.
-     */
-    public function getTypeName(): string
-    {
-        return $this->_typeName;
+        return $this->_type;
     }
 
     public function getLength(): ?int
@@ -537,34 +344,15 @@ class Column extends AbstractNamedObject
         return $this->_autoincrement;
     }
 
-    /**
-     * @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setAutoincrement()}
-     *             instead.
-     */
     public function setAutoincrement(bool $flag): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setAutoincrement() instead.',
-            __METHOD__,
-        );
-
         $this->_autoincrement = $flag;
 
         return $this;
     }
 
-    /** @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setComment()} instead. */
     public function setComment(string $comment): self
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setComment() instead.',
-            __METHOD__,
-        );
-
         $this->_comment = $comment;
 
         return $this;
@@ -576,21 +364,12 @@ class Column extends AbstractNamedObject
     }
 
     /**
-     * @deprecated since doctrine/dbal 4.5. Use {@see Column::editor()} and {@see ColumnEditor::setValues()} instead.
-     *
      * @param list<string> $values
      *
      * @return $this
      */
     public function setValues(array $values): static
     {
-        Deprecation::triggerIfCalledFromOutside(
-            'doctrine/dbal',
-            'https://github.com/doctrine/dbal/pull/7381',
-            '%s is deprecated. Use Column::editor() and ColumnEditor::setValues() instead.',
-            __METHOD__,
-        );
-
         $this->_values = $values;
 
         return $this;
@@ -602,50 +381,24 @@ class Column extends AbstractNamedObject
         return $this->_values;
     }
 
-    /**
-     * Pass `true` as the first (virtual) argument to omit the resolved {@see Type} instance from the returned array
-     * and rely on the `typeName` key instead. Omitting the argument is deprecated.
-     *
-     * @return ColumnProperties
-     */
-    public function toArray(/* bool $skipType = false */): array
+    /** @return ColumnProperties */
+    public function toArray(): array
     {
-        $skipType = func_num_args() > 0 ? func_get_arg(0) : false;
-        if (! is_bool($skipType)) {
-            // @phpstan-ignore missingType.checkedException
-            throw new TypeError(sprintf(
-                'Argument 1 passed to %s must be a boolean, %s given',
-                __METHOD__,
-                get_debug_type($skipType),
-            ));
-        }
-
-        if (! $skipType) {
-            Deprecation::trigger(
-                'doctrine/dbal',
-                'https://github.com/doctrine/dbal/pull/7490',
-                'Calling %s() without the $skipType argument is deprecated. Pass true to omit the Type instance from '
-                . 'the returned array and read the "typeName" key instead.',
-                __METHOD__,
-            );
-        }
-
         return array_merge([
-            'name'            => $this->_name,
-            'typeName'        => $this->_typeName,
-            'default'         => $this->_default,
-            'notnull'         => $this->_notnull,
-            'length'          => $this->_length,
-            'precision'       => $this->_precision,
-            'scale'           => $this->_scale,
+            'name'             => $this->_name,
+            'type'             => $this->_type,
+            'default'          => $this->_default,
+            'notnull'          => $this->_notnull,
+            'length'           => $this->_length,
+            'precision'        => $this->_precision,
+            'scale'            => $this->_scale,
             'fixed'            => $this->_fixed,
-            'unsigned'        => $this->_unsigned,
-            'autoincrement'   => $this->_autoincrement,
+            'unsigned'         => $this->_unsigned,
+            'autoincrement'    => $this->_autoincrement,
             'columnDefinition' => $this->_columnDefinition,
-            'comment'         => $this->_comment,
-            'values'          => $this->_values,
-        // @phpstan-ignore missingType.checkedException
-        ], $skipType ? [] : ['type' => $this->getType()], $this->_platformOptions);
+            'comment'          => $this->_comment,
+            'values'           => $this->_values,
+        ], $this->_platformOptions);
     }
 
     public static function editor(): ColumnEditor
@@ -657,7 +410,7 @@ class Column extends AbstractNamedObject
     {
         return self::editor()
             ->setName($this->getObjectName())
-            ->setTypeName($this->_typeName)
+            ->setType($this->_type)
             ->setLength($this->_length)
             ->setPrecision($this->_precision)
             ->setScale($this->_scale)

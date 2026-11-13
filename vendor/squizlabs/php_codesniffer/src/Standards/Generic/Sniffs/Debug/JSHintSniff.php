@@ -1,12 +1,11 @@
 <?php
-
 /**
  * Runs jshint.js on the file.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Alexander Wei§ <aweisswa@gmx.de>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  *
  * @deprecated 3.9.0
  */
@@ -21,6 +20,7 @@ use PHP_CodeSniffer\Util\Common;
 
 class JSHintSniff implements Sniff, DeprecatedSniff
 {
+
     /**
      * A list of tokenizers this sniff supports.
      *
@@ -37,6 +37,7 @@ class JSHintSniff implements Sniff, DeprecatedSniff
     public function register()
     {
         return [T_OPEN_TAG];
+
     }//end register()
 
 
@@ -63,12 +64,12 @@ class JSHintSniff implements Sniff, DeprecatedSniff
 
         if ($rhinoPath !== null) {
             $rhinoPath = Common::escapeshellcmd($rhinoPath);
-            $cmd       = "$rhinoPath \"$jshintPath\" " . escapeshellarg($fileName);
+            $cmd       = "$rhinoPath \"$jshintPath\" ".escapeshellarg($fileName);
             exec($cmd, $output, $retval);
 
             $regex = '`^(?P<error>.+)\(.+:(?P<line>[0-9]+).*:[0-9]+\)$`';
         } else {
-            $cmd = "$jshintPath " . escapeshellarg($fileName);
+            $cmd = "$jshintPath ".escapeshellarg($fileName);
             exec($cmd, $output, $retval);
 
             $regex = '`^(.+?): line (?P<line>[0-9]+), col [0-9]+, (?P<error>.+)$`';
@@ -83,13 +84,14 @@ class JSHintSniff implements Sniff, DeprecatedSniff
                 }
 
                 $line    = (int) $matches['line'];
-                $message = 'jshint says: ' . trim($matches['error']);
+                $message = 'jshint says: '.trim($matches['error']);
                 $phpcsFile->addWarningOnLine($message, $line, 'ExternalTool');
             }
         }
 
         // Ignore the rest of the file.
         return $phpcsFile->numTokens;
+
     }//end process()
 
 
@@ -101,6 +103,7 @@ class JSHintSniff implements Sniff, DeprecatedSniff
     public function getDeprecationVersion()
     {
         return 'v3.9.0';
+
     }//end getDeprecationVersion()
 
 
@@ -112,6 +115,7 @@ class JSHintSniff implements Sniff, DeprecatedSniff
     public function getRemovalVersion()
     {
         return 'v4.0.0';
+
     }//end getRemovalVersion()
 
 
@@ -123,5 +127,8 @@ class JSHintSniff implements Sniff, DeprecatedSniff
     public function getDeprecationMessage()
     {
         return 'Support for scanning JavaScript files will be removed completely in v4.0.0.';
+
     }//end getDeprecationMessage()
+
+
 }//end class

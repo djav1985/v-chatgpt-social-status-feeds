@@ -337,10 +337,12 @@ class OraclePlatform extends AbstractPlatform
             }
 
             if (
-                isset($column['autoincrement']) && $column['autoincrement'] !== false
+                ! isset($column['autoincrement']) || $column['autoincrement'] === false
             ) {
-                $sql = array_merge($sql, $this->getCreateAutoincrementSql($column['name'], $name));
+                continue;
             }
+
+            $sql = array_merge($sql, $this->getCreateAutoincrementSql($column['name'], $name));
         }
 
         foreach ($indexes as $index) {
@@ -577,16 +579,18 @@ SQL,
         $tableNameSQL = $diff->getOldTable()->getQuotedName($this);
 
         foreach ($diff->getAddedColumns() as $column) {
-            $addColumnSQL[] = $this->getColumnDeclarationSQL($column->getQuotedName($this), $column->toArray(true));
+            $addColumnSQL[] = $this->getColumnDeclarationSQL($column->getQuotedName($this), $column->toArray());
             $comment        = $column->getComment();
 
-            if ($comment !== '') {
-                $commentsSQL[] = $this->getCommentOnColumnSQL(
-                    $tableNameSQL,
-                    $column->getQuotedName($this),
-                    $comment,
-                );
+            if ($comment === '') {
+                continue;
             }
+
+            $commentsSQL[] = $this->getCommentOnColumnSQL(
+                $tableNameSQL,
+                $column->getQuotedName($this),
+                $comment,
+            );
         }
 
         if (count($addColumnSQL) > 0) {
@@ -614,7 +618,7 @@ SQL,
             // Oracle only supports binary type columns with variable length.
             // Avoids unnecessary table alteration statements.
             if (
-                $this->getColumnType($newColumn) instanceof BinaryType &&
+                $newColumn->getType() instanceof BinaryType &&
                 $columnDiff->hasFixedChanged() &&
                 $countChangedProperties === 1
             ) {
@@ -627,9 +631,9 @@ SQL,
              * Do not add query part if only comment has changed
              */
             if ($countChangedProperties > ($columnHasChangedComment ? 1 : 0)) {
-                $newColumnProperties = $newColumn->toArray(true);
+                $newColumnProperties = $newColumn->toArray();
 
-                $oldSQL = $this->getColumnDeclarationSQL('', $oldColumn->toArray(true));
+                $oldSQL = $this->getColumnDeclarationSQL('', $oldColumn->toArray());
                 $newSQL = $this->getColumnDeclarationSQL('', $newColumnProperties);
 
                 if ($newSQL !== $oldSQL) {
@@ -642,13 +646,15 @@ SQL,
                 }
             }
 
-            if ($columnDiff->hasCommentChanged()) {
-                $commentsSQL[] = $this->getCommentOnColumnSQL(
-                    $tableNameSQL,
-                    $newColumn->getQuotedName($this),
-                    $newColumn->getComment(),
-                );
+            if (! $columnDiff->hasCommentChanged()) {
+                continue;
             }
+
+            $commentsSQL[] = $this->getCommentOnColumnSQL(
+                $tableNameSQL,
+                $newColumn->getQuotedName($this),
+                $newColumn->getComment(),
+            );
         }
 
         if (count($modifyColumnSQL) > 0) {
@@ -690,7 +696,7 @@ SQL,
                 $notnull = $column['notnull'] ? ' NOT NULL' : ' NULL';
             }
 
-            $typeDecl    = $this->getColumnType($column)->getSQLDeclaration($column, $this);
+            $typeDecl    = $column['type']->getSQLDeclaration($column, $this);
             $declaration = $typeDecl . $default . $notnull;
         }
 

@@ -13,6 +13,7 @@ use const FILE_IGNORE_NEW_LINES;
 use function assert;
 use function file;
 use function is_file;
+use function preg_replace;
 use function sha1;
 use PHPUnit\Runner\FileDoesNotExistException;
 
@@ -21,33 +22,33 @@ use PHPUnit\Runner\FileDoesNotExistException;
  *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class Issue
+final readonly class Issue
 {
     /**
-     * @psalm-var non-empty-string
+     * @var non-empty-string
      */
-    private readonly string $file;
+    private string $file;
 
     /**
-     * @psalm-var positive-int
+     * @var positive-int
      */
-    private readonly int $line;
+    private int $line;
 
     /**
-     * @psalm-var non-empty-string
+     * @var non-empty-string
      */
-    private readonly string $hash;
+    private string $hash;
 
     /**
-     * @psalm-var non-empty-string
+     * @var non-empty-string
      */
-    private readonly string $description;
+    private string $description;
 
     /**
-     * @psalm-param non-empty-string $file
-     * @psalm-param positive-int $line
-     * @psalm-param ?non-empty-string $hash
-     * @psalm-param non-empty-string $description
+     * @param non-empty-string  $file
+     * @param positive-int      $line
+     * @param ?non-empty-string $hash
+     * @param non-empty-string  $description
      *
      * @throws FileDoesNotExistException
      * @throws FileDoesNotHaveLineException
@@ -58,14 +59,14 @@ final class Issue
             $hash = self::calculateHash($file, $line);
         }
 
-        return new self($file, $line, $hash, $description);
+        return new self($file, $line, $hash, self::normalizeDescription($description));
     }
 
     /**
-     * @psalm-param non-empty-string $file
-     * @psalm-param positive-int $line
-     * @psalm-param non-empty-string $hash
-     * @psalm-param non-empty-string $description
+     * @param non-empty-string $file
+     * @param positive-int     $line
+     * @param non-empty-string $hash
+     * @param non-empty-string $description
      */
     private function __construct(string $file, int $line, string $hash, string $description)
     {
@@ -76,7 +77,7 @@ final class Issue
     }
 
     /**
-     * @psalm-return non-empty-string
+     * @return non-empty-string
      */
     public function file(): string
     {
@@ -84,7 +85,7 @@ final class Issue
     }
 
     /**
-     * @psalm-return positive-int
+     * @return positive-int
      */
     public function line(): int
     {
@@ -92,7 +93,7 @@ final class Issue
     }
 
     /**
-     * @psalm-return non-empty-string
+     * @return non-empty-string
      */
     public function hash(): string
     {
@@ -100,7 +101,7 @@ final class Issue
     }
 
     /**
-     * @psalm-return non-empty-string
+     * @return non-empty-string
      */
     public function description(): string
     {
@@ -116,13 +117,13 @@ final class Issue
     }
 
     /**
-     * @psalm-param non-empty-string $file
-     * @psalm-param positive-int $line
+     * @param non-empty-string $file
+     * @param positive-int     $line
      *
      * @throws FileDoesNotExistException
      * @throws FileDoesNotHaveLineException
      *
-     * @psalm-return non-empty-string
+     * @return non-empty-string
      */
     private static function calculateHash(string $file, int $line): string
     {
@@ -143,5 +144,24 @@ final class Issue
         assert($hash !== '');
 
         return $hash;
+    }
+
+    /**
+     * As of PHP 8.6, messages that refer to an anonymous class contain its full name,
+     * including the NUL byte as well as the file, line, and counter that follow it.
+     * These are removed so that the description does not depend on where the code is
+     * located and can be stored in the XML document of the baseline.
+     *
+     * @psalm-param non-empty-string $description
+     *
+     * @psalm-return non-empty-string
+     */
+    private static function normalizeDescription(string $description): string
+    {
+        $normalizedDescription = preg_replace('/@anonymous\x00.*?:\d+\$[0-9a-f]+/', '@anonymous', $description);
+
+        assert($normalizedDescription !== null && $normalizedDescription !== '');
+
+        return $normalizedDescription;
     }
 }

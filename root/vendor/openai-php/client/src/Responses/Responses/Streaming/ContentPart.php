@@ -37,8 +37,7 @@ final class ContentPart implements ResponseContract, ResponseHasMetaInformationC
         public readonly int $outputIndex,
         public readonly OutputMessageContentOutputText|OutputMessageContentRefusal $part,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ContentPartType  $attributes

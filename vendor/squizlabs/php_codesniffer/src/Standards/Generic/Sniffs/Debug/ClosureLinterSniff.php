@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Runs gjslint on the file.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  *
  * @deprecated 3.9.0
  */
@@ -20,6 +19,7 @@ use PHP_CodeSniffer\Util\Common;
 
 class ClosureLinterSniff implements Sniff, DeprecatedSniff
 {
+
     /**
      * A list of error codes that should show errors.
      *
@@ -52,6 +52,7 @@ class ClosureLinterSniff implements Sniff, DeprecatedSniff
     public function register()
     {
         return [T_OPEN_TAG];
+
     }//end register()
 
 
@@ -75,7 +76,7 @@ class ClosureLinterSniff implements Sniff, DeprecatedSniff
         $fileName = $phpcsFile->getFilename();
 
         $lintPath = Common::escapeshellcmd($lintPath);
-        $cmd      = $lintPath . ' --nosummary --notime --unix_mode ' . escapeshellarg($fileName);
+        $cmd      = $lintPath.' --nosummary --notime --unix_mode '.escapeshellarg($fileName);
         exec($cmd, $output, $retval);
 
         if (is_array($output) === false) {
@@ -112,6 +113,7 @@ class ClosureLinterSniff implements Sniff, DeprecatedSniff
 
         // Ignore the rest of the file.
         return $phpcsFile->numTokens;
+
     }//end process()
 
 
@@ -123,6 +125,7 @@ class ClosureLinterSniff implements Sniff, DeprecatedSniff
     public function getDeprecationVersion()
     {
         return 'v3.9.0';
+
     }//end getDeprecationVersion()
 
 
@@ -134,6 +137,7 @@ class ClosureLinterSniff implements Sniff, DeprecatedSniff
     public function getRemovalVersion()
     {
         return 'v4.0.0';
+
     }//end getRemovalVersion()
 
 
@@ -145,5 +149,8 @@ class ClosureLinterSniff implements Sniff, DeprecatedSniff
     public function getDeprecationMessage()
     {
         return 'Support for scanning JavaScript files will be removed completely in v4.0.0.';
+
     }//end getDeprecationMessage()
+
+
 }//end class

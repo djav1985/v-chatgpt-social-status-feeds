@@ -41,8 +41,7 @@ final class TranscriptionSessionResponse implements ResponseContract
         public readonly ?InputAudioTranscription $inputAudioTranscription,
         public readonly ?array $modalities,
         public readonly ?TurnDetection $turnDetection,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  TranscriptionSessionType  $attributes

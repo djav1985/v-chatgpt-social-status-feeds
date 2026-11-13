@@ -54,7 +54,7 @@ class ColumnDiff
 
     public function hasTypeChanged(): bool
     {
-        return $this->newColumn->getTypeName() !== $this->oldColumn->getTypeName();
+        return $this->newColumn->getType()::class !== $this->oldColumn->getType()::class;
     }
 
     public function hasLengthChanged(): bool

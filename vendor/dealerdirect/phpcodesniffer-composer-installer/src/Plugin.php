@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-namespace Dealerdirect\Composer\Plugin\Installers\PHPCodeSniffer;
+namespace PHPCSStandards\Composer\Plugin\Installers\PHPCodeSniffer;
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
@@ -37,10 +37,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     const KEY_MAX_DEPTH = 'phpcodesniffer-search-depth';
 
     const MESSAGE_ERROR_WRONG_MAX_DEPTH =
-        'The value of "%s" (in the composer.json "extra".section) must be an integer larger then %d, %s given.';
+        'The value of "%s" (in the composer.json "extra".section) must be an integer larger than %d, %s given.';
 
     const MESSAGE_NOT_INSTALLED      = 'PHPCodeSniffer is not installed';
-    const MESSAGE_NOTHING_TO_INSTALL = 'Nothing to install or update';
+    const MESSAGE_NOTHING_TO_INSTALL = 'No PHPCS standards to install or update';
     const MESSAGE_PLUGIN_UNINSTALLED = 'PHPCodeSniffer Composer Installer is uninstalled';
     const MESSAGE_RUNNING_INSTALLER  = 'Running PHPCodeSniffer Composer Installer';
 
@@ -234,9 +234,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         if ($this->isPHPCodeSnifferInstalled() === true) {
             $this->processExecutor->execute(
-                'phpcs --config-show',
+                $this->getPhpcsCommand() . ' --config-show',
                 $output,
-                $this->composer->getConfig()->get('bin-dir')
+                $this->getPHPCodeSnifferInstallPath()
             );
 
             $regex = sprintf(self::PHPCS_CONFIG_REGEX, self::PHPCS_CONFIG_KEY);
@@ -287,27 +287,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             self::PHPCS_CONFIG_KEY
         );
 
-        // Determine the path to the main PHPCS file.
-        $phpcsPath = $this->getPHPCodeSnifferInstallPath();
-        if (file_exists($phpcsPath . '/bin/phpcs') === true) {
-            // PHPCS 3.x.
-            $phpcsExecutable = './bin/phpcs';
-        } else {
-            // PHPCS 2.x.
-            $phpcsExecutable = './scripts/phpcs';
-        }
-
         // Okay, lets rock!
         $command = vsprintf(
-            '%s %s %s',
+            '%s %s',
             array(
-                'php executable'   => $this->getPhpExecCommand(),
-                'phpcs executable' => $phpcsExecutable,
-                'arguments'        => implode(' ', $arguments),
+                'phpcs command' => $this->getPhpcsCommand(),
+                'arguments'     => implode(' ', $arguments),
             )
         );
 
-        $exitCode = $this->processExecutor->execute($command, $configResult, $phpcsPath);
+        $exitCode = $this->processExecutor->execute($command, $configResult, $this->getPHPCodeSnifferInstallPath());
         if ($exitCode === 0) {
             $exitCode = $this->verifySaveSuccess();
         }
@@ -360,6 +349,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
+     * Get the command to call PHPCS.
+     */
+    protected function getPhpcsCommand()
+    {
+        return vsprintf(
+            '%s %s',
+            array(
+                'php executable'   => $this->getPhpExecCommand(),
+                'phpcs executable' => './bin/phpcs',
+            )
+        );
+    }
+
+    /**
      * Get the path to the current PHP version being used.
      *
      * Duplicate of the same in the EventDispatcher class in Composer itself.
@@ -402,17 +405,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $changes = false;
         foreach ($this->installedPaths as $key => $path) {
-            // This might be a relative path as well
-            $alternativePath = realpath($this->getPHPCodeSnifferInstallPath() . \DIRECTORY_SEPARATOR . $path);
+            // Resolve relative paths to absolute using the PHPCS install path as the base
+            // to avoid potential open_basedir warnings from is_dir() on relative paths.
+            if ($this->filesystem->isAbsolutePath($path) === false) {
+                $path = realpath($this->getPHPCodeSnifferInstallPath() . \DIRECTORY_SEPARATOR . $path);
+            }
 
-            if (
-                (is_dir($path) === false || is_readable($path) === false) &&
-                (
-                    $alternativePath === false ||
-                    is_dir($alternativePath) === false ||
-                    is_readable($alternativePath) === false
-                )
-            ) {
+            if ($path === false || is_dir($path) === false || is_readable($path) === false) {
                 unset($this->installedPaths[$key]);
                 $changes = true;
             }
@@ -431,9 +430,17 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     private function updateInstalledPaths()
     {
-        $changes = false;
+        $changes     = false;
+        $searchPaths = array();
 
-        $searchPaths            = array($this->cwd);
+        // Add root package only if it has the expected package type.
+        if (
+            $this->composer->getPackage() instanceof RootPackageInterface
+            && $this->composer->getPackage()->getType() === self::PACKAGE_TYPE
+        ) {
+            $searchPaths[] = $this->cwd;
+        }
+
         $codingStandardPackages = $this->getPHPCodingStandardPackages();
         foreach ($codingStandardPackages as $package) {
             $installPath = $this->composer->getInstallationManager()->getInstallPath($package);
@@ -443,6 +450,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 );
             }
             $searchPaths[] = $installPath;
+        }
+
+        // Nothing to do.
+        if ($searchPaths === array()) {
+            return false;
         }
 
         $finder = new Finder();
@@ -486,9 +498,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * Iterates through Composers' local repository looking for valid Coding
      * Standard packages.
      *
-     * If the package is the RootPackage (the one the plugin is installed into),
-     * the package is ignored for now since it needs a different install path logic.
-     *
      * @return array Composer packages containing coding standard(s)
      */
     private function getPHPCodingStandardPackages()
@@ -502,13 +511,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 return $package->getType() === Plugin::PACKAGE_TYPE;
             }
         );
-
-        if (
-            ! $this->composer->getPackage() instanceof RootPackageInterface
-            && $this->composer->getPackage()->getType() === self::PACKAGE_TYPE
-        ) {
-            $codingStandardPackages[] = $this->composer->getPackage();
-        }
 
         return $codingStandardPackages;
     }
@@ -534,6 +536,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Returns the path to the PHP_CodeSniffer package installation location
      *
+     * {@internal Do NOT try to modernize via the Composer 2.2 API (`InstalledVersions::getInstallPath()`).
+     * Doing so doesn't play nice with other plugins.
+     * {@link https://github.com/PHPCSStandards/composer-installer/issues/239}}
+     *
      * @return string
      */
     private function getPHPCodeSnifferInstallPath()
@@ -543,6 +549,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * Simple check if PHP_CodeSniffer is installed.
+     *
+     * {@internal Do NOT try to modernize via the Composer 2.2 API (`InstalledVersions::isInstalled()`).
+     * Doing so doesn't play nice with integrations calling the Composer EventDispatcher programmatically.
+     * {@link https://github.com/PHPCSStandards/composer-installer/issues/247}}
      *
      * @param null|string|\Composer\Semver\Constraint\ConstraintInterface $versionConstraint to match against
      *

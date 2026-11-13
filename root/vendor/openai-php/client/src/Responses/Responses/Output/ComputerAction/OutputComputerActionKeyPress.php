@@ -29,8 +29,7 @@ final class OutputComputerActionKeyPress implements ResponseContract
     private function __construct(
         public readonly array $keys,
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  KeyPressType  $attributes

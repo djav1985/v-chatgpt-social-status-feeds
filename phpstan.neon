@@ -1,4 +1,8 @@
+includes:
+  - phpstan-baseline.neon
+
 parameters:
+  tmpDir: .phpstan-cache
   level: 6
   paths:
     - root/app
@@ -9,6 +13,3 @@ parameters:
     - root/vendor
   bootstrapFiles:
     - .github/phpstan-bootstrap.php
-
-  ignoreErrors:
-    - '#Variable \$\w+ might not be defined\.#'

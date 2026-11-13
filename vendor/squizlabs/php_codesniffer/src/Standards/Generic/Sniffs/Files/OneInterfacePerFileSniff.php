@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that only one interface is declared per file.
  *
  * @author    Andy Grunwald <andygrunwald@gmail.com>
  * @copyright 2010-2014 Andy Grunwald
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Files;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class OneInterfacePerFileSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -23,6 +24,7 @@ class OneInterfacePerFileSniff implements Sniff
     public function register()
     {
         return [T_INTERFACE];
+
     }//end register()
 
 
@@ -48,5 +50,8 @@ class OneInterfacePerFileSniff implements Sniff
             $error = 'Only one interface is allowed in a file';
             $phpcsFile->addError($error, $nextInterface, 'MultipleFound');
         }
+
     }//end process()
+
+
 }//end class

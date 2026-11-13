@@ -1,11 +1,10 @@
 <?php
-
 /**
  * XML report for PHP_CodeSniffer.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Reports;
@@ -16,6 +15,8 @@ use XMLWriter;
 
 class Xml implements Report
 {
+
+
     /**
      * Generate a partial report for a single processed file.
      *
@@ -31,9 +32,9 @@ class Xml implements Report
      *
      * @return bool
      */
-    public function generateFileReport($report, File $phpcsFile, $showSources = false, $width = 80)
+    public function generateFileReport($report, File $phpcsFile, $showSources=false, $width=80)
     {
-        $out = new XMLWriter();
+        $out = new XMLWriter;
         $out->openMemory();
         $out->setIndent(true);
         $out->setIndentString('    ');
@@ -78,13 +79,14 @@ class Xml implements Report
         $content = $out->flush();
         if (strpos($content, PHP_EOL) !== false) {
             $content = substr($content, (strpos($content, PHP_EOL) + strlen(PHP_EOL)));
-        } elseif (strpos($content, "\n") !== false) {
+        } else if (strpos($content, "\n") !== false) {
             $content = substr($content, (strpos($content, "\n") + 1));
         }
 
         echo $content;
 
         return true;
+
     }//end generateFileReport()
 
 
@@ -110,14 +112,17 @@ class Xml implements Report
         $totalErrors,
         $totalWarnings,
         $totalFixable,
-        $showSources = false,
-        $width = 80,
-        $interactive = false,
-        $toScreen = true
+        $showSources=false,
+        $width=80,
+        $interactive=false,
+        $toScreen=true
     ) {
-        echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        echo '<phpcs version="' . Config::VERSION . '">' . PHP_EOL;
+        echo '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
+        echo '<phpcs version="'.Config::VERSION.'">'.PHP_EOL;
         echo $cachedData;
-        echo '</phpcs>' . PHP_EOL;
+        echo '</phpcs>'.PHP_EOL;
+
     }//end generate()
+
+
 }//end class

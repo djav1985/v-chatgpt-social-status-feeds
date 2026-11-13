@@ -1,5 +1,4 @@
 <?php
-
 /**
  * A class to find T_VARIABLE tokens.
  *
@@ -11,7 +10,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Sniffs;
@@ -21,6 +20,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 abstract class AbstractVariableSniff extends AbstractScopeSniff
 {
+
     /**
      * List of PHP Reserved variables.
      *
@@ -58,6 +58,7 @@ abstract class AbstractVariableSniff extends AbstractScopeSniff
         ];
 
         parent::__construct($scopes, $listen, true);
+
     }//end __construct()
 
 
@@ -78,8 +79,7 @@ abstract class AbstractVariableSniff extends AbstractScopeSniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (
-            $tokens[$stackPtr]['code'] === T_DOUBLE_QUOTED_STRING
+        if ($tokens[$stackPtr]['code'] === T_DOUBLE_QUOTED_STRING
             || $tokens[$stackPtr]['code'] === T_HEREDOC
         ) {
             // Check to see if this string has a variable in it.
@@ -129,8 +129,7 @@ abstract class AbstractVariableSniff extends AbstractScopeSniff
                 }
 
                 $owner = $tokens[$opener]['parenthesis_owner'];
-                if (
-                    $tokens[$owner]['code'] === T_FUNCTION
+                if ($tokens[$owner]['code'] === T_FUNCTION
                     || $tokens[$owner]['code'] === T_CLOSURE
                 ) {
                     $inFunction = true;
@@ -144,6 +143,7 @@ abstract class AbstractVariableSniff extends AbstractScopeSniff
         } else {
             return $this->processMemberVar($phpcsFile, $stackPtr);
         }
+
     }//end processTokenWithinScope()
 
 
@@ -165,8 +165,7 @@ abstract class AbstractVariableSniff extends AbstractScopeSniff
         // These variables are not member vars.
         if ($tokens[$stackPtr]['code'] === T_VARIABLE) {
             return $this->processVariable($phpcsFile, $stackPtr);
-        } elseif (
-            $tokens[$stackPtr]['code'] === T_DOUBLE_QUOTED_STRING
+        } else if ($tokens[$stackPtr]['code'] === T_DOUBLE_QUOTED_STRING
             || $tokens[$stackPtr]['code'] === T_HEREDOC
         ) {
             // Check to see if this string has a variable in it.
@@ -175,6 +174,7 @@ abstract class AbstractVariableSniff extends AbstractScopeSniff
                 return $this->processVariableInString($phpcsFile, $stackPtr);
             }
         }
+
     }//end processTokenOutsideScope()
 
 
@@ -225,4 +225,6 @@ abstract class AbstractVariableSniff extends AbstractScopeSniff
      *                  the rest of the file.
      */
     abstract protected function processVariableInString(File $phpcsFile, $stackPtr);
+
+
 }//end class

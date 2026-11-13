@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Verifies spacing between the spread operator and the variable/function call it applies to.
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2019 Juliette Reinders Folmer. All rights reserved.
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace;
@@ -16,6 +15,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SpreadOperatorSpacingAfterSniff implements Sniff
 {
+
     /**
      * The number of spaces desired after a spread token.
      *
@@ -39,6 +39,7 @@ class SpreadOperatorSpacingAfterSniff implements Sniff
     public function register()
     {
         return [T_ELLIPSIS];
+
     }//end register()
 
 
@@ -70,8 +71,7 @@ class SpreadOperatorSpacingAfterSniff implements Sniff
             return;
         }
 
-        if (
-            $this->ignoreNewlines === true
+        if ($this->ignoreNewlines === true
             && $tokens[$stackPtr]['line'] !== $tokens[$nextNonEmpty]['line']
         ) {
             $phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', 'newline');
@@ -104,7 +104,7 @@ class SpreadOperatorSpacingAfterSniff implements Sniff
         $found = 0;
         if ($tokens[$stackPtr]['line'] !== $tokens[$nextNonEmpty]['line']) {
             $found = 'newline';
-        } elseif ($tokens[($stackPtr + 1)]['code'] === T_WHITESPACE) {
+        } else if ($tokens[($stackPtr + 1)]['code'] === T_WHITESPACE) {
             $found = $tokens[($stackPtr + 1)]['length'];
         }
 
@@ -125,7 +125,7 @@ class SpreadOperatorSpacingAfterSniff implements Sniff
         if ($this->spacing !== 0) {
             if ($found === 0) {
                 $errorCode = 'NoSpace';
-            } elseif ($found !== 'newline' && $found < $this->spacing) {
+            } else if ($found !== 'newline' && $found < $this->spacing) {
                 $errorCode = 'TooLittleSpace';
             }
         }
@@ -152,5 +152,8 @@ class SpreadOperatorSpacingAfterSniff implements Sniff
                 $phpcsFile->fixer->endChangeset();
             }
         }
+
     }//end process()
+
+
 }//end class

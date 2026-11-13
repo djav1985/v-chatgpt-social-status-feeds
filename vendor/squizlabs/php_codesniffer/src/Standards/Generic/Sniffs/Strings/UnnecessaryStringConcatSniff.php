@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that two strings are not concatenated together; suggests using one string instead.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Strings;
@@ -16,6 +15,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UnnecessaryStringConcatSniff implements Sniff
 {
+
     /**
      * A list of tokenizers this sniff supports.
      *
@@ -55,6 +55,7 @@ class UnnecessaryStringConcatSniff implements Sniff
             T_STRING_CONCAT,
             T_PLUS,
         ];
+
     }//end register()
 
 
@@ -74,7 +75,7 @@ class UnnecessaryStringConcatSniff implements Sniff
         if ($tokens[$stackPtr]['code'] === T_STRING_CONCAT && $phpcsFile->tokenizerType === 'JS') {
             // JS uses T_PLUS for string concatenation, not T_STRING_CONCAT.
             return;
-        } elseif ($tokens[$stackPtr]['code'] === T_PLUS && $phpcsFile->tokenizerType === 'PHP') {
+        } else if ($tokens[$stackPtr]['code'] === T_PLUS && $phpcsFile->tokenizerType === 'PHP') {
             // PHP uses T_STRING_CONCAT for string concatenation, not T_PLUS.
             return;
         }
@@ -85,8 +86,7 @@ class UnnecessaryStringConcatSniff implements Sniff
             return;
         }
 
-        if (
-            isset(Tokens::$stringTokens[$tokens[$prev]['code']]) === false
+        if (isset(Tokens::$stringTokens[$tokens[$prev]['code']]) === false
             || isset(Tokens::$stringTokens[$tokens[$next]['code']]) === false
         ) {
             // Bow out as at least one of the two tokens being concatenated is not a string.
@@ -104,14 +104,13 @@ class UnnecessaryStringConcatSniff implements Sniff
         if ($phpcsFile->tokenizerType === 'PHP') {
             $prevChar = substr($tokens[$prev]['content'], -2, 1);
             $nextChar = $tokens[$next]['content'][1];
-            $combined = $prevChar . $nextChar;
-            if ($combined === '?' . '>' || $combined === '<' . '?') {
+            $combined = $prevChar.$nextChar;
+            if ($combined === '?'.'>' || $combined === '<'.'?') {
                 return;
             }
         }
 
-        if (
-            $this->allowMultiline === true
+        if ($this->allowMultiline === true
             && $tokens[$prev]['line'] !== $tokens[$next]['line']
         ) {
             return;
@@ -123,5 +122,8 @@ class UnnecessaryStringConcatSniff implements Sniff
         } else {
             $phpcsFile->addWarning($error, $stackPtr, 'Found');
         }
+
     }//end process()
+
+
 }//end class

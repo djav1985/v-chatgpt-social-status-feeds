@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Ensures heredoc/nowdoc identifiers do not have any whitespace before them.
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2024 PHPCSStandards and contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class HereNowdocIdentifierSpacingSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -26,6 +27,7 @@ class HereNowdocIdentifierSpacingSniff implements Sniff
             T_START_HEREDOC,
             T_START_NOWDOC,
         ];
+
     }//end register()
 
 
@@ -42,8 +44,7 @@ class HereNowdocIdentifierSpacingSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (
-            strpos($tokens[$stackPtr]['content'], ' ') === false
+        if (strpos($tokens[$stackPtr]['content'], ' ') === false
             && strpos($tokens[$stackPtr]['content'], "\t") === false
         ) {
             // Nothing to do.
@@ -61,5 +62,8 @@ class HereNowdocIdentifierSpacingSniff implements Sniff
             $replacement = str_replace([' ', "\t"], '', $tokens[$stackPtr]['content']);
             $phpcsFile->fixer->replaceToken($stackPtr, $replacement);
         }
+
     }//end process()
+
+
 }//end class

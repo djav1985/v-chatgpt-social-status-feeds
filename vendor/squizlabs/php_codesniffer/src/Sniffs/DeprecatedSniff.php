@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Marks a sniff as deprecated.
  *
@@ -10,14 +9,16 @@
  * as well, or extend an abstract sniff which does, to be recognized as a valid sniff.
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
- * @copyright 2024 PHPCSStandards Contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @copyright 2024 PHPCSStandards and contributors
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Sniffs;
 
 interface DeprecatedSniff
 {
+
+
     /**
      * Provide the version number in which the sniff was deprecated.
      *
@@ -57,4 +58,6 @@ interface DeprecatedSniff
      * @return string
      */
     public function getDeprecationMessage();
+
+
 }//end interface

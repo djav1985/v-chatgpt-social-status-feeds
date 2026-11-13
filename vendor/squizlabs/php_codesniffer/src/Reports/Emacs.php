@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Emacs report for PHP_CodeSniffer.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Reports;
@@ -14,6 +13,8 @@ use PHP_CodeSniffer\Files\File;
 
 class Emacs implements Report
 {
+
+
     /**
      * Generate a partial report for a single processed file.
      *
@@ -29,7 +30,7 @@ class Emacs implements Report
      *
      * @return bool
      */
-    public function generateFileReport($report, File $phpcsFile, $showSources = false, $width = 80)
+    public function generateFileReport($report, File $phpcsFile, $showSources=false, $width=80)
     {
         if ($report['errors'] === 0 && $report['warnings'] === 0) {
             // Nothing to print.
@@ -41,16 +42,17 @@ class Emacs implements Report
                 foreach ($colErrors as $error) {
                     $message = $error['message'];
                     if ($showSources === true) {
-                        $message .= ' (' . $error['source'] . ')';
+                        $message .= ' ('.$error['source'].')';
                     }
 
                     $type = strtolower($error['type']);
-                    echo $report['filename'] . ':' . $line . ':' . $column . ': ' . $type . ' - ' . $message . PHP_EOL;
+                    echo $report['filename'].':'.$line.':'.$column.': '.$type.' - '.$message.PHP_EOL;
                 }
             }
         }
 
         return true;
+
     }//end generateFileReport()
 
 
@@ -76,11 +78,14 @@ class Emacs implements Report
         $totalErrors,
         $totalWarnings,
         $totalFixable,
-        $showSources = false,
-        $width = 80,
-        $interactive = false,
-        $toScreen = true
+        $showSources=false,
+        $width=80,
+        $interactive=false,
+        $toScreen=true
     ) {
         echo $cachedData;
+
     }//end generate()
+
+
 }//end class

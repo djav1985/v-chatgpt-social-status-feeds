@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Diff report for PHP_CodeSniffer.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Reports;
@@ -14,6 +13,8 @@ use PHP_CodeSniffer\Files\File;
 
 class Diff implements Report
 {
+
+
     /**
      * Generate a partial report for a single processed file.
      *
@@ -29,7 +30,7 @@ class Diff implements Report
      *
      * @return bool
      */
-    public function generateFileReport($report, File $phpcsFile, $showSources = false, $width = 80)
+    public function generateFileReport($report, File $phpcsFile, $showSources=false, $width=80)
     {
         $errors = $phpcsFile->getFixableCount();
         if ($errors === 0) {
@@ -41,9 +42,9 @@ class Diff implements Report
         if (empty($tokens) === true) {
             if (PHP_CODESNIFFER_VERBOSITY === 1) {
                 $startTime = microtime(true);
-                echo 'DIFF report is parsing ' . basename($report['filename']) . ' ';
-            } elseif (PHP_CODESNIFFER_VERBOSITY > 1) {
-                echo 'DIFF report is forcing parse of ' . $report['filename'] . PHP_EOL;
+                echo 'DIFF report is parsing '.basename($report['filename']).' ';
+            } else if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                echo 'DIFF report is forcing parse of '.$report['filename'].PHP_EOL;
             }
 
             $phpcsFile->parse();
@@ -66,13 +67,13 @@ class Diff implements Report
 
         if (PHP_CODESNIFFER_VERBOSITY > 1) {
             ob_end_clean();
-            echo "\t*** START FILE FIXING ***" . PHP_EOL;
+            echo "\t*** START FILE FIXING ***".PHP_EOL;
         }
 
         $fixed = $phpcsFile->fixer->fixFile();
 
         if (PHP_CODESNIFFER_VERBOSITY > 1) {
-            echo "\t*** END FILE FIXING ***" . PHP_EOL;
+            echo "\t*** END FILE FIXING ***".PHP_EOL;
             ob_start();
         }
 
@@ -86,8 +87,9 @@ class Diff implements Report
             return false;
         }
 
-        echo $diff . PHP_EOL;
+        echo $diff.PHP_EOL;
         return true;
+
     }//end generateFileReport()
 
 
@@ -113,14 +115,17 @@ class Diff implements Report
         $totalErrors,
         $totalWarnings,
         $totalFixable,
-        $showSources = false,
-        $width = 80,
-        $interactive = false,
-        $toScreen = true
+        $showSources=false,
+        $width=80,
+        $interactive=false,
+        $toScreen=true
     ) {
         echo $cachedData;
         if ($toScreen === true && $cachedData !== '') {
             echo PHP_EOL;
         }
+
     }//end generate()
+
+
 }//end class

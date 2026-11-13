@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Checks that the opening PHP tag is the first content in a file.
  *
  * @author    Andy Grunwald <andygrunwald@gmail.com>
  * @copyright 2010-2014 Andy Grunwald
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
@@ -15,6 +14,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class CharacterBeforePHPOpeningTagSniff implements Sniff
 {
+
     /**
      * List of supported BOM definitions.
      *
@@ -37,6 +37,7 @@ class CharacterBeforePHPOpeningTagSniff implements Sniff
     public function register()
     {
         return [T_OPEN_TAG];
+
     }//end register()
 
 
@@ -78,5 +79,8 @@ class CharacterBeforePHPOpeningTagSniff implements Sniff
         // Skip the rest of the file so we don't pick up additional
         // open tags, typically embedded in HTML.
         return $phpcsFile->numTokens;
+
     }//end process()
+
+
 }//end class

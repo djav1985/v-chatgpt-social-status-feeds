@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Makes sure that shorthand PHP open tags are not used.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\PHP;
@@ -16,6 +15,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DisallowShortOpenTagSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -34,6 +35,7 @@ class DisallowShortOpenTagSniff implements Sniff
         }
 
         return $targets;
+
     }//end register()
 
 
@@ -110,7 +112,7 @@ class DisallowShortOpenTagSniff implements Sniff
                 if ($closerFound !== false) {
                     if ($i !== $stackPtr) {
                         break;
-                    } elseif ($closerFound > $openerFound) {
+                    } else if ($closerFound > $openerFound) {
                         break;
                     } else {
                         $closerFound = false;
@@ -121,7 +123,7 @@ class DisallowShortOpenTagSniff implements Sniff
             if ($closerFound !== false) {
                 $error   = 'Possible use of short open tags detected; found: %s';
                 $snippet = $this->getSnippet($content, '<?');
-                $data    = ['<?' . $snippet];
+                $data    = ['<?'.$snippet];
 
                 $phpcsFile->addWarning($error, $stackPtr, 'PossibleFound', $data);
 
@@ -131,6 +133,7 @@ class DisallowShortOpenTagSniff implements Sniff
                 }
             }
         }//end if
+
     }//end process()
 
 
@@ -143,7 +146,7 @@ class DisallowShortOpenTagSniff implements Sniff
      *
      * @return string
      */
-    protected function getSnippet($content, $start = '', $length = 40)
+    protected function getSnippet($content, $start='', $length=40)
     {
         $startPos = 0;
 
@@ -160,5 +163,8 @@ class DisallowShortOpenTagSniff implements Sniff
         }
 
         return $snippet;
+
     }//end getSnippet()
+
+
 }//end class

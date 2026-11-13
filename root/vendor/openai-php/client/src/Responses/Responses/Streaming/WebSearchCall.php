@@ -30,8 +30,7 @@ final class WebSearchCall implements ResponseContract, ResponseHasMetaInformatio
         public readonly string $itemId,
         public readonly int $outputIndex,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  WebSearchCallType  $attributes

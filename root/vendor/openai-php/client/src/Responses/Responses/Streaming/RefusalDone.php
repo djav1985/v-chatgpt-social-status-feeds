@@ -32,8 +32,7 @@ final class RefusalDone implements ResponseContract, ResponseHasMetaInformationC
         public readonly int $outputIndex,
         public readonly string $refusal,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  RefusalDoneType  $attributes

@@ -31,8 +31,7 @@ final class DeleteContainer implements ResponseContract, ResponseHasMetaInformat
         public readonly string $object,
         public readonly bool $deleted,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  DeleteContainerType  $attributes

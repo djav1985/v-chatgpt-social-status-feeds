@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Full report for PHP_CodeSniffer.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Reports;
@@ -17,6 +16,8 @@ use PHP_CodeSniffer\Util\Timing;
 
 class Code implements Report
 {
+
+
     /**
      * Generate a partial report for a single processed file.
      *
@@ -32,7 +33,7 @@ class Code implements Report
      *
      * @return bool
      */
-    public function generateFileReport($report, File $phpcsFile, $showSources = false, $width = 80)
+    public function generateFileReport($report, File $phpcsFile, $showSources=false, $width=80)
     {
         if ($report['errors'] === 0 && $report['warnings'] === 0) {
             // Nothing to print.
@@ -47,9 +48,9 @@ class Code implements Report
         if (empty($tokens) === true) {
             if (PHP_CODESNIFFER_VERBOSITY === 1) {
                 $startTime = microtime(true);
-                echo 'CODE report is parsing ' . basename($file) . ' ';
-            } elseif (PHP_CODESNIFFER_VERBOSITY > 1) {
-                echo "CODE report is forcing parse of $file" . PHP_EOL;
+                echo 'CODE report is parsing '.basename($file).' ';
+            } else if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                echo "CODE report is forcing parse of $file".PHP_EOL;
             }
 
             try {
@@ -170,34 +171,34 @@ class Code implements Report
         }
 
         // Print the file header.
-        echo PHP_EOL . "\033[1mFILE: ";
+        echo PHP_EOL."\033[1mFILE: ";
         if ($fileLength <= ($width - 6)) {
             echo $file;
         } else {
-            echo '...' . substr($file, ($fileLength - ($width - 6)));
+            echo '...'.substr($file, ($fileLength - ($width - 6)));
         }
 
-        echo "\033[0m" . PHP_EOL;
-        echo str_repeat('-', $width) . PHP_EOL;
+        echo "\033[0m".PHP_EOL;
+        echo str_repeat('-', $width).PHP_EOL;
 
-        echo "\033[1m" . 'FOUND ' . $report['errors'] . ' ERROR';
+        echo "\033[1m".'FOUND '.$report['errors'].' ERROR';
         if ($report['errors'] !== 1) {
             echo 'S';
         }
 
         if ($report['warnings'] > 0) {
-            echo ' AND ' . $report['warnings'] . ' WARNING';
+            echo ' AND '.$report['warnings'].' WARNING';
             if ($report['warnings'] !== 1) {
                 echo 'S';
             }
         }
 
-        echo ' AFFECTING ' . count($report['messages']) . ' LINE';
+        echo ' AFFECTING '.count($report['messages']).' LINE';
         if (count($report['messages']) !== 1) {
             echo 'S';
         }
 
-        echo "\033[0m" . PHP_EOL;
+        echo "\033[0m".PHP_EOL;
 
         foreach ($report['messages'] as $line => $lineErrors) {
             $startLine = max(($line - $surroundingLines), 1);
@@ -210,13 +211,13 @@ class Code implements Report
                     if ($lineTokens[$snippetLine]['start'] === $i) {
                         // Starting a new line.
                         if ($snippetLine === $line) {
-                            $snippet .= "\033[1m" . '>> ';
+                            $snippet .= "\033[1m".'>> ';
                         } else {
                             $snippet .= '   ';
                         }
 
                         $snippet .= str_repeat(' ', ($maxLineNumLength - strlen($snippetLine)));
-                        $snippet .= $snippetLine . ':  ';
+                        $snippet .= $snippetLine.':  ';
                         if ($snippetLine === $line) {
                             $snippet .= "\033[0m";
                         }
@@ -251,7 +252,7 @@ class Code implements Report
 
                     // Underline invisible characters as well.
                     if ($underline === true && trim($tokenContent) === '') {
-                        $snippet .= "\033[4m" . ' ' . "\033[0m" . $tokenContent;
+                        $snippet .= "\033[4m".' '."\033[0m".$tokenContent;
                     } else {
                         if ($underline === true) {
                             $snippet .= "\033[4m";
@@ -266,12 +267,12 @@ class Code implements Report
                 }//end for
             }//end if
 
-            echo str_repeat('-', $width) . PHP_EOL;
+            echo str_repeat('-', $width).PHP_EOL;
 
             foreach ($lineErrors as $colErrors) {
                 foreach ($colErrors as $error) {
                     $padding = ($maxLineNumLength - strlen($line));
-                    echo 'LINE ' . str_repeat(' ', $padding) . $line . ': ';
+                    echo 'LINE '.str_repeat(' ', $padding).$line.': ';
 
                     if ($error['type'] === 'ERROR') {
                         echo "\033[31mERROR\033[0m";
@@ -295,32 +296,33 @@ class Code implements Report
                     }
 
                     $message = $error['message'];
-                    $message = str_replace("\n", "\n" . $errorPadding, $message);
+                    $message = str_replace("\n", "\n".$errorPadding, $message);
                     if ($showSources === true) {
-                        $message = "\033[1m" . $message . "\033[0m" . ' (' . $error['source'] . ')';
+                        $message = "\033[1m".$message."\033[0m".' ('.$error['source'].')';
                     }
 
                     $errorMsg = wordwrap(
                         $message,
                         $maxErrorSpace,
-                        PHP_EOL . $errorPadding
+                        PHP_EOL.$errorPadding
                     );
 
-                    echo $errorMsg . PHP_EOL;
+                    echo $errorMsg.PHP_EOL;
                 }//end foreach
             }//end foreach
 
-            echo str_repeat('-', $width) . PHP_EOL;
-            echo rtrim($snippet) . PHP_EOL;
+            echo str_repeat('-', $width).PHP_EOL;
+            echo rtrim($snippet).PHP_EOL;
         }//end foreach
 
-        echo str_repeat('-', $width) . PHP_EOL;
+        echo str_repeat('-', $width).PHP_EOL;
         if ($report['fixable'] > 0) {
-            echo "\033[1m" . 'PHPCBF CAN FIX THE ' . $report['fixable'] . ' MARKED SNIFF VIOLATIONS AUTOMATICALLY' . "\033[0m" . PHP_EOL;
-            echo str_repeat('-', $width) . PHP_EOL;
+            echo "\033[1m".'PHPCBF CAN FIX THE '.$report['fixable'].' MARKED SNIFF VIOLATIONS AUTOMATICALLY'."\033[0m".PHP_EOL;
+            echo str_repeat('-', $width).PHP_EOL;
         }
 
         return true;
+
     }//end generateFileReport()
 
 
@@ -346,10 +348,10 @@ class Code implements Report
         $totalErrors,
         $totalWarnings,
         $totalFixable,
-        $showSources = false,
-        $width = 80,
-        $interactive = false,
-        $toScreen = true
+        $showSources=false,
+        $width=80,
+        $interactive=false,
+        $toScreen=true
     ) {
         if ($cachedData === '') {
             return;
@@ -360,5 +362,8 @@ class Code implements Report
         if ($toScreen === true && $interactive === false) {
             Timing::printRunTime();
         }
+
     }//end generate()
+
+
 }//end class

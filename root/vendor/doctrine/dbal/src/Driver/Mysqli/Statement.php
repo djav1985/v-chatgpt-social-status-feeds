@@ -70,7 +70,9 @@ final class Statement implements StatementInterface
         }
 
         try {
-            $this->stmt->execute();
+            if (! $this->stmt->execute()) {
+                throw StatementError::new($this->stmt);
+            }
         } catch (mysqli_sql_exception $e) {
             throw StatementError::upcast($e);
         }
@@ -111,10 +113,8 @@ final class Statement implements StatementInterface
             $values[$parameter] = $value;
         }
 
-        try {
-            $this->stmt->bind_param($types, ...$values);
-        } catch (mysqli_sql_exception $e) {
-            throw StatementError::upcast($e);
+        if (! $this->stmt->bind_param($types, ...$values)) {
+            throw StatementError::new($this->stmt);
         }
 
         $this->sendLongData($streams);
@@ -137,10 +137,8 @@ final class Statement implements StatementInterface
                     throw FailedReadingStreamOffset::new($paramNr);
                 }
 
-                try {
-                    $this->stmt->send_long_data($paramNr - 1, $chunk);
-                } catch (mysqli_sql_exception $e) {
-                    throw StatementError::upcast($e);
+                if (! $this->stmt->send_long_data($paramNr - 1, $chunk)) {
+                    throw StatementError::new($this->stmt);
                 }
             }
         }

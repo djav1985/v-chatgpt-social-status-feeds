@@ -41,8 +41,7 @@ final class CreateContainer implements ResponseContract, ResponseHasMetaInformat
         public readonly int $lastActiveAt,
         public readonly string $name,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  CreateContainerType  $attributes

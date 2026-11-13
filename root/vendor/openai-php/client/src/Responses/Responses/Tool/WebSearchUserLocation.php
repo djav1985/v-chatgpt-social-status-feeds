@@ -31,8 +31,7 @@ final class WebSearchUserLocation implements ResponseContract
         public readonly string $country,
         public readonly ?string $region,
         public readonly ?string $timezone,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  UserLocationType  $attributes

@@ -5,6 +5,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ## Unreleased
 ### Changed
+- Updated repository development tools to matching current releases and added runnable PHPStan, ESLint, and Stylelint commands.
 - Database upgrades preserve queued status jobs while migrating their processing state; fresh installs report SQL failures and retain recovery files when setup is incomplete.
 - Reordered class members consistently by declaration type, visibility, and static status.
 - CSRF tokens now use cryptographic randomness, user errors hide internal exception details, database retries avoid ambiguous writes, and image downloads are time- and size-limited.

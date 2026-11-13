@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Ensures the whole file is PHP only, with no whitespace or inline HTML.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Files;
@@ -15,6 +14,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class InlineHTMLSniff implements Sniff
 {
+
     /**
      * List of supported BOM definitions.
      *
@@ -37,6 +37,7 @@ class InlineHTMLSniff implements Sniff
     public function register()
     {
         return [T_INLINE_HTML];
+
     }//end register()
 
 
@@ -71,5 +72,8 @@ class InlineHTMLSniff implements Sniff
         $phpcsFile->addError($error, $stackPtr, 'Found');
 
         return $phpcsFile->numTokens;
+
     }//end process()
+
+
 }//end class

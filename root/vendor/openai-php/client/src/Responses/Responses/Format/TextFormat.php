@@ -27,8 +27,7 @@ final class TextFormat implements ResponseContract
      */
     private function __construct(
         public readonly string $type,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  TextFormatType  $attributes

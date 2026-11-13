@@ -366,7 +366,7 @@ abstract class AbstractMySQLPlatform extends AbstractPlatform
         $queryParts = [];
 
         foreach ($diff->getAddedColumns() as $column) {
-            $columnProperties = array_merge($column->toArray(true), [
+            $columnProperties = array_merge($column->toArray(), [
                 'comment' => $column->getComment(),
             ]);
 
@@ -383,7 +383,7 @@ abstract class AbstractMySQLPlatform extends AbstractPlatform
         foreach ($diff->getChangedColumns() as $columnDiff) {
             $newColumn = $columnDiff->getNewColumn();
 
-            $newColumnProperties = array_merge($newColumn->toArray(true), [
+            $newColumnProperties = array_merge($newColumn->toArray(), [
                 'comment' => $newColumn->getComment(),
             ]);
 
@@ -395,6 +395,7 @@ abstract class AbstractMySQLPlatform extends AbstractPlatform
 
         $droppedIndexes = $this->indexIndexesByLowerCaseName($diff->getDroppedIndexes());
         $addedIndexes   = $this->indexIndexesByLowerCaseName($diff->getAddedIndexes());
+        $diffModified   = false;
 
         $noLongerPrimaryKeyColumns = [];
 
@@ -467,7 +468,7 @@ abstract class AbstractMySQLPlatform extends AbstractPlatform
             $sql = array_merge($sql, $this->getPreAlterTableAlterPrimaryKeySQL($diff, $droppedIndex));
 
             foreach ($diff->getAddedIndexes() as $addedIndex) {
-                if ($droppedIndex->getUnquotedColumns() !== $addedIndex->getUnquotedColumns()) {
+                if ($droppedIndex->getColumns() !== $addedIndex->getColumns()) {
                     continue;
                 }
 
@@ -536,7 +537,7 @@ abstract class AbstractMySQLPlatform extends AbstractPlatform
             $column->setAutoincrement(false);
 
             $sql[] = 'ALTER TABLE ' . $tableNameSQL . ' MODIFY ' .
-                $this->getColumnDeclarationSQL($column->getQuotedName($this), $column->toArray(true));
+                $this->getColumnDeclarationSQL($column->getQuotedName($this), $column->toArray());
 
             // original autoincrement information might be needed later on by other parts of the table alteration
             $column->setAutoincrement(true);
@@ -563,9 +564,11 @@ abstract class AbstractMySQLPlatform extends AbstractPlatform
         $primaryKeyColumns = [];
 
         foreach ($primaryKey->getColumns() as $columnName) {
-            if ($table->hasColumn($columnName)) {
-                $primaryKeyColumns[] = $table->getColumn($columnName);
+            if (! $table->hasColumn($columnName)) {
+                continue;
             }
+
+            $primaryKeyColumns[] = $table->getColumn($columnName);
         }
 
         if (count($primaryKeyColumns) === 0) {
@@ -593,7 +596,7 @@ abstract class AbstractMySQLPlatform extends AbstractPlatform
                 $column->setAutoincrement(false);
 
                 $sql[] = 'ALTER TABLE ' . $tableNameSQL . ' MODIFY ' .
-                    $this->getColumnDeclarationSQL($column->getQuotedName($this), $column->toArray(true));
+                    $this->getColumnDeclarationSQL($column->getQuotedName($this), $column->toArray());
 
                 // Restore the autoincrement attribute as it might be needed later on
                 // by other parts of the table alteration.

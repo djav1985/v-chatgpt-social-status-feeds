@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Tests that files are not executable.
  *
  * @author    Matthew Peveler <matt.peveler@gmail.com>
  * @copyright 2019 Matthew Peveler
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Files;
@@ -15,6 +14,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ExecutableFileSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -26,6 +27,7 @@ class ExecutableFileSniff implements Sniff
             T_OPEN_TAG,
             T_OPEN_TAG_WITH_ECHO,
         ];
+
     }//end register()
 
 
@@ -53,5 +55,8 @@ class ExecutableFileSniff implements Sniff
 
         // Ignore the rest of the file.
         return $phpcsFile->numTokens;
+
     }//end process()
+
+
 }//end class

@@ -35,8 +35,7 @@ final class TranscriptTextDone implements ResponseContract, ResponseHasMetaInfor
         public readonly ?array $logprobs,
         public readonly string $text,
         public readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  TranscriptTextDoneType  $attributes

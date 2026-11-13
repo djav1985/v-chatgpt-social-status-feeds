@@ -70,10 +70,12 @@ class Comparator extends BaseComparator
 
             $overrideOptions = array_diff_assoc($normalizedOptions, $tableOptions);
 
-            if ($overrideOptions !== $originalOptions) {
-                /** @phpstan-ignore argument.type */
-                $column->setPlatformOptions($overrideOptions);
+            if ($overrideOptions === $originalOptions) {
+                continue;
             }
+
+            /** @phpstan-ignore argument.type */
+            $column->setPlatformOptions($overrideOptions);
         }
 
         return $table;

@@ -1,10 +1,9 @@
 <?php
-
 $var = array();
 $var = [1,2,3];
 $var = array(1,2,3);
 echo $var[1];
-$foo = array($var[1],$var[2]);
+$foo = ARRAY($var[1],$var[2]);
 $foo = array(
         1,
         2,
@@ -12,12 +11,9 @@ $foo = array(
        );
 $var = array/*comment*/(1,2,3);
 
-function foo(array $array)
-{
-}
+function foo(array $array) {}
 
-$a = function (array $array) use ($foo): array {
-};
+$a = function (array $array) use ($foo): array {};
 
 abstract function foo(): array;
 
@@ -30,11 +26,8 @@ array_map(
     []
 );
 
-class Foo
-{
-    function array()
-    {
-    }
+class Foo {
+    function array() {}
 }
 
-$obj->array(1, 2, 3);
+$obj->array( 1, 2, 3 );

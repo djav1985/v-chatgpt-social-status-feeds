@@ -32,8 +32,7 @@ final class OutputTextDone implements ResponseContract, ResponseHasMetaInformati
         public readonly int $outputIndex,
         public readonly string $text,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  OutputTextDoneType  $attributes

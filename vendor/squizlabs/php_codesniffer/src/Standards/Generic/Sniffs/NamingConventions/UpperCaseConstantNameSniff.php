@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Ensures that constant names are all uppercase.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions;
@@ -16,6 +15,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UpperCaseConstantNameSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -27,6 +28,7 @@ class UpperCaseConstantNameSniff implements Sniff
             T_STRING,
             T_CONST,
         ];
+
     }//end register()
 
 
@@ -87,8 +89,7 @@ class UpperCaseConstantNameSniff implements Sniff
 
         // Make sure this is not a method call or class instantiation.
         $prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
-        if (
-            $tokens[$prev]['code'] === T_OBJECT_OPERATOR
+        if ($tokens[$prev]['code'] === T_OBJECT_OPERATOR
             || $tokens[$prev]['code'] === T_DOUBLE_COLON
             || $tokens[$prev]['code'] === T_NULLSAFE_OBJECT_OPERATOR
             || $tokens[$prev]['code'] === T_NEW
@@ -136,12 +137,15 @@ class UpperCaseConstantNameSniff implements Sniff
 
             $error = 'Constants must be uppercase; expected %s but found %s';
             $data  = [
-                $prefix . strtoupper($constName),
-                $prefix . $constName,
+                $prefix.strtoupper($constName),
+                $prefix.$constName,
             ];
             $phpcsFile->addError($error, $constPtr, 'ConstantNotUpperCase', $data);
         } else {
             $phpcsFile->recordMetric($constPtr, 'Constant name case', 'upper');
         }
+
     }//end process()
+
+
 }//end class

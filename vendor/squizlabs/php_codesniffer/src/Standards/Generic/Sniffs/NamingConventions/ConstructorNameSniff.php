@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Bans PHP 4 style constructors.
  *
@@ -9,7 +8,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Leif Wickland <lwickland@rightnow.com>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions;
@@ -20,6 +19,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class ConstructorNameSniff extends AbstractScopeSniff
 {
+
     /**
      * The name of the class we are currently checking.
      *
@@ -41,6 +41,7 @@ class ConstructorNameSniff extends AbstractScopeSniff
     public function __construct()
     {
         parent::__construct([T_CLASS, T_ANON_CLASS], [T_FUNCTION], true);
+
     }//end __construct()
 
 
@@ -89,7 +90,7 @@ class ConstructorNameSniff extends AbstractScopeSniff
                 $error = 'PHP4 style constructors are not allowed; use "__construct()" instead';
                 $phpcsFile->addError($error, $stackPtr, 'OldStyle');
             }
-        } elseif ($methodName !== '__construct') {
+        } else if ($methodName !== '__construct') {
             // Not a constructor.
             return;
         }
@@ -110,8 +111,7 @@ class ConstructorNameSniff extends AbstractScopeSniff
         $startIndex       = $tokens[$stackPtr]['scope_opener'];
         while (($doubleColonIndex = $phpcsFile->findNext(T_DOUBLE_COLON, ($startIndex + 1), $endFunctionIndex)) !== false) {
             $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($doubleColonIndex + 1), null, true);
-            if (
-                $tokens[$nextNonEmpty]['code'] !== T_STRING
+            if ($tokens[$nextNonEmpty]['code'] !== T_STRING
                 || strtolower($tokens[$nextNonEmpty]['content']) !== $parentClassNameLc
             ) {
                 $startIndex = $nextNonEmpty;
@@ -119,8 +119,7 @@ class ConstructorNameSniff extends AbstractScopeSniff
             }
 
             $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($doubleColonIndex - 1), null, true);
-            if (
-                $tokens[$prevNonEmpty]['code'] === T_PARENT
+            if ($tokens[$prevNonEmpty]['code'] === T_PARENT
                 || $tokens[$prevNonEmpty]['code'] === T_SELF
                 || $tokens[$prevNonEmpty]['code'] === T_STATIC
                 || ($tokens[$prevNonEmpty]['code'] === T_STRING
@@ -132,6 +131,7 @@ class ConstructorNameSniff extends AbstractScopeSniff
 
             $startIndex = $nextNonEmpty;
         }//end while
+
     }//end processTokenWithinScope()
 
 
@@ -147,6 +147,7 @@ class ConstructorNameSniff extends AbstractScopeSniff
      */
     protected function processTokenOutsideScope(File $phpcsFile, $stackPtr)
     {
+
     }//end processTokenOutsideScope()
 
 
@@ -181,5 +182,8 @@ class ConstructorNameSniff extends AbstractScopeSniff
                 $i = $tokens[$i]['scope_closer'];
             }
         }
+
     }//end loadFunctionNamesInScope()
+
+
 }//end class

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * A doc generator that outputs documentation in Markdown format.
  *
@@ -7,7 +6,7 @@
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2014 Arroba IT
  * @copyright 2024 PHPCSStandards and contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Generators;
@@ -18,6 +17,8 @@ use PHP_CodeSniffer\Config;
 
 class Markdown extends Generator
 {
+
+
     /**
      * Generates the documentation for a standard.
      *
@@ -41,6 +42,7 @@ class Markdown extends Generator
             echo $content;
             echo $this->getFormattedFooter();
         }
+
     }//end generate()
 
 
@@ -56,11 +58,12 @@ class Markdown extends Generator
     protected function printHeader()
     {
         trigger_error(
-            'The ' . __METHOD__ . '() method is deprecated. Use "echo ' . __CLASS__ . '::getFormattedHeader()" instead.',
+            'The '.__METHOD__.'() method is deprecated. Use "echo '.__CLASS__.'::getFormattedHeader()" instead.',
             E_USER_DEPRECATED
         );
 
         echo $this->getFormattedHeader();
+
     }//end printHeader()
 
 
@@ -75,7 +78,8 @@ class Markdown extends Generator
     {
         $standard = $this->ruleset->name;
 
-        return "# $standard Coding Standard" . PHP_EOL;
+        return "# $standard Coding Standard".PHP_EOL;
+
     }//end getFormattedHeader()
 
 
@@ -91,11 +95,12 @@ class Markdown extends Generator
     protected function printFooter()
     {
         trigger_error(
-            'The ' . __METHOD__ . '() method is deprecated. Use "echo ' . __CLASS__ . '::getFormattedFooter()" instead.',
+            'The '.__METHOD__.'() method is deprecated. Use "echo '.__CLASS__.'::getFormattedFooter()" instead.',
             E_USER_DEPRECATED
         );
 
         echo $this->getFormattedFooter();
+
     }//end printFooter()
 
 
@@ -111,11 +116,12 @@ class Markdown extends Generator
         // Turn off errors so we don't get timezone warnings if people
         // don't have their timezone set.
         $errorLevel = error_reporting(0);
-        $output     = PHP_EOL . 'Documentation generated on ' . date('r');
-        $output    .= ' by [PHP_CodeSniffer ' . Config::VERSION . '](https://github.com/PHPCSStandards/PHP_CodeSniffer)' . PHP_EOL;
+        $output     = PHP_EOL.'Documentation generated on '.date('r');
+        $output    .= ' by [PHP_CodeSniffer '.Config::VERSION.'](https://github.com/PHPCSStandards/PHP_CodeSniffer)'.PHP_EOL;
         error_reporting($errorLevel);
 
         return $output;
+
     }//end getFormattedFooter()
 
 
@@ -134,16 +140,17 @@ class Markdown extends Generator
         foreach ($doc->childNodes as $node) {
             if ($node->nodeName === 'standard') {
                 $content .= $this->getFormattedTextBlock($node);
-            } elseif ($node->nodeName === 'code_comparison') {
+            } else if ($node->nodeName === 'code_comparison') {
                 $content .= $this->getFormattedCodeComparisonBlock($node);
             }
         }
 
         if (trim($content) !== '') {
             $title = $this->getTitle($doc);
-            echo PHP_EOL . "## $title" . PHP_EOL . PHP_EOL;
+            echo PHP_EOL."## $title".PHP_EOL.PHP_EOL;
             echo $content;
         }
+
     }//end processSniff()
 
 
@@ -161,11 +168,12 @@ class Markdown extends Generator
     protected function printTextBlock(DOMNode $node)
     {
         trigger_error(
-            'The ' . __METHOD__ . '() method is deprecated. Use "echo ' . __CLASS__ . '::getFormattedTextBlock()" instead.',
+            'The '.__METHOD__.'() method is deprecated. Use "echo '.__CLASS__.'::getFormattedTextBlock()" instead.',
             E_USER_DEPRECATED
         );
 
         echo $this->getFormattedTextBlock($node);
+
     }//end printTextBlock()
 
 
@@ -203,19 +211,19 @@ class Markdown extends Generator
             }
 
             // Check if the _next_ line is blank.
-            if (
-                isset($nodeLines[($i + 1)]) === false
+            if (isset($nodeLines[($i + 1)]) === false
                 || trim($nodeLines[($i + 1)]) === ''
             ) {
                 // Next line is blank, just add the line.
                 $lines[] = $currentLine;
             } else {
                 // Ensure that line breaks are respected in markdown.
-                $lines[] = $currentLine . '  ';
+                $lines[] = $currentLine.'  ';
             }
         }
 
-        return implode(PHP_EOL, $lines) . PHP_EOL;
+        return implode(PHP_EOL, $lines).PHP_EOL;
+
     }//end getFormattedTextBlock()
 
 
@@ -233,11 +241,12 @@ class Markdown extends Generator
     protected function printCodeComparisonBlock(DOMNode $node)
     {
         trigger_error(
-            'The ' . __METHOD__ . '() method is deprecated. Use "echo ' . __CLASS__ . '::getFormattedCodeComparisonBlock()" instead.',
+            'The '.__METHOD__.'() method is deprecated. Use "echo '.__CLASS__.'::getFormattedCodeComparisonBlock()" instead.',
             E_USER_DEPRECATED
         );
 
         echo $this->getFormattedCodeComparisonBlock($node);
+
     }//end printCodeComparisonBlock()
 
 
@@ -269,33 +278,34 @@ class Markdown extends Generator
 
         $titleRow = '';
         if ($firstTitle !== '' || $secondTitle !== '') {
-            $titleRow .= '   <tr>' . PHP_EOL;
-            $titleRow .= "    <th>$firstTitle</th>" . PHP_EOL;
-            $titleRow .= "    <th>$secondTitle</th>" . PHP_EOL;
-            $titleRow .= '   </tr>' . PHP_EOL;
+            $titleRow .= '   <tr>'.PHP_EOL;
+            $titleRow .= "    <th>$firstTitle</th>".PHP_EOL;
+            $titleRow .= "    <th>$secondTitle</th>".PHP_EOL;
+            $titleRow .= '   </tr>'.PHP_EOL;
         }
 
         $codeRow = '';
         if ($first !== '' || $second !== '') {
-            $codeRow .= '   <tr>' . PHP_EOL;
-            $codeRow .= '<td>' . PHP_EOL . PHP_EOL;
-            $codeRow .= "    $first" . PHP_EOL . PHP_EOL;
-            $codeRow .= '</td>' . PHP_EOL;
-            $codeRow .= '<td>' . PHP_EOL . PHP_EOL;
-            $codeRow .= "    $second" . PHP_EOL . PHP_EOL;
-            $codeRow .= '</td>' . PHP_EOL;
-            $codeRow .= '   </tr>' . PHP_EOL;
+            $codeRow .= '   <tr>'.PHP_EOL;
+            $codeRow .= '<td>'.PHP_EOL.PHP_EOL;
+            $codeRow .= "    $first".PHP_EOL.PHP_EOL;
+            $codeRow .= '</td>'.PHP_EOL;
+            $codeRow .= '<td>'.PHP_EOL.PHP_EOL;
+            $codeRow .= "    $second".PHP_EOL.PHP_EOL;
+            $codeRow .= '</td>'.PHP_EOL;
+            $codeRow .= '   </tr>'.PHP_EOL;
         }
 
         $output = '';
         if ($titleRow !== '' || $codeRow !== '') {
-            $output .= '  <table>' . PHP_EOL;
+            $output .= '  <table>'.PHP_EOL;
             $output .= $titleRow;
             $output .= $codeRow;
-            $output .= '  </table>' . PHP_EOL;
+            $output .= '  </table>'.PHP_EOL;
         }
 
         return $output;
+
     }//end getFormattedCodeComparisonBlock()
 
 
@@ -312,6 +322,7 @@ class Markdown extends Generator
     {
         $title = trim($codeElm->getAttribute('title'));
         return str_replace('  ', '&nbsp;&nbsp;', $title);
+
     }//end formatCodeTitle()
 
 
@@ -328,9 +339,12 @@ class Markdown extends Generator
     {
         $code = (string) $codeElm->nodeValue;
         $code = trim($code);
-        $code = str_replace("\n", PHP_EOL . '    ', $code);
+        $code = str_replace("\n", PHP_EOL.'    ', $code);
         $code = str_replace(['<em>', '</em>'], '', $code);
 
         return $code;
+
     }//end formatCodeSample()
+
+
 }//end class

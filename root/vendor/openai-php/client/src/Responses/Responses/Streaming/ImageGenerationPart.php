@@ -31,8 +31,7 @@ final class ImageGenerationPart implements ResponseContract, ResponseHasMetaInfo
         public readonly string $itemId,
         public readonly int $sequenceNumber,
         private readonly MetaInformation $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  ImageGenerationPartType  $attributes

@@ -11,8 +11,7 @@ final class CreateResponseChoice
         public readonly CreateResponseMessage $message,
         public readonly ?CreateResponseChoiceLogprobs $logprobs,
         public readonly ?string $finishReason,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{index: int, message: array{role: string, content: ?string, annotations?: array<int, array{type: string, url_citation: array{start_index: int, end_index: int, title: string, url: string}}>, function_call: ?array{name: string, arguments: string}, tool_calls: ?array<int, array{id: string, type: string, function: array{name: string, arguments: string}}>} ,logprobs?: ?array{content: ?array<int, array{token: string, logprob: float, bytes: ?array<int, int>}>}, finish_reason: string|null}  $attributes

@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Ensures there is a single space before cast tokens.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting;
@@ -16,6 +15,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SpaceBeforeCastSniff implements Sniff
 {
+
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -24,6 +25,7 @@ class SpaceBeforeCastSniff implements Sniff
     public function register()
     {
         return Tokens::$castTokens;
+
     }//end register()
 
 
@@ -64,5 +66,8 @@ class SpaceBeforeCastSniff implements Sniff
                 $phpcsFile->fixer->replaceToken(($stackPtr - 1), ' ');
             }
         }
+
     }//end process()
+
+
 }//end class

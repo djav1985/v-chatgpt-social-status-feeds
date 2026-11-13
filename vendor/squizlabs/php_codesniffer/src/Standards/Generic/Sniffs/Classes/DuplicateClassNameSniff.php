@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Reports errors if the same class or interface name is used in multiple files.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Classes;
@@ -16,10 +15,11 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class DuplicateClassNameSniff implements Sniff
 {
+
     /**
      * List of classes that have been found during checking.
      *
-     * @var array
+     * @var array<string, array<string, string|int>>
      */
     protected $foundClasses = [];
 
@@ -32,6 +32,7 @@ class DuplicateClassNameSniff implements Sniff
     public function register()
     {
         return [T_OPEN_TAG];
+
     }//end register()
 
 
@@ -62,8 +63,7 @@ class DuplicateClassNameSniff implements Sniff
             // Keep track of what namespace we are in.
             if ($tokens[$stackPtr]['code'] === T_NAMESPACE) {
                 $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
-                if (
-                    $nextNonEmpty !== false
+                if ($nextNonEmpty !== false
                     // Ignore namespace keyword used as operator.
                     && $tokens[$nextNonEmpty]['code'] !== T_NS_SEPARATOR
                 ) {
@@ -86,7 +86,7 @@ class DuplicateClassNameSniff implements Sniff
                 $name = $phpcsFile->getDeclarationName($stackPtr);
                 if (empty($name) === false) {
                     if ($namespace !== '') {
-                        $name = $namespace . '\\' . $name;
+                        $name = $namespace.'\\'.$name;
                     }
 
                     $compareName = strtolower($name);
@@ -119,5 +119,8 @@ class DuplicateClassNameSniff implements Sniff
         }//end while
 
         return $phpcsFile->numTokens;
+
     }//end process()
+
+
 }//end class
