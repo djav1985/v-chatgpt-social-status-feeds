@@ -96,19 +96,6 @@ class ErrorManager
     }
 
     /**
-     * Resolve the log file path (LOG_FILE constant overrides the default).
-     */
-    private static function resolveLogFile(): string
-    {
-        $configured = defined('LOG_FILE') ? constant('LOG_FILE') : null;
-        if (is_string($configured) && $configured !== '') {
-            return $configured;
-        }
-
-        return __DIR__ . '/../../php_app.log';
-    }
-
-    /**
      * Handle PHP errors by converting them to ErrorException.
      */
     public function handleError(int $errno, string $errstr, string $errfile, int $errline): bool
@@ -144,5 +131,18 @@ class ErrorManager
             http_response_code(500);
             echo 'A critical error occurred.';
         }
+    }
+
+    /**
+     * Resolve the log file path (LOG_FILE constant overrides the default).
+     */
+    private static function resolveLogFile(): string
+    {
+        $configured = defined('LOG_FILE') ? constant('LOG_FILE') : null;
+        if (is_string($configured) && $configured !== '') {
+            return $configured;
+        }
+
+        return __DIR__ . '/../../php_app.log';
     }
 }

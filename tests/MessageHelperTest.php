@@ -12,26 +12,6 @@ final class MessageHelperTest extends TestCase
 {
     private SessionManager $session;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Start a clean session for each test
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_write_close();
-        }
-
-        $_SESSION = [];
-        $this->session = SessionManager::getInstance();
-    }
-
-    protected function tearDown(): void
-    {
-        // Clean up session data
-        $_SESSION = [];
-        parent::tearDown();
-    }
-
     public function testAddMessageStoresMessageInSession(): void
     {
         $message = 'Test message';
@@ -141,5 +121,25 @@ final class MessageHelperTest extends TestCase
         $messages = $this->session->get('messages', []);
         $this->assertCount(1, $messages);
         $this->assertSame('', $messages[0]);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Start a clean session for each test
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
+        $_SESSION = [];
+        $this->session = SessionManager::getInstance();
+    }
+
+    protected function tearDown(): void
+    {
+        // Clean up session data
+        $_SESSION = [];
+        parent::tearDown();
     }
 }

@@ -105,6 +105,84 @@ class Response
     }
 
     // -------------------------------------------------------------------------
+    // Static factories
+    // -------------------------------------------------------------------------
+
+    /**
+     * Create a redirect response.
+     *
+     * @param string $url        Target URL.
+     * @param int    $statusCode 301, 302, 303, or 307 (defaults to 302).
+     */
+    public static function redirect(string $url, int $statusCode = 302): self
+    {
+        return new self($statusCode, ['Location' => $url]);
+    }
+
+    /**
+     * Create a plain-text response.
+     */
+    public static function text(string $body, int $statusCode = 200): self
+    {
+        return new self($statusCode, ['Content-Type' => 'text/plain; charset=UTF-8'], $body);
+    }
+
+    /**
+     * Create an HTML response.
+     */
+    public static function html(string $body, int $statusCode = 200): self
+    {
+        return new self($statusCode, ['Content-Type' => 'text/html; charset=UTF-8'], $body);
+    }
+
+    /**
+     * Create a JSON response.
+     *
+     * @param array<mixed>|object $data Data to JSON-encode.
+     * @param int                 $statusCode HTTP status code.
+     * @param int                 $flags json_encode() flags (defaults to JSON_THROW_ON_ERROR).
+     *                                  JSON_THROW_ON_ERROR is always OR-ed in to guarantee that
+     *                                  a \JsonException is thrown rather than returning false.
+     * @throws \JsonException When encoding fails.
+     */
+    public static function json(array|object $data, int $statusCode = 200, int $flags = JSON_THROW_ON_ERROR): self
+    {
+        // Always include JSON_THROW_ON_ERROR so the function never silently
+        // returns false regardless of what the caller passes in $flags.
+        $body = json_encode($data, $flags | JSON_THROW_ON_ERROR);
+        return new self($statusCode, ['Content-Type' => 'application/json; charset=UTF-8'], $body);
+    }
+
+    /**
+     * Create a view response.
+     *
+     * send() will render the named view file, extracting $data into its scope.
+     *
+     * @param string               $view       View name relative to the Views directory (no .php).
+     * @param array<string, mixed> $data       Variables to extract inside the view.
+     * @param int                  $statusCode HTTP status code (default 200).
+     */
+    public static function view(string $view, array $data = [], int $statusCode = 200): self
+    {
+        return (new self($statusCode))->withView($view, $data);
+    }
+
+    /**
+     * Create a file-streaming response.
+     *
+     * @param string $filePath    Absolute path to the file to stream.
+     * @param string $contentType MIME type sent as Content-Type header.
+     * @param int    $statusCode  HTTP status code (default 200).
+     */
+    public static function file(
+        string $filePath,
+        string $contentType = 'application/octet-stream',
+        int $statusCode = 200
+    ): self {
+        return (new self($statusCode, ['Content-Type' => $contentType]))->withFile($filePath);
+    }
+
+    // -------------------------------------------------------------------------
     // Accessors
     // -------------------------------------------------------------------------
 
@@ -328,6 +406,20 @@ class Response
         echo $this->body;
     }
 
+    // -------------------------------------------------------------------------
+    // Internal helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Normalize a header name to Title-Case so lookups are case-insensitive.
+     *
+     * e.g. "content-type" -> "Content-Type"
+     */
+    private static function normalizeHeaderName(string $name): string
+    {
+        return implode('-', array_map('ucfirst', explode('-', strtolower(trim($name)))));
+    }
+
     /**
      * Require a view file with the given data extracted into its scope.
      *
@@ -341,94 +433,5 @@ class Response
 
         extract($data, EXTR_SKIP);
         require __DIR__ . '/../Views/' . $view . '.php';
-    }
-
-    // -------------------------------------------------------------------------
-    // Static factories
-    // -------------------------------------------------------------------------
-
-    /**
-     * Create a redirect response.
-     *
-     * @param string $url        Target URL.
-     * @param int    $statusCode 301, 302, 303, or 307 (defaults to 302).
-     */
-    public static function redirect(string $url, int $statusCode = 302): self
-    {
-        return new self($statusCode, ['Location' => $url]);
-    }
-
-    /**
-     * Create a plain-text response.
-     */
-    public static function text(string $body, int $statusCode = 200): self
-    {
-        return new self($statusCode, ['Content-Type' => 'text/plain; charset=UTF-8'], $body);
-    }
-
-    /**
-     * Create an HTML response.
-     */
-    public static function html(string $body, int $statusCode = 200): self
-    {
-        return new self($statusCode, ['Content-Type' => 'text/html; charset=UTF-8'], $body);
-    }
-
-    /**
-     * Create a JSON response.
-     *
-     * @param array<mixed>|object $data Data to JSON-encode.
-     * @param int                 $statusCode HTTP status code.
-     * @param int                 $flags json_encode() flags (defaults to JSON_THROW_ON_ERROR).
-     *                                  JSON_THROW_ON_ERROR is always OR-ed in to guarantee that
-     *                                  a \JsonException is thrown rather than returning false.
-     * @throws \JsonException When encoding fails.
-     */
-    public static function json(array|object $data, int $statusCode = 200, int $flags = JSON_THROW_ON_ERROR): self
-    {
-        // Always include JSON_THROW_ON_ERROR so the function never silently
-        // returns false regardless of what the caller passes in $flags.
-        $body = json_encode($data, $flags | JSON_THROW_ON_ERROR);
-        return new self($statusCode, ['Content-Type' => 'application/json; charset=UTF-8'], $body);
-    }
-
-    /**
-     * Create a view response.
-     *
-     * send() will render the named view file, extracting $data into its scope.
-     *
-     * @param string               $view       View name relative to the Views directory (no .php).
-     * @param array<string, mixed> $data       Variables to extract inside the view.
-     * @param int                  $statusCode HTTP status code (default 200).
-     */
-    public static function view(string $view, array $data = [], int $statusCode = 200): self
-    {
-        return (new self($statusCode))->withView($view, $data);
-    }
-
-    /**
-     * Create a file-streaming response.
-     *
-     * @param string $filePath    Absolute path to the file to stream.
-     * @param string $contentType MIME type sent as Content-Type header.
-     * @param int    $statusCode  HTTP status code (default 200).
-     */
-    public static function file(string $filePath, string $contentType = 'application/octet-stream', int $statusCode = 200): self
-    {
-        return (new self($statusCode, ['Content-Type' => $contentType]))->withFile($filePath);
-    }
-
-    // -------------------------------------------------------------------------
-    // Internal helpers
-    // -------------------------------------------------------------------------
-
-    /**
-     * Normalize a header name to Title-Case so lookups are case-insensitive.
-     *
-     * e.g. "content-type" -> "Content-Type"
-     */
-    private static function normalizeHeaderName(string $name): string
-    {
-        return implode('-', array_map('ucfirst', explode('-', strtolower(trim($name)))));
     }
 }

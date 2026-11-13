@@ -12,14 +12,6 @@ use ReflectionMethod;
 
 final class QueueServiceTest extends TestCase
 {
-    private function invokePrivateMethod(QueueService $service, string $method, mixed ...$args): mixed
-    {
-        $reflection = new ReflectionMethod(QueueService::class, $method);
-        $reflection->setAccessible(true);
-
-        return $reflection->invoke($service, ...$args);
-    }
-
     public function testNormalizeHoursFiltersInvalidValues(): void
     {
         $service = new QueueService();
@@ -246,6 +238,14 @@ final class QueueServiceTest extends TestCase
         $this->assertCount(2, $result);
         $this->assertSame('1', $result[0]['id']);
         $this->assertSame('2', $result[1]['id']);
+    }
+
+    private function invokePrivateMethod(QueueService $service, string $method, mixed ...$args): mixed
+    {
+        $reflection = new ReflectionMethod(QueueService::class, $method);
+        $reflection->setAccessible(true);
+
+        return $reflection->invoke($service, ...$args);
     }
 
 }

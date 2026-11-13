@@ -27,6 +27,9 @@ use RuntimeException;
 class StatusService
 {
     private const REASONING_EFFORT = 'low';
+    private const IMAGE_DOWNLOAD_TIMEOUT = 30;
+    private const IMAGE_DOWNLOAD_CONNECT_TIMEOUT = 10;
+    private const MAX_IMAGE_DOWNLOAD_BYTES = 15 * 1024 * 1024;
 
     /** @var \OpenAI\Client|null */
     private static $client = null;
@@ -514,8 +517,48 @@ class StatusService
         }
 
         if (isset($imageData['url']) && is_string($imageData['url']) && $imageData['url'] !== '') {
-            $imageContent = @file_get_contents($imageData['url']);
-            return ($imageContent === false || $imageContent === '') ? null : $imageContent;
+            try {
+                $response = (new GuzzleClient([
+                    'timeout' => self::IMAGE_DOWNLOAD_TIMEOUT,
+                    'connect_timeout' => self::IMAGE_DOWNLOAD_CONNECT_TIMEOUT,
+                ]))->get($imageData['url'], [
+                    'http_errors' => false,
+                    'stream' => true,
+                    'on_headers' => static function (\Psr\Http\Message\ResponseInterface $response): void {
+                        $contentLength = $response->getHeaderLine('Content-Length');
+                        if (
+                            $contentLength !== ''
+                            && ctype_digit($contentLength)
+                            && (int) $contentLength > self::MAX_IMAGE_DOWNLOAD_BYTES
+                        ) {
+                            throw new RuntimeException('Image response exceeds the configured size limit.');
+                        }
+                    },
+                ]);
+
+                if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
+                    return null;
+                }
+
+                $body = $response->getBody();
+                $imageContent = '';
+                while (!$body->eof()) {
+                    $remainingBytes = self::MAX_IMAGE_DOWNLOAD_BYTES + 1 - strlen($imageContent);
+                    $chunk = $body->read(min(8192, $remainingBytes));
+                    if ($chunk === '') {
+                        break;
+                    }
+
+                    $imageContent .= $chunk;
+                    if (strlen($imageContent) > self::MAX_IMAGE_DOWNLOAD_BYTES) {
+                        return null;
+                    }
+                }
+
+                return $imageContent === '' ? null : $imageContent;
+            } catch (\Throwable) {
+                return null;
+            }
         }
 
         return null;

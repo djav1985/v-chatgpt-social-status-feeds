@@ -13,21 +13,6 @@ final class CacheServiceTest extends TestCase
 {
     private CacheService $cache;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->cache = CacheService::getInstance();
-        // Clear all cache before each test
-        $this->cache->clear();
-    }
-
-    protected function tearDown(): void
-    {
-        // Clean up after tests
-        $this->cache->clear();
-        parent::tearDown();
-    }
-
     public function testSingletonPattern(): void
     {
         $instance1 = CacheService::getInstance();
@@ -183,6 +168,21 @@ final class CacheServiceTest extends TestCase
         $result = $this->cache->get($key);
         
         $this->assertEquals($value, $result, 'Should handle complex data structures');
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->cache = CacheService::getInstance();
+        // Clear all cache before each test
+        $this->cache->clear();
+    }
+
+    protected function tearDown(): void
+    {
+        // Clean up after tests
+        $this->cache->clear();
+        parent::tearDown();
     }
 
 }

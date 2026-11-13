@@ -15,6 +15,7 @@
 namespace App\Controllers;
 
 use App\Core\Mailer;
+use App\Core\ErrorManager;
 use App\Core\Response;
 use App\Models\AccountModel;
 use App\Models\StatusJobModel;
@@ -178,7 +179,8 @@ class HomeController
             StatusModel::deleteStatus($statusId, $accountName, $accountOwner);
             MessageHelper::addMessage('Successfully deleted status.');
         } catch (\Exception $e) {
-            MessageHelper::addMessage('Failed to delete status: ' . $e->getMessage());
+            ErrorManager::getInstance()->log('Failed to delete status: ' . $e->getMessage(), 'error');
+            MessageHelper::addMessage('Failed to delete status. Please try again.');
         }
     }
 
@@ -235,7 +237,8 @@ class HomeController
                 }
             }
         } catch (\Exception $e) {
-            MessageHelper::addMessage('Failed to generate status: ' . $e->getMessage());
+            ErrorManager::getInstance()->log('Failed to queue status generation: ' . $e->getMessage(), 'error');
+            MessageHelper::addMessage('Failed to queue status generation. Please try again.');
         }
     }
 }

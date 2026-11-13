@@ -26,8 +26,9 @@
     }
   },
   "scripts": {
-    "phpcs": "phpcs --standard=phpcs.xml root/",
-    "phpcbf": "phpcbf --standard=phpcs.xml root/",
+    "phpcs": "phpcs --standard=phpcs.xml --extensions=php root/",
+    "phpcbf": "phpcbf --standard=phpcs.xml --extensions=php root/",
+    "phpstan": "phpstan analyse --no-progress --memory-limit=1G --autoload-file .github/phpstan-bootstrap.php",
     "test": "phpunit"
   }
 }

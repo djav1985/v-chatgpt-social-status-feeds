@@ -15,6 +15,7 @@
 namespace App\Controllers;
 
 use App\Core\Mailer;
+use App\Core\ErrorManager;
 use App\Core\Response;
 use App\Models\UserModel;
 use App\Core\SessionManager;
@@ -197,7 +198,8 @@ class UsersController
                 MessageHelper::addMessage('Failed to create or modify user.');
             }
         } catch (\Exception $e) {
-            MessageHelper::addMessage('Failed to create or modify user: ' . $e->getMessage());
+            ErrorManager::getInstance()->log('Failed to create or modify user: ' . $e->getMessage(), 'error');
+            MessageHelper::addMessage('Failed to create or modify user. Please try again.');
         }
     }
 
@@ -217,7 +219,8 @@ class UsersController
                 UserModel::deleteUser($username);
                 MessageHelper::addMessage('User Deleted');
             } catch (\Exception $e) {
-                MessageHelper::addMessage('Failed to delete user: ' . $e->getMessage());
+                ErrorManager::getInstance()->log('Failed to delete user: ' . $e->getMessage(), 'error');
+                MessageHelper::addMessage('Failed to delete user. Please try again.');
             }
         }
     }
@@ -240,7 +243,7 @@ class UsersController
                 $session->set('username', $user->username);
                 $session->set('logged_in', true);
                 $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
-                $session->set('csrf_token', \hash('sha256', \uniqid('', true)));
+                $session->set('csrf_token', bin2hex(random_bytes(32)));
                 $session->set('is_admin', $user->admin);
                 $session->set('timeout', time());
                 $session->regenerate();
@@ -249,7 +252,8 @@ class UsersController
                 MessageHelper::addMessage('Failed to login as user.');
             }
         } catch (\Exception $e) {
-            MessageHelper::addMessage('Failed to login as user: ' . $e->getMessage());
+            ErrorManager::getInstance()->log('Failed to impersonate user: ' . $e->getMessage(), 'error');
+            MessageHelper::addMessage('Failed to login as user.');
         }
 
         return false;

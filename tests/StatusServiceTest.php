@@ -11,14 +11,6 @@ use ReflectionMethod;
 
 final class StatusServiceTest extends TestCase
 {
-    private function invokePrivateMethod(string $method, mixed ...$args): mixed
-    {
-        $reflection = new ReflectionMethod(StatusService::class, $method);
-        $reflection->setAccessible(true);
-
-        return $reflection->invoke(null, ...$args);
-    }
-
     public function testNormalizeIdentifierPreservesSpecialCharacters(): void
     {
         $result = $this->invokePrivateMethod('normalizeIdentifier', "  Foo & Bar  ");
@@ -149,5 +141,13 @@ final class StatusServiceTest extends TestCase
         $this->assertSame('{"status":"Great day","cta":"Visit us"}', $result);
         $decoded = json_decode($result, true);
         $this->assertSame(JSON_ERROR_NONE, json_last_error());
+    }
+
+    private function invokePrivateMethod(string $method, mixed ...$args): mixed
+    {
+        $reflection = new ReflectionMethod(StatusService::class, $method);
+        $reflection->setAccessible(true);
+
+        return $reflection->invoke(null, ...$args);
     }
 }

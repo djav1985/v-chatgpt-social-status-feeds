@@ -229,10 +229,9 @@ EXECUTE idx_sql;
 DEALLOCATE PREPARE idx_sql;
 
 -- =========================
--- status_jobs - Recreate with new schema
+-- status_jobs - Migrate in place and preserve queued jobs
 -- =========================
-DROP TABLE IF EXISTS status_jobs;
-CREATE TABLE status_jobs (
+CREATE TABLE IF NOT EXISTS status_jobs (
     id CHAR(36) PRIMARY KEY,
     scheduled_at BIGINT NOT NULL,
     account VARCHAR(255) NOT NULL,
@@ -242,6 +241,48 @@ CREATE TABLE status_jobs (
     INDEX idx_scheduled (scheduled_at, status),
     UNIQUE INDEX idx_unique_job (account, username, scheduled_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Older versions represented a claimed job with status='processing'. Move
+-- that state to the processing flag before narrowing the status enum.
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'status_jobs'
+          AND COLUMN_NAME = 'processing') = 0,
+    'ALTER TABLE status_jobs ADD COLUMN processing BOOLEAN NOT NULL DEFAULT FALSE',
+    'SELECT 0');
+PREPARE alter_sql FROM @stmt;
+EXECUTE alter_sql;
+DEALLOCATE PREPARE alter_sql;
+
+UPDATE status_jobs SET processing = TRUE WHERE status = 'processing';
+
+ALTER TABLE status_jobs
+    MODIFY COLUMN id CHAR(36) NOT NULL,
+    MODIFY COLUMN status ENUM('pending','retry') NOT NULL DEFAULT 'pending';
+
+-- Ensure current index names exist after older installations are migrated.
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.STATISTICS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'status_jobs'
+          AND INDEX_NAME = 'idx_scheduled') = 0,
+    'CREATE INDEX idx_scheduled ON status_jobs (scheduled_at, status)',
+    'SELECT 0');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
+
+SET @stmt := IF(
+    (SELECT COUNT(*) FROM information_schema.STATISTICS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'status_jobs'
+          AND INDEX_NAME = 'idx_unique_job') = 0,
+    'CREATE UNIQUE INDEX idx_unique_job ON status_jobs (account, username, scheduled_at)',
+    'SELECT 0');
+PREPARE idx_sql FROM @stmt;
+EXECUTE idx_sql;
+DEALLOCATE PREPARE idx_sql;
 
 -- =========================
 -- accounts - Migrate primary key and structure

@@ -15,6 +15,7 @@
 namespace App\Controllers;
 
 use App\Core\Response;
+use App\Core\ErrorManager;
 use App\Models\AccountModel;
 use App\Models\UserModel;
 use App\Core\SessionManager;
@@ -497,7 +498,8 @@ class AccountsController
             }
             MessageHelper::addMessage('Account has been created or modified.');
         } catch (\Exception $e) {
-            MessageHelper::addMessage('Failed to create or modify account: ' . $e->getMessage());
+            ErrorManager::getInstance()->log('Failed to create or modify account: ' . $e->getMessage(), 'error');
+            MessageHelper::addMessage('Failed to create or modify account. Please try again.');
         }
     }
 
@@ -517,7 +519,8 @@ class AccountsController
             $queueService->removeAllJobs($accountOwner, $accountName);
             MessageHelper::addMessage('Account Deleted.');
         } catch (\Exception $e) {
-            MessageHelper::addMessage('Failed to delete account: ' . $e->getMessage());
+            ErrorManager::getInstance()->log('Failed to delete account: ' . $e->getMessage(), 'error');
+            MessageHelper::addMessage('Failed to delete account. Please try again.');
         }
     }
 }

@@ -16,27 +16,6 @@ final class RouterTest extends TestCase
     private array $originalSession;
     private string|false $originalRemoteAddress;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->originalSession = $_SESSION ?? [];
-        $this->originalRemoteAddress = $_SERVER['REMOTE_ADDR'] ?? false;
-        $_SESSION = [];
-        unset($_SERVER['REMOTE_ADDR']);
-        $this->router = new Router();
-    }
-
-    protected function tearDown(): void
-    {
-        $_SESSION = $this->originalSession;
-        if ($this->originalRemoteAddress === false) {
-            unset($_SERVER['REMOTE_ADDR']);
-        } else {
-            $_SERVER['REMOTE_ADDR'] = $this->originalRemoteAddress;
-        }
-        parent::tearDown();
-    }
-
     public function testRootRedirectsToHome(): void
     {
         $response = $this->router->dispatch(new Request('GET', '/'));
@@ -74,5 +53,26 @@ final class RouterTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('login', $response->getView());
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->originalSession = $_SESSION ?? [];
+        $this->originalRemoteAddress = $_SERVER['REMOTE_ADDR'] ?? false;
+        $_SESSION = [];
+        unset($_SERVER['REMOTE_ADDR']);
+        $this->router = new Router();
+    }
+
+    protected function tearDown(): void
+    {
+        $_SESSION = $this->originalSession;
+        if ($this->originalRemoteAddress === false) {
+            unset($_SERVER['REMOTE_ADDR']);
+        } else {
+            $_SERVER['REMOTE_ADDR'] = $this->originalRemoteAddress;
+        }
+        parent::tearDown();
     }
 }

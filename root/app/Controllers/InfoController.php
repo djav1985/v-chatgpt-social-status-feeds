@@ -15,6 +15,7 @@
 namespace App\Controllers;
 
 use App\Core\Response;
+use App\Core\ErrorManager;
 use App\Models\UserModel;
 use App\Core\SessionManager;
 use App\Helpers\MessageHelper;
@@ -146,7 +147,8 @@ class InfoController
             UserModel::updatePassword($username, $hashedPassword);
             MessageHelper::addMessage('Password Updated!');
         } catch (\Exception $e) {
-            MessageHelper::addMessage('Password update failed: ' . $e->getMessage());
+            ErrorManager::getInstance()->log('Password update failed: ' . $e->getMessage(), 'error');
+            MessageHelper::addMessage('Password update failed. Please try again.');
         }
     }
 
@@ -173,7 +175,8 @@ class InfoController
             UserModel::updateProfile($username, $who, $where, $what, $goal);
             MessageHelper::addMessage('Profile Updated!');
         } catch (\Exception $e) {
-            MessageHelper::addMessage('Profile update failed: ' . $e->getMessage());
+            ErrorManager::getInstance()->log('Profile update failed: ' . $e->getMessage(), 'error');
+            MessageHelper::addMessage('Profile update failed. Please try again.');
         }
     }
 }

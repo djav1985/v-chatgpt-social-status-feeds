@@ -13,24 +13,6 @@ final class ViewEscapingTest extends TestCase
     private array $originalSession;
     private array $originalServer;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->originalSession = $_SESSION ?? [];
-        $this->originalServer = $_SERVER;
-        $_SESSION = [];
-        $_SERVER['REQUEST_URI'] = '/info';
-        SessionManager::getInstance()->set('username', 'test-user');
-        SessionManager::getInstance()->set('csrf_token', 'test-token');
-    }
-
-    protected function tearDown(): void
-    {
-        $_SESSION = $this->originalSession;
-        $_SERVER = $this->originalServer;
-        parent::tearDown();
-    }
-
     public function testLoginViewEscapesCsrfToken(): void
     {
         $token = '"><script>alert(1)</script>';
@@ -101,6 +83,24 @@ final class ViewEscapingTest extends TestCase
             $this->assertStringNotContainsString($field, $output);
         }
         $this->assertStringContainsString('target="_blank" rel="noopener noreferrer"', $output);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->originalSession = $_SESSION ?? [];
+        $this->originalServer = $_SERVER;
+        $_SESSION = [];
+        $_SERVER['REQUEST_URI'] = '/info';
+        SessionManager::getInstance()->set('username', 'test-user');
+        SessionManager::getInstance()->set('csrf_token', 'test-token');
+    }
+
+    protected function tearDown(): void
+    {
+        $_SESSION = $this->originalSession;
+        $_SERVER = $this->originalServer;
+        parent::tearDown();
     }
 
     /**

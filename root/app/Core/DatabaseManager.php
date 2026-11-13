@@ -128,6 +128,10 @@ class DatabaseManager
             return true;
         } catch (DBALException $e) {
             if ($this->isConnectionError($e)) {
+                if (!$this->isReadOnlyQuery() || (self::$dbh !== null && self::$dbh->isTransactionActive())) {
+                    throw $e;
+                }
+
                 if ($this->retryCount < self::MAX_RETRIES) {
                     $this->retryCount++;
                     ErrorManager::getInstance()->log('MySQL connection lost during execution. Attempting to reconnect... Retry ' . $this->retryCount, 'warning');
@@ -230,8 +234,17 @@ class DatabaseManager
     private function isConnectionError(DBALException $e): bool
     {
         $code = $e->getPrevious() ? $e->getPrevious()->getCode() : $e->getCode();
-        $errors = ['2006', '2013', '1047', '1049'];
+        $errors = ['2006', '2013'];
         return in_array((string) $code, $errors, true);
+    }
+
+    /**
+     * Check whether the current query can be safely retried after a lost connection.
+     */
+    private function isReadOnlyQuery(): bool
+    {
+        return preg_match('/^\s*(SELECT|SHOW|DESCRIBE|PRAGMA)\b/i', $this->sql) === 1
+            && preg_match('/\b(FOR\s+UPDATE|LOCK\s+IN\s+SHARE\s+MODE)\b/i', $this->sql) !== 1;
     }
 
     /**

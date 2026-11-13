@@ -11,27 +11,6 @@ final class WorkerHelperTest extends TestCase
 {
     private string $testJobType;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->testJobType = 'test-worker-' . bin2hex(random_bytes(8));
-        $this->cleanupLockFile();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->cleanupLockFile();
-        parent::tearDown();
-    }
-
-    private function cleanupLockFile(): void
-    {
-        $lockPath = WorkerHelper::getLockPath($this->testJobType);
-        if (file_exists($lockPath)) {
-            @unlink($lockPath);
-        }
-    }
-
     public function testGetLockPathReturnsCorrectPath(): void
     {
         $lockPath = WorkerHelper::getLockPath('run-queue');
@@ -215,6 +194,27 @@ final class WorkerHelperTest extends TestCase
         $this->assertIsArray($lock3);
 
         WorkerHelper::releaseLock($lock3);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->testJobType = 'test-worker-' . bin2hex(random_bytes(8));
+        $this->cleanupLockFile();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->cleanupLockFile();
+        parent::tearDown();
+    }
+
+    private function cleanupLockFile(): void
+    {
+        $lockPath = WorkerHelper::getLockPath($this->testJobType);
+        if (file_exists($lockPath)) {
+            @unlink($lockPath);
+        }
     }
 
     private function withRunningWorkerProcess(callable $test): void

@@ -88,7 +88,7 @@ class LoginController
             $session->set('logged_in', true);
             $session->set('username', $userInfo->username);
             $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
-            $session->set('csrf_token', \hash('sha256', \uniqid('', true)));
+            $session->set('csrf_token', bin2hex(random_bytes(32)));
             $session->set('is_admin', $userInfo->admin);
             $session->set('timeout', time());
             $session->regenerate();

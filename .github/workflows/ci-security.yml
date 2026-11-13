@@ -27,17 +27,12 @@ jobs:
           php-version: '8.2'
           tools: phpstan
           coverage: xdebug
+      # PHP coding standard
+      - name: PHPCS
+        run: composer phpcs
       # PHPStan
       - name: PHPStan (root)
-        if: hashFiles('phpstan.neon') != ''
-        continue-on-error: true
-        run: |
-          if [ -f vendor/bin/phpstan ]; then
-            chmod +x vendor/bin/phpstan
-            vendor/bin/phpstan analyse --memory-limit=1G --autoload-file .github/phpstan-bootstrap.php
-          else
-            echo "PHPStan not found in vendor/, skipping."
-          fi
+        run: composer phpstan
       # PHPUnit – only if installed in vendor/
       - name: PHPUnit (root)
         if: hashFiles('phpunit.xml') != ''

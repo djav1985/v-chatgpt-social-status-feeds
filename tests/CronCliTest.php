@@ -8,22 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 final class CronCliTest extends TestCase
 {
-    private function runCronScript(array $args): array
-    {
-        $scriptPath = __DIR__ . '/../root/cron.php';
-        $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($scriptPath)
-            . ' ' . implode(' ', array_map('escapeshellarg', $args));
-
-        $output = [];
-        $exitCode = 0;
-        exec($cmd . ' 2>&1', $output, $exitCode);
-
-        return [
-            'output' => implode("\n", $output),
-            'exitCode' => $exitCode
-        ];
-    }
-
     public function testCronShowsHelpForNoArguments(): void
     {
         $result = $this->runCronScript([]);
@@ -83,6 +67,22 @@ final class CronCliTest extends TestCase
             $this->assertSame(0, $result['exitCode']);
             $this->assertStringNotContainsString('already running', $result['output']);
         });
+    }
+
+    private function runCronScript(array $args): array
+    {
+        $scriptPath = __DIR__ . '/../root/cron.php';
+        $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($scriptPath)
+            . ' ' . implode(' ', array_map('escapeshellarg', $args));
+
+        $output = [];
+        $exitCode = 0;
+        exec($cmd . ' 2>&1', $output, $exitCode);
+
+        return [
+            'output' => implode("\n", $output),
+            'exitCode' => $exitCode
+        ];
     }
 
     private function assertWorkerLockBlocksLaunch(string $jobType): void

@@ -5,6 +5,10 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ## Unreleased
 ### Changed
+- Database upgrades preserve queued status jobs while migrating their processing state; fresh installs report SQL failures and retain recovery files when setup is incomplete.
+- Reordered class members consistently by declaration type, visibility, and static status.
+- CSRF tokens now use cryptographic randomness, user errors hide internal exception details, database retries avoid ambiguous writes, and image downloads are time- and size-limited.
+- PHP lint and static-analysis commands are scoped to PHP sources and enforced in CI.
 - Standardized HTTP handling around `Request` and `Response`: the front controller builds a request from PHP globals, and an instance of `Router` dispatches it before the response is sent.
 - Reworked route dispatch and removed the shared base controller; routing now returns explicit responses for access control, missing routes, and unsupported methods.
 - Session initialization is lazy and configures strict mode plus `HttpOnly`, HTTPS-aware `Secure`, and `SameSite=Lax` cookie attributes.

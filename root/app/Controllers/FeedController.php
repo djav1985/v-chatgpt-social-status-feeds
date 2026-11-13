@@ -35,7 +35,7 @@ class FeedController
             return self::outputRssFeed($account, $user);
         } catch (\Exception $e) {
             ErrorManager::getInstance()->log('RSS feed generation failed: ' . $e->getMessage(), 'error');
-            return Response::text('Error: ' . $e->getMessage(), 500);
+            return Response::text('Feed unavailable.', 500);
         }
     }
 
