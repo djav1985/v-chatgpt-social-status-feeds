@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -14,6 +13,7 @@
 
 namespace App\Controllers;
 
+use Psr\Http\Message\ServerRequestInterface;
 use App\Core\Response;
 use App\Core\ErrorManager;
 use App\Models\UserModel;
@@ -23,13 +23,16 @@ use App\Helpers\ValidationHelper;
 
 class InfoController
 {
+    use RequestContext;
+
     /**
      * Display user profile information and system message.
      *
      * @return Response
      */
-    public function handleRequest(): Response
+    public function handleRequest(ServerRequestInterface $request): Response
     {
+        $this->captureRequest($request);
         $session = SessionManager::getInstance();
         $profileData = self::generateProfileDataAttributes($session->get('username'));
         $systemMsg = self::buildSystemMessage($session->get('username'));
@@ -45,22 +48,17 @@ class InfoController
      *
      * @return Response
      */
-    public function handleSubmission(): Response
+    public function handleSubmission(ServerRequestInterface $request): Response
     {
-        $token = $_POST['csrf_token'] ?? '';
+        $this->captureRequest($request);
         $session = SessionManager::getInstance();
-        if (!ValidationHelper::validateCsrfToken($token)) {
-            MessageHelper::addMessage('Invalid CSRF token. Please try again.');
+        if (isset($this->requestBody['change_password'])) {
+            $this->processPasswordChange();
             return Response::redirect('/info');
         }
 
-        if (isset($_POST['change_password'])) {
-            self::processPasswordChange();
-            return Response::redirect('/info');
-        }
-
-        if (isset($_POST['update_profile'])) {
-            self::processProfileUpdate();
+        if (isset($this->requestBody['update_profile'])) {
+            $this->processProfileUpdate();
             return Response::redirect('/info');
         }
 
@@ -117,13 +115,13 @@ class InfoController
      *
      * @return void
      */
-    private static function processPasswordChange(): void
+    private function processPasswordChange(): void
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
         // Fix: Don't sanitize passwords - only cast to string
-        $password = (string) ($_POST['password'] ?? '');
-        $password2 = (string) ($_POST['password2'] ?? '');
+        $password = (string) ($this->requestBody['password'] ?? '');
+        $password2 = (string) ($this->requestBody['password2'] ?? '');
 
         if ($password !== $password2) {
             MessageHelper::addMessage('Passwords do not match. Please try again.');
@@ -157,14 +155,14 @@ class InfoController
      *
      * @return void
      */
-    private static function processProfileUpdate(): void
+    private function processProfileUpdate(): void
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
-        $who = ValidationHelper::sanitizeString($_POST['who'] ?? '', 'text');
-        $where = ValidationHelper::sanitizeString($_POST['where'] ?? '', 'text');
-        $what = ValidationHelper::sanitizeString($_POST['what'] ?? '', 'text');
-        $goal = ValidationHelper::sanitizeString($_POST['goal'] ?? '', 'text');
+        $who = ValidationHelper::sanitizeString($this->requestBody['who'] ?? '', 'text');
+        $where = ValidationHelper::sanitizeString($this->requestBody['where'] ?? '', 'text');
+        $what = ValidationHelper::sanitizeString($this->requestBody['what'] ?? '', 'text');
+        $goal = ValidationHelper::sanitizeString($this->requestBody['goal'] ?? '', 'text');
 
         if (empty($who) || empty($where) || empty($what) || empty($goal)) {
             MessageHelper::addMessage('All fields are required.');

@@ -1,5 +1,5 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
+
 // phpcs:ignoreFile Generic.Files.LineLength.TooLong
 
 /**
@@ -12,9 +12,16 @@
  * File: user-list-item.php
  * Description: View partial for rendering a single user list card.
  *
- * @var object{username: string, email: string, max_api_calls: int|string, used_api_calls: int|string, expires: string} $user User data.
+ * @var object{
+ *     username: string,
+ *     email: string,
+ *     max_api_calls: int|string,
+ *     used_api_calls: int|string,
+ *     expires: string
+ * } $user User data.
  * @var string $dataAttributes Escaped user data attributes.
  */
+$csrfToken = htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'));
 ?>
 <div class="column col-6 col-xl-12 col-md-12 col-sm-12">
     <div class="card account-list-card">
@@ -30,13 +37,13 @@
             <button class="btn btn-primary" id="update-btn" <?php echo $dataAttributes; ?>>Update</button>
             <form class="delete-user-form" action="/users" method="POST">
                 <input type="hidden" name="username" value="<?php echo htmlspecialchars($user->username); ?>">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
                 <button class="btn btn-error" name="delete_user">Delete</button>
             </form>
             <?php if ($user->username !== App\Core\SessionManager::getInstance()->get('username')) : ?>
                 <form class="login-as-form" action="/users" method="POST">
                     <input type="hidden" name="username" value="<?php echo htmlspecialchars($user->username); ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
                     <button class="btn btn-primary" name="login_as">Login</button>
                 </form>
             <?php endif; ?>

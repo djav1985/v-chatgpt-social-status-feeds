@@ -1,5 +1,16 @@
 <?php
-// phpcs:ignoreFile
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: CacheServiceTest.php
+ * Description: PHPUnit tests for CacheService.
+ */
+
 // SuppressWarnings(PHPMD.TooManyPublicMethods) - Test class needs comprehensive coverage
 
 declare(strict_types=1);
@@ -7,8 +18,10 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Services\CacheService;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
+#[RunTestsInSeparateProcesses]
 final class CacheServiceTest extends TestCase
 {
     private CacheService $cache;
@@ -17,7 +30,7 @@ final class CacheServiceTest extends TestCase
     {
         $instance1 = CacheService::getInstance();
         $instance2 = CacheService::getInstance();
-        
+
         $this->assertSame($instance1, $instance2, 'getInstance should return same instance');
     }
 
@@ -25,17 +38,17 @@ final class CacheServiceTest extends TestCase
     {
         $key = 'test_key';
         $value = 'test_value';
-        
+
         $this->cache->set($key, $value);
         $result = $this->cache->get($key);
-        
+
         $this->assertSame($value, $result, 'Should retrieve the same value that was set');
     }
 
     public function testGetNonExistentKey(): void
     {
         $result = $this->cache->get('non_existent_key');
-        
+
         $this->assertNull($result, 'Should return null for non-existent keys');
     }
 
@@ -43,7 +56,7 @@ final class CacheServiceTest extends TestCase
     {
         $default = 'default_value';
         $result = $this->cache->get('non_existent_key', $default);
-        
+
         $this->assertSame($default, $result, 'Should return default for non-existent keys');
     }
 
@@ -51,10 +64,10 @@ final class CacheServiceTest extends TestCase
     {
         $key = 'test_key';
         $value = 'test_value';
-        
+
         $this->cache->set($key, $value);
         $this->assertSame($value, $this->cache->get($key));
-        
+
         $this->cache->delete($key);
         $this->assertNull($this->cache->get($key), 'Deleted key should return null');
     }
@@ -62,12 +75,12 @@ final class CacheServiceTest extends TestCase
     public function testHas(): void
     {
         $key = 'test_key';
-        
+
         $this->assertFalse($this->cache->has($key), 'Should return false before setting');
-        
+
         $this->cache->set($key, 'value');
         $this->assertTrue($this->cache->has($key), 'Should return true after setting');
-        
+
         $this->cache->delete($key);
         $this->assertFalse($this->cache->has($key), 'Should return false after deleting');
     }
@@ -77,17 +90,17 @@ final class CacheServiceTest extends TestCase
         $key = 'test_key';
         $expectedValue = 'computed_value';
         $callCount = 0;
-        
+
         $callback = function () use ($expectedValue, &$callCount) {
             $callCount++;
             return $expectedValue;
         };
-        
+
         // First call should execute callback
         $result1 = $this->cache->remember($key, 60, $callback);
         $this->assertSame($expectedValue, $result1);
         $this->assertSame(1, $callCount, 'Callback should be called once');
-        
+
         // Second call should use cached value
         $result2 = $this->cache->remember($key, 60, $callback);
         $this->assertSame($expectedValue, $result2);
@@ -114,11 +127,11 @@ final class CacheServiceTest extends TestCase
     {
         $key = 'test_key';
         $value = 'test_value';
-        
+
         // Set with 1 second TTL
         $this->cache->set($key, $value, 1);
         $this->assertSame($value, $this->cache->get($key));
-        
+
         // Wait for TTL to expire
         sleep(2);
         $this->assertNull($this->cache->get($key), 'Should return null after TTL expires');
@@ -129,13 +142,13 @@ final class CacheServiceTest extends TestCase
         $this->cache->set('key1', 'value1');
         $this->cache->set('key2', 'value2');
         $this->cache->set('key3', 'value3');
-        
+
         $this->assertTrue($this->cache->has('key1'));
         $this->assertTrue($this->cache->has('key2'));
         $this->assertTrue($this->cache->has('key3'));
-        
+
         $this->cache->clear();
-        
+
         $this->assertFalse($this->cache->has('key1'));
         $this->assertFalse($this->cache->has('key2'));
         $this->assertFalse($this->cache->has('key3'));
@@ -146,9 +159,9 @@ final class CacheServiceTest extends TestCase
         $this->cache->set('user:1', 'value1');
         $this->cache->set('user:2', 'value2');
         $this->cache->set('post:1', 'value3');
-        
+
         $this->cache->clear('user:');
-        
+
         $this->assertNull($this->cache->get('user:1'));
         $this->assertNull($this->cache->get('user:2'));
         $this->assertSame('value3', $this->cache->get('post:1'), 'Other prefixes should not be cleared');
@@ -163,10 +176,10 @@ final class CacheServiceTest extends TestCase
             'array' => [1, 2, 3],
             'nested' => ['key' => 'value'],
         ];
-        
+
         $this->cache->set($key, $value);
         $result = $this->cache->get($key);
-        
+
         $this->assertEquals($value, $result, 'Should handle complex data structures');
     }
 
@@ -184,5 +197,4 @@ final class CacheServiceTest extends TestCase
         $this->cache->clear();
         parent::tearDown();
     }
-
 }

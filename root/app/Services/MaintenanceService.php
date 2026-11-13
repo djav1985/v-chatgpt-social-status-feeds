@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -44,7 +43,10 @@ class MaintenanceService
     public function runDaily(): void
     {
         if (!$this->claimWorkerLock()) {
-            ErrorManager::getInstance()->log('[MaintenanceService] Daily worker already running; skipping runDaily invocation.', 'info');
+            ErrorManager::getInstance()->log(
+                '[MaintenanceService] Daily worker already running; skipping runDaily invocation.',
+                'info'
+            );
             return;
         }
 
@@ -63,7 +65,10 @@ class MaintenanceService
     public function runMonthly(): void
     {
         if (!$this->claimWorkerLock()) {
-            ErrorManager::getInstance()->log('[MaintenanceService] Monthly worker already running; skipping runMonthly invocation.', 'info');
+            ErrorManager::getInstance()->log(
+                '[MaintenanceService] Monthly worker already running; skipping runMonthly invocation.',
+                'info'
+            );
             return;
         }
 

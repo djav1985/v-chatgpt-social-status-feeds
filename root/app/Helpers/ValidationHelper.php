@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -148,11 +147,11 @@ class ValidationHelper
     public static function validateInteger(mixed $value, ?int $min = null, ?int $max = null): ?int
     {
         $intValue = self::convertToInteger($value);
-        
+
         if ($intValue === null) {
             return null;
         }
-        
+
         return self::validateIntegerBounds($intValue, $min, $max);
     }
 
@@ -279,7 +278,7 @@ class ValidationHelper
         }
         return [];
     }
-    
+
     /**
      * Validate password if provided.
      *
@@ -289,11 +288,13 @@ class ValidationHelper
     private static function validatePasswordIfProvided(string $password): array
     {
         if ($password !== '' && !self::isValidPassword($password)) {
-            return ['Password must be 8-16 characters long, including at least one letter, one number, and one symbol.'];
+            return [
+                'Password must be 8-16 characters long, including at least one letter, one number, and one symbol.',
+            ];
         }
         return [];
     }
-    
+
     /**
      * Validate email format.
      *
@@ -307,7 +308,7 @@ class ValidationHelper
         }
         return [];
     }
-    
+
     /**
      * Check if password meets requirements.
      *
@@ -332,7 +333,7 @@ class ValidationHelper
         }
         return [];
     }
-    
+
     /**
      * Validate account link if provided.
      *
@@ -346,7 +347,7 @@ class ValidationHelper
         }
         return [];
     }
-    
+
     /**
      * Check if URL is valid HTTPS URL.
      *
@@ -369,14 +370,14 @@ class ValidationHelper
         if (is_int($value)) {
             return $value;
         }
-        
+
         if (is_string($value) && preg_match('/^-?\d+$/', $value)) {
             return (int) $value;
         }
-        
+
         return null;
     }
-    
+
     /**
      * Validate integer is within bounds.
      *
@@ -390,14 +391,14 @@ class ValidationHelper
         if ($min !== null && $value < $min) {
             return null;
         }
-        
+
         if ($max !== null && $value > $max) {
             return null;
         }
-        
+
         return $value;
     }
-    
+
     /**
      * Validate individual cron hour values.
      *
@@ -418,7 +419,7 @@ class ValidationHelper
 
         return [];
     }
-    
+
     /**
      * Check if a cron hour value is valid.
      *

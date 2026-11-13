@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -27,7 +26,9 @@ if ($conn->connect_error) {
 $result = $conn->query("SHOW TABLES");
 if (!$result || $result->num_rows === 0) {
     echo "<h2>Error: Database is empty</h2>";
-    echo "<p>This script is for upgrading existing databases. For fresh installations, please use <a href='install.php'>install.php</a> instead.</p>";
+    echo '<p>This script is for upgrading existing databases. For fresh' .
+        ' installations, please use <a href=\'install.php\'>install.php</a>' .
+        ' instead.</p>';
     $conn->close();
     exit;
 }
@@ -40,7 +41,9 @@ echo "<p><strong>IMPORTANT:</strong> Make sure you have backed up your database 
 // Simple confirmation check
 if (!isset($_POST['confirm']) || $_POST['confirm'] !== 'yes') {
     echo '<form method="post" action="">';
-    echo '<p><label><input type="checkbox" name="confirm" value="yes" required> I have backed up my database and want to proceed with the upgrade</label></p>';
+    echo '<p><label><input type="checkbox" name="confirm" value="yes" required> I' .
+        ' have backed up my database and want to proceed with the' .
+        ' upgrade</label></p>';
     echo '<p><button type="submit">Upgrade Database</button></p>';
     echo '</form>';
     $conn->close();
@@ -73,15 +76,15 @@ if ($conn->multi_query($sql)) {
             $errors[] = $error;
         }
     } while ($conn->next_result());
-    
+
     if (empty($errors)) {
         echo "<h3 style='color: green;'>Database upgraded successfully!</h3>";
         echo "<p>Your database has been migrated to the new schema. All existing data has been preserved.</p>";
         echo "<p><a href='/'>Return to application</a></p>";
-        
+
         // Delete this script after successful upgrade
         @unlink(__FILE__);
-        
+
         // Delete the SQL file after successful upgrade
         @unlink(__DIR__ . '/../upgrade.sql');
     } else {

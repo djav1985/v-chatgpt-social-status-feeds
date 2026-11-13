@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -76,7 +75,8 @@ require 'partials/header.php';
                 </select>
 
                 <!-- CSRF token for security -->
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
+                <input type="hidden" name="csrf_token"
+                    value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
                 <button class="btn btn-primary btn-lg" type="submit" name="edit_users">Add/Update User</button>
             </form>
         </div>
@@ -110,7 +110,8 @@ require 'partials/header.php';
                 totalAccountsSelect.value = this.dataset.totalAccounts;
                 maxApiCallsSelect.value = this.dataset.maxApiCalls;
                 usedApiCallsSelect.innerHTML =
-                    `<option value="${this.dataset.usedApiCalls}">${this.dataset.usedApiCalls}</option><option value="0">0</option>`;
+                    `<option value="${this.dataset.usedApiCalls}">${this.dataset.usedApiCalls}</option>`
+                    + '<option value="0">0</option>';
                 expiresField.value = this.dataset.expires;
                 adminSelect.value = this.dataset.admin;
                 // Make username field readonly when updating

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -12,7 +11,8 @@
  * Description: AI Social Status Generator
  *
  * @var string $accountOwner Current account owner's username.
- * @var list<array{name: string, info: mixed, statuses: list<array<string, mixed>>, feedUrl: string}> $accountsData Account data for dashboard rendering.
+ * @var list<array{name: string, info: mixed, statuses: list<array<string, mixed>>, feedUrl: string}>
+ *     $accountsData Account data for dashboard rendering.
  */
 
 
@@ -40,7 +40,7 @@ require 'partials/header.php';
             $panelDisplay = $isInitiallyOpen ? $openDisplay : 'none';
             $buttonIcon = $isInitiallyOpen ? 'icon-arrow-up' : 'icon-arrow-right';
             $accountActionDisplay = $isInitiallyOpen ? 'flex' : 'none';
-    ?>
+            ?>
 
         <div class="status-container card">
             <div class="status-header card-header">
@@ -55,14 +55,14 @@ require 'partials/header.php';
                     data-account-name="<?php echo htmlspecialchars($accountName, ENT_QUOTES); ?>"
                 >
                     <i class="icon <?php
- echo $buttonIcon ?>"></i>
+                    echo $buttonIcon ?>"></i>
                 </button>
                 <h3 class="status-campaign card-title">Status Campaign: #<?php
- echo htmlspecialchars($accountName) ?></h3>
+                echo htmlspecialchars($accountName) ?></h3>
             </div>
 
             <?php
- if (!empty($statuses)) : ?>
+            if (!empty($statuses)) : ?>
                 <div
                     id="<?php echo $panelId; ?>"
                     class="status-content columns"
@@ -70,11 +70,17 @@ require 'partials/header.php';
                     data-open-display="flex"
                     aria-hidden="<?php echo $isInitiallyOpen ? 'false' : 'true'; ?>"
                 >
-            <?php foreach ($statuses as $status) : ?>
-                        <?php if (!empty($status['status'])) : ?>
+                       <?php foreach ($statuses as $status) : ?>
+                            <?php if (!empty($status['status'])) : ?>
+                                <?php
+                                $statusImagePath = $status['status_image']
+                                    ? "images/{$accountOwnerEsc}/{$accountName}/{$status['status_image']}"
+                                    : 'assets/images/default.png';
+                                ?>
                             <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
                                 <div class="status-item card">
-                                    <img src="<?php echo htmlspecialchars($status['status_image'] ? "images/{$accountOwnerEsc}/{$accountName}/{$status['status_image']}" : 'assets/images/default.png'); ?>" class="status-image img-responsive" loading="lazy">
+                                    <img src="<?php echo htmlspecialchars($statusImagePath); ?>"
+                                        class="status-image img-responsive" loading="lazy">
                                     <p class="status-text">
                                         <?php echo htmlspecialchars($status['status']); ?>
                                     </p>
@@ -86,11 +92,11 @@ require 'partials/header.php';
                                     </div>
                                 </div>
                             </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
+                            <?php endif; ?>
+                       <?php endforeach; ?>
                 </div>
-            <?php
- else : ?>
+                       <?php
+            else : ?>
                 <div
                     id="<?php echo $panelId; ?>"
                     class="status-content empty"
@@ -100,8 +106,8 @@ require 'partials/header.php';
                 >
                     <p class="empty-title">No statuses available.</p>
                 </div>
-            <?php
- endif; ?>
+                <?php
+            endif; ?>
 
             <div
                 id="<?php echo $actionsId; ?>"
@@ -111,17 +117,20 @@ require 'partials/header.php';
                 aria-hidden="<?php echo $isInitiallyOpen ? 'false' : 'true'; ?>"
             >
                 <button class="view-feed-button btn btn-primary" onclick="location.href='<?php
- echo $feedUrl ?>';">View Feed</button>
+                echo $feedUrl ?>';">View Feed</button>
                 <form class="account-action-form" action="/home" method="POST">
                     <input type="hidden" name="account" value="<?php
- echo htmlspecialchars($accountName, ENT_QUOTES) ?>">
+                    echo htmlspecialchars($accountName, ENT_QUOTES) ?>">
                     <input type="hidden" name="username" value="<?php echo $accountOwnerEsc ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES) ?>">
-                    <button type="submit" class="generate-status-button btn btn-success" name="generate_status">Generate Status</button>
+                    <?php $csrfToken = App\Core\SessionManager::getInstance()->get('csrf_token'); ?>
+                    <input type="hidden" name="csrf_token"
+                        value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
+                    <button type="submit" class="generate-status-button btn btn-success"
+                        name="generate_status">Generate Status</button>
                 </form>
             </div>
         </div>
-    <?php
+            <?php
         endforeach;
     }
     ?>

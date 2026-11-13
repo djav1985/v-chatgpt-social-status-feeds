@@ -25,12 +25,6 @@ parameters:
 			path: root/app/Core/DatabaseManager.php
 
 		-
-			message: '#^Parameter \#1 \$routeDefinitionCallback of function FastRoute\\simpleDispatcher expects callable\(FastRoute\\ConfigureRoutes\)\: void, Closure\(FastRoute\\RouteCollector\)\: void given\.$#'
-			identifier: argument.type
-			count: 1
-			path: root/app/Core/Router.php
-
-		-
 			message: '#^Method App\\Helpers\\ValidationHelper\:\:validateCronHours\(\) has parameter \$cron with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1

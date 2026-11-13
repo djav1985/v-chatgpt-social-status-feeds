@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -11,6 +10,7 @@
  * File: footer.php
  * Description: AI Social Status Generator
  */
+
 ?>
 
 <footer class="columns">

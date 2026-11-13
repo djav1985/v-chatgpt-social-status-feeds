@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -11,6 +10,7 @@
  * File: header.php
  * Description: AI Social Status Generator
  */
+
 ?>
 
 <!DOCTYPE html>
@@ -39,32 +39,43 @@
     </div>
     <div class="column col-6 text-right">
         <form action="/login" method="POST" class="form-inline">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
+            <input type="hidden" name="csrf_token"
+                value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
             <button id="logout" class="btn btn-error" type="submit" name="logout">Logout</button>
         </form>
     </div>
 </header>
 <ul class="tab tab-block">
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/home') { echo 'active';
+    <?php $currentPath = $requestPath ?? '/'; ?>
+    <li class="tab-item <?php if ($currentPath === '/home') {
+        echo 'active';
                         } ?>">
         <a href="/home">Statuses</a>
     </li>
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/accounts') { echo 'active';
+    <li class="tab-item <?php if ($currentPath === '/accounts') {
+        echo 'active';
                         } ?>">
         <a href="/accounts">Accts</a>
     </li>
     <?php if (App\Core\SessionManager::getInstance()->get('is_admin')) : ?>
-        <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/users') { echo 'active';
+        <li class="tab-item <?php if ($currentPath === '/users') {
+            echo 'active';
                             } ?>">
             <a href="/users">Users</a>
         </li>
     <?php endif; ?>
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/info') { echo 'active';
+    <li class="tab-item <?php if ($currentPath === '/info') {
+        echo 'active';
                         } ?>">
         <a href="/info">My Info</a>
     </li>
-    <li class="tab-item <?php if ($_SERVER['REQUEST_URI'] === '/feeds/' . htmlspecialchars(App\Core\SessionManager::getInstance()->get('username')) . '/all') { echo 'active';
+    <?php
+    $username = htmlspecialchars(App\Core\SessionManager::getInstance()->get('username'));
+    $allFeedsPath = '/feeds/' . $username . '/all';
+    ?>
+    <li class="tab-item <?php if ($currentPath === $allFeedsPath) {
+        echo 'active';
                         } ?>">
-        <a href="/feeds/<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('username')); ?>/all">Omni</a>
+        <a href="<?php echo $allFeedsPath; ?>">Omni</a>
     </li>
 </ul>

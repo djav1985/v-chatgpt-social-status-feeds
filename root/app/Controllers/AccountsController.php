@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -14,6 +13,7 @@
 
 namespace App\Controllers;
 
+use Psr\Http\Message\ServerRequestInterface;
 use App\Core\Response;
 use App\Core\ErrorManager;
 use App\Models\AccountModel;
@@ -25,13 +25,16 @@ use App\Services\QueueService;
 
 class AccountsController
 {
+    use RequestContext;
+
     /**
      * Show the accounts management page with schedule overview.
      *
      * @return Response
      */
-    public function handleRequest(): Response
+    public function handleRequest(ServerRequestInterface $request): Response
     {
+        $this->captureRequest($request);
         $daysOptions = self::generateDaysOptions();
         $cronOptions = self::generateCronOptions();
         $accountList = self::generateAccountList();
@@ -52,20 +55,16 @@ class AccountsController
      *
      * @return Response
      */
-    public function handleSubmission(): Response
+    public function handleSubmission(ServerRequestInterface $request): Response
     {
-        if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
-            MessageHelper::addMessage('Invalid CSRF token. Please try again.');
+        $this->captureRequest($request);
+        if (isset($this->requestBody['edit_account'])) {
+            $this->createOrUpdateAccount();
             return Response::redirect('/accounts');
         }
 
-        if (isset($_POST['edit_account'])) {
-            self::createOrUpdateAccount();
-            return Response::redirect('/accounts');
-        }
-
-        if (isset($_POST['delete_account'])) {
-            self::deleteAccount();
+        if (isset($this->requestBody['delete_account'])) {
+            $this->deleteAccount();
             return Response::redirect('/accounts');
         }
 
@@ -158,7 +157,8 @@ class AccountsController
     /**
      * Convert the overview array to an HTML grid.
      *
-     * @param array<string, array<string, list<array{hour: int, text: string}|string>>> $overview    Organized array of posts
+      * @param array<string, array<string, list<array{hour: int, text: string}|string>>>
+      *     $overview Organized array of posts
      * @param array<int, string> $daysOfWeek  Days of the week in order
      * @return string HTML table grid
      */
@@ -273,8 +273,10 @@ class AccountsController
             $dataAttributes .= "data-prompt=\"" . htmlspecialchars($account->prompt, ENT_QUOTES, 'UTF-8') . "\" ";
             $dataAttributes .= "data-link=\"" . htmlspecialchars($account->link, ENT_QUOTES, 'UTF-8') . "\" ";
             $dataAttributes .= "data-hashtags=\"" . ($account->hashtags ? '1' : '0') . "\" ";
-            $dataAttributes .= "data-cron=\"" . htmlspecialchars(implode(',', explode(',', $account->cron)), ENT_QUOTES, 'UTF-8') . "\" ";
-            $dataAttributes .= "data-days=\"" . htmlspecialchars(implode(',', explode(',', $account->days)), ENT_QUOTES, 'UTF-8') . "\" ";
+            $cron = htmlspecialchars(implode(',', explode(',', $account->cron)), ENT_QUOTES, 'UTF-8');
+            $days = htmlspecialchars(implode(',', explode(',', $account->days)), ENT_QUOTES, 'UTF-8');
+            $dataAttributes .= "data-cron=\"{$cron}\" ";
+            $dataAttributes .= "data-days=\"{$days}\" ";
             $dataAttributes .= "data-platform=\"" . htmlspecialchars($account->platform, ENT_QUOTES, 'UTF-8') . "\"";
 
             ob_start();
@@ -385,37 +387,37 @@ class AccountsController
      *
      * @return void
      */
-    private static function createOrUpdateAccount(): void
+    private function createOrUpdateAccount(): void
     {
         $session = SessionManager::getInstance();
         $accountOwner = $session->get('username');
         // Fix: Handle space-to-dash conversion and use alphanumeric-dash mode
-        $rawAccountName = $_POST['account'] ?? '';
+        $rawAccountName = $this->requestBody['account'] ?? '';
         $normalizedAccountName = str_replace(' ', '-', $rawAccountName);
         $accountName = ValidationHelper::sanitizeString($normalizedAccountName, 'alphanumeric-dash');
         // Preserve spaces and punctuation in the user-authored prompt.
-        $prompt = trim((string) ($_POST['prompt'] ?? ''));
-        $platform = ValidationHelper::sanitizeString($_POST['platform'] ?? '');
+        $prompt = trim((string) ($this->requestBody['prompt'] ?? ''));
+        $platform = ValidationHelper::sanitizeString($this->requestBody['platform'] ?? '');
         // Fix: Handle null return from validateInteger
-        $hashtags = ValidationHelper::validateInteger($_POST['hashtags'] ?? 0);
+        $hashtags = ValidationHelper::validateInteger($this->requestBody['hashtags'] ?? 0);
         if ($hashtags === null) {
             $hashtags = 0;
             MessageHelper::addMessage('Invalid hashtags value supplied. Defaulting to 0.');
         }
         // URLs contain punctuation that the generic sanitizer would strip.
-        $link = trim((string) ($_POST['link'] ?? ''));
-        
+        $link = trim((string) ($this->requestBody['link'] ?? ''));
+
         // Validate cron array and process if valid
-        $cronErrors = ValidationHelper::validateCronArray($_POST['cron'] ?? []);
+        $cronErrors = ValidationHelper::validateCronArray($this->requestBody['cron'] ?? []);
         foreach ($cronErrors as $err) {
             MessageHelper::addMessage($err);
         }
-        
+
         // Process cron hours into comma-separated string
         $cron = 'null';
-        if (empty($cronErrors) && isset($_POST['cron']) && is_array($_POST['cron'])) {
+        if (empty($cronErrors) && isset($this->requestBody['cron']) && is_array($this->requestBody['cron'])) {
             $hours = [];
-            foreach ($_POST['cron'] as $hour) {
+            foreach ($this->requestBody['cron'] as $hour) {
                 if ($hour === 'null') {
                     continue;
                 }
@@ -427,22 +429,22 @@ class AccountsController
                 $cron = implode(',', $hours);
             }
         }
-        
+
         // Validate days array and process if valid
-        $daysErrors = ValidationHelper::validateDaysArray($_POST['days'] ?? []);
+        $daysErrors = ValidationHelper::validateDaysArray($this->requestBody['days'] ?? []);
         foreach ($daysErrors as $err) {
             MessageHelper::addMessage($err);
         }
-        
+
         // Process days into comma-separated string or 'everyday'
         $days = '';
-        if (empty($daysErrors) && isset($_POST['days'])) {
-            if ($_POST['days'] === 'everyday') {
+        if (empty($daysErrors) && isset($this->requestBody['days'])) {
+            if ($this->requestBody['days'] === 'everyday') {
                 $days = 'everyday';
-            } elseif (is_array($_POST['days'])) {
-                $days = (count($_POST['days']) === 1 && $_POST['days'][0] === 'everyday') 
-                    ? 'everyday' 
-                    : implode(',', $_POST['days']);
+            } elseif (is_array($this->requestBody['days'])) {
+                $days = (count($this->requestBody['days']) === 1 && $this->requestBody['days'][0] === 'everyday')
+                    ? 'everyday'
+                    : implode(',', $this->requestBody['days']);
             }
         }
 
@@ -457,7 +459,9 @@ class AccountsController
         $accountValidationErrors = ValidationHelper::validateAccount([
             'accountName' => $accountName,
             'link' => $link,
-            'cronArr' => isset($_POST['cron']) && is_array($_POST['cron']) ? $_POST['cron'] : [],
+            'cronArr' => isset($this->requestBody['cron']) && is_array($this->requestBody['cron'])
+                ? $this->requestBody['cron']
+                : [],
         ]);
 
         foreach ($accountValidationErrors as $err) {
@@ -475,12 +479,30 @@ class AccountsController
                 if (is_array($oldInfo)) {
                     $oldInfo = (object)$oldInfo;
                 }
-                AccountModel::updateAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                AccountModel::updateAccount(
+                    $accountOwner,
+                    $accountName,
+                    $prompt,
+                    $platform,
+                    $hashtags,
+                    $link,
+                    $cron,
+                    $days
+                );
                 if ($oldInfo && ($oldInfo->cron !== $cron || $oldInfo->days !== $days)) {
                     $queue->rescheduleAccountJobs($accountOwner, $accountName, $cron, $days);
                 }
             } else {
-                AccountModel::createAccount($accountOwner, $accountName, $prompt, $platform, $hashtags, $link, $cron, $days);
+                AccountModel::createAccount(
+                    $accountOwner,
+                    $accountName,
+                    $prompt,
+                    $platform,
+                    $hashtags,
+                    $link,
+                    $cron,
+                    $days
+                );
                 $acctImagePath = __DIR__ . '/../../public/images/' . $accountOwner . '/' . $accountName;
                 if (!file_exists($acctImagePath)) {
                     mkdir(
@@ -508,10 +530,10 @@ class AccountsController
      *
      * @return void
      */
-    private static function deleteAccount(): void
+    private function deleteAccount(): void
     {
         $session = SessionManager::getInstance();
-        $accountName = ValidationHelper::sanitizeString($_POST['account'] ?? '', 'alphanumeric-dash');
+        $accountName = ValidationHelper::sanitizeString($this->requestBody['account'] ?? '', 'alphanumeric-dash');
         $accountOwner = $session->get('username');
         try {
             AccountModel::deleteAccount($accountOwner, $accountName);

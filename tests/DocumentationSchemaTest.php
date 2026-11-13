@@ -1,5 +1,15 @@
 <?php
-// phpcs:ignoreFile
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: DocumentationSchemaTest.php
+ * Description: PHPUnit tests for DocumentationSchema.
+ */
 
 declare(strict_types=1);
 

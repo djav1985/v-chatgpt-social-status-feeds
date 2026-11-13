@@ -1,6 +1,17 @@
 <?php
 
 /**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: intelephense_stubs.php
+ * Description: Language server stubs for PHP runtime functions.
+ */
+
+/**
  * Intelephense/PHP static analysis stubs.
  *
  * This file provides lightweight function stubs for global PHP functions

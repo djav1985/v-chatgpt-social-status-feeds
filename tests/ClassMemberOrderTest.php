@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: ClassMemberOrderTest.php
+ * Description: PHPUnit tests for ClassMemberOrder.
+ */
+
 declare(strict_types=1);
 
 namespace Tests;
@@ -15,9 +26,9 @@ class ClassMemberOrderTest extends TestCase
     public function testResponsePublicStaticMethodsPrecedePublicAndPrivateMethods(): void
     {
         $this->assertMethodOrder(Response::class, [
-            'redirect', 'text', 'html', 'json', 'view', 'file',
-            'getStatusCode', 'getReasonPhrase', 'send',
-            'normalizeHeaderName', 'renderView',
+            '__construct', 'redirect', 'text', 'html', 'json', 'view', 'file',
+            'getView', 'getViewData', 'getFile', 'withView', 'withViewData',
+            'withFile', 'send', 'renderView',
         ]);
     }
 

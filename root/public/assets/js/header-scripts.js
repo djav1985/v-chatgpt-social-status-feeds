@@ -17,3 +17,5 @@ function showToast(message) {
         }, 500);
     }, 3000);
 }
+
+window.showToast = showToast;

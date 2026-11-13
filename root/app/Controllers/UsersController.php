@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -14,6 +13,7 @@
 
 namespace App\Controllers;
 
+use Psr\Http\Message\ServerRequestInterface;
 use App\Core\Mailer;
 use App\Core\ErrorManager;
 use App\Core\Response;
@@ -24,13 +24,16 @@ use App\Helpers\ValidationHelper;
 
 class UsersController
 {
+    use RequestContext;
+
     /**
      * Display the user management page for administrators.
      *
      * @return Response
      */
-    public function handleRequest(): Response
+    public function handleRequest(ServerRequestInterface $request): Response
     {
+        $this->captureRequest($request);
 
         $session = SessionManager::getInstance();
         if (!$session->get('is_admin')) {
@@ -50,30 +53,26 @@ class UsersController
      *
      * @return Response
      */
-    public function handleSubmission(): Response
+    public function handleSubmission(ServerRequestInterface $request): Response
     {
+        $this->captureRequest($request);
         $session = SessionManager::getInstance();
         if (!$session->get('is_admin')) {
             return Response::text('Forbidden', 403);
         }
 
-        if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
-            MessageHelper::addMessage('Invalid CSRF token. Please try again.');
+        if (isset($this->requestBody['edit_users'])) {
+            $this->editUsers();
             return Response::redirect('/users');
         }
 
-        if (isset($_POST['edit_users'])) {
-            self::editUsers();
+        if (isset($this->requestBody['delete_user']) && isset($this->requestBody['username'])) {
+            $this->deleteUser();
             return Response::redirect('/users');
         }
 
-        if (isset($_POST['delete_user']) && isset($_POST['username'])) {
-            self::deleteUser();
-            return Response::redirect('/users');
-        }
-
-        if (isset($_POST['login_as']) && isset($_POST['username'])) {
-            if (self::loginAs()) {
+        if (isset($this->requestBody['login_as']) && isset($this->requestBody['username'])) {
+            if ($this->loginAs()) {
                 return Response::redirect('/home');
             }
             return Response::redirect('/users');
@@ -118,20 +117,20 @@ class UsersController
      *
      * @return void
      */
-    private static function editUsers(): void
+    private function editUsers(): void
     {
         $session = SessionManager::getInstance();
-        $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
-        $password = (string) ($_POST['password'] ?? '');
+        $username = ValidationHelper::sanitizeString($this->requestBody['username'] ?? '');
+        $password = (string) ($this->requestBody['password'] ?? '');
         $plainPassword = $password;
         // Email addresses contain punctuation that the generic sanitizer would strip.
-        $email = trim((string) ($_POST['email'] ?? ''));
+        $email = trim((string) ($this->requestBody['email'] ?? ''));
         // Fix: Handle null returns with default values
-        $totalAccounts = ValidationHelper::validateInteger($_POST['total-accounts'] ?? 0, 0) ?? 0;
-        $maxApiCalls = ValidationHelper::validateInteger($_POST['max-api-calls'] ?? 0, 0) ?? 0;
-        $usedApiCalls = ValidationHelper::validateInteger($_POST['used-api-calls'] ?? 0, 0) ?? 0;
-        $expires = ValidationHelper::sanitizeString($_POST['expires'] ?? '');
-        $admin = ValidationHelper::validateInteger($_POST['admin'] ?? 0, 0) ?? 0;
+        $totalAccounts = ValidationHelper::validateInteger($this->requestBody['total-accounts'] ?? 0, 0) ?? 0;
+        $maxApiCalls = ValidationHelper::validateInteger($this->requestBody['max-api-calls'] ?? 0, 0) ?? 0;
+        $usedApiCalls = ValidationHelper::validateInteger($this->requestBody['used-api-calls'] ?? 0, 0) ?? 0;
+        $expires = ValidationHelper::sanitizeString($this->requestBody['expires'] ?? '');
+        $admin = ValidationHelper::validateInteger($this->requestBody['admin'] ?? 0, 0) ?? 0;
 
         // Centralized validation
         $userValidationErrors = ValidationHelper::validateUser([
@@ -208,10 +207,10 @@ class UsersController
      *
      * @return void
      */
-    private static function deleteUser(): void
+    private function deleteUser(): void
     {
         $session = SessionManager::getInstance();
-        $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
+        $username = ValidationHelper::sanitizeString($this->requestBody['username'] ?? '');
         if ($username === $session->get('username')) {
             MessageHelper::addMessage("Sorry, you can't delete your own account.");
         } else {
@@ -230,10 +229,10 @@ class UsersController
      *
      * @return bool True when impersonation succeeded, otherwise false
      */
-    private static function loginAs(): bool
+    private function loginAs(): bool
     {
         $session = SessionManager::getInstance();
-        $username = ValidationHelper::sanitizeString($_POST['username'] ?? '');
+        $username = ValidationHelper::sanitizeString($this->requestBody['username'] ?? '');
         try {
             $user = UserModel::getUserInfo($username);
             if ($user) {
@@ -242,8 +241,8 @@ class UsersController
                 }
                 $session->set('username', $user->username);
                 $session->set('logged_in', true);
-                $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
-                $session->set('csrf_token', bin2hex(random_bytes(32)));
+                $session->set('user_agent', $this->requestServer['HTTP_USER_AGENT'] ?? '');
+                $session->set('csrf_token', bin2hex(\App\Helpers\EncryptionHelper::bytes(32)));
                 $session->set('is_admin', $user->admin);
                 $session->set('timeout', time());
                 $session->regenerate();

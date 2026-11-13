@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -14,15 +13,16 @@
 
 namespace App\Services;
 
-use App\Models\AccountModel;
-use App\Models\UserModel;
-use App\Models\StatusModel;
-use function random_bytes;
 use App\Core\ErrorManager;
+use App\Models\AccountModel;
+use App\Models\StatusModel;
+use App\Models\UserModel;
 use GuzzleHttp\Client as GuzzleClient;
 use InvalidArgumentException;
 use OpenAI;
 use RuntimeException;
+
+use function random_bytes;
 
 class StatusService
 {
@@ -34,13 +34,14 @@ class StatusService
     /** @var \OpenAI\Client|null */
     private static $client = null;
 
-    
+
     /**
      * Generates a status update and associated image for a given account.
      *
      * @param string $accountName The name of the account.
      * @param string $accountOwner The owner of the account.
-     * @return array<string, mixed>|null Returns an array with success status and message, or null if the operation fails.
+     * @return array<string, mixed>|null Returns an array with success status and message,
+     *                                   or null if the operation fails.
      */
     public static function generateStatus(string $accountName, string $accountOwner): ?array
     {
@@ -100,7 +101,8 @@ class StatusService
 
         $platformDescription = match ($platform) {
             'facebook', 'google-business' => 'Must stay under 250 characters. Include lots of emojis.',
-            'twitter' => 'ONE SENTENCE ONLY. NO EXCEPTIONS. Do NOT write more than one sentence or it will be discarded.',
+            'twitter' => 'ONE SENTENCE ONLY. NO EXCEPTIONS. Do NOT write more than one '
+                . 'sentence or it will be discarded.',
             'instagram' => 'Must stay under 150 characters. Include lots of emojis.',
             default => 'Must stay under 150 characters. Include lots of emojis.',
         };
@@ -238,8 +240,18 @@ class StatusService
      * @param string $accountOwner The owner of the account.
      * @return array<string, mixed> Returns the API response containing structured data or an error array.
      */
-    private static function generateSocialStatus(string $systemMessage, string $prompt, bool $includeHashtags, string $platform, string $platformDescription, string $totalTags, int $totalCharacters, int $statusTokens, string $accountName, string $accountOwner): array
-    {
+    private static function generateSocialStatus(
+        string $systemMessage,
+        string $prompt,
+        bool $includeHashtags,
+        string $platform,
+        string $platformDescription,
+        string $totalTags,
+        int $totalCharacters,
+        int $statusTokens,
+        string $accountName,
+        string $accountOwner
+    ): array {
         // Build JSON schema for responses endpoint
         $jsonSchema = [
             "type" => "object",
@@ -283,7 +295,8 @@ class StatusService
         $data = [
             "model" => MODEL,
             "instructions" => $systemMessage,
-            "input" => "Create a status: $prompt (Must be under $totalCharacters characters. Do NOT exceed this limit. $platformDescription.)",
+            'input' => "Create a status: $prompt (Must be under $totalCharacters characters. "
+                . "Do NOT exceed this limit. $platformDescription.)",
             "max_output_tokens" => $statusTokens,
             "reasoning" => [
                 "effort" => self::REASONING_EFFORT
@@ -314,7 +327,9 @@ class StatusService
         $responseStatus = $response['status'] ?? '';
         if ($responseStatus === 'incomplete') {
             $reason = $response['incomplete_details']['reason'] ?? 'unknown';
-            $error = "Error generating status for $accountName owned by $accountOwner: API response incomplete (reason: $reason). This usually means the response was truncated. Please try again.";
+            $error = "Error generating status for $accountName owned by $accountOwner: "
+                . "API response incomplete (reason: $reason). This usually means the "
+                . 'response was truncated. Please try again.';
             ErrorManager::getInstance()->log($error, 'error');
             return ["error" => $error];
         }
@@ -324,8 +339,11 @@ class StatusService
         foreach ($outputArr as $outputItem) {
             if (isset($outputItem['content']) && is_array($outputItem['content'])) {
                 foreach ($outputItem['content'] as $contentBlock) {
-                    if (isset($contentBlock['type']) && $contentBlock['type'] === 'output_text' && isset($contentBlock['text'])) {
-
+                    if (
+                        isset($contentBlock['type'])
+                        && $contentBlock['type'] === 'output_text'
+                        && isset($contentBlock['text'])
+                    ) {
                         $raw = $contentBlock['text'];
 
                         // 1. Remove illegal control characters (but KEEP emojis)
@@ -341,7 +359,9 @@ class StatusService
                             return $decodedContent;
                         } else {
                             $jsonError = json_last_error_msg();
-                            $error = "Error generating status for $accountName owned by $accountOwner: Invalid structured output from API (JSON decode error after clean-up: $jsonError). Original content: " . var_export($raw, true);
+                            $error = "Error generating status for $accountName owned by $accountOwner: "
+                                . "Invalid structured output from API (JSON decode error after clean-up: "
+                                . $jsonError . '). Original content: ' . var_export($raw, true);
                             ErrorManager::getInstance()->log($error, 'error');
                             return ["error" => $error];
                         }
@@ -350,7 +370,9 @@ class StatusService
             }
         }
 
-        $error = "Error generating status for $accountName owned by $accountOwner: API response did not contain expected structured content. Full response: " . var_export($response, true);
+        $error = "Error generating status for $accountName owned by $accountOwner: "
+            . 'API response did not contain expected structured content. Full response: '
+            . var_export($response, true);
         ErrorManager::getInstance()->log($error, 'error');
         return ["error" => $error];
     }

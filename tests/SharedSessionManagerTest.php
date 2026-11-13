@@ -1,5 +1,16 @@
 <?php
-// phpcs:ignoreFile
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: SharedSessionManagerTest.php
+ * Description: Shared PHPUnit tests for SessionManager.
+ */
+
 // SuppressWarnings(PHPMD.TooManyPublicMethods) - Test class requires comprehensive coverage
 
 declare(strict_types=1);
@@ -9,7 +20,7 @@ namespace Tests;
 use App\Core\SessionManager;
 use PHPUnit\Framework\TestCase;
 
-final class SessionManagerTest extends TestCase
+final class SharedSessionManagerTest extends TestCase
 {
     private SessionManager $session;
     private string|false $originalUserAgent;
@@ -18,46 +29,46 @@ final class SessionManagerTest extends TestCase
     {
         $instance1 = SessionManager::getInstance();
         $instance2 = SessionManager::getInstance();
-        
+
         $this->assertSame($instance1, $instance2);
     }
 
     public function testGetReturnsValueFromSession(): void
     {
         $_SESSION['test_key'] = 'test_value';
-        
+
         $result = $this->session->get('test_key');
-        
+
         $this->assertSame('test_value', $result);
     }
 
     public function testGetReturnsDefaultWhenKeyNotExists(): void
     {
         $result = $this->session->get('non_existent_key', 'default_value');
-        
+
         $this->assertSame('default_value', $result);
     }
 
     public function testGetReturnsNullWhenKeyNotExistsAndNoDefault(): void
     {
         $result = $this->session->get('non_existent_key');
-        
+
         $this->assertNull($result);
     }
 
     public function testSetStoresValueInSession(): void
     {
         $this->session->set('test_key', 'test_value');
-        
+
         $this->assertSame('test_value', $_SESSION['test_key']);
     }
 
     public function testSetOverwritesExistingValue(): void
     {
         $_SESSION['test_key'] = 'old_value';
-        
+
         $this->session->set('test_key', 'new_value');
-        
+
         $this->assertSame('new_value', $_SESSION['test_key']);
     }
 
@@ -71,7 +82,7 @@ final class SessionManagerTest extends TestCase
             'array' => ['a', 'b', 'c'],
             'null' => null,
         ];
-        
+
         foreach ($testCases as $key => $value) {
             $this->session->set($key, $value);
             $this->assertSame($value, $this->session->get($key));
@@ -83,9 +94,9 @@ final class SessionManagerTest extends TestCase
         $_SESSION['logged_in'] = false;
         $_SESSION['timeout'] = time();
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        
+
         $result = $this->session->isValid();
-        
+
         $this->assertFalse($result);
     }
 
@@ -94,9 +105,9 @@ final class SessionManagerTest extends TestCase
         $_SESSION['logged_in'] = true;
         $_SESSION['timeout'] = time();
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        
+
         $result = $this->session->isValid();
-        
+
         $this->assertTrue($result);
     }
 
@@ -106,9 +117,9 @@ final class SessionManagerTest extends TestCase
         $oldTimeout = time() - 100;
         $_SESSION['timeout'] = $oldTimeout;
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        
+
         $this->session->isValid();
-        
+
         $newTimeout = $_SESSION['timeout'];
         $this->assertGreaterThan($oldTimeout, $newTimeout);
     }
@@ -119,9 +130,9 @@ final class SessionManagerTest extends TestCase
         // Set timeout to 2000 seconds ago (exceeds default 1800 limit)
         $_SESSION['timeout'] = time() - 2000;
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        
+
         $result = $this->session->isValid();
-        
+
         $this->assertFalse($result);
     }
 
@@ -131,9 +142,9 @@ final class SessionManagerTest extends TestCase
         $_SESSION['timeout'] = time();
         $_SESSION['user_agent'] = 'OldUserAgent/1.0';
         $_SERVER['HTTP_USER_AGENT'] = 'NewUserAgent/2.0';
-        
+
         $result = $this->session->isValid();
-        
+
         $this->assertFalse($result);
     }
 
@@ -143,10 +154,10 @@ final class SessionManagerTest extends TestCase
         $_SESSION['timeout'] = time();
         unset($_SESSION['user_agent']);
         unset($_SERVER['HTTP_USER_AGENT']);
-        
+
         // Should not crash
         $result = $this->session->isValid();
-        
+
         $this->assertTrue($result);
     }
 
@@ -154,7 +165,7 @@ final class SessionManagerTest extends TestCase
     {
         $_SESSION['test_key'] = 'test_value';
         $_SESSION['another_key'] = 'another_value';
-        
+
         $this->session->destroy();
 
         $this->assertEmpty($_SESSION);
@@ -169,10 +180,10 @@ final class SessionManagerTest extends TestCase
             ],
             'integer' => 123,
         ];
-        
+
         $this->session->set('complex', $complexData);
         $result = $this->session->get('complex');
-        
+
         $this->assertSame($complexData, $result);
     }
 

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -9,39 +8,26 @@
  * Version: 3.0.0
  *
  * File: Request.php
- * Description: Simple HTTP request representation.
+ * Description: PSR-7 HTTP request factory.
  */
+
+declare(strict_types=1);
 
 namespace App\Core;
 
-class Request
-{
-    /**
-     * @param string               $method HTTP method.
-     * @param string               $path   Request path (without query string).
-     * @param array<string, mixed> $get    Query string parameters.
-     * @param array<string, mixed> $post   POST body parameters.
-     * @param array<string, mixed> $server Server variables.
-     */
-    public function __construct(
-        public readonly string $method,
-        public readonly string $path,
-        public readonly array $get = [],
-        public readonly array $post = [],
-        public readonly array $server = [],
-    ) {
-    }
+use GuzzleHttp\Psr7\ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
 
-    /**
-     * Build a Request from PHP globals.
-     */
-    public static function fromGlobals(): self
+/** Factory for PSR-7 server requests. */
+final class Request
+{
+    public static function fromGlobals(): ServerRequestInterface
     {
-        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-        if (!is_string($path)) {
-            $path = '/';
+        $request = ServerRequest::fromGlobals();
+        if ($request->getUri()->getPath() === '') {
+            return $request->withUri($request->getUri()->withPath('/'));
         }
 
-        return new self($_SERVER['REQUEST_METHOD'] ?? 'GET', $path, $_GET, $_POST, $_SERVER);
+        return $request;
     }
 }

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -14,6 +13,7 @@
 
 namespace App\Controllers;
 
+use Psr\Http\Message\ServerRequestInterface;
 use App\Core\Response;
 use App\Models\AccountModel;
 use App\Models\StatusModel;
@@ -42,12 +42,16 @@ class FeedController
     /**
      * Validate parameters and output the requested feed.
      *
+     * @param ServerRequestInterface $request PSR-7 request.
      * @param string|null $user    Owner username
      * @param string|null $account Account name or "all"
      * @return Response
      */
-    public function handleRequest(?string $user = null, ?string $account = null): Response
-    {
+    public function handleRequest(
+        ServerRequestInterface $request,
+        ?string $user = null,
+        ?string $account = null
+    ): Response {
         if (!$user || !$account) {
             return Response::text('Bad Request: Missing user or account parameter.', 400);
         }
@@ -133,13 +137,15 @@ class FeedController
             unset($status);
         }
 
-        $rssUrl = DOMAIN . '/feeds/' . rawurlencode($accountOwner) . '/' . ($isAllAccounts ? 'all' : rawurlencode($accountName));
+        $feedAccount = $isAllAccounts ? 'all' : rawurlencode($accountName);
+        $rssUrl = DOMAIN . '/feeds/' . rawurlencode($accountOwner) . '/' . $feedAccount;
         $escapedRssUrl = htmlspecialchars($rssUrl, ENT_QUOTES, 'UTF-8');
         $escapedAccountOwner = htmlspecialchars($accountOwner, ENT_QUOTES, 'UTF-8');
         $escapedAccountName = htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8');
 
         $xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        $xmlOutput .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">' . PHP_EOL;
+        $xmlOutput .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" ';
+        $xmlOutput .= 'xmlns:content="http://purl.org/rss/1.0/modules/content/">' . PHP_EOL;
 
         $xmlOutput .= '<channel>' . PHP_EOL;
         $xmlOutput .= '<title>' . $escapedAccountOwner . ' status feed</title>' . PHP_EOL;
@@ -165,7 +171,8 @@ class FeedController
 
             // Include image enclosure if available
             if (!empty($status->status_image)) {
-                $imageUrl = DOMAIN . '/images/' . $accountOwner . '/' . (string)$status->account . '/' . (string)$status->status_image;
+                $imageUrl = DOMAIN . '/images/' . $accountOwner . '/'
+                    . (string)$status->account . '/' . (string)$status->status_image;
 
                 // Images are stored under root/public/images/<owner>/<account>/
                 $pathOwner   = basename($accountOwner);
@@ -173,7 +180,8 @@ class FeedController
                 $pathImage   = basename($status->status_image);
 
                 $imageFileSize = self::getImageFileSize($pathOwner, $pathAccount, $pathImage);
-                $enclosureTag  = '<enclosure url="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
+                $enclosureTag = '<enclosure url="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8')
+                    . '" length="' . $imageFileSize . '" type="image/png" />' . PHP_EOL;
             }
 
             $description = htmlspecialchars((string)$status->status, ENT_QUOTES, 'UTF-8');
@@ -237,9 +245,13 @@ class FeedController
         $cacheKey = "image:size:{$pathOwner}:{$pathAccount}:{$pathImage}";
         $ttl = defined('CACHE_TTL_FEED') ? CACHE_TTL_FEED : 600;
 
-        return CacheService::getInstance()->remember($cacheKey, $ttl, function () use ($pathOwner, $pathAccount, $pathImage) {
-            $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
-            return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
-        });
+        return CacheService::getInstance()->remember(
+            $cacheKey,
+            $ttl,
+            function () use ($pathOwner, $pathAccount, $pathImage) {
+                $imageFilePath = __DIR__ . '/../../public/images/' . $pathOwner . '/' . $pathAccount . '/' . $pathImage;
+                return file_exists($imageFilePath) ? filesize($imageFilePath) : 0;
+            }
+        );
     }
 }

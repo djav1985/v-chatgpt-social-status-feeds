@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -12,7 +11,8 @@
  * Description: AI Social Status Generator
  *
  * @var string $profileData Escaped HTML data attributes for the profile form.
- * @var array{systemMsg?: string, who?: string, where?: string, what?: string, goal?: string, hasProfile?: bool} $systemMsg Profile data used to build the system message.
+ * @var array{systemMsg?: string, who?: string, where?: string, what?: string, goal?: string, hasProfile?: bool}
+ *     $systemMsg Profile data used to build the system message.
  */
 
 
@@ -32,21 +32,35 @@
                 <div class="column col-6 col-md-6 col-sm-12">
                     <!-- Who input field -->
                     <label for="who">Who:</label>
-                    <input class="form-input" type="text" name="who" id="who" placeholder="We are... (name)" maxlength="50" required>
+                    <input class="form-input" type="text" name="who" id="who" placeholder="We are... (name)"
+                        maxlength="50" required>
                 </div>
                 <div class="column col-6 col-md-6 col-sm-12">
                     <!-- Where input field -->
                     <label for="where">Where:</label>
-                    <input class="form-input" type="text" name="where" id="where" placeholder="We are located in... (florida)" maxlength="50" required>
+                    <input class="form-input" type="text" name="where" id="where" placeholder="We are located
+                        in... (florida)" maxlength="50" required>
                 </div>
                 <!-- What input field -->
                 <label for="what">What:</label>
-                <textarea class="form-input" rows="10" name="what" id="what" placeholder="We... (build things)" maxlength="1024" required></textarea>
+                <textarea class="form-input" rows="10" name="what" id="what" placeholder="We... (build things)"
+                    maxlength="1024" required></textarea>
                 <!-- Goal input field -->
                 <label for="goal">Goal:</label>
-                <textarea class="form-input" rows="10" name="goal" id="goal" placeholder="Our goal is... (drive more sales)" maxlength="500" required></textarea>
-                <input name="csrf_token" type="hidden" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES, 'UTF-8'); ?>">
-                <input name="accountOwner" type="hidden" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('username'), ENT_QUOTES, 'UTF-8'); ?>">
+                <textarea class="form-input" rows="10" name="goal" id="goal" placeholder="Our goal is... (drive
+                    more sales)" maxlength="500" required></textarea>
+                <input name="csrf_token" type="hidden"
+                    value="<?php echo htmlspecialchars(
+                        App\Core\SessionManager::getInstance()->get('csrf_token'),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ); ?>">
+                <input name="accountOwner" type="hidden"
+                    value="<?php echo htmlspecialchars(
+                        App\Core\SessionManager::getInstance()->get('username'),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ); ?>">
                 <input class="btn btn-primary btn-lg" type="submit" name="update_profile">
             </form>
         </div>
@@ -58,7 +72,13 @@
             <form class="form-group" method="post">
                 <!-- Username input field (readonly) -->
                 <label for="username">Username:</label>
-                <input class="form-input" type="text" id="username" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('username'), ENT_QUOTES, 'UTF-8'); ?>" readonly>
+                <input class="form-input" type="text" id="username"
+                    value="<?php echo htmlspecialchars(
+                        App\Core\SessionManager::getInstance()->get('username'),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ); ?>"
+                    readonly>
                 <!-- New password input field -->
                 <label for="password">New Password:</label>
                 <input class="form-input" type="password" name="password" id="password" required>
@@ -66,10 +86,20 @@
                 <label for="password2">Confirm New Password:</label>
                 <input class="form-input" type="password" name="password2" id="password2" required>
                 <!-- CSRF token for security -->
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="csrf_token"
+                    value="<?php echo htmlspecialchars(
+                        App\Core\SessionManager::getInstance()->get('csrf_token'),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ); ?>">
                 <input type="submit" class="btn btn-primary btn-lg" name="change_password">
             </form>
-            <iframe style="margin: auto;" width="100%" height="340px" src="https://www.youtube.com/embed/Hj-XiPXyqCg?si=TPG2nQ_u1Iz3y_T1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <iframe style="margin: auto;" width="100%" height="340px"
+                src="https://www.youtube.com/embed/Hj-XiPXyqCg?si=TPG2nQ_u1Iz3y_T1"
+                title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope;
+                    picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>
     </div>
     <!-- System Message Section -->

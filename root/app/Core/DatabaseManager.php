@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -21,6 +20,7 @@ use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Exception;
 use App\Core\ErrorManager;
+
 class DatabaseManager
 {
     private const MAX_RETRIES = 3;
@@ -134,11 +134,18 @@ class DatabaseManager
 
                 if ($this->retryCount < self::MAX_RETRIES) {
                     $this->retryCount++;
-                    ErrorManager::getInstance()->log('MySQL connection lost during execution. Attempting to reconnect... Retry ' . $this->retryCount, 'warning');
+                    ErrorManager::getInstance()->log(
+                        'MySQL connection lost during execution. Attempting to reconnect... Retry '
+                        . $this->retryCount,
+                        'warning'
+                    );
                     $this->reconnect();
                     return $this->execute();
                 } else {
-                    ErrorManager::getInstance()->log('Max database reconnection attempts reached. Aborting query.', 'error');
+                    ErrorManager::getInstance()->log(
+                        'Max database reconnection attempts reached. Aborting query.',
+                        'error'
+                    );
                     throw new Exception('Max database reconnection attempts reached.');
                 }
             }
@@ -192,7 +199,10 @@ class DatabaseManager
             return true;
         } catch (DBALException $e) {
             if ($this->isConnectionError($e)) {
-                ErrorManager::getInstance()->log('MySQL connection lost during transaction. Attempting to reconnect...', 'warning');
+                ErrorManager::getInstance()->log(
+                    'MySQL connection lost during transaction. Attempting to reconnect...',
+                    'warning'
+                );
                 $this->reconnect();
                 self::$dbh->beginTransaction();
                 return true;
@@ -254,7 +264,11 @@ class DatabaseManager
      */
     private function connect(): void
     {
-        if (self::$dbh !== null && self::$lastUsedTime !== null && (time() - self::$lastUsedTime) > self::$idleTimeout) {
+        if (
+            self::$dbh !== null
+            && self::$lastUsedTime !== null
+            && (time() - self::$lastUsedTime) > self::$idleTimeout
+        ) {
             $this->closeConnection();
         }
 

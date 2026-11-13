@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -51,7 +50,7 @@ class CacheService
     private function __construct()
     {
         $this->apcuAvailable = extension_loaded('apcu') && \apcu_enabled();
-        
+
         if (!$this->apcuAvailable && !self::$apcuUnavailableLogged) {
             ErrorManager::getInstance()->log(
                 'APCu is not available. Using in-memory cache fallback.',
@@ -86,18 +85,18 @@ class CacheService
         if ($this->apcuAvailable) {
             $success = false;
             $value = \apcu_fetch($prefixedKey, $success);
-            
+
             if ($success) {
                 return $value;
             }
         } else {
             if (isset(self::$memoryCache[$prefixedKey])) {
                 $entry = self::$memoryCache[$prefixedKey];
-                
+
                 if ($entry['expires'] === 0 || $entry['expires'] > time()) {
                     return $entry['value'];
                 }
-                
+
                 unset(self::$memoryCache[$prefixedKey]);
             }
         }
@@ -119,14 +118,14 @@ class CacheService
 
         if ($this->apcuAvailable) {
             $result = \apcu_store($prefixedKey, $value, $ttl);
-            
+
             if (!$result) {
                 ErrorManager::getInstance()->log(
                     "Failed to store key '{$key}' in APCu cache.",
                     'warning'
                 );
             }
-            
+
             return $result;
         } else {
             $expires = $ttl > 0 ? time() + $ttl : 0;
@@ -134,7 +133,7 @@ class CacheService
                 'value' => $value,
                 'expires' => $expires,
             ];
-            
+
             return true;
         }
     }
@@ -156,7 +155,7 @@ class CacheService
                 unset(self::$memoryCache[$prefixedKey]);
                 return true;
             }
-            
+
             return false;
         }
     }
@@ -204,14 +203,14 @@ class CacheService
         } else {
             if (isset(self::$memoryCache[$prefixedKey])) {
                 $entry = self::$memoryCache[$prefixedKey];
-                
+
                 if ($entry['expires'] === 0 || $entry['expires'] > time()) {
                     return true;
                 }
-                
+
                 unset(self::$memoryCache[$prefixedKey]);
             }
-            
+
             return false;
         }
     }
@@ -228,7 +227,7 @@ class CacheService
     {
         $sentinel = new \stdClass();
         $value = $this->get($key, $sentinel);
-        
+
         if ($value !== $sentinel) {
             return $value;
         }
@@ -242,7 +241,7 @@ class CacheService
                 "Cache remember callback failed for key '{$key}': {$e->getMessage()}",
                 'error'
             );
-            
+
             throw $e;
         }
     }
@@ -255,8 +254,8 @@ class CacheService
      */
     private function clearApcuCache(?string $pattern): bool
     {
-        $prefixedPattern = $pattern === null 
-            ? self::PREFIX 
+        $prefixedPattern = $pattern === null
+            ? self::PREFIX
             : self::PREFIX . $pattern;
 
         try {
@@ -270,7 +269,7 @@ class CacheService
             return false;
         }
     }
-    
+
     /**
      * Delete APCu entries from iterator.
      *
@@ -293,5 +292,4 @@ class CacheService
 
         return $deleted;
     }
-
 }

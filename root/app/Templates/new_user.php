@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -28,6 +27,7 @@
     </tr>
 </table>
 <p style="margin-top:20px;">
-    <a href="<?= DOMAIN ?>/login" style="display:inline-block;background:#0366d6;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:4px;">Log in to your account</a>
+    <a href="<?= DOMAIN ?>/login" style="display:inline-block;background:#0366d6;color:#ffffff;padding:10px
+    20px;text-decoration:none;border-radius:4px;">Log in to your account</a>
 </p>
 <p>After logging in, please change your password from your profile settings.</p>

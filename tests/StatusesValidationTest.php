@@ -1,11 +1,22 @@
 <?php
 
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: StatusesValidationTest.php
+ * Description: Statuses-specific PHPUnit tests for validation.
+ */
+
 namespace Tests;
 
 use App\Helpers\ValidationHelper;
 use PHPUnit\Framework\TestCase;
 
-class ValidationTest extends TestCase
+class StatusesValidationTest extends TestCase
 {
     /**
      * Test sanitizeString with various character sets

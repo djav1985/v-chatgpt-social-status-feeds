@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -135,7 +134,10 @@ class StatusJobModel
             $threshold = max(0, $now - $timeout);
 
             $db = DatabaseManager::getInstance();
-            $db->query('UPDATE status_jobs SET processing = FALSE WHERE processing = TRUE AND scheduled_at <= :threshold');
+            $db->query(
+                'UPDATE status_jobs SET processing = FALSE '
+                . 'WHERE processing = TRUE AND scheduled_at <= :threshold'
+            );
             $db->bind(':threshold', $threshold);
             $db->execute();
 
@@ -225,7 +227,10 @@ class StatusJobModel
             $db->execute();
             return true;
         } catch (Exception $e) {
-            ErrorManager::getInstance()->log("Error marking job {$id} status and processing: " . $e->getMessage(), 'error');
+            ErrorManager::getInstance()->log(
+                "Error marking job {$id} status and processing: " . $e->getMessage(),
+                'error'
+            );
             throw $e;
         }
     }

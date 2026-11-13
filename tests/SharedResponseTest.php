@@ -1,5 +1,15 @@
 <?php
-// phpcs:ignoreFile
+
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: SharedResponseTest.php
+ * Description: Shared PHPUnit tests for Response.
+ */
 
 declare(strict_types=1);
 
@@ -8,7 +18,7 @@ namespace Tests;
 use App\Core\Response;
 use PHPUnit\Framework\TestCase;
 
-final class ResponseTest extends TestCase
+final class SharedResponseTest extends TestCase
 {
     // -------------------------------------------------------------------------
     // Constructor / accessors
@@ -17,70 +27,60 @@ final class ResponseTest extends TestCase
     public function testDefaultStatusCodeIs200(): void
     {
         $response = new Response();
-
         $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testDefaultBodyIsEmpty(): void
     {
         $response = new Response();
-
-        $this->assertSame('', $response->getBody());
+        $this->assertSame('', (string) $response->getBody());
     }
 
     public function testDefaultHeadersAreEmpty(): void
     {
         $response = new Response();
-
         $this->assertSame([], $response->getHeaders());
     }
 
     public function testCustomStatusCodeIsStored(): void
     {
         $response = new Response(404);
-
         $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testKnownStatusCodeResolvesReasonPhrase(): void
     {
         $response = new Response(404);
-
         $this->assertSame('Not Found', $response->getReasonPhrase());
     }
 
     public function testUnknownStatusCodeHasEmptyReasonPhrase(): void
     {
-        $response = new Response(999);
-
+        $response = new Response(599);
         $this->assertSame('', $response->getReasonPhrase());
     }
 
     public function testCustomReasonPhraseOverridesDefault(): void
     {
         $response = new Response(200, [], '', 'Everything Is Fine');
-
         $this->assertSame('Everything Is Fine', $response->getReasonPhrase());
     }
 
     public function testConstructorStoresBody(): void
     {
         $response = new Response(200, [], 'Hello World');
-
-        $this->assertSame('Hello World', $response->getBody());
+        $this->assertSame('Hello World', (string) $response->getBody());
     }
 
     public function testConstructorStoresHeaders(): void
     {
         $response = new Response(200, ['Content-Type' => 'text/html']);
-
         $this->assertSame(['text/html'], $response->getHeader('Content-Type'));
     }
 
     public function testConstructorStoresHeaderListValues(): void
     {
         $response = new Response(200, ['Set-Cookie' => ['a=1', 'b=2']]);
-
         $this->assertSame(['a=1', 'b=2'], $response->getHeader('Set-Cookie'));
     }
 
@@ -91,21 +91,18 @@ final class ResponseTest extends TestCase
     public function testHasHeaderReturnsTrueWhenPresent(): void
     {
         $response = new Response(200, ['X-Foo' => 'bar']);
-
         $this->assertTrue($response->hasHeader('X-Foo'));
     }
 
     public function testHasHeaderReturnsFalseWhenAbsent(): void
     {
         $response = new Response();
-
         $this->assertFalse($response->hasHeader('X-Foo'));
     }
 
     public function testHasHeaderIsCaseInsensitive(): void
     {
         $response = new Response(200, ['Content-Type' => 'text/html']);
-
         $this->assertTrue($response->hasHeader('content-type'));
         $this->assertTrue($response->hasHeader('CONTENT-TYPE'));
     }
@@ -113,28 +110,24 @@ final class ResponseTest extends TestCase
     public function testGetHeaderIsCaseInsensitive(): void
     {
         $response = new Response(200, ['Content-Type' => 'application/json']);
-
         $this->assertSame(['application/json'], $response->getHeader('content-type'));
     }
 
     public function testGetHeaderReturnsEmptyArrayWhenAbsent(): void
     {
         $response = new Response();
-
         $this->assertSame([], $response->getHeader('X-Missing'));
     }
 
     public function testGetHeaderLineJoinsMultipleValues(): void
     {
         $response = new Response(200, ['Accept' => ['text/html', 'application/json']]);
-
         $this->assertSame('text/html, application/json', $response->getHeaderLine('Accept'));
     }
 
     public function testGetHeaderLineReturnsEmptyStringWhenAbsent(): void
     {
         $response = new Response();
-
         $this->assertSame('', $response->getHeaderLine('X-Missing'));
     }
 
@@ -146,7 +139,6 @@ final class ResponseTest extends TestCase
     {
         $original = new Response(200);
         $modified = $original->withStatus(404);
-
         $this->assertNotSame($original, $modified);
         $this->assertSame(200, $original->getStatusCode());
         $this->assertSame(404, $modified->getStatusCode());
@@ -155,14 +147,12 @@ final class ResponseTest extends TestCase
     public function testWithStatusUpdatesReasonPhrase(): void
     {
         $response = (new Response(200))->withStatus(500);
-
         $this->assertSame('Internal Server Error', $response->getReasonPhrase());
     }
 
     public function testWithStatusAcceptsCustomReasonPhrase(): void
     {
         $response = (new Response(200))->withStatus(418, "I'm a teapot");
-
         $this->assertSame("I'm a teapot", $response->getReasonPhrase());
     }
 
@@ -170,7 +160,6 @@ final class ResponseTest extends TestCase
     {
         $original = new Response();
         $modified = $original->withHeader('X-Foo', 'bar');
-
         $this->assertNotSame($original, $modified);
         $this->assertFalse($original->hasHeader('X-Foo'));
         $this->assertTrue($modified->hasHeader('X-Foo'));
@@ -179,53 +168,46 @@ final class ResponseTest extends TestCase
     public function testWithHeaderReplacesExistingValue(): void
     {
         $response = (new Response(200, ['X-Foo' => 'old']))->withHeader('X-Foo', 'new');
-
         $this->assertSame(['new'], $response->getHeader('X-Foo'));
     }
 
     public function testWithHeaderAcceptsArrayValue(): void
     {
         $response = (new Response())->withHeader('Set-Cookie', ['a=1', 'b=2']);
-
         $this->assertSame(['a=1', 'b=2'], $response->getHeader('Set-Cookie'));
     }
 
     public function testWithAddedHeaderAppendsValue(): void
     {
         $response = (new Response(200, ['X-Foo' => 'first']))->withAddedHeader('X-Foo', 'second');
-
         $this->assertSame(['first', 'second'], $response->getHeader('X-Foo'));
     }
 
     public function testWithAddedHeaderCreatesHeaderWhenAbsent(): void
     {
         $response = (new Response())->withAddedHeader('X-Foo', 'value');
-
         $this->assertSame(['value'], $response->getHeader('X-Foo'));
     }
 
     public function testWithoutHeaderRemovesHeader(): void
     {
         $response = (new Response(200, ['X-Foo' => 'bar']))->withoutHeader('X-Foo');
-
         $this->assertFalse($response->hasHeader('X-Foo'));
     }
 
     public function testWithoutHeaderDoesNothingWhenAbsent(): void
     {
         $response = (new Response())->withoutHeader('X-Missing');
-
         $this->assertSame([], $response->getHeaders());
     }
 
     public function testWithBodyReturnsNewInstance(): void
     {
         $original = new Response(200, [], 'old');
-        $modified = $original->withBody('new');
-
+        $modified = $original->withBody(\GuzzleHttp\Psr7\Utils::streamFor('new'));
         $this->assertNotSame($original, $modified);
-        $this->assertSame('old', $original->getBody());
-        $this->assertSame('new', $modified->getBody());
+        $this->assertSame('old', (string) $original->getBody());
+        $this->assertSame('new', (string) $modified->getBody());
     }
 
     // -------------------------------------------------------------------------
@@ -235,21 +217,18 @@ final class ResponseTest extends TestCase
     public function testGetViewReturnsNullByDefault(): void
     {
         $response = new Response();
-
         $this->assertNull($response->getView());
     }
 
     public function testGetViewDataReturnsEmptyArrayByDefault(): void
     {
         $response = new Response();
-
         $this->assertSame([], $response->getViewData());
     }
 
     public function testGetFileReturnsNullByDefault(): void
     {
         $response = new Response();
-
         $this->assertNull($response->getFile());
     }
 
@@ -257,7 +236,6 @@ final class ResponseTest extends TestCase
     {
         $original = new Response();
         $modified = $original->withView('home');
-
         $this->assertNotSame($original, $modified);
         $this->assertNull($original->getView());
         $this->assertSame('home', $modified->getView());
@@ -267,7 +245,6 @@ final class ResponseTest extends TestCase
     {
         $data     = ['user' => 'alice', 'count' => 3];
         $response = (new Response())->withView('dashboard', $data);
-
         $this->assertSame('dashboard', $response->getView());
         $this->assertSame($data, $response->getViewData());
     }
@@ -275,7 +252,6 @@ final class ResponseTest extends TestCase
     public function testWithViewDefaultDataIsEmpty(): void
     {
         $response = (new Response())->withView('home');
-
         $this->assertSame([], $response->getViewData());
     }
 
@@ -283,7 +259,6 @@ final class ResponseTest extends TestCase
     {
         $original = new Response();
         $modified = $original->withFile('/tmp/test.png');
-
         $this->assertNotSame($original, $modified);
         $this->assertNull($original->getFile());
         $this->assertSame('/tmp/test.png', $modified->getFile());
@@ -292,7 +267,6 @@ final class ResponseTest extends TestCase
     public function testViewFactoryCreatesViewResponse(): void
     {
         $response = Response::view('home', ['foo' => 'bar'], 200);
-
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('home', $response->getView());
         $this->assertSame(['foo' => 'bar'], $response->getViewData());
@@ -301,14 +275,12 @@ final class ResponseTest extends TestCase
     public function testViewFactoryDefaultsTo200(): void
     {
         $response = Response::view('login');
-
         $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testFileFactorySetsFileAndContentType(): void
     {
         $response = Response::file('/tmp/image.png', 'image/png', 200);
-
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('/tmp/image.png', $response->getFile());
         $this->assertSame('image/png', $response->getHeaderLine('Content-Type'));
@@ -317,7 +289,6 @@ final class ResponseTest extends TestCase
     public function testFileFactoryDefaultContentType(): void
     {
         $response = Response::file('/tmp/data.bin');
-
         $this->assertSame('application/octet-stream', $response->getHeaderLine('Content-Type'));
     }
 
@@ -325,14 +296,11 @@ final class ResponseTest extends TestCase
     {
         $tmpFile = tempnam(sys_get_temp_dir(), 'response_test_');
         file_put_contents($tmpFile, 'file contents here');
-
         try {
             $response = (new Response())->withFile($tmpFile);
-
             ob_start();
             $response->send();
             $output = ob_get_clean();
-
             $this->assertSame('file contents here', $output);
         } finally {
             unlink($tmpFile);
@@ -343,14 +311,11 @@ final class ResponseTest extends TestCase
     {
         $tmpFile = tempnam(sys_get_temp_dir(), 'response_test_');
         file_put_contents($tmpFile, 'from file');
-
         try {
             $response = (new Response(200, [], 'body text'))->withFile($tmpFile);
-
             ob_start();
             $response->send();
             $output = ob_get_clean();
-
             $this->assertSame('from file', $output);
             $this->assertStringNotContainsString('body text', $output);
         } finally {
@@ -361,7 +326,6 @@ final class ResponseTest extends TestCase
     public function testViewPreservedThroughStatusChange(): void
     {
         $response = (new Response())->withView('error')->withStatus(500);
-
         $this->assertSame('error', $response->getView());
         $this->assertSame(500, $response->getStatusCode());
     }
@@ -369,7 +333,6 @@ final class ResponseTest extends TestCase
     public function testFilePreservedThroughHeaderChange(): void
     {
         $response = (new Response())->withFile('/tmp/f.txt')->withHeader('X-Foo', 'bar');
-
         $this->assertSame('/tmp/f.txt', $response->getFile());
         $this->assertSame('bar', $response->getHeaderLine('X-Foo'));
     }
@@ -381,7 +344,6 @@ final class ResponseTest extends TestCase
     public function testRedirectFactoryDefaultsTo302(): void
     {
         $response = Response::redirect('/home');
-
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame('/home', $response->getHeaderLine('Location'));
     }
@@ -389,57 +351,50 @@ final class ResponseTest extends TestCase
     public function testRedirectFactoryAcceptsCustomStatusCode(): void
     {
         $response = Response::redirect('/home', 301);
-
         $this->assertSame(301, $response->getStatusCode());
     }
 
     public function testTextFactorySetsContentType(): void
     {
         $response = Response::text('hello');
-
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('text/plain; charset=UTF-8', $response->getHeaderLine('Content-Type'));
-        $this->assertSame('hello', $response->getBody());
+        $this->assertSame('hello', (string) $response->getBody());
     }
 
     public function testHtmlFactorySetsContentType(): void
     {
         $response = Response::html('<p>hi</p>');
-
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('text/html; charset=UTF-8', $response->getHeaderLine('Content-Type'));
-        $this->assertSame('<p>hi</p>', $response->getBody());
+        $this->assertSame('<p>hi</p>', (string) $response->getBody());
     }
 
     public function testJsonFactoryEncodesData(): void
     {
         $response = Response::json(['key' => 'value']);
-
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('application/json; charset=UTF-8', $response->getHeaderLine('Content-Type'));
-        $this->assertSame('{"key":"value"}', $response->getBody());
+        $this->assertSame('{"key":"value"}', (string) $response->getBody());
     }
 
     public function testJsonFactoryAcceptsCustomStatusCode(): void
     {
         $response = Response::json(['error' => 'not found'], 404);
-
         $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testJsonFactoryThrowsOnInvalidData(): void
     {
         $this->expectException(\JsonException::class);
-
-        // NAN cannot be JSON-encoded and will trigger JSON_THROW_ON_ERROR
+// NAN cannot be JSON-encoded and will trigger JSON_THROW_ON_ERROR
         Response::json(['value' => NAN]);
     }
 
     public function testJsonFactoryThrowsEvenWithoutExplicitThrowFlag(): void
     {
         $this->expectException(\JsonException::class);
-
-        // Passing 0 as flags should still throw because JSON_THROW_ON_ERROR is
+// Passing 0 as flags should still throw because JSON_THROW_ON_ERROR is
         // OR-ed in unconditionally inside the factory.
         Response::json(['value' => NAN], 200, 0);
     }
@@ -453,11 +408,10 @@ final class ResponseTest extends TestCase
         $response = (new Response())
             ->withStatus(201)
             ->withHeader('Content-Type', 'application/json')
-            ->withBody('{"ok":true}');
-
+            ->withBody(\GuzzleHttp\Psr7\Utils::streamFor('{"ok":true}'));
         $this->assertSame(201, $response->getStatusCode());
         $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
-        $this->assertSame('{"ok":true}', $response->getBody());
+        $this->assertSame('{"ok":true}', (string) $response->getBody());
     }
 
     // -------------------------------------------------------------------------
@@ -467,22 +421,18 @@ final class ResponseTest extends TestCase
     public function testSendEmitsBody(): void
     {
         $response = new Response(200, [], 'body content');
-
         ob_start();
         $response->send();
         $output = ob_get_clean();
-
         $this->assertSame('body content', $output);
     }
 
     public function testSendEmitsEmptyBodySilently(): void
     {
         $response = new Response();
-
         ob_start();
         $response->send();
         $output = ob_get_clean();
-
         $this->assertSame('', $output);
     }
 }

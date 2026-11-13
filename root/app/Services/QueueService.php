@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -15,16 +14,17 @@
 namespace App\Services;
 
 use App\Core\ErrorManager;
-use App\Services\StatusService;
-use App\Models\AccountModel;
-use App\Models\StatusJobModel;
-use function random_bytes;
-use App\Models\UserModel;
 use App\Core\Mailer;
 use App\Helpers\WorkerHelper;
+use App\Models\AccountModel;
+use App\Models\StatusJobModel;
+use App\Models\UserModel;
+use App\Services\StatusService;
 use DateTimeImmutable;
 use DateTimeZone;
 use RuntimeException;
+
+use function random_bytes;
 
 /**
  * Service for queue operations (run-queue and fill-queue).
@@ -87,7 +87,10 @@ class QueueService
     public function runQueue(): void
     {
         if (!$this->claimWorkerLock()) {
-            ErrorManager::getInstance()->log('[QueueService] Queue worker already running; skipping runQueue invocation.', 'info');
+            ErrorManager::getInstance()->log(
+                '[QueueService] Queue worker already running; skipping runQueue invocation.',
+                'info'
+            );
             return;
         }
 
@@ -152,7 +155,10 @@ class QueueService
     public function fillQueue(): void
     {
         if (!$this->claimWorkerLock()) {
-            ErrorManager::getInstance()->log('[QueueService] Fill queue worker already running; skipping fillQueue invocation.', 'info');
+            ErrorManager::getInstance()->log(
+                '[QueueService] Fill queue worker already running; skipping fillQueue invocation.',
+                'info'
+            );
             return;
         }
 
@@ -219,7 +225,7 @@ class QueueService
     /**
      * Atomically claim jobs with a specific status for processing.
      * Filters jobs by the given status parameter and prevents concurrent execution.
-     * 
+     *
      * @param int $now Current timestamp.
      * @param string $status Job status to filter by (e.g., 'pending' or 'retry').
      * @return array<int, array<string, mixed>> Array of successfully claimed jobs.
@@ -392,7 +398,7 @@ class QueueService
                     ),
                     'error'
                 );
-                
+
                 if ($isRetryBatch || $status === 'retry') {
                     // Retry jobs that fail should be deleted
                     StatusJobModel::deleteById($job['id']);

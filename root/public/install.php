@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -78,7 +77,8 @@ if (!empty($errors)) {
         error_log('Database installation query failed: ' . $error);
     }
     http_response_code(500);
-    exit('Database installation failed partway through. The installer and SQL file were retained; check the server logs before retrying.');
+    exit('Database installation failed partway through. The installer and SQL file' .
+        ' were retained; check the server logs before retrying.');
 }
 
 echo 'Database installed successfully.';

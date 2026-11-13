@@ -5,6 +5,11 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ## Unreleased
 ### Changed
+- Reworked the README to use consistent Markdown formatting and updated installation, cron, queue, caching, and development guidance to match the current application.
+- Removed redundant file-wide PHPCS ignores and narrowed test suppressions to the specific active sniffs.
+- Standardized PHP headers, opening-tag spacing, LF line endings, and final newlines across application and test PHP files.
+- Removed request and response test conveniences from production classes; request construction now lives in the test support directory, and controller actions require the PSR-7 request supplied by the router.
+- Aligned session startup, cookie-destruction guards, and CSRF token generation across Statuses and Update API.
 - Updated repository development tools to matching current releases and added runnable PHPStan, ESLint, and Stylelint commands.
 - Database upgrades preserve queued status jobs while migrating their processing state; fresh installs report SQL failures and retain recovery files when setup is incomplete.
 - Reordered class members consistently by declaration type, visibility, and static status.

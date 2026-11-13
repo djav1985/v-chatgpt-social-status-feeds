@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -14,68 +13,26 @@
 
 namespace App\Core;
 
+/**
+ * Singleton manager for PHP session and authentication operations.
+ */
 class SessionManager
 {
-    /**
-     * Singleton instance of the SessionManager.
-     */
-    private static ?SessionManager $instance = null;
+    private static ?self $instance = null;
 
     /**
-     * Private constructor to prevent direct instantiation.
+     * Prevent direct instantiation.
      */
     private function __construct()
     {
     }
 
     /**
-     * Retrieve the singleton instance.
-     *
-     * @return SessionManager
+     * Get the singleton session manager instance.
      */
-    public static function getInstance(): SessionManager
+    public static function getInstance(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    /**
-     * Destroy the current session, its data and the session cookie.
-     *
-     * @return void
-     */
-    public function destroy(): void
-    {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            if (!headers_sent()) {
-                $params = session_get_cookie_params();
-                setcookie(session_name(), '', [
-                    'expires'  => time() - 42000,
-                    'path'     => $params['path'],
-                    'domain'   => $params['domain'],
-                    'secure'   => $params['secure'],
-                    'httponly' => $params['httponly'],
-                    'samesite' => $params['samesite'],
-                ]);
-            }
-            $_SESSION = [];
-            session_destroy();
-        }
-    }
-
-    /**
-     * Regenerate the session ID to prevent fixation.
-     *
-     * @return void
-     */
-    public function regenerate(): void
-    {
-        $this->initialize();
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_regenerate_id(true);
-        }
+        return self::$instance ??= new self();
     }
 
     /**
@@ -105,18 +62,64 @@ class SessionManager
     }
 
     /**
-     * Validate the current session and update timeout.
+     * Destroy the current session and its data.
      *
-     * @return bool True if the session is valid and user is logged in
+     * @return void
      */
-    public function isValid(): bool
+    public function destroy(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            if (!headers_sent()) {
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', [
+                    'expires' => time() - 42000,
+                    'path' => $params['path'],
+                    'domain' => $params['domain'],
+                    'secure' => $params['secure'],
+                    'httponly' => $params['httponly'],
+                    'samesite' => $params['samesite'],
+                ]);
+            }
+            session_unset();
+            session_destroy();
+        }
+    }
+
+    /**
+     * Regenerate the session ID to prevent fixation.
+     *
+     * @return void
+     */
+    public function regenerate(): void
+    {
+        $this->initialize();
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_regenerate_id(true);
+        }
+    }
+
+    /**
+     * Create the CSRF token when the session has none.
+     */
+    public function ensureCsrfToken(): void
+    {
+        if (!$this->get('csrf_token')) {
+            $this->set('csrf_token', bin2hex(\App\Helpers\EncryptionHelper::bytes(32)));
+        }
+    }
+
+    /**
+     * Check session timeout, user agent and login state; destroys the session when expired.
+     */
+    public function isValid(?string $currentUserAgent = null): bool
     {
         $timeoutLimit = defined('SESSION_TIMEOUT_LIMIT') ? SESSION_TIMEOUT_LIMIT : 1800;
         $timeout = $this->get('timeout');
         $timeoutExceeded = is_int($timeout) && (time() - $timeout > $timeoutLimit);
 
         $userAgent = $this->get('user_agent');
-        $userAgentChanged = is_string($userAgent) && $userAgent !== ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $currentUserAgent ??= $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $userAgentChanged = is_string($userAgent) && $userAgent !== $currentUserAgent;
 
         if ($timeoutExceeded || $userAgentChanged) {
             $this->destroy();
@@ -129,27 +132,17 @@ class SessionManager
     }
 
     /**
-     * Create the CSRF token when the session has none.
-     */
-    public function ensureCsrfToken(): void
-    {
-        if (!$this->get('csrf_token')) {
-            $this->set('csrf_token', bin2hex(random_bytes(32)));
-        }
-    }
-
-    /**
      * Whether the current request comes from an authenticated user.
-     *
-     * @return bool True if authenticated, false if not.
      */
-    public function requireAuth(): bool
+    public function requireAuth(?string $currentUserAgent = null): bool
     {
-        return $this->isValid();
+        return $this->isValid($currentUserAgent);
     }
 
     /**
-     * Start the session on demand with strict mode and secure cookie parameters.
+     * Initialize PHP session with secure settings.
+     *
+     * @return void
      */
     private function initialize(): void
     {
@@ -160,10 +153,13 @@ class SessionManager
         $secureFlag = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 
         ini_set('session.use_strict_mode', '1');
+        ini_set('session.cookie_secure', $secureFlag ? '1' : '0');
+        ini_set('session.cookie_samesite', 'Lax');
+
         session_set_cookie_params([
-            'path'     => '/',
+            'path' => '/',
             'httponly' => true,
-            'secure'   => $secureFlag,
+            'secure' => $secureFlag,
             'samesite' => 'Lax',
         ]);
 

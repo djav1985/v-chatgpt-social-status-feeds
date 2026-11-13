@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -11,6 +10,7 @@
  * File: email_footer.php
  * Description: Email template footer partial.
  */
+
 ?>
 </div>
 <div class="email-footer" style="background:#66cc33;padding:10px;text-align:center;color:#ffffff;">

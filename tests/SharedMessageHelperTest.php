@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: SharedMessageHelperTest.php
+ * Description: Shared PHPUnit tests for MessageHelper.
+ */
+
 declare(strict_types=1);
 
 namespace Tests;
@@ -8,7 +19,7 @@ use App\Helpers\MessageHelper;
 use App\Core\SessionManager;
 use PHPUnit\Framework\TestCase;
 
-final class MessageHelperTest extends TestCase
+final class SharedMessageHelperTest extends TestCase
 {
     private SessionManager $session;
 

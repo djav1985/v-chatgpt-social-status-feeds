@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -11,6 +10,7 @@
  * File: login.php
  * Description: AI Social Status Generator
  */
+
 ?>
 
 <!DOCTYPE html>
@@ -33,12 +33,18 @@
             <img class="img-responsive" id="logo" src="assets/images/logo.png" alt="Logo">
             <!-- Login form -->
             <form class="form-group" method="post">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="csrf_token"
+                    value="<?php echo htmlspecialchars(
+                        App\Core\SessionManager::getInstance()->get('csrf_token'),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ); ?>">
                 <label for="username">Username:</label>
                 <input class="form-input" id="username" type="text" name="username" autocomplete="username" required>
 
                 <label for="password">Password:</label>
-                <input class="form-input" id="password" type="password" name="password" autocomplete="current-password" required>
+                <input class="form-input" id="password" type="password" name="password"
+                    autocomplete="current-password" required>
 
                 <input class="btn btn-primary btn-lg" type="submit" value="Log In">
             </form>

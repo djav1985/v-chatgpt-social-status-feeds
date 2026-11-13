@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -31,7 +30,8 @@
             <p><strong>Days:</strong> <?php echo htmlspecialchars($daysStr, ENT_QUOTES, 'UTF-8'); ?></p>
             <p><strong>Times:</strong> <?php echo htmlspecialchars($timesStr, ENT_QUOTES, 'UTF-8'); ?></p>
             <p><strong>Link:</strong>
-                <a href="<?php echo htmlspecialchars($accountData->link, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
+                <a href="<?php echo htmlspecialchars($accountData->link, ENT_QUOTES, 'UTF-8'); ?>"
+                    target="_blank" rel="noopener noreferrer">
                     <?php echo htmlspecialchars($accountData->link, ENT_QUOTES, 'UTF-8'); ?>
                 </a>
             </p>

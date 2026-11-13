@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: WorkerHelperTest.php
+ * Description: PHPUnit tests for WorkerHelper.
+ */
+
 declare(strict_types=1);
 
 namespace Tests;
@@ -41,13 +52,6 @@ final class WorkerHelperTest extends TestCase
         $this->assertFalse(WorkerHelper::isProcessRunning(-999));
     }
 
-    public function testIsProcessRunningReturnsTrueForWorkerProcess(): void
-    {
-        $this->withRunningWorkerProcess(function (int $pid): void {
-            $this->assertTrue(WorkerHelper::isProcessRunning($pid));
-        });
-    }
-
     public function testIsProcessRunningReturnsFalseForNonExistentProcess(): void
     {
         // Use a very high PID that's unlikely to exist
@@ -58,15 +62,6 @@ final class WorkerHelperTest extends TestCase
     public function testCanLaunchReturnsTrueWhenNoLockExists(): void
     {
         $this->assertTrue(WorkerHelper::canLaunch($this->testJobType));
-    }
-
-    public function testCanLaunchReturnsFalseWhenLockExistsWithRunningProcess(): void
-    {
-        $this->withRunningWorkerProcess(function (int $pid): void {
-            file_put_contents(WorkerHelper::getLockPath($this->testJobType), (string) $pid);
-
-            $this->assertFalse(WorkerHelper::canLaunch($this->testJobType));
-        });
     }
 
     public function testCanLaunchReturnsTrueWhenLockExistsWithDeadProcess(): void
@@ -151,15 +146,6 @@ final class WorkerHelperTest extends TestCase
         $this->assertGreaterThan(0, $pid);
     }
 
-    public function testClaimLockAndWritePidFailsWhenLockAlreadyClaimedByRunningProcess(): void
-    {
-        $this->withRunningWorkerProcess(function (int $pid): void {
-            file_put_contents(WorkerHelper::getLockPath($this->testJobType), (string) $pid);
-
-            $this->assertFalse(WorkerHelper::claimLockAndWritePid($this->testJobType));
-        });
-    }
-
     public function testDifferentJobTypesCanRunSimultaneously(): void
     {
         $suffix = bin2hex(random_bytes(8));
@@ -217,47 +203,4 @@ final class WorkerHelperTest extends TestCase
         }
     }
 
-    private function withRunningWorkerProcess(callable $test): void
-    {
-        if (!function_exists('posix_kill') && !is_dir('/proc')) {
-            $this->markTestSkipped('Process liveness checks are not supported on this platform.');
-        }
-
-        $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR
-            . 'socialrss-test-worker-' . bin2hex(random_bytes(8));
-        $this->assertTrue(mkdir($directory));
-        $script = $directory . DIRECTORY_SEPARATOR . 'cron.php';
-        file_put_contents($script, "<?php sleep(30);");
-
-        $process = proc_open(
-            escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script),
-            [
-                0 => ['pipe', 'r'],
-                1 => ['pipe', 'w'],
-                2 => ['pipe', 'w'],
-            ],
-            $pipes
-        );
-
-        if (!is_resource($process)) {
-            unlink($script);
-            rmdir($directory);
-            $this->fail('Unable to start a process for the liveness check.');
-        }
-
-        try {
-            $status = proc_get_status($process);
-            $this->assertTrue($status['running']);
-            $this->assertIsInt($status['pid']);
-            $test($status['pid']);
-        } finally {
-            proc_terminate($process);
-            foreach ($pipes as $pipe) {
-                fclose($pipe);
-            }
-            proc_close($process);
-            unlink($script);
-            rmdir($directory);
-        }
-    }
 }

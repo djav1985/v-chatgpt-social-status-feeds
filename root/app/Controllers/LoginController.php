@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -14,6 +13,7 @@
 
 namespace App\Controllers;
 
+use Psr\Http\Message\ServerRequestInterface;
 use App\Models\UserModel;
 use App\Models\BlacklistModel;
 use App\Core\ErrorManager;
@@ -24,13 +24,16 @@ use App\Helpers\ValidationHelper;
 
 class LoginController
 {
+    use RequestContext;
+
     /**
      * Show the login form when the user is not already authenticated.
      *
      * @return Response
      */
-    public function handleRequest(): Response
+    public function handleRequest(ServerRequestInterface $request): Response
     {
+        $this->captureRequest($request);
         $session = SessionManager::getInstance();
         if ($session->get('logged_in') === true) {
             return Response::redirect('/');
@@ -44,35 +47,24 @@ class LoginController
      *
      * @return Response
      */
-    public function handleSubmission(): Response
+    public function handleSubmission(ServerRequestInterface $request): Response
     {
+        $this->captureRequest($request);
         $session = SessionManager::getInstance();
 
         // Redirect already-logged-in users away from login form
-        if ($session->get('logged_in') === true && !isset($_POST['logout'])) {
+        if ($session->get('logged_in') === true && !isset($this->requestBody['logout'])) {
             return Response::redirect('/');
         }
 
         // Handle logout
-        if ($session->get('logged_in') === true && isset($_POST['logout'])) {
-            if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
-                MessageHelper::addMessage('Invalid CSRF token. Please try again.');
-                return Response::redirect('/login');
-            }
+        if ($session->get('logged_in') === true && isset($this->requestBody['logout'])) {
             return self::logoutUser();
         }
 
-        // Validate CSRF token
-        if (!ValidationHelper::validateCsrfToken($_POST['csrf_token'] ?? '')) {
-            $error = 'Invalid CSRF token. Please try again.';
-            ErrorManager::getInstance()->log($error);
-            MessageHelper::addMessage($error);
-            return Response::redirect('/login');
-        }
-
         // Sanitize and validate input
-        $username = trim($_POST['username'] ?? '');
-        $password = trim($_POST['password'] ?? '');
+        $username = trim($this->requestBody['username'] ?? '');
+        $password = trim($this->requestBody['password'] ?? '');
 
         $loginErrors = self::validateLoginInput($username, $password);
         if (!empty($loginErrors)) {
@@ -87,8 +79,8 @@ class LoginController
         if ($userInfo) {
             $session->set('logged_in', true);
             $session->set('username', $userInfo->username);
-            $session->set('user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
-            $session->set('csrf_token', bin2hex(random_bytes(32)));
+            $session->set('user_agent', $this->requestServer['HTTP_USER_AGENT'] ?? '');
+            $session->set('csrf_token', bin2hex(\App\Helpers\EncryptionHelper::bytes(32)));
             $session->set('is_admin', $userInfo->admin);
             $session->set('timeout', time());
             $session->regenerate();
@@ -96,7 +88,7 @@ class LoginController
         }
 
         // Handle failed login attempt
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+        $ip = $this->requestServer['REMOTE_ADDR'] ?? '';
         if (BlacklistModel::isBlacklisted($ip)) {
             $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
             ErrorManager::getInstance()->log($error);

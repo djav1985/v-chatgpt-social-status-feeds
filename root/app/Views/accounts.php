@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -45,7 +44,8 @@ require 'partials/header.php';
                 </select>
                 <!-- Prompt textarea -->
                 <label for="add-prompt">Prompt:</label>
-                <textarea class="form-input" rows="5" name="prompt" id="add-prompt" required>Create a compelling status update...</textarea>
+                <textarea class="form-input" rows="5" name="prompt" id="add-prompt" required>Create a compelling
+                    status update...</textarea>
                 <!-- Link input field -->
                 <label for="link">Link:</label>
                 <input class="form-input" type="url" name="link" id="link" required value="https://domain.com">
@@ -65,7 +65,12 @@ require 'partials/header.php';
                     <option value="0" selected>No</option>
                     <option value="1">Yes</option>
                 </select>
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token'), ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="csrf_token"
+                    value="<?php echo htmlspecialchars(
+                        App\Core\SessionManager::getInstance()->get('csrf_token'),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ); ?>">
                 <button type="submit" class="btn btn-primary btn-lg" name="edit_account">Add/Update Account</button>
             </form>
             <?php
@@ -78,10 +83,14 @@ require 'partials/header.php';
             <div class="card-body account-summary">
                 <h4>Account Summary</h4>
                 <ul class="account-summary-list">
-                    <li><strong>Total Accounts:</strong> <?php echo htmlspecialchars((string) $totalAccounts, ENT_QUOTES, 'UTF-8'); ?></li>
-                    <li><strong>Max API Calls:</strong> <?php echo htmlspecialchars((string) $maxApiCallsLabel, ENT_QUOTES, 'UTF-8'); ?></li>
-                    <li><strong>Used API Calls:</strong> <?php echo htmlspecialchars((string) $usedApiCalls, ENT_QUOTES, 'UTF-8'); ?></li>
-                    <li><strong>Expires:</strong> <?php echo htmlspecialchars((string) $expiresLabel, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <li><strong>Total Accounts:</strong>
+                        <?php echo htmlspecialchars((string) $totalAccounts, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <li><strong>Max API Calls:</strong>
+                        <?php echo htmlspecialchars((string) $maxApiCallsLabel, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <li><strong>Used API Calls:</strong>
+                        <?php echo htmlspecialchars((string) $usedApiCalls, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <li><strong>Expires:</strong>
+                        <?php echo htmlspecialchars((string) $expiresLabel, ENT_QUOTES, 'UTF-8'); ?></li>
                 </ul>
             </div>
         </div>

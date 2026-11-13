@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -72,7 +71,7 @@ class AccountModel
     public static function getAllUserAccts(string $username): array
     {
         $username = trim($username);
-        
+
         // Check L1 cache (static array) first
         if (array_key_exists($username, self::$accountListCache)) {
             return self::$accountListCache[$username];
@@ -83,7 +82,7 @@ class AccountModel
             if (CACHE_ENABLED) {
                 $apcuKey = self::accountListApcuCacheKey($username);
                 $cache = CacheService::getInstance();
-                
+
                 // Use remember() to handle cache miss automatically
                 $accounts = $cache->remember($apcuKey, CACHE_TTL_ACCOUNT, function () use ($username) {
                     $db = DatabaseManager::getInstance();
@@ -91,7 +90,7 @@ class AccountModel
                     $db->bind(':username', $username);
                     return $db->resultSet();
                 });
-                
+
                 // Store in L1 cache and return
                 self::$accountListCache[$username] = $accounts;
                 return $accounts;
@@ -102,7 +101,7 @@ class AccountModel
             $db->query("SELECT account FROM accounts WHERE username = :username");
             $db->bind(':username', $username);
             $accounts = $db->resultSet();
-            
+
             // Store in L1 cache and return
             self::$accountListCache[$username] = $accounts;
             return $accounts;
@@ -170,12 +169,24 @@ class AccountModel
      * @param string $days
      * @return bool
      */
-    public static function updateAccount(string $accountOwner, string $accountName, string $prompt, string $platform, int $hashtags, string $link, string $cron, string $days): bool
-    {
+    public static function updateAccount(
+        string $accountOwner,
+        string $accountName,
+        string $prompt,
+        string $platform,
+        int $hashtags,
+        string $link,
+        string $cron,
+        string $days
+    ): bool {
         $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
-            $db->query("UPDATE accounts SET prompt = :prompt, platform = :platform, hashtags = :hashtags, link = :link, cron = :cron, days = :days WHERE username = :accountOwner AND account = :accountName");
+            $db->query(
+                'UPDATE accounts SET prompt = :prompt, platform = :platform, hashtags = :hashtags, '
+                . 'link = :link, cron = :cron, days = :days '
+                . 'WHERE username = :accountOwner AND account = :accountName'
+            );
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
             $db->bind(':prompt', $prompt);
@@ -210,12 +221,23 @@ class AccountModel
      * @param string $days
      * @return bool
      */
-    public static function createAccount(string $accountOwner, string $accountName, string $prompt, string $platform, int $hashtags, string $link, string $cron, string $days): bool
-    {
+    public static function createAccount(
+        string $accountOwner,
+        string $accountName,
+        string $prompt,
+        string $platform,
+        int $hashtags,
+        string $link,
+        string $cron,
+        string $days
+    ): bool {
         $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
-            $db->query("INSERT INTO accounts (username, account, prompt, platform, hashtags, link, cron, days) VALUES (:accountOwner, :accountName, :prompt, :platform, :hashtags, :link, :cron, :days)");
+            $db->query(
+                'INSERT INTO accounts (username, account, prompt, platform, hashtags, link, cron, days) '
+                . 'VALUES (:accountOwner, :accountName, :prompt, :platform, :hashtags, :link, :cron, :days)'
+            );
             $db->bind(':accountOwner', $accountOwner);
             $db->bind(':accountName', $accountName);
             $db->bind(':prompt', $prompt);
@@ -304,7 +326,7 @@ class AccountModel
             if (CACHE_ENABLED) {
                 $apcuKey = 'account:info:' . trim($username) . ':' . trim($account);
                 $cache = CacheService::getInstance();
-                
+
                 // Use remember() to handle cache miss automatically
                 $info = $cache->remember($apcuKey, CACHE_TTL_ACCOUNT, function () use ($username, $account) {
                     $db = DatabaseManager::getInstance();
@@ -313,7 +335,7 @@ class AccountModel
                     $db->bind(':account', $account);
                     return $db->single();
                 });
-                
+
                 // Store in L1 cache and return
                 self::$accountInfoCache[$cacheKey] = $info;
                 return $info;

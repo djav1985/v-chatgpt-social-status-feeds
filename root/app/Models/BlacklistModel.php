@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -84,7 +83,10 @@ class BlacklistModel
 
             $result = (object)$result;
             if (time() - $result->timestamp > (3 * 24 * 60 * 60)) {
-                $db->query("UPDATE ip_blacklist SET blacklisted = FALSE, login_attempts = 0, timestamp = :now WHERE ip_address = :ip");
+                $db->query(
+                    'UPDATE ip_blacklist SET blacklisted = FALSE, login_attempts = 0, '
+                    . 'timestamp = :now WHERE ip_address = :ip'
+                );
                 $db->bind(':now', time());
                 $db->bind(':ip', $ip);
                 $db->execute();

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -26,7 +25,10 @@ class StatusModel
     {
         try {
             $db = DatabaseManager::getInstance();
-            $db->query("SELECT status_image FROM status_updates WHERE id = :statusId AND account = :account AND username = :username");
+            $db->query(
+                'SELECT status_image FROM status_updates '
+                . 'WHERE id = :statusId AND account = :account AND username = :username'
+            );
             $db->bind(':statusId', $statusId);
             $db->bind(':account', $accountName);
             $db->bind(':username', $accountOwner);
@@ -46,14 +48,17 @@ class StatusModel
     {
         try {
             $db = DatabaseManager::getInstance();
-            $db->query("DELETE FROM status_updates WHERE id = :statusId AND account = :account AND username = :username");
+            $db->query(
+                'DELETE FROM status_updates '
+                . 'WHERE id = :statusId AND account = :account AND username = :username'
+            );
             $db->bind(':statusId', $statusId);
             $db->bind(':account', $accountName);
             $db->bind(':username', $accountOwner);
             $db->execute();
-            
+
             self::clearStatusCache($accountOwner, $accountName);
-            
+
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error deleting status: " . $e->getMessage(), 'error');
@@ -72,7 +77,10 @@ class StatusModel
     {
         try {
             $db = DatabaseManager::getInstance();
-            $db->query("SELECT * FROM status_updates WHERE username = :username AND account = :account ORDER BY created_at DESC");
+            $db->query(
+                'SELECT * FROM status_updates '
+                . 'WHERE username = :username AND account = :account ORDER BY created_at DESC'
+            );
             $db->bind(':username', $username);
             $db->bind(':account', $account);
             return $db->resultSet();
@@ -82,20 +90,26 @@ class StatusModel
         }
     }
 
-    public static function saveStatus(string $accountName, string $accountOwner, string $statusContent, string $imageName): bool
-    {
+    public static function saveStatus(
+        string $accountName,
+        string $accountOwner,
+        string $statusContent,
+        string $imageName
+    ): bool {
         try {
             $db = DatabaseManager::getInstance();
-            $sql = "INSERT INTO status_updates (username, account, status, created_at, status_image) VALUES (:username, :account, :status, NOW(), :status_image)";
+            $sql = 'INSERT INTO status_updates '
+                . '(username, account, status, created_at, status_image) '
+                . 'VALUES (:username, :account, :status, NOW(), :status_image)';
             $db->query($sql);
             $db->bind(':username', $accountOwner);
             $db->bind(':account', $accountName);
             $db->bind(':status', $statusContent);
             $db->bind(':status_image', $imageName);
             $db->execute();
-            
+
             self::clearStatusCache($accountOwner, $accountName);
-            
+
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error saving status: " . $e->getMessage(), 'error');
@@ -115,11 +129,11 @@ class StatusModel
         if (!CACHE_ENABLED) {
             return self::fetchStatusUpdates($username, $account);
         }
-        
+
         try {
             $cacheKey = "status:feed:{$username}:{$account}:all";
             $cache = CacheService::getInstance();
-            
+
             return $cache->remember($cacheKey, CACHE_TTL_FEED, function () use ($username, $account) {
                 return self::fetchStatusUpdates($username, $account);
             });
@@ -128,7 +142,7 @@ class StatusModel
             throw $e;
         }
     }
-    
+
 
     /**
      * Count total statuses for a user and account.
@@ -142,11 +156,11 @@ class StatusModel
         if (!CACHE_ENABLED) {
             return self::fetchStatusCount($accountName, $accountOwner);
         }
-        
+
         try {
             $cacheKey = "status:count:{$accountOwner}:{$accountName}";
             $cache = CacheService::getInstance();
-            
+
             return $cache->remember($cacheKey, CACHE_TTL_STATUS, function () use ($accountName, $accountOwner) {
                 return self::fetchStatusCount($accountName, $accountOwner);
             });
@@ -155,20 +169,23 @@ class StatusModel
             throw $e;
         }
     }
-    
+
 
     public static function deleteOldStatuses(string $accountName, string $accountOwner, int $deleteCount): bool
     {
         try {
             $db = DatabaseManager::getInstance();
-            $db->query("DELETE FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at ASC LIMIT :deleteCount");
+            $db->query(
+                'DELETE FROM status_updates WHERE account = :account AND username = :username '
+                . 'ORDER BY created_at ASC LIMIT :deleteCount'
+            );
             $db->bind(':account', $accountName);
             $db->bind(':username', $accountOwner);
             $db->bind(':deleteCount', $deleteCount, ParameterType::INTEGER);
             $db->execute();
-            
+
             self::clearStatusCache($accountOwner, $accountName);
-            
+
             return true;
         } catch (Exception $e) {
             ErrorManager::getInstance()->log("Error deleting old statuses: " . $e->getMessage(), 'error');
@@ -207,7 +224,11 @@ class StatusModel
             $start = date('Y-m-d ') . sprintf('%02d', $hour) . ':00:00';
             $end = date('Y-m-d ') . sprintf('%02d', $hour) . ':59:59';
 
-            $db->query("SELECT COUNT(*) as count FROM status_updates WHERE username = :username AND account = :account AND created_at BETWEEN :start AND :end");
+            $db->query(
+                'SELECT COUNT(*) as count FROM status_updates '
+                . 'WHERE username = :username AND account = :account '
+                . 'AND created_at BETWEEN :start AND :end'
+            );
             $db->bind(':username', $accountOwner);
             $db->bind(':account', $accountName);
             $db->bind(':start', $start);
@@ -237,11 +258,11 @@ class StatusModel
         if (!CACHE_ENABLED) {
             return self::fetchLatestStatusUpdate($accountName, $accountOwner);
         }
-        
+
         try {
             $cacheKey = "status:latest:{$accountOwner}:{$accountName}";
             $cache = CacheService::getInstance();
-            
+
             return $cache->remember($cacheKey, CACHE_TTL_STATUS, function () use ($accountName, $accountOwner) {
                 return self::fetchLatestStatusUpdate($accountName, $accountOwner);
             });
@@ -250,8 +271,8 @@ class StatusModel
             throw $e;
         }
     }
-    
-    
+
+
     /**
      * Clear cached status data for a specific user/account combination.
      * If account is null, clears cache for all accounts of the user.
@@ -266,7 +287,7 @@ class StatusModel
         if (!CACHE_ENABLED) {
             return;
         }
-        
+
         try {
             $cache = CacheService::getInstance();
 
@@ -303,7 +324,10 @@ class StatusModel
     private static function fetchStatusUpdates(string $username, string $account): array
     {
         $db = DatabaseManager::getInstance();
-        $db->query("SELECT * FROM status_updates WHERE account = :accountName AND username = :accountOwner ORDER BY created_at DESC");
+        $db->query(
+            'SELECT * FROM status_updates '
+            . 'WHERE account = :accountName AND username = :accountOwner ORDER BY created_at DESC'
+        );
         $db->bind(':accountName', $account);
         $db->bind(':accountOwner', $username);
         return $db->resultSet();
@@ -340,7 +364,11 @@ class StatusModel
     private static function fetchLatestStatusUpdate(string $accountName, string $accountOwner): ?object
     {
         $db = DatabaseManager::getInstance();
-        $db->query("SELECT * FROM status_updates WHERE account = :account AND username = :username ORDER BY created_at DESC LIMIT 1");
+        $db->query(
+            'SELECT * FROM status_updates '
+            . 'WHERE account = :account AND username = :username '
+            . 'ORDER BY created_at DESC LIMIT 1'
+        );
         $db->bind(':account', $accountName);
         $db->bind(':username', $accountOwner);
         $result = $db->single();

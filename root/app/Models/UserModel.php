@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile PSR1.Files.SideEffects.FoundWithSymbols
 
 /**
  * Project: SocialRSS
@@ -28,7 +27,7 @@ class UserModel
      */
     private static array $userInfoCache = [];
 
-    
+
 
     /**
      * Get all users from the database.
@@ -72,15 +71,33 @@ class UserModel
      * @param bool $isUpdate
      * @return bool
      */
-    public static function updateUser(string $username, string $password, string $email, int $totalAccounts, int $maxApiCalls, int $usedApiCalls, string $expires, int $admin, bool $isUpdate): bool
-    {
+    public static function updateUser(
+        string $username,
+        string $password,
+        string $email,
+        int $totalAccounts,
+        int $maxApiCalls,
+        int $usedApiCalls,
+        string $expires,
+        int $admin,
+        bool $isUpdate
+    ): bool {
         $db = DatabaseManager::getInstance();
         $db->beginTransaction();
         try {
             if ($isUpdate) {
-                $db->query("UPDATE users SET password = :password, email = :email, total_accounts = :totalAccounts, max_api_calls = :maxApiCalls, used_api_calls = :usedApiCalls, admin = :admin, expires = :expires WHERE username = :username");
+                $db->query(
+                    'UPDATE users SET password = :password, email = :email, total_accounts = :totalAccounts, '
+                    . 'max_api_calls = :maxApiCalls, used_api_calls = :usedApiCalls, admin = :admin, '
+                    . 'expires = :expires WHERE username = :username'
+                );
             } else {
-                $db->query("INSERT INTO users (username, password, email, total_accounts, max_api_calls, used_api_calls, expires, admin) VALUES (:username, :password, :email, :totalAccounts, :maxApiCalls, :usedApiCalls, :expires, :admin)");
+                $db->query(
+                    'INSERT INTO users (username, password, email, total_accounts, max_api_calls, '
+                    . 'used_api_calls, expires, admin) '
+                    . 'VALUES (:username, :password, :email, :totalAccounts, :maxApiCalls, '
+                    . ':usedApiCalls, :expires, :admin)'
+                );
             }
             $db->bind(':username', $username);
             $db->bind(':password', $password);
@@ -185,7 +202,7 @@ class UserModel
             if (CACHE_ENABLED) {
                 $apcuKey = 'user:info:' . trim($username);
                 $cache = CacheService::getInstance();
-                
+
                 // Use remember() to handle cache miss automatically
                 $user = $cache->remember($apcuKey, CACHE_TTL_USER, function () use ($username) {
                     $db = DatabaseManager::getInstance();
@@ -194,7 +211,7 @@ class UserModel
                     $result = $db->single();
                     return is_array($result) ? (object)$result : null;
                 });
-                
+
                 // Store in L1 cache and return
                 self::$userInfoCache[$cacheKey] = $user;
                 return $user;
@@ -341,7 +358,10 @@ class UserModel
     {
         try {
             $db = DatabaseManager::getInstance();
-            $db->query("UPDATE users SET who = :who, `where` = :where, what = :what, goal = :goal WHERE username = :username");
+            $db->query(
+                'UPDATE users SET who = :who, `where` = :where, what = :what, goal = :goal '
+                . 'WHERE username = :username'
+            );
             $db->bind(':username', $username);
             $db->bind(':who', $who);
             $db->bind(':where', $where);

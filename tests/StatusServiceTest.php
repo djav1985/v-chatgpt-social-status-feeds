@@ -1,11 +1,23 @@
 <?php
 
+/**
+ * Project: SocialRSS
+ * Author:  Vontainment <services@vontainment.com>
+ * License: https://opensource.org/licenses/MIT MIT License
+ * Link:    https://vontainment.com
+ * Version: 3.0.0
+ *
+ * File: StatusServiceTest.php
+ * Description: PHPUnit tests for StatusService.
+ */
+
 declare(strict_types=1);
 
 namespace Tests;
 
 use App\Services\StatusService;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
@@ -58,6 +70,7 @@ final class StatusServiceTest extends TestCase
         $this->assertContains($constant->getValue(), ['none', 'low', 'medium', 'high', 'xhigh']);
     }
 
+    #[RunInSeparateProcess]
     public function testGenerateSocialImageRejectsAnEmptyPromptBeforeCallingTheApi(): void
     {
         $result = $this->invokePrivateMethod('generateSocialImage', '   ', 'test-account', 'test-owner');
