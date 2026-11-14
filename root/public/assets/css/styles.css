@@ -1,233 +1,197 @@
-:root{--brand-green:#66cc33;--brand-slate:#4b5161;--brand-blue:#0366d6;--brand-light-blue:#b3daff;--tblr-primary:var(--brand-green);--tblr-success:var(--brand-green);--tblr-secondary:var(--brand-blue);--tblr-body-font-family:arial,sans-serif}
-html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fa;color:var(--brand-slate);font-family:arial,sans-serif}.page{min-height:100vh}.page-wrapper{padding-bottom:4rem}.admin-header{background:var(--brand-blue);color:#fff;border-bottom:4px solid var(--brand-green)}.admin-header .container-xl{display:flex;justify-content:space-between;align-items:center;gap:1rem}.admin-logo img{display:block;width:min(240px,55vw);height:auto}.btn-logout{background:#f76707;color:#fff;border:1px solid #e8590c}.btn-logout:hover,.btn-logout:focus{background:#e8590c;color:#fff}.admin-nav-wrap{background:#fff}.admin-nav{gap:.3rem;overflow-x:auto;flex-wrap:nowrap}.admin-nav .nav-link{white-space:nowrap;color:var(--brand-slate);transition:color .15s ease,background-color .15s ease}.admin-nav .nav-link:hover{background:var(--brand-light-blue);color:var(--brand-slate)}.admin-nav .nav-link.active{color:var(--tblr-secondary);border-color:#dce2e8 #dce2e8 #fff}.page-body{padding:1.5rem 0 3rem}.page-header{margin-bottom:1.25rem}.page-title{color:var(--brand-slate)}.card{min-width:0;box-shadow:0 1px 3px #18243312}.card-title{color:var(--brand-slate)}.btn{transition:background-color .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease}.btn-primary{background:var(--tblr-primary);border-color:var(--tblr-primary);color:#fff}.btn-primary:hover,.btn-primary:focus{background:#59b82b;border-color:#59b82b;color:#fff}.btn-primary:active{background:#4fa526;border-color:#4fa526;color:#fff}.btn-secondary{background:var(--tblr-secondary);border-color:var(--tblr-secondary);color:#fff}.btn-secondary:hover,.btn-secondary:focus{background:#0257b5;border-color:#0257b5;color:#fff}.btn-secondary:active{background:#014991;border-color:#014991;color:#fff}.btn-outline-secondary{color:var(--tblr-secondary);border-color:var(--tblr-secondary)}.btn-outline-secondary:hover,.btn-outline-secondary:focus{background:var(--tblr-secondary);color:#fff}.btn-danger{background:#d63939;border-color:#c52f2f;color:#fff}.btn-danger:hover,.btn-danger:focus{background:#c52f2f;border-color:#b52525;color:#fff}.btn:disabled,.btn.disabled{opacity:.55}.form-control:focus,.form-select:focus{border-color:var(--tblr-secondary);box-shadow:0 0 0 .2rem #0366d633}.form-grid{display:grid;gap:.55rem}.form-grid label{font-weight:600;margin-top:.35rem}.form-grid button{margin-top:.5rem}.admin-footer{background:var(--brand-slate);border-top:1px solid #3f4553;padding:1rem 0;text-align:center}.admin-footer p{margin:0;color:#fff;font-size:.875rem}.admin-footer a{color:var(--brand-light-blue)}.status-accordion{display:grid;gap:.8rem}.status-campaign-card{overflow:hidden}.status-campaign-header{padding:0}.status-campaign-toggle{width:100%;min-height:3.5rem;display:flex;align-items:center;gap:.7rem;padding:.8rem 1rem;border:0;background:#fff;color:var(--brand-slate);text-align:left}.status-campaign-toggle:hover{background:#f3f7fb}.status-campaign-title{font-weight:600;flex:1;overflow-wrap:anywhere}.status-chevron{width:1rem;height:1rem;fill:none;stroke:currentcolor;stroke-width:2;transition:transform .18s ease}.status-campaign-toggle[aria-expanded="true"] .status-chevron{transform:rotate(90deg)}.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:1rem}.status-item{overflow:hidden;transition:transform .15s ease,box-shadow .15s ease}.status-item:hover{transform:translateY(-2px);box-shadow:0 6px 18px #1824331c}.status-image{display:block;width:100%;max-height:280px;object-fit:cover;background:#f0f2f5}.status-text{white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:.5rem}.status-date{font-size:.8rem;color:#667382}.status-actions{display:flex;align-items:center;gap:.5rem}.status-actions form{margin-left:auto}.status-icon-button{width:2.4rem;height:2.4rem;padding:.45rem}.status-icon-button svg{height:100%;width:100%;fill:none;stroke:currentcolor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.campaign-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.65rem}.calendar-day{border:1px solid #dce2e8;border-radius:4px;padding:.65rem;min-width:0}.calendar-day h3{font-size:1rem;font-weight:600}.calendar-slot{border-top:1px solid #e6e9ed;padding:.4rem 0;overflow-wrap:anywhere}.calendar-slot ul{padding-left:1rem;margin:.2rem 0}.toast-stack{position:fixed;right:1rem;bottom:1rem;z-index:1100;width:min(24rem,calc(100vw - 2rem))}.toast-stack .alert{box-shadow:0 8px 24px #1824332a;overflow-wrap:anywhere}.empty-state{padding:2rem}.reveal-transition{transition:opacity .18s ease,transform .18s ease}
+/* Status campaign, card, and schedule components. Shared admin UI lives in admin-base.css. */
 
-@media(max-width:767.98px){.container-xl{padding-left:1rem;padding-right:1rem}.admin-header .container-xl{padding-top:.5rem;padding-bottom:.5rem}.page-body{padding-top:1rem}.calendar-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr))}.status-campaign-toggle{gap:.45rem;padding:.7rem}.campaign-actions>*{flex:1 1 auto}.admin-footer{position:static}}
-
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
-.toast-container{z-index:1100;width:min(24rem,calc(100vw - 2rem))}.toast-container .toast{display:block;border-left:4px solid var(--brand-blue);box-shadow:0 0.5rem 1.5rem rgb(32 41 54 / 18%);opacity:0;transform:translateY(-.5rem);transition:opacity 180ms ease,transform 180ms ease}.toast-container .toast.show{opacity:1;transform:translateY(0)}.toast-container .toast-success{border-left-color:var(--brand-green)}.toast-container .toast-error{border-left-color:#dc3545}.flash-fallback{margin:0 0 .75rem}
-
-/* stylelint-disable no-duplicate-selectors */
-/* Keep the status app's navigation consistent with the updater admin. */
-.admin-header {
-  min-height: 76px;
-  box-shadow: 0 3px 8px rgb(75 81 97 / 16%);
+.page-wrapper {
+  padding-bottom: 4rem;
 }
 
-.admin-header-actions {
+.status-accordion {
+  display: grid;
+  gap: 1.6rem;
+  padding-top: 0.75rem;
+}
+
+.status-campaign-card {
+  overflow: hidden;
+}
+
+.status-campaign-header {
+  padding: 0;
+}
+
+.status-campaign-toggle {
+  display: flex;
+  width: 100%;
+  min-height: 3.5rem;
+  align-items: center;
+  gap: 0.7rem;
+  border: 0;
+  padding: 0.8rem 1rem;
+  background: #fff;
+  color: var(--brand-slate);
+  text-align: left;
+}
+
+.status-campaign-toggle:hover {
+  background: #f3f7fb;
+}
+
+.status-campaign-title {
+  flex: 1;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.status-chevron {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: transform 180ms ease;
+}
+
+.status-campaign-toggle[aria-expanded="true"] .status-chevron {
+  transform: rotate(90deg);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
+  justify-content: start;
+  gap: 1rem;
+}
+
+.status-item {
+  overflow: hidden;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.status-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgb(24 36 51 / 11%);
+}
+
+.status-image {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  background: #f0f2f5;
+  object-fit: cover;
+}
+
+.status-text {
+  margin-bottom: 0.5rem;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.status-date {
+  color: #667382;
+  font-size: 0.8rem;
+}
+
+.status-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.admin-logo img {
-  width: min(300px, 58vw);
+.status-actions form {
+  margin-left: auto;
 }
 
-.admin-nav {
-  gap: 0.25rem;
-  overflow: visible;
+.status-icon-button {
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0.45rem;
+}
+
+.status-icon-button svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.campaign-actions {
+  display: flex;
   flex-wrap: wrap;
-  border-bottom: 0;
+  gap: 0.6rem;
+  margin-top: 1rem;
 }
 
-.admin-nav .nav-link {
-  border: 0;
-  border-bottom: 3px solid transparent;
-  border-radius: 0;
-  padding: 0.9rem 1rem 0.75rem;
-  color: #202936;
-  font-weight: 600;
-  white-space: normal;
-  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
-}
-
-.admin-nav .nav-link:hover,
-.admin-nav .nav-link:focus-visible {
-  background: #f3f8ff;
-  color: var(--tblr-secondary);
-}
-
-.admin-nav .nav-link.active {
-  border-bottom-color: var(--tblr-primary);
-  background: #fff;
-  color: #202936;
-}
-
-@media (min-width: 768px) {
-  .admin-nav-wrap {
-    margin-top: 0.5rem;
-    border-bottom: 1px solid #dce2e9;
-    background: transparent;
-  }
-
-  .admin-nav {
-    align-items: flex-end;
-    gap: 0.35rem;
-  }
-
-  .admin-nav .nav-link {
-    margin-bottom: -1px;
-    border: 1px solid #dce2e9;
-    border-radius: 0.25rem 0.25rem 0 0;
-    background: #fff;
-  }
-
-  .admin-nav .nav-link.active {
-    position: relative;
-    z-index: 1;
-    border-color: #dce2e8;
-    border-bottom-color: #f5f7fb;
-    background: #f5f7fb;
-  }
-}
-
-.status-grid {
-  grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
-  justify-content: start;
-}
-
-.status-accordion {
-  padding-top: 0.75rem;
-}
-
-.page-header {
-  margin-bottom: 1.25rem;
-}
-
-.page-header + .row {
-  padding-top: 0.75rem;
-}
-
-.page-header + .card {
-  margin-top: 0.75rem;
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.65rem;
 }
 
 .calendar-day {
-  border-color: #aebccc;
+  min-width: 0;
+  border: 1px solid #aebccc;
+  border-radius: 4px;
+  padding: 0.65rem;
   background: #fff;
   box-shadow: 0 2px 8px rgb(75 81 97 / 12%);
 }
 
 .calendar-day h3 {
-  border-bottom: 2px solid var(--tblr-primary);
+  border-bottom: 2px solid var(--brand-green);
   padding-bottom: 0.5rem;
-  color: var(--tblr-secondary);
+  color: var(--brand-blue);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.calendar-slot {
+  overflow-wrap: anywhere;
+  border-top: 1px solid #e6e9ed;
+  padding: 0.4rem 0;
+}
+
+.calendar-slot ul {
+  margin: 0.2rem 0;
+  padding-left: 1rem;
+}
+
+.toast-stack {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1100;
+  width: min(24rem, calc(100vw - 2rem));
+}
+
+.toast-stack .alert {
+  overflow-wrap: anywhere;
+  box-shadow: 0 8px 24px rgb(24 36 51 / 16%);
+}
+
+.empty-state {
+  padding: 2rem;
+}
+
+.reveal-transition {
+  transition: opacity 180ms ease, transform 180ms ease;
 }
 
 @media (max-width: 767.98px) {
-  .admin-nav {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
+  .calendar-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr));
   }
 
-  .admin-nav .nav-link {
-    padding: 0.75rem 0.5rem;
-    text-align: center;
-  }
-}
-
-.mobile-menu-toggle,
-.mobile-nav-logout {
-  display: none;
-}
-
-@media (max-width: 767.98px) {
-  .admin-nav-wrap.mobile-nav-ready {
-    position: relative;
-    z-index: 20;
-    height: 0;
-    background: transparent;
-    box-shadow: none;
+  .status-campaign-toggle {
+    gap: 0.45rem;
+    padding: 0.7rem;
   }
 
-  .admin-header .desktop-logout {
-    display: none;
+  .campaign-actions > * {
+    flex: 1 1 auto;
   }
 
-  .admin-header-actions {
-    align-items: center;
-  }
-
-  .mobile-menu-toggle {
-    display: flex;
-    width: 2.75rem;
-    height: 2.75rem;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #dce2e9;
-    border-radius: 0.25rem;
-    background: #fff;
-    padding: 0.5rem;
-    color: #182433;
-  }
-
-  .mobile-menu-toggle svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    flex: none;
-  }
-
-  .mobile-nav-logout {
-    display: flex;
-    align-items: center;
-    border-top: 1px solid #dce2e9;
-    padding: 0.75rem 0.5rem;
-  }
-
-  .mobile-nav-logout .btn-logout {
-    width: 100%;
-  }
-
-  .admin-nav-wrap.mobile-nav-ready .admin-nav {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 100vw;
-    transform: translateX(-50%);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    visibility: hidden;
-    background: #fff;
-    box-shadow: 0 6px 14px rgb(75 81 97 / 20%);
-    transition: max-height 240ms ease, opacity 180ms ease, visibility 0s linear 240ms;
-  }
-
-  .admin-nav-wrap.mobile-nav-ready.is-open .admin-nav {
-    max-height: min(80vh, 32rem);
-    overflow-y: auto;
-    opacity: 1;
-    visibility: visible;
-    transition-delay: 0s;
-  }
-
-  .admin-nav-wrap.mobile-nav-ready .admin-nav .nav-link {
-    padding: 0.75rem 0.5rem;
-    text-align: left;
-  }
-
-  .admin-nav-wrap.mobile-nav-ready .container-xl {
-    max-width: none;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .admin-nav-wrap.mobile-nav-ready .admin-nav {
-    padding: 0 1rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mobile-menu-toggle,
-  .admin-nav-wrap.mobile-nav-ready .admin-nav {
-    transition: none;
-  }
-}
-
-@media (max-width: 767.98px) {
   .status-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -239,4 +203,10 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fa;color:var(--
   }
 }
 
-/* stylelint-enable no-duplicate-selectors */
+@media (prefers-reduced-motion: reduce) {
+  .status-chevron,
+  .status-item,
+  .reveal-transition {
+    transition: none;
+  }
+}

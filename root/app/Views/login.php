@@ -13,7 +13,7 @@
 
 $csrfToken = (string) App\Core\SessionManager::getInstance()->get('csrf_token', '');
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-US">
 <head>
     <meta charset="UTF-8">
@@ -22,18 +22,20 @@ $csrfToken = (string) App\Core\SessionManager::getInstance()->get('csrf_token', 
     <title>AI Status Admin Login</title>
     <link rel="stylesheet" href="/assets/lib/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="/assets/css/styles.css">
-    <link rel="stylesheet" href="/assets/css/forms.css">
-    <link rel="stylesheet" href="/assets/css/login.css">
+    <link rel="stylesheet" href="/assets/css/admin-base.css">
     <script defer src="/assets/lib/tabler/js/tabler.min.js"></script>
     <script defer src="/assets/js/header-scripts.js"></script>
 </head>
 <body class="login-page">
     <main class="login-shell">
-        <section class="card login-card" aria-labelledby="login-title">
+        <section class="card login-card">
             <div class="card-body">
-                <img class="login-logo" src="/assets/images/logo.png" alt="Vontainment">
-                <h1 id="login-title" class="h2 text-center">Admin sign in</h1>
-                <form action="/login" method="post">
+                <a href="/" class="login-logo" aria-label="Vontainment home">
+                    <img src="/assets/images/logo.png" alt="Vontainment">
+                </a>
+                <div class="page-pretitle text-center">AI Status Generator</div>
+                <h1 class="login-title">Admin sign in</h1>
+                <form method="post" action="/login">
                     <input
                         type="hidden"
                         name="csrf_token"
@@ -48,14 +50,21 @@ $csrfToken = (string) App\Core\SessionManager::getInstance()->get('csrf_token', 
                             name="username"
                             autocomplete="username"
                             required
+                            autofocus
                         >
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label class="form-label" for="password">Password</label>
-                        <input class="form-control" id="password" type="password" name="password"
-                            autocomplete="current-password" required>
+                        <input
+                            class="form-control"
+                            id="password"
+                            type="password"
+                            name="password"
+                            autocomplete="current-password"
+                            required
+                        >
                     </div>
-                    <button class="btn btn-secondary w-100" type="submit">Log in</button>
+                    <button class="btn btn-primary w-100" type="submit">Sign in</button>
                 </form>
             </div>
         </section>

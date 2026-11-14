@@ -21,7 +21,7 @@
     <title>Page not found</title>
     <link rel="stylesheet" href="/assets/lib/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="/assets/css/styles.css">
-    <link rel="stylesheet" href="/assets/css/login.css">
+    <link rel="stylesheet" href="/assets/css/admin-base.css">
 </head>
 <body class="login-page">
     <main class="login-shell">
@@ -29,7 +29,7 @@
             <div class="card-body">
                 <h1 class="h2">404 - Page not found</h1>
                 <p class="text-secondary">The page you are looking for does not exist.</p>
-                <a class="btn btn-secondary" href="/home">Return to admin</a>
+                <a class="btn btn-primary" href="/home">Return to admin</a>
             </div>
         </section>
     </main>

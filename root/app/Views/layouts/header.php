@@ -37,7 +37,7 @@ $activeSectionEsc = htmlspecialchars($activeSection, ENT_QUOTES, 'UTF-8');
     <title>Status Admin</title>
     <link rel="stylesheet" href="/assets/lib/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="/assets/css/styles.css">
-    <link rel="stylesheet" href="/assets/css/forms.css">
+    <link rel="stylesheet" href="/assets/css/admin-base.css">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <script defer src="/assets/lib/tabler/js/tabler.min.js"></script>
     <script defer src="/assets/js/header-scripts.js"></script>
