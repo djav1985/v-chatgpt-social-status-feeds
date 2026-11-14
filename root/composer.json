@@ -5,10 +5,10 @@
   "type": "project",
   "require": {
     "php": "^8.2",
-    "phpmailer/phpmailer": "^6.8",
-    "doctrine/dbal": "^4.3",
+    "phpmailer/phpmailer": "7.2",
+    "doctrine/dbal": "4.6",
     "nikic/fast-route": "2.0.0-beta1",
-    "openai-php/client": "*",
+    "openai-php/client": "0.22",
     "respect/validation": "^2.4",
     "guzzlehttp/guzzle": "^8.5",
     "guzzlehttp/psr7": "^3.4",

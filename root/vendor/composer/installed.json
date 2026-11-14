@@ -2,17 +2,17 @@
     "packages": [
         {
             "name": "doctrine/dbal",
-            "version": "4.4.3",
-            "version_normalized": "4.4.3.0",
+            "version": "4.6.0",
+            "version_normalized": "4.6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "61e730f1658814821a85f2402c945f3883407dec"
+                "reference": "1b56fbfb22704712786fea81ff4bb156fcc6427e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/61e730f1658814821a85f2402c945f3883407dec",
-                "reference": "61e730f1658814821a85f2402c945f3883407dec",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/1b56fbfb22704712786fea81ff4bb156fcc6427e",
+                "reference": "1b56fbfb22704712786fea81ff4bb156fcc6427e",
                 "shasum": ""
             },
             "require": {
@@ -25,19 +25,20 @@
                 "doctrine/coding-standard": "14.0.0",
                 "fig/log-test": "^1",
                 "jetbrains/phpstorm-stubs": "2023.2",
-                "phpstan/phpstan": "2.1.30",
+                "phpstan/phpstan": "2.3.4",
                 "phpstan/phpstan-phpunit": "2.0.7",
                 "phpstan/phpstan-strict-rules": "^2",
-                "phpunit/phpunit": "11.5.50",
-                "slevomat/coding-standard": "8.27.1",
-                "squizlabs/php_codesniffer": "4.0.1",
+                "phpunit/phpunit": "11.5.56",
+                "slevomat/coding-standard": "8.31.1",
+                "squizlabs/php_codesniffer": "4.0.4",
                 "symfony/cache": "^6.3.8|^7.0|^8.0",
-                "symfony/console": "^5.4|^6.3|^7.0|^8.0"
+                "symfony/console": "^5.4|^6.3|^7.0|^8.0",
+                "symfony/service-contracts": "^2.2 || ^3.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
             },
-            "time": "2026-03-20T08:52:12+00:00",
+            "time": "2026-11-14T18:08:09+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -91,7 +92,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/4.4.3"
+                "source": "https://github.com/doctrine/dbal/tree/4.6.0"
             },
             "funding": [
                 {
@@ -568,17 +569,17 @@
         },
         {
             "name": "openai-php/client",
-            "version": "v0.17.1",
-            "version_normalized": "0.17.1.0",
+            "version": "v0.22.0",
+            "version_normalized": "0.22.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openai-php/client.git",
-                "reference": "f7d3150159a7b840fe144568bede1c072f768343"
+                "reference": "23e1da353c02a39be03980ae968fba802cf70555"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openai-php/client/zipball/f7d3150159a7b840fe144568bede1c072f768343",
-                "reference": "f7d3150159a7b840fe144568bede1c072f768343",
+                "url": "https://api.github.com/repos/openai-php/client/zipball/23e1da353c02a39be03980ae968fba802cf70555",
+                "reference": "23e1da353c02a39be03980ae968fba802cf70555",
                 "shasum": ""
             },
             "require": {
@@ -591,18 +592,18 @@
                 "psr/http-message": "^1.1.0|^2.0.0"
             },
             "require-dev": {
-                "guzzlehttp/guzzle": "^7.9.3",
-                "guzzlehttp/psr7": "^2.7.1",
-                "laravel/pint": "^1.24.0",
+                "guzzlehttp/guzzle": "^7.10.0",
+                "guzzlehttp/psr7": "^2.8.0",
+                "laravel/pint": "^1.25.1",
                 "mockery/mockery": "^1.6.12",
-                "nunomaduro/collision": "^8.8.0",
-                "pestphp/pest": "^3.8.2|^4.0.0",
+                "nunomaduro/collision": "^8.8.3",
+                "pestphp/pest": "^3.8.2|^4.1.4",
                 "pestphp/pest-plugin-arch": "^3.1.1|^4.0.0",
                 "pestphp/pest-plugin-type-coverage": "^3.5.1|^4.0.0",
-                "phpstan/phpstan": "^1.12.25",
-                "symfony/var-dumper": "^7.2.6"
+                "phpstan/phpstan": "^1.12.32",
+                "symfony/var-dumper": "^7.3.5"
             },
-            "time": "2025-10-09T10:35:54+00:00",
+            "time": "2026-10-31T15:12:58+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -642,7 +643,7 @@
             ],
             "support": {
                 "issues": "https://github.com/openai-php/client/issues",
-                "source": "https://github.com/openai-php/client/tree/v0.17.1"
+                "source": "https://github.com/openai-php/client/tree/v0.22.0"
             },
             "funding": [
                 {
@@ -803,17 +804,17 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.11.1",
-            "version_normalized": "6.11.1.0",
+            "version": "v7.2.0",
+            "version_normalized": "7.2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "d9e3b36b47f04b497a0164c5a20f92acb4593284"
+                "reference": "f5eb50148734d03bbbb81825c722c1889636d51a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/d9e3b36b47f04b497a0164c5a20f92acb4593284",
-                "reference": "d9e3b36b47f04b497a0164c5a20f92acb4593284",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/f5eb50148734d03bbbb81825c722c1889636d51a",
+                "reference": "f5eb50148734d03bbbb81825c722c1889636d51a",
                 "shasum": ""
             },
             "require": {
@@ -827,13 +828,13 @@
                 "doctrine/annotations": "^1.2.6 || ^1.13.3",
                 "php-parallel-lint/php-console-highlighter": "^1.0.0",
                 "php-parallel-lint/php-parallel-lint": "^1.3.2",
-                "phpcompatibility/php-compatibility": "^9.3.5",
-                "roave/security-advisories": "dev-latest",
-                "squizlabs/php_codesniffer": "^3.7.2",
+                "phpcompatibility/php-compatibility": "^10.0.0@dev",
+                "squizlabs/php_codesniffer": "^3.13.6 || ^4.0.2",
                 "yoast/phpunit-polyfills": "^1.0.4"
             },
             "suggest": {
                 "decomplexity/SendOauth2": "Adapter for using XOAUTH2 authentication",
+                "directorytree/imapengine": "For uploading sent messages via IMAP, see gmail example",
                 "ext-imap": "Needed to support advanced email address parsing according to RFC822",
                 "ext-mbstring": "Needed to send email in multibyte encoding charset or decode encoded addresses",
                 "ext-openssl": "Needed for secure SMTP sending and DKIM signing",
@@ -844,7 +845,7 @@
                 "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)",
                 "thenetworg/oauth2-azure": "Needed for Microsoft XOAUTH2 authentication"
             },
-            "time": "2025-09-30T11:54:53+00:00",
+            "time": "2026-11-07T15:15:17+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -876,7 +877,7 @@
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
             "support": {
                 "issues": "https://github.com/PHPMailer/PHPMailer/issues",
-                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.11.1"
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v7.2.0"
             },
             "funding": [
                 {

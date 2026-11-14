@@ -17,7 +17,7 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
  * @phpstan-import-type OutputTextType from OutputMessageContentOutputText
  * @phpstan-import-type ContentRefusalType from OutputMessageContentRefusal
  *
- * @phpstan-type ContentPartType array{content_index: int, item_id: string, output_index: int, part: OutputTextType|ContentRefusalType}
+ * @phpstan-type ContentPartType array{type: string, content_index: int, item_id: string, output_index: int, sequence_number: int, part: OutputTextType|ContentRefusalType}
  *
  * @implements ResponseContract<ContentPartType>
  */
@@ -32,9 +32,11 @@ final class ContentPart implements ResponseContract, ResponseHasMetaInformationC
     use HasMetaInformation;
 
     private function __construct(
+        public readonly string $type,
         public readonly int $contentIndex,
         public readonly string $itemId,
         public readonly int $outputIndex,
+        public readonly int $sequenceNumber,
         public readonly OutputMessageContentOutputText|OutputMessageContentRefusal $part,
         private readonly MetaInformation $meta,
     ) {}
@@ -50,9 +52,11 @@ final class ContentPart implements ResponseContract, ResponseHasMetaInformationC
         };
 
         return new self(
+            type: $attributes['type'],
             contentIndex: $attributes['content_index'],
             itemId: $attributes['item_id'],
             outputIndex: $attributes['output_index'],
+            sequenceNumber: $attributes['sequence_number'],
             part: $part,
             meta: $meta,
         );
@@ -64,9 +68,11 @@ final class ContentPart implements ResponseContract, ResponseHasMetaInformationC
     public function toArray(): array
     {
         return [
+            'type' => $this->type,
             'content_index' => $this->contentIndex,
             'item_id' => $this->itemId,
             'output_index' => $this->outputIndex,
+            'sequence_number' => $this->sequenceNumber,
             'part' => $this->part->toArray(),
         ];
     }

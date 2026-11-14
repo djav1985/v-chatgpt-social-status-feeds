@@ -7,6 +7,8 @@ namespace OpenAI\Responses\Responses;
 use OpenAI\Contracts\ResponseContract;
 use OpenAI\Exceptions\UnknownEventException;
 use OpenAI\Responses\Concerns\ArrayAccessible;
+use OpenAI\Responses\Responses\Streaming\ApplyPatchCallOperationDiffDelta;
+use OpenAI\Responses\Responses\Streaming\ApplyPatchCallOperationDiffDone;
 use OpenAI\Responses\Responses\Streaming\CodeInterpreterCall;
 use OpenAI\Responses\Responses\Streaming\CodeInterpreterCodeDelta;
 use OpenAI\Responses\Responses\Streaming\CodeInterpreterCodeDone;
@@ -26,6 +28,7 @@ use OpenAI\Responses\Responses\Streaming\OutputItem;
 use OpenAI\Responses\Responses\Streaming\OutputTextAnnotationAdded;
 use OpenAI\Responses\Responses\Streaming\OutputTextDelta;
 use OpenAI\Responses\Responses\Streaming\OutputTextDone;
+use OpenAI\Responses\Responses\Streaming\RateLimits;
 use OpenAI\Responses\Responses\Streaming\ReasoningSummaryPart;
 use OpenAI\Responses\Responses\Streaming\ReasoningSummaryTextDelta;
 use OpenAI\Responses\Responses\Streaming\ReasoningSummaryTextDone;
@@ -33,6 +36,11 @@ use OpenAI\Responses\Responses\Streaming\ReasoningTextDelta;
 use OpenAI\Responses\Responses\Streaming\ReasoningTextDone;
 use OpenAI\Responses\Responses\Streaming\RefusalDelta;
 use OpenAI\Responses\Responses\Streaming\RefusalDone;
+use OpenAI\Responses\Responses\Streaming\Response;
+use OpenAI\Responses\Responses\Streaming\ShellCallCommand;
+use OpenAI\Responses\Responses\Streaming\ShellCallCommandDelta;
+use OpenAI\Responses\Responses\Streaming\ShellCallOutputContentDelta;
+use OpenAI\Responses\Responses\Streaming\ShellCallOutputContentDone;
 use OpenAI\Responses\Responses\Streaming\WebSearchCall;
 use OpenAI\Testing\Responses\Concerns\FakeableForStreamedResponse;
 
@@ -52,7 +60,7 @@ final class CreateStreamedResponse implements ResponseContract
 
     private function __construct(
         public readonly string $event,
-        public readonly CreateResponse|OutputItem|ContentPart|OutputTextDelta|OutputTextAnnotationAdded|OutputTextDone|RefusalDelta|RefusalDone|FunctionCallArgumentsDelta|FunctionCallArgumentsDone|FileSearchCall|WebSearchCall|CodeInterpreterCall|CodeInterpreterCodeDelta|CodeInterpreterCodeDone|ReasoningSummaryPart|ReasoningSummaryTextDelta|ReasoningSummaryTextDone|ReasoningTextDelta|ReasoningTextDone|McpListTools|McpListToolsInProgress|McpCall|McpCallArgumentsDelta|McpCallArgumentsDone|ImageGenerationPart|ImageGenerationPartialImage|Error $response,
+        public readonly Response|OutputItem|ContentPart|OutputTextDelta|OutputTextAnnotationAdded|OutputTextDone|RefusalDelta|RefusalDone|FunctionCallArgumentsDelta|FunctionCallArgumentsDone|ApplyPatchCallOperationDiffDelta|ApplyPatchCallOperationDiffDone|ShellCallCommand|ShellCallCommandDelta|ShellCallOutputContentDelta|ShellCallOutputContentDone|FileSearchCall|WebSearchCall|CodeInterpreterCall|CodeInterpreterCodeDelta|CodeInterpreterCodeDone|ReasoningSummaryPart|ReasoningSummaryTextDelta|ReasoningSummaryTextDone|ReasoningTextDelta|ReasoningTextDone|McpListTools|McpListToolsInProgress|McpCall|McpCallArgumentsDelta|McpCallArgumentsDone|ImageGenerationPart|ImageGenerationPartialImage|RateLimits|Error $response,
     ) {}
 
     /**
@@ -66,10 +74,11 @@ final class CreateStreamedResponse implements ResponseContract
 
         $response = match ($event) {
             'response.created',
+            'response.queued',
             'response.in_progress',
             'response.completed',
             'response.failed',
-            'response.incomplete' => CreateResponse::from($attributes['response'], $meta), // @phpstan-ignore-line
+            'response.incomplete' => Response::from($attributes, $meta), // @phpstan-ignore-line
             'response.output_item.added',
             'response.output_item.done' => OutputItem::from($attributes, $meta), // @phpstan-ignore-line
             'response.content_part.added',
@@ -81,6 +90,13 @@ final class CreateStreamedResponse implements ResponseContract
             'response.refusal.done' => RefusalDone::from($attributes, $meta), // @phpstan-ignore-line
             'response.function_call_arguments.delta' => FunctionCallArgumentsDelta::from($attributes, $meta), // @phpstan-ignore-line
             'response.function_call_arguments.done' => FunctionCallArgumentsDone::from($attributes, $meta), // @phpstan-ignore-line
+            'response.shell_call_command.added',
+            'response.shell_call_command.done' => ShellCallCommand::from($attributes, $meta), // @phpstan-ignore-line
+            'response.shell_call_command.delta' => ShellCallCommandDelta::from($attributes, $meta), // @phpstan-ignore-line
+            'response.shell_call_output_content.delta' => ShellCallOutputContentDelta::from($attributes, $meta), // @phpstan-ignore-line
+            'response.shell_call_output_content.done' => ShellCallOutputContentDone::from($attributes, $meta), // @phpstan-ignore-line
+            'response.apply_patch_call_operation_diff.delta' => ApplyPatchCallOperationDiffDelta::from($attributes, $meta), // @phpstan-ignore-line
+            'response.apply_patch_call_operation_diff.done' => ApplyPatchCallOperationDiffDone::from($attributes, $meta), // @phpstan-ignore-line
             'response.file_search_call.in_progress',
             'response.file_search_call.searching',
             'response.file_search_call.completed' => FileSearchCall::from($attributes, $meta), // @phpstan-ignore-line
@@ -113,6 +129,7 @@ final class CreateStreamedResponse implements ResponseContract
             'response.image_generation_call.generating',
             'response.image_generation_call.in_progress' => ImageGenerationPart::from($attributes, $meta), // @phpstan-ignore-line
             'response.image_generation_call.partial_image' => ImageGenerationPartialImage::from($attributes, $meta), // @phpstan-ignore-line
+            'response.rate_limits.updated' => RateLimits::from($attributes, $meta), // @phpstan-ignore-line
             'error' => Error::from($attributes, $meta), // @phpstan-ignore-line
             default => throw new UnknownEventException('Unknown Responses streaming event: '.$event),
         };
