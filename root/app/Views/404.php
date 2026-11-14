@@ -29,7 +29,7 @@
             <div class="card-body">
                 <h1 class="h2">404 - Page not found</h1>
                 <p class="text-secondary">The page you are looking for does not exist.</p>
-                <a class="btn btn-primary" href="/home">Return to admin</a>
+                <a class="btn btn-secondary" href="/home">Return to admin</a>
             </div>
         </section>
     </main>

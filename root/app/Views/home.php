@@ -122,7 +122,7 @@ $csrfTokenEsc = htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8');
                                                 </div>
                                                 <div class="card-footer status-actions">
                                                     <button
-                                                        class="btn btn-primary status-icon-button copy-button"
+                                                        class="btn btn-secondary status-icon-button copy-button"
                                                         type="button"
                                                         data-text="<?php echo $statusTextEsc; ?>"
                                                         data-url="<?php echo $imageUrlEsc; ?>"
@@ -138,7 +138,7 @@ $csrfTokenEsc = htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8');
                                                         </svg>
                                                     </button>
                                                     <button
-                                                        class="btn btn-success status-icon-button share-button"
+                                                        class="btn btn-primary status-icon-button share-button"
                                                         type="button"
                                                         data-text="<?php echo $statusTextEsc; ?>"
                                                         data-url="<?php echo $imageUrlEsc; ?>"
@@ -192,7 +192,7 @@ $csrfTokenEsc = htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8');
 
                                 <div class="campaign-actions">
                                     <a
-                                        class="btn btn-outline-primary"
+                                        class="btn btn-outline-secondary"
                                         href="<?php echo $feedUrlEsc; ?>"
                                     >
                                         View feed
@@ -211,7 +211,7 @@ $csrfTokenEsc = htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8');
                                         >
                                         <button
                                             type="submit"
-                                            class="btn btn-success"
+                                            class="btn btn-primary"
                                             name="generate_status"
                                         >Generate Status</button>
                                     </form>

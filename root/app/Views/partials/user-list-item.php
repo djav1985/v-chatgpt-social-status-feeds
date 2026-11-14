@@ -34,7 +34,7 @@ $csrfToken = htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_
             <p><strong>Expires:</strong> <?php echo htmlspecialchars($user->expires); ?></p>
         </div>
         <div class="card-body button-group">
-            <button class="btn btn-primary" id="update-btn" <?php echo $dataAttributes; ?>>Update</button>
+            <button class="btn btn-secondary" id="update-btn" <?php echo $dataAttributes; ?>>Update</button>
             <form class="delete-user-form" action="/users" method="POST">
                 <input type="hidden" name="username" value="<?php echo htmlspecialchars($user->username); ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
@@ -44,7 +44,7 @@ $csrfToken = htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_
                 <form class="login-as-form" action="/users" method="POST">
                     <input type="hidden" name="username" value="<?php echo htmlspecialchars($user->username); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
-                    <button class="btn btn-primary" name="login_as">Login</button>
+                    <button class="btn btn-secondary" name="login_as">Login</button>
                 </form>
             <?php endif; ?>
         </div>

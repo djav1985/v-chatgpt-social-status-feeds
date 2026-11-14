@@ -82,7 +82,7 @@ $platformOptions = [
                 <option value="1">Yes</option>
               </select>
               <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
-              <button class="btn btn-success" name="edit_account">
+              <button class="btn btn-primary" name="edit_account">
                 Add or update account
               </button>
               <button
@@ -167,7 +167,7 @@ $platformOptions = [
                     </div>
                     <div class="card-footer d-flex flex-wrap gap-2">
                       <button
-                        class="btn btn-primary account-update"
+                        class="btn btn-secondary account-update"
                         type="button"
                         data-account-name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>"
                         data-prompt="<?= htmlspecialchars($account->prompt, ENT_QUOTES, 'UTF-8') ?>"

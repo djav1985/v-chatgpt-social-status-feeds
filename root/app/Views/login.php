@@ -55,7 +55,7 @@ $csrfToken = (string) App\Core\SessionManager::getInstance()->get('csrf_token', 
                         <input class="form-control" id="password" type="password" name="password"
                             autocomplete="current-password" required>
                     </div>
-                    <button class="btn btn-primary w-100" type="submit">Log in</button>
+                    <button class="btn btn-secondary w-100" type="submit">Log in</button>
                 </form>
             </div>
         </section>

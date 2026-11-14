@@ -60,7 +60,7 @@ $username = (string) App\Core\SessionManager::getInstance()->get('username', '')
               ></textarea>
               <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
               <input type="hidden" name="accountOwner" value="<?= $escape($username) ?>">
-              <button class="btn btn-success" type="submit" name="update_profile">Update profile</button>
+              <button class="btn btn-primary" type="submit" name="update_profile">Update profile</button>
             </form>
           </div>
         </div>
@@ -91,7 +91,7 @@ $username = (string) App\Core\SessionManager::getInstance()->get('username', '')
                 required
               >
               <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
-              <button class="btn btn-primary" type="submit" name="change_password">Change password</button>
+              <button class="btn btn-secondary" type="submit" name="change_password">Change password</button>
             </form>
           </div>
         </div>
@@ -100,7 +100,7 @@ $username = (string) App\Core\SessionManager::getInstance()->get('username', '')
         <div class="card">
           <div class="card-header"><h2 class="card-title">System message</h2></div>
           <div class="card-body">
-            <p><strong class="text-primary"><?= $escape($systemMsg['systemMsg'] ?? '') ?></strong>
+            <p><strong class="text-secondary"><?= $escape($systemMsg['systemMsg'] ?? '') ?></strong>
               <?php if (!empty($systemMsg['hasProfile'])) : ?>
                 You work for <?= $escape($systemMsg['who'] ?? '') ?> located in
                     <?= $escape($systemMsg['where'] ?? '') ?>.

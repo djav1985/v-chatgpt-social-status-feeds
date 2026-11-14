@@ -63,7 +63,7 @@ $maxApiCallOptions = [
                 <option value="1">Yes</option>
               </select>
               <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
-              <button class="btn btn-success" type="submit" name="edit_users">Add or update user</button>
+              <button class="btn btn-primary" type="submit" name="edit_users">Add or update user</button>
             </form>
           </div>
         </div>
@@ -98,7 +98,7 @@ $maxApiCallOptions = [
                     <?= htmlspecialchars((string) ($user['expires'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
                   </p>
                   <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-primary user-update" type="button"
+                    <button class="btn btn-secondary user-update" type="button"
                       data-username="<?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?>"
                       data-email="<?= htmlspecialchars((string) ($user['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                       data-admin="<?= (int) ($user['admin'] ?? 0) ?>"
@@ -115,7 +115,7 @@ $maxApiCallOptions = [
                           value="<?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?>"
                         >
                         <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
-                        <button class="btn btn-primary" name="login_as">Login as</button>
+                        <button class="btn btn-secondary" name="login_as">Login as</button>
                       </form>
                     <?php endif ?>
                     <form action="/users" method="post" class="m-0">
