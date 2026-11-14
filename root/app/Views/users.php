@@ -1,125 +1,144 @@
 <?php
-
-/**
- * Project: SocialRSS
- * Author:  Vontainment <services@vontainment.com>
- * License: https://opensource.org/licenses/MIT MIT License
- * Link:    https://vontainment.com
- * Version: 3.0.0
- *
- * File: users.php
- * Description: AI Social Status Generator
- *
- * @var string $userList Rendered user list cards.
- */
-
-
-
-require 'partials/header.php';
+/** @var list<array<string, mixed>> $users */
+require __DIR__ . '/layouts/header.php';
+$csrf = htmlspecialchars((string) App\Core\SessionManager::getInstance()->get('csrf_token', ''), ENT_QUOTES, 'UTF-8');
+$currentUser = (string) App\Core\SessionManager::getInstance()->get('username', '');
+$maxApiCallOptions = [
+    '0' => 'Off',
+    '30' => '30',
+    '90' => '90',
+    '300' => '300',
+    '9999999999' => 'Unlimited',
+];
 ?>
-
-<main class="container">
-    <div class="columns">
-        <!-- User Management Section -->
-        <div class="account-left card column col-4 col-md-4 col-sm-12">
-            <div class="account-header card-header">
-                <h3 class="account-name card-title">Add/Update User</h3>
-            </div>
-            <form class="form-group columns" action="/users" method="POST">
-                <!-- Username input field -->
-                <label for="username">Username:</label>
-                <input class="form-input" type="text" name="username" id="username" required>
-
-
-                <!-- Password input field -->
-                <label for="password">Password:</label>
-                <input class="form-input" type="password" name="password" id="password">
-
-                <!-- Email input field -->
-                <label for="email">Email:</label>
-                <input class="form-input" type="email" name="email" id="email" required>
-
-                <!-- Total Accounts dropdown -->
-                <label for="total-accounts">Total Accounts:</label>
-                <select class="form-select" name="total-accounts" id="total-accounts" required>
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                </select>
-
-                <!-- Max API Calls dropdown -->
-                <label for="max-api-calls">Max API Calls:</label>
-                <select class="form-select" name="max-api-calls" id="max-api-calls" required>
-                    <option value="0">Off</option>
-                    <option value="30">30</option>
-                    <option value="90">90</option>
-                    <option value="300">300</option>
-                    <option value="9999999999">Unlimited</option>
-                </select>
-
-                <!-- Used API Calls dropdown -->
-                <label for="used-api-calls">Used API Calls:</label>
-                <select class="form-select" name="used-api-calls" id="used-api-calls" required>
-                    <option value="0">0</option>
-                </select>
-
-                <!-- Expiry date input field -->
-                <label for="expires">Expires:</label>
-                <input class="form-input" type="date" name="expires" id="expires" required>
-
-                <!-- Admin status dropdown -->
-                <label for="admin">Admin:</label>
-                <select class="form-select" name="admin" id="admin" required>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </select>
-
-                <!-- CSRF token for security -->
-                <input type="hidden" name="csrf_token"
-                    value="<?php echo htmlspecialchars(App\Core\SessionManager::getInstance()->get('csrf_token')); ?>">
-                <button class="btn btn-primary btn-lg" type="submit" name="edit_users">Add/Update User</button>
+<main class="page-body">
+  <div class="container-xl">
+    <div class="page-header"><div class="page-pretitle">Administration</div><h1 class="page-title">Users</h1></div>
+    <div class="row g-3">
+      <section class="col-12 col-lg-4">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Add or update user</h2></div>
+          <div class="card-body">
+            <form class="form-grid" action="/users" method="post">
+              <label for="username">Username</label>
+              <input class="form-control" name="username" id="username" required>
+              <label for="password">Password</label>
+              <input
+                class="form-control"
+                type="password"
+                name="password"
+                id="password"
+                autocomplete="new-password"
+                placeholder="********"
+                aria-describedby="password-help"
+              >
+              <small id="password-help" class="form-hint">
+                Leave blank to keep the current password. New users need a password.
+              </small>
+              <label for="email">Email</label>
+              <input class="form-control" type="email" name="email" id="email" required>
+              <label for="total-accounts">Total accounts</label>
+              <select class="form-select" name="total-accounts" id="total-accounts" required>
+                <?php foreach ([3, 5, 10] as $value) : ?>
+                  <option value="<?= $value ?>"><?= $value ?></option>
+                <?php endforeach ?>
+              </select>
+              <label for="max-api-calls">Max API calls</label>
+              <select class="form-select" name="max-api-calls" id="max-api-calls" required>
+                <?php foreach ($maxApiCallOptions as $value => $label) : ?>
+                  <option value="<?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?>">
+                    <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
+                  </option>
+                <?php endforeach ?>
+              </select>
+              <label for="used-api-calls">Used API calls</label>
+              <select class="form-select" name="used-api-calls" id="used-api-calls" required>
+                <option value="0">0</option>
+              </select>
+              <label for="expires">Expires</label>
+              <input class="form-control" type="date" name="expires" id="expires" required>
+              <label for="admin">Admin</label>
+              <select class="form-select" name="admin" id="admin" required>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+              <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
+              <button class="btn btn-success" type="submit" name="edit_users">Add or update user</button>
             </form>
+          </div>
         </div>
-        <!-- User List Section -->
-        <div class="account-right card column col-8 col-md-8 col-sm-12">
-            <div class="account-header card-header">
-                <h3 class="account-name card-title">User List</h3>
-            </div>
-            <div class="columns">
-                <?php echo $userList; ?>
-            </div>
+      </section>
+      <section class="col-12 col-lg-8">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">User list</h2></div>
+          <div class="card-body"><div class="row row-cards">
+            <?php foreach ($users as $user) :
+                    $username = (string) ($user['username'] ?? '');
+                    $maxApiCalls = htmlspecialchars(
+                        (string) ($user['max_api_calls'] ?? 0),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    );
+                    $expires = htmlspecialchars((string) ($user['expires'] ?? ''), ENT_QUOTES, 'UTF-8');
+                ?>
+              <div class="col-12 col-md-6">
+                <article class="card h-100"><div class="card-body">
+                  <h3 class="h3 text-break"><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></h3>
+                  <p class="text-break">
+                    <strong>Email:</strong>
+                    <?= htmlspecialchars((string) ($user['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
+                  </p>
+                  <p>
+                    <strong>API calls:</strong>
+                    <?= htmlspecialchars((string) ($user['used_api_calls'] ?? 0), ENT_QUOTES, 'UTF-8') ?> /
+                    <?= htmlspecialchars((string) ($user['max_api_calls'] ?? 0), ENT_QUOTES, 'UTF-8') ?>
+                  </p>
+                  <p>
+                    <strong>Expires:</strong>
+                    <?= htmlspecialchars((string) ($user['expires'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
+                  </p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-primary user-update" type="button"
+                      data-username="<?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?>"
+                      data-email="<?= htmlspecialchars((string) ($user['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                      data-admin="<?= (int) ($user['admin'] ?? 0) ?>"
+                      data-total-accounts="<?= (int) ($user['total_accounts'] ?? 0) ?>"
+                      data-max-api-calls="<?= $maxApiCalls ?>"
+                      data-used-api-calls="<?= (int) ($user['used_api_calls'] ?? 0) ?>"
+                      data-expires="<?= $expires ?>"
+                    >Update</button>
+                    <?php if ($username !== $currentUser) : ?>
+                      <form action="/users" method="post" class="m-0">
+                        <input
+                          type="hidden"
+                          name="username"
+                          value="<?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?>"
+                        >
+                        <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
+                        <button class="btn btn-primary" name="login_as">Login as</button>
+                      </form>
+                    <?php endif ?>
+                    <form action="/users" method="post" class="m-0">
+                      <input
+                        type="hidden"
+                        name="username"
+                        value="<?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?>"
+                      >
+                      <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
+                      <button class="btn btn-danger" name="delete_user">Delete</button>
+                    </form>
+                  </div>
+                </div></article>
+              </div>
+            <?php endforeach ?>
+            <?php if ($users === []) :
+                ?><div class="col-12"><p class="text-secondary">No users found.</p></div><?php
+            endif ?>
+          </div></div>
         </div>
+      </section>
     </div>
+  </div>
 </main>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const updateButtons = document.querySelectorAll('#update-btn');
-        updateButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const usernameField = document.querySelector('#username');
-                const emailField = document.querySelector('#email');
-                const totalAccountsSelect = document.querySelector('#total-accounts');
-                const maxApiCallsSelect = document.querySelector('#max-api-calls');
-                const usedApiCallsSelect = document.querySelector('#used-api-calls');
-                const expiresField = document.querySelector('#expires');
-                const adminSelect = document.querySelector('#admin');
-                // Populate form fields with data attributes from the clicked button
-                usernameField.value = this.dataset.username;
-                emailField.value = this.dataset.email;
-                totalAccountsSelect.value = this.dataset.totalAccounts;
-                maxApiCallsSelect.value = this.dataset.maxApiCalls;
-                usedApiCallsSelect.innerHTML =
-                    `<option value="${this.dataset.usedApiCalls}">${this.dataset.usedApiCalls}</option>`
-                    + '<option value="0">0</option>';
-                expiresField.value = this.dataset.expires;
-                adminSelect.value = this.dataset.admin;
-                // Make username field readonly when updating
-                usernameField.readOnly = true;
-            });
-        });
-    });
-</script>
-
-<?php
- require 'partials/footer.php'; ?>
+<script defer src="/assets/js/admin-forms.js"></script>
+<?php require __DIR__ . '/layouts/footer.php'; ?>

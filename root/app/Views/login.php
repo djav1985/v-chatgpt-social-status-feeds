@@ -8,51 +8,58 @@
  * Version: 3.0.0
  *
  * File: login.php
- * Description: AI Social Status Generator
+ * Description: AI Social Status Generator sign-in view.
  */
 
+$csrfToken = (string) App\Core\SessionManager::getInstance()->get('csrf_token', '');
 ?>
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-US">
 <head>
-    <!-- Meta tags for responsive design and SEO -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <title>AI Status Admin Login</title>
-    <!-- External CSS for styling -->
-    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
-    <link rel="stylesheet" href="/assets/css/login.css">
+    <link rel="stylesheet" href="/assets/lib/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
     <link rel="stylesheet" href="/assets/css/forms.css">
+    <link rel="stylesheet" href="/assets/css/login.css">
+    <script defer src="/assets/lib/tabler/js/tabler.min.js"></script>
+    <script defer src="/assets/js/header-scripts.js"></script>
 </head>
-<body>
-    <div class="columns">
-        <div class="column col-12 col-md-6 col-mx-auto" id="login-box">
-            <!-- Logo for branding -->
-            <img class="img-responsive" id="logo" src="assets/images/logo.png" alt="Logo">
-            <!-- Login form -->
-            <form class="form-group" method="post">
-                <input type="hidden" name="csrf_token"
-                    value="<?php echo htmlspecialchars(
-                        App\Core\SessionManager::getInstance()->get('csrf_token'),
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ); ?>">
-                <label for="username">Username:</label>
-                <input class="form-input" id="username" type="text" name="username" autocomplete="username" required>
-
-                <label for="password">Password:</label>
-                <input class="form-input" id="password" type="password" name="password"
-                    autocomplete="current-password" required>
-
-                <input class="btn btn-primary btn-lg" type="submit" value="Log In">
-            </form>
-
-            <!-- Display error messages if any -->
-        </div>
-    </div>
-<?php
-    App\Helpers\MessageHelper::displayAndClearMessages(); ?>
+<body class="login-page">
+    <main class="login-shell">
+        <section class="card login-card" aria-labelledby="login-title">
+            <div class="card-body">
+                <img class="login-logo" src="/assets/images/logo.png" alt="Vontainment">
+                <h1 id="login-title" class="h2 text-center">Admin sign in</h1>
+                <form action="/login" method="post">
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>"
+                    >
+                    <div class="mb-3">
+                        <label class="form-label" for="username">Username</label>
+                        <input
+                            class="form-control"
+                            id="username"
+                            type="text"
+                            name="username"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Password</label>
+                        <input class="form-control" id="password" type="password" name="password"
+                            autocomplete="current-password" required>
+                    </div>
+                    <button class="btn btn-primary w-100" type="submit">Log in</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    <?php require __DIR__ . '/layouts/flash-messages.php'; ?>
 </body>
 </html>

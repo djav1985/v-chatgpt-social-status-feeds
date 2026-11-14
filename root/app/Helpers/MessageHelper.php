@@ -34,18 +34,19 @@ class MessageHelper
     }
 
     /**
-     * Output all queued flash messages as JavaScript toast calls and clear the queue.
+     * Retrieve queued flash messages as plain data and clear the queue.
      *
-     * @return void
+     * @return list<string>
      */
-    public static function displayAndClearMessages(): void
+    public static function getAndClearMessages(): array
     {
         $messages = SessionManager::getInstance()->get('messages');
-        if (is_array($messages) && !empty($messages)) {
-            foreach ($messages as $message) {
-                echo '<script>showToast(' . json_encode($message) . ');</script>';
-            }
-            SessionManager::getInstance()->set('messages', []);
+        SessionManager::getInstance()->set('messages', []);
+
+        if (!is_array($messages)) {
+            return [];
         }
+
+        return array_values(array_filter($messages, 'is_string'));
     }
 }

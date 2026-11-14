@@ -5,6 +5,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ## Unreleased
 ### Changed
+- Restored safe status copy/share fallbacks, clarified mobile and account update controls, preserved database defaults and schedule ordering, and removed PR auto-fix writes from CI.
 - Reworked the README to use consistent Markdown formatting and updated installation, cron, queue, caching, and development guidance to match the current application.
 - Removed redundant file-wide PHPCS ignores and narrowed test suppressions to the specific active sniffs.
 - Standardized PHP headers, opening-tag spacing, LF line endings, and final newlines across application and test PHP files.
@@ -84,3 +85,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - **Reduced APCu logging noise**: CacheService now logs "APCu not available" message only once per process instead of on every instantiation, eliminating redundant I/O overhead.
 - **Added queue processing backoff**: QueueService now includes a 10-second pause after failed status generation and a 5-second idle sleep when no jobs are claimed, preventing tight retry loops and reducing CPU usage during OpenAI API failures or idle periods.
 - Status generation now uses a Responses API-supported reasoning effort, rejects empty image prompts locally, and clarifies that manual generation is handled by the next scheduled queue worker.
+## Unreleased
+### Changed
+- Replaced the status admin's legacy shell with locally bundled Tabler assets and a responsive interface using the established green, slate, blue, and light-blue palette.
+- Moved dashboard, account, user, profile, login, and not-found rendering into views and shared `Views/layouts` templates; controllers now provide structured view data instead of HTML fragments.
+- Added collapsible status campaign panels with a remembered open campaign, responsive status cards, and accessible toast notifications.

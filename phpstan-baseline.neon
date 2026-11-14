@@ -131,9 +131,3 @@ parameters:
 			identifier: nullCoalesce.variable
 			count: 1
 			path: root/app/Views/accounts.php
-
-		-
-			message: '#^Variable \$missingConfig in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.variable
-			count: 1
-			path: root/config.php

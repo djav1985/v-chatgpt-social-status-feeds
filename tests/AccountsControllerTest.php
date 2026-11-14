@@ -44,4 +44,28 @@ class AccountsControllerTest extends TestCase
         $this->assertEquals('10:00 p.m.', $method->invoke(null, 22));
     }
 
+    public function testCalendarSlotsAreSortedAfterAccountsAreAggregated(): void
+    {
+        $class = new ReflectionClass(\App\Controllers\AccountsController::class);
+        $method = $class->getMethod('sortCalendarOverview');
+        $method->setAccessible(true);
+        $overview = [
+            'monday' => [
+                'morning' => [],
+                'afternoon' => [],
+                'night' => [
+                    ['hour' => 22, 'account' => 'Later account', 'time' => '10:00 p.m.'],
+                    ['hour' => 18, 'account' => 'Earlier account', 'time' => '6:00 p.m.'],
+                ],
+            ],
+        ];
+
+        $result = $method->invoke(null, $overview);
+
+        self::assertSame(
+            ['Earlier account', 'Later account'],
+            array_column($result['monday']['night'], 'account')
+        );
+    }
+
 }

@@ -72,72 +72,67 @@ class AccountsController
     }
 
     /**
-     * Build a calendar overview of scheduled posts grouped by day and time slot.
+     * Build structured schedule data for the accounts view.
      *
-     * @return string HTML representation of the calendar
+     * @return array{
+     *     days: list<string>,
+     *     schedule: array<string, array<string, list<array{hour: int, account: string, time: string}>>>
+     * }
      */
-    private static function generateCalendarOverview(): string
+    private static function generateCalendarOverview(): array
     {
-        $session = SessionManager::getInstance();
-        $username = $session->get('username');
-        $accounts = array_map(
-            fn($account) => self::hydrateAccountRow($account),
-            UserModel::getAllUserAccts($username)
-        );
-
-        $daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        $username = SessionManager::getInstance()->get('username');
+        $accounts = array_map(fn($account) => self::hydrateAccountRow($account), UserModel::getAllUserAccts($username));
+        $days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         $overview = [];
-        foreach ($daysOfWeek as $day) {
-            $overview[$day] = [
-                'morning' => [],
-                'afternoon' => [],
-                'night' => [],
-            ];
+        foreach ($days as $day) {
+            $overview[$day] = ['morning' => [], 'afternoon' => [], 'night' => []];
         }
-
         foreach ($accounts as $acct) {
             if ($acct->account === '') {
                 continue;
             }
-            $acctDays = array_map('trim', explode(',', (string) $acct->days));
-            if (in_array('everyday', $acctDays, true)) {
-                $acctDays = $daysOfWeek;
+            $accountDays = array_map('trim', explode(',', $acct->days));
+            if (in_array('everyday', $accountDays, true)) {
+                $accountDays = $days;
             }
-
-            $cronTimes = array_filter(
-                array_map('trim', explode(',', (string) $acct->cron)),
-                fn($v) => $v !== '' && is_numeric($v)
-            );
-
-            foreach ($acctDays as $day) {
-                $day = strtolower($day);
-                if (!isset($overview[$day])) {
-                    continue;
-                }
-                foreach ($cronTimes as $time) {
-                    $hour = (int) $time;
-                    $slot = 'night';
-                    if ($hour >= 5 && $hour < 12) {
-                        $slot = 'morning';
-                    } elseif ($hour >= 12 && $hour <= 17) {
-                        $slot = 'afternoon';
+            $cronTimes = array_values(array_filter(array_map('trim', explode(',', $acct->cron)), 'is_numeric'));
+            sort($cronTimes, SORT_NUMERIC);
+            foreach ($cronTimes as $time) {
+                $hour = (int) $time;
+                $slot = $hour >= 5 && $hour < 12 ? 'morning' : ($hour >= 12 && $hour <= 17 ? 'afternoon' : 'night');
+                foreach ($accountDays as $day) {
+                    $day = strtolower($day);
+                    if (isset($overview[$day][$slot])) {
+                        $overview[$day][$slot][] = [
+                            'hour' => $hour,
+                            'account' => $acct->account,
+                            'time' => self::formatHour($hour),
+                        ];
                     }
-                    $overview[$day][$slot][] = [
-                        'hour' => $hour,
-                        'text' => self::formatHour($hour) . ': ' . $acct->account
-                    ];
                 }
             }
         }
+        return ['days' => $days, 'schedule' => self::sortCalendarOverview($overview)];
+    }
 
-        // Sort entries within each slot chronologically by hour
-        foreach ($overview as $day => $slots) {
-            foreach ($slots as $slot => $entries) {
-                usort($overview[$day][$slot], fn($a, $b) => $a['hour'] <=> $b['hour']);
+    /**
+     * Sort each aggregated day and time slot by hour after accounts have been combined.
+     *
+     * @param array<string, array<string, list<array{hour: int, account: string, time: string}>>> $overview
+     * @return array<string, array<string, list<array{hour: int, account: string, time: string}>>>
+     */
+    private static function sortCalendarOverview(array $overview): array
+    {
+        foreach ($overview as &$slots) {
+            foreach ($slots as &$entries) {
+                usort($entries, static fn(array $left, array $right): int => $left['hour'] <=> $right['hour']);
             }
+            unset($entries);
         }
+        unset($slots);
 
-        return self::overviewToHtml($overview, $daysOfWeek);
+        return $overview;
     }
 
     /**
@@ -154,144 +149,33 @@ class AccountsController
         return $displayHour . ':00 ' . $period;
     }
 
-    /**
-     * Convert the overview array to an HTML grid.
-     *
-      * @param array<string, array<string, list<array{hour: int, text: string}|string>>>
-      *     $overview Organized array of posts
-     * @param array<int, string> $daysOfWeek  Days of the week in order
-     * @return string HTML table grid
-     */
-    private static function overviewToHtml(array $overview, array $daysOfWeek): string
+    /** @return list<string> Available days for account schedules. */
+    private static function generateDaysOptions(): array
     {
-        $html = '<div class="calendar-grid">';
-        foreach ($daysOfWeek as $day) {
-            $html .= '<div class="calendar-day">';
-            $html .= '<h4>' . ucfirst($day) . '</h4>';
-            foreach (['morning', 'afternoon', 'night'] as $slot) {
-                $html .= '<div class="calendar-slot">';
-                $html .= '<strong>' . ucfirst($slot) . '</strong>';
-                $html .= '<ul>';
-                foreach ($overview[$day][$slot] as $entry) {
-                    $entryText = is_array($entry) ? $entry['text'] : $entry;
-                    $html .= '<li>' . htmlspecialchars((string) $entryText, ENT_QUOTES, 'UTF-8') . '</li>';
-                }
-                if (empty($overview[$day][$slot])) {
-                    $html .= '<li>&nbsp;</li>';
-                }
-                $html .= '</ul></div>';
-            }
-            $html .= '</div>';
-        }
-        $html .= '</div>';
-        return $html;
+        return ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     }
 
-    /**
-     * Create select options for the days of the week.
-     *
-     * @return string HTML option tags
-     */
-    private static function generateDaysOptions(): string
+    /** @return list<array{value: string, label: string}> Available schedule hour values and labels. */
+    private static function generateCronOptions(): array
     {
-        $days = ['everyday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        $options = '';
-        foreach ($days as $day) {
-            $options .= "<option value=\"$day\">" . ucfirst($day) . "</option>";
-        }
-        return $options;
-    }
-
-    /**
-     * Generate hourly cron selection options for 6am through 10pm.
-     *
-     * @return string HTML option tags
-     */
-    private static function generateCronOptions(): string
-    {
-        $options = '<option value="null" selected>Off</option>';
+        $options = [['value' => 'null', 'label' => 'Off']];
         for ($hour = 6; $hour <= 22; $hour++) {
-            $amPm = ($hour < 12) ? 'am' : 'pm';
-            $displayHour = ($hour <= 12) ? $hour : $hour - 12;
-            $displayTime = "{$displayHour} {$amPm}";
-            $value = ($hour < 10) ? "0{$hour}" : "{$hour}";
-            $options .= "<option value=\"{$value}\">{$displayTime}</option>";
+            $options[] = [
+                'value' => str_pad((string) $hour, 2, '0', STR_PAD_LEFT),
+                'label' => ($hour <= 12 ? $hour : $hour - 12) . ' ' . ($hour < 12 ? 'am' : 'pm'),
+            ];
         }
         return $options;
     }
 
-    /**
-     * Render the account list items for the accounts page.
-     *
-     * @return string HTML fragment of account rows
-     */
-    private static function generateAccountList(): string
+    /** @return list<object> Account data for rendering in the view. */
+    private static function generateAccountList(): array
     {
-        $session = SessionManager::getInstance();
-        $username = $session->get('username');
-        $accounts = array_map(
-            fn($account) => self::hydrateAccountRow($account),
-            UserModel::getAllUserAccts($username)
-        );
-        $output = '';
-        foreach ($accounts as $account) {
-            if ($account->account === '') {
-                continue;
-            }
-            $accountName = $account->account;
-
-            $daysArr = array_map('ucfirst', array_map('trim', explode(',', $account->days)));
-            $daysStr = implode(', ', $daysArr);
-            $cronArr = array_filter(
-                array_map('trim', explode(',', $account->cron)),
-                function (string $hour): bool {
-                    return $hour !== '' && is_numeric($hour);
-                }
-            );
-            $timesStr = 'Off';
-            if (!empty($cronArr)) {
-                $times = array_map(
-                    function (string $hour): string {
-                        $hour = (int) $hour;
-                        if ($hour === 0) {
-                            return '12 am';
-                        }
-                        if ($hour === 12) {
-                            return '12 pm';
-                        }
-                        $amPm = ($hour < 12) ? 'am' : 'pm';
-                        $displayHour = ($hour <= 12) ? $hour : $hour - 12;
-                        return $displayHour . ' ' . $amPm;
-                    },
-                    $cronArr
-                );
-                $timesStr = implode(', ', $times);
-            }
-
-            $escapedAccountName = htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8');
-            $dataAttributes  = "data-account-name=\"" . $escapedAccountName . "\" ";
-            $dataAttributes .= "data-prompt=\"" . htmlspecialchars($account->prompt, ENT_QUOTES, 'UTF-8') . "\" ";
-            $dataAttributes .= "data-link=\"" . htmlspecialchars($account->link, ENT_QUOTES, 'UTF-8') . "\" ";
-            $dataAttributes .= "data-hashtags=\"" . ($account->hashtags ? '1' : '0') . "\" ";
-            $cron = htmlspecialchars(implode(',', explode(',', $account->cron)), ENT_QUOTES, 'UTF-8');
-            $days = htmlspecialchars(implode(',', explode(',', $account->days)), ENT_QUOTES, 'UTF-8');
-            $dataAttributes .= "data-cron=\"{$cron}\" ";
-            $dataAttributes .= "data-days=\"{$days}\" ";
-            $dataAttributes .= "data-platform=\"" . htmlspecialchars($account->platform, ENT_QUOTES, 'UTF-8') . "\"";
-
-            ob_start();
-            $viewData = [
-                'accountName' => $accountName,
-                'accountData' => $account,
-                'daysStr' => $daysStr,
-                'timesStr' => $timesStr,
-                'dataAttributes' => $dataAttributes,
-            ];
-            extract($viewData);
-            include __DIR__ . '/../Views/partials/account-list-item.php';
-            $output .= ob_get_clean();
-        }
-        return $output;
+        $username = SessionManager::getInstance()->get('username');
+        return array_values(array_filter(
+            array_map(fn($row) => self::hydrateAccountRow($row), UserModel::getAllUserAccts($username)),
+            fn($row) => $row->account !== ''
+        ));
     }
 
     /**
