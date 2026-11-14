@@ -2,6 +2,8 @@
 
 > A PHP application for generating, scheduling, and publishing social media status updates through RSS feeds.
 
+![Status dashboard with recent campaigns](./screenshots/status-home-desktop.png)
+
 ## Table of Contents
 
 1. [Overview](#overview)
@@ -90,10 +92,23 @@ Review the Docker configuration and replace example API and database settings be
 
 ## Usage
 
-1. Sign in to the dashboard and create or update user accounts.
-2. Add a social account with its platform, prompt, link, image instructions, scheduled days and times, and hashtag preference.
-3. Use the account feed or collective user feed with a compatible publishing service.
-4. Use **Generate Status** to queue an immediately due job. The next `run-queue` execution processes it; generation does not run in the web request.
+### Users and profile
+
+Sign in to the dashboard to create or update users. Use **My Info** to manage your profile.
+
+![User management page](./screenshots/status-users-desktop.png)
+
+![My Info page](./screenshots/status-my-info-desktop.png)
+
+### Social accounts
+
+Add a social account with its platform, prompt, link, image instructions, scheduled days and times, and hashtag preference.
+
+![Social account management page](./screenshots/status-accts-desktop.png)
+
+### Publishing and generation
+
+Use the account feed or collective user feed with a compatible publishing service. Use **Generate Status** to queue an immediately due job. The next `run-queue` execution processes it; generation does not run in the web request.
 
 The queue is stored in `status_jobs`. Its `status` field distinguishes first attempts (`pending`) from retries (`retry`). The `status_jobs` table includes `processing BOOLEAN NOT NULL DEFAULT FALSE`. The `processing` is flipped to `true` when a worker claims a job; it is cleared when work finishes or a stale claim is reset.
 

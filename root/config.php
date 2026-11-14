@@ -67,7 +67,7 @@ define('CRON_MEMORY_LIMIT', getenv('CRON_MEMORY_LIMIT') !== false ? getenv('CRON
 define('DB_HOST', getenv('DB_HOST') !== false ? getenv('DB_HOST') : 'localhost'); // Database host or server
 define('DB_USER', getenv('DB_USER') !== false ? getenv('DB_USER') : 'root'); // Database username
 define('DB_PASSWORD', getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : ''); // Database password
-define('DB_NAME', getenv('DB_NAME') !== false ? getenv('DB_NAME') : 'localhost3'); // Database schema name
+define('DB_NAME', getenv('DB_NAME') !== false ? getenv('DB_NAME') : 'test'); // Database schema name
 
 // SMTP settings for sending emails
 define('SMTP_HOST', 'smtp.example.com');

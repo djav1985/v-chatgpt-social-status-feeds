@@ -10,6 +10,13 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fb;color:var(--
 /* Keep the status app's navigation consistent with the updater admin. */
 .admin-header {
   min-height: 76px;
+  box-shadow: 0 3px 8px rgb(75 81 97 / 16%);
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .admin-logo img {
@@ -44,6 +51,34 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fb;color:var(--
   border-bottom-color: var(--brand-green);
   background: #fff;
   color: #202936;
+}
+
+@media (min-width: 768px) {
+  .admin-nav-wrap {
+    margin-top: 0.5rem;
+    border-bottom: 1px solid #dce2e9;
+    background: transparent;
+  }
+
+  .admin-nav {
+    align-items: flex-end;
+    gap: 0.35rem;
+  }
+
+  .admin-nav .nav-link {
+    margin-bottom: -1px;
+    border: 1px solid #dce2e9;
+    border-radius: 0.25rem 0.25rem 0 0;
+    background: #fff;
+  }
+
+  .admin-nav .nav-link.active {
+    position: relative;
+    z-index: 1;
+    border-color: #dce2e8;
+    border-bottom-color: #f5f7fb;
+    background: #f5f7fb;
+  }
 }
 
 .status-grid {
@@ -89,37 +124,50 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fb;color:var(--
   }
 }
 
-.mobile-nav-toggle {
+.mobile-menu-toggle,
+.mobile-nav-logout {
   display: none;
 }
 
 @media (max-width: 767.98px) {
   .admin-nav-wrap.mobile-nav-ready {
+    position: relative;
+    z-index: 20;
     background: #fff;
     box-shadow: 0 2px 8px rgb(75 81 97 / 18%);
   }
 
-  .admin-nav-wrap.mobile-nav-ready .mobile-nav-toggle {
+  .admin-header .desktop-logout {
+    display: none;
+  }
+
+  .admin-header .mobile-menu-toggle {
     display: flex;
-    width: 100%;
+    width: 2.75rem;
+    height: 2.5rem;
     align-items: center;
-    justify-content: space-between;
-    border: 0;
-    background: #fff;
-    padding: 0.85rem 0.5rem;
-    color: #202936;
-    font-weight: 600;
-    text-align: left;
+    justify-content: center;
+    border: 1px solid rgb(255 255 255 / 70%);
+    border-radius: 0.25rem;
+    background: transparent;
+    padding: 0.5rem;
+    color: #fff;
   }
 
-  .mobile-nav-chevron {
-    width: 1.1rem;
-    height: 1.1rem;
-    transition: transform 180ms ease;
+  .mobile-menu-toggle svg {
+    width: 1.4rem;
+    height: 1.4rem;
   }
 
-  .admin-nav-wrap.is-open .mobile-nav-chevron {
-    transform: rotate(180deg);
+  .mobile-nav-logout {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #dce2e9;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .mobile-nav-logout .btn-logout {
+    width: 100%;
   }
 
   .admin-nav-wrap.mobile-nav-ready .admin-nav {
@@ -146,7 +194,7 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fb;color:var(--
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mobile-nav-chevron,
+  .mobile-menu-toggle,
   .admin-nav-wrap.mobile-nav-ready .admin-nav {
     transition: none;
   }

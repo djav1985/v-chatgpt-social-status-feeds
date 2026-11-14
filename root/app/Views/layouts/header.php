@@ -25,7 +25,6 @@ if ($session->get('is_admin')) {
 }
 $navigation['/info'] = 'My Info';
 $navigation[$allFeedsPath] = 'Omni';
-$currentLabel = $navigation[$currentPath] ?? 'Menu';
 ?>
 <!doctype html>
 <html lang="en-US">
@@ -48,20 +47,21 @@ $currentLabel = $navigation[$currentPath] ?? 'Menu';
             <a class="admin-logo" href="/home" aria-label="Status Admin home">
                 <img src="/assets/images/logo.png" alt="Vontainment">
             </a>
-            <form action="/login" method="post" class="m-0">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                <button id="logout" class="btn btn-logout" type="submit" name="logout">Logout</button>
-            </form>
+            <div class="admin-header-actions">
+                <form action="/login" method="post" class="m-0 desktop-logout">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                    <button id="logout" class="btn btn-logout" type="submit" name="logout">Logout</button>
+                </form>
+                <button class="mobile-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="admin-nav-links" hidden>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </header>
     <div class="admin-nav-wrap">
         <div class="container-xl">
-            <button class="mobile-nav-toggle" type="button" aria-expanded="false" aria-controls="admin-nav-links" hidden>
-                <span><?php echo htmlspecialchars($currentLabel, ENT_QUOTES, 'UTF-8'); ?></span>
-                <svg class="mobile-nav-chevron" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </button>
             <nav id="admin-nav-links" class="nav nav-tabs admin-nav" aria-label="Admin sections">
                 <?php foreach ($navigation as $path => $label) : ?>
                     <?php $isActive = $currentPath === $path; ?>
@@ -70,6 +70,10 @@ $currentLabel = $navigation[$currentPath] ?? 'Menu';
                         <?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>
                     </a>
                 <?php endforeach; ?>
+                <form action="/login" method="post" class="mobile-nav-logout">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                    <button class="btn btn-logout" type="submit" name="logout">Logout</button>
+                </form>
             </nav>
         </div>
     </div>

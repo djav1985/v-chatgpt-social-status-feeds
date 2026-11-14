@@ -55,7 +55,7 @@
     document.querySelectorAll("#notification-stack .app-toast").forEach(attachLifetime);
 
     const navWrap = document.querySelector(".admin-nav-wrap");
-    const navToggle = navWrap?.querySelector(".mobile-nav-toggle");
+    const navToggle = document.querySelector(".mobile-menu-toggle");
     const nav = navWrap?.querySelector(".admin-nav");
     if (!navWrap || !navToggle || !nav) return;
 
@@ -65,6 +65,7 @@
 
     const setNavOpen = (open) => {
       navToggle.setAttribute("aria-expanded", String(open));
+      navToggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
       navWrap.classList.toggle("is-open", open);
       nav.inert = mobileViewport.matches && !open;
     };
@@ -75,12 +76,8 @@
       setNavOpen(navToggle.getAttribute("aria-expanded") !== "true");
     });
 
-    navWrap.addEventListener("click", (event) => {
-      if (event.target.closest(".admin-nav a")) setNavOpen(false);
-    });
-
     document.addEventListener("click", (event) => {
-      if (!navWrap.contains(event.target)) setNavOpen(false);
+      if (!navWrap.contains(event.target) && !navToggle.contains(event.target)) setNavOpen(false);
     });
 
     document.addEventListener("keydown", (event) => {
