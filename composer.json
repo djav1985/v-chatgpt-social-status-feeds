@@ -27,9 +27,9 @@
     }
   },
   "scripts": {
-    "phpcs": "phpcs --standard=phpcs.xml --extensions=php root/",
-    "phpcbf": "phpcbf --standard=phpcs.xml --extensions=php root/",
-    "phpstan": "phpstan analyse --no-progress --memory-limit=1G",
-    "test": "phpunit"
+    "phpcs": "@php vendor/bin/phpcs --standard=phpcs.xml --extensions=php root/",
+    "phpcbf": "@php vendor/bin/phpcbf --standard=phpcs.xml --extensions=php root/",
+    "phpstan": "@php vendor/bin/phpstan analyse --no-progress --memory-limit=1G",
+    "test": "@php vendor/bin/phpunit"
   }
 }

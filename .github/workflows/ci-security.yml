@@ -46,7 +46,7 @@ jobs:
         run: composer phpstan
       # PHPUnit
       - name: PHPUnit (root)
-        run: vendor/bin/phpunit --coverage-clover coverage.xml
+        run: php vendor/bin/phpunit --coverage-clover coverage.xml
       - name: ESLint
         run: npm run lint:js
       - name: Stylelint
@@ -107,3 +107,42 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
+
+  # ---------- PR auto-fix ----------
+  lint-fix:
+    name: Prepare lint fixes for PR
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install Node dependencies
+        run: npm ci
+      - name: PHPCBF
+        run: composer phpcbf || true
+      - name: ESLint Fix
+        run: node node_modules/eslint/bin/eslint.js 'root/**/*.js' --ignore-pattern 'vendor/**' --ignore-pattern 'root/vendor/**' --fix || true
+      - name: Stylelint Fix
+        run: node node_modules/stylelint/bin/stylelint.mjs 'root/**/*.css' --ignore-pattern 'vendor/**' --ignore-pattern 'root/vendor/**' --fix || true
+      - name: Save proposed fixes
+        run: git diff --binary > auto-fixes.patch
+      - name: Upload proposed fixes
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-fixes
+          path: auto-fixes.patch
+          if-no-files-found: error
