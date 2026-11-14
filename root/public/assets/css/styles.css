@@ -94,9 +94,12 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fa;color:var(--
   margin-bottom: 1.25rem;
 }
 
-.page-header + .row,
-.page-header + .card {
+.page-header + .row {
   padding-top: 0.75rem;
+}
+
+.page-header + .card {
+  margin-top: 0.75rem;
 }
 
 .calendar-day {
