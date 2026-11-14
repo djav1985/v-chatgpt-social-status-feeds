@@ -84,3 +84,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 - **Reduced APCu logging noise**: CacheService now logs "APCu not available" message only once per process instead of on every instantiation, eliminating redundant I/O overhead.
 - **Added queue processing backoff**: QueueService now includes a 10-second pause after failed status generation and a 5-second idle sleep when no jobs are claimed, preventing tight retry loops and reducing CPU usage during OpenAI API failures or idle periods.
 - Status generation now uses a Responses API-supported reasoning effort, rejects empty image prompts locally, and clarifies that manual generation is handled by the next scheduled queue worker.
+## Unreleased
+### Changed
+- Replaced the status admin's legacy shell with locally bundled Tabler assets and a responsive interface using the established green, slate, blue, and light-blue palette.
+- Moved dashboard, account, user, profile, login, and not-found rendering into views and shared `Views/layouts` templates; controllers now provide structured view data instead of HTML fragments.
+- Added collapsible status campaign panels with a remembered open campaign, responsive status cards, and accessible toast notifications.

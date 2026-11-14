@@ -8,28 +8,30 @@
  * Version: 3.0.0
  *
  * File: 404.php
- * Description: Page not found view
+ * Description: Page not found view.
  */
 
 ?>
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-US">
 <head>
-    <!-- Meta tags for responsive design and SEO -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>AI Status Admin Login</title>
-    <!-- External CSS for styling -->
-    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <title>Page not found</title>
+    <link rel="stylesheet" href="/assets/lib/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
     <link rel="stylesheet" href="/assets/css/login.css">
-    <link rel="stylesheet" href="/assets/css/forms.css">
 </head>
-<body>
-<div class="content-box">
-    <h2>404 - Page Not Found</h2>
-    <p>The page you are looking for does not exist.</p>
-</div>
+<body class="login-page">
+    <main class="login-shell">
+        <section class="card login-card text-center">
+            <div class="card-body">
+                <h1 class="h2">404 - Page not found</h1>
+                <p class="text-secondary">The page you are looking for does not exist.</p>
+                <a class="btn btn-primary" href="/home">Return to admin</a>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

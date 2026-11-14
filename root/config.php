@@ -14,7 +14,7 @@
  */
 
 // OpenAI API key for authentication
-define('API_KEY', '');
+define('API_KEY', getenv('OPENAI_API_KEY') !== false ? getenv('OPENAI_API_KEY') : '');
 
 // Endpoint for OpenAI's chat completion API
 define('API_ENDPOINT', 'https://api.openai.com/v1/');
@@ -31,7 +31,7 @@ define('IMAGE_SIZE', getenv('IMAGE_SIZE') !== false ? getenv('IMAGE_SIZE') : '15
 define('TEMPERATURE', 1);
 
 // Domain where the status service is hosted
-define('DOMAIN', 'http://localhost3');
+define('DOMAIN', getenv('APP_DOMAIN') !== false ? getenv('APP_DOMAIN') : 'http://localhost3');
 
 // System prompt that guides the AI's output
 define('SYSTEM_MSG', 'You are a social media marketer. You will respond with professional but fun social status update and nothing else.');
@@ -64,10 +64,10 @@ define('CRON_MAX_EXECUTION_TIME', getenv('CRON_MAX_EXECUTION_TIME') !== false ? 
 define('CRON_MEMORY_LIMIT', getenv('CRON_MEMORY_LIMIT') !== false ? getenv('CRON_MEMORY_LIMIT') : '512M');
 
 // MySQL Database Connection Constants
-define('DB_HOST', 'localhost'); // Database host or server
-define('DB_USER', 'root'); // Database username
-define('DB_PASSWORD', ''); // Database password
-define('DB_NAME', 'localhost3'); // Database schema name
+define('DB_HOST', getenv('DB_HOST') !== false ? getenv('DB_HOST') : 'localhost'); // Database host or server
+define('DB_USER', getenv('DB_USER') !== false ? getenv('DB_USER') : 'root'); // Database username
+define('DB_PASSWORD', getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : ''); // Database password
+define('DB_NAME', getenv('DB_NAME') !== false ? getenv('DB_NAME') : 'localhost3'); // Database schema name
 
 // SMTP settings for sending emails
 define('SMTP_HOST', 'smtp.example.com');

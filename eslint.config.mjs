@@ -3,7 +3,7 @@ import globals from "globals";
 
 export default [
   {
-    ignores: ["**/vendor/**", "**/node_modules/**", "**/.git/**"],
+    ignores: ["**/vendor/**", "**/node_modules/**", "**/.git/**", "root/public/assets/lib/**"],
   },
   js.configs.recommended,
   {

@@ -40,7 +40,6 @@ final class ViewEscapingTest extends TestCase
         $message = '<script>alert("xss")</script>';
 
         $output = $this->renderView('info', [
-            'profileData' => '',
             'systemMsg' => [
                 'systemMsg' => $message,
                 'hasProfile' => false,
@@ -56,10 +55,10 @@ final class ViewEscapingTest extends TestCase
         $totalAccounts = '<script>alert(1)</script>';
 
         $output = $this->renderView('accounts', [
-            'daysOptions' => '',
-            'cronOptions' => '',
-            'accountList' => '',
-            'calendarOverview' => '',
+            'daysOptions' => [],
+            'cronOptions' => [],
+            'accountList' => [],
+            'calendarOverview' => ['days' => [], 'schedule' => []],
             'userStats' => ['totalAccounts' => $totalAccounts],
         ]);
 

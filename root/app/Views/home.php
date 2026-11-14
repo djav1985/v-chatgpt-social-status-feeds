@@ -8,307 +8,139 @@
  * Version: 3.0.0
  *
  * File: home.php
- * Description: AI Social Status Generator
+ * Description: AI Social Status Generator dashboard.
  *
  * @var string $accountOwner Current account owner's username.
- * @var list<array{name: string, info: mixed, statuses: list<array<string, mixed>>, feedUrl: string}>
- *     $accountsData Account data for dashboard rendering.
+ * @var string $csrfToken CSRF token for status actions.
+ * @var list<array{name: string, info: mixed, statuses: list<array<string, mixed>>, feedUrl: string}> $accountsData
  */
 
+require __DIR__ . '/layouts/header.php';
 
+$accountOwner = (string) $accountOwner;
+$csrfToken = (string) $csrfToken;
 
-require 'partials/header.php';
 ?>
+<main class="page-body">
+    <div class="container-xl">
+        <div class="page-header">
+            <div class="page-pretitle">Status campaigns</div>
+            <h1 class="page-title">Recent statuses</h1>
+        </div>
 
-<main class="container">
-    <?php
-    $accountOwnerEsc = htmlspecialchars($accountOwner, ENT_QUOTES);
-
-    if (empty($accountsData)) {
-        echo '<div id="no-account" class="empty"><p class="empty-title">Please set up an account!</p></div>';
-    } else {
-        foreach ($accountsData as $index => $acct) :
-            $accountName = htmlspecialchars($acct['name'], ENT_QUOTES);
-            $acctInfo = $acct['info'];
-            $statuses = $acct['statuses'];
-            $feedUrl = htmlspecialchars($acct['feedUrl'], ENT_QUOTES);
-            $panelId = 'status-panel-' . $index;
-            $actionsId = 'account-actions-' . $index;
-            $hasStatuses = !empty($statuses);
-            $openDisplay = $hasStatuses ? 'flex' : 'block';
-            $isInitiallyOpen = $index === 0;
-            $panelDisplay = $isInitiallyOpen ? $openDisplay : 'none';
-            $buttonIcon = $isInitiallyOpen ? 'icon-arrow-up' : 'icon-arrow-right';
-            $accountActionDisplay = $isInitiallyOpen ? 'flex' : 'none';
-            ?>
-
-        <div class="status-container card">
-            <div class="status-header card-header">
-                <button
-                    class="collapse-button"
-                    type="button"
-                    onclick="toggleSection(this)"
-                    aria-expanded="<?php echo $isInitiallyOpen ? 'true' : 'false'; ?>"
-                    aria-controls="<?php echo $panelId; ?>"
-                    data-actions="<?php echo $actionsId; ?>"
-                    data-default-open="<?php echo $isInitiallyOpen ? 'true' : 'false'; ?>"
-                    data-account-name="<?php echo htmlspecialchars($accountName, ENT_QUOTES); ?>"
-                >
-                    <i class="icon <?php
-                    echo $buttonIcon ?>"></i>
-                </button>
-                <h3 class="status-campaign card-title">Status Campaign: #<?php
-                echo htmlspecialchars($accountName) ?></h3>
-            </div>
-
-            <?php
-            if (!empty($statuses)) : ?>
-                <div
-                    id="<?php echo $panelId; ?>"
-                    class="status-content columns"
-                    style="display: <?php echo $panelDisplay; ?>;"
-                    data-open-display="flex"
-                    aria-hidden="<?php echo $isInitiallyOpen ? 'false' : 'true'; ?>"
-                >
-                       <?php foreach ($statuses as $status) : ?>
-                            <?php if (!empty($status['status'])) : ?>
-                                <?php
-                                $statusImagePath = $status['status_image']
-                                    ? "images/{$accountOwnerEsc}/{$accountName}/{$status['status_image']}"
-                                    : 'assets/images/default.png';
-                                ?>
-                            <div class="status-wrapper column col-3 col-md-4 col-sm-6 col-xs-12">
-                                <div class="status-item card">
-                                    <img src="<?php echo htmlspecialchars($statusImagePath); ?>"
-                                        class="status-image img-responsive" loading="lazy">
-                                    <p class="status-text">
-                                        <?php echo htmlspecialchars($status['status']); ?>
-                                    </p>
-                                    <div class="status-meta">
-                                        <strong class="status-info">
-                                            <?php echo date('m/d/y g:ia', strtotime($status['created_at'])); ?>
-                                        </strong>
-                                        <?php echo $status['share_button']; ?>
+        <?php if ($accountsData === []) : ?>
+            <section class="card empty-state">
+                <div class="card-body">
+                    <h2 class="h3">Please set up an account</h2>
+                    <p class="text-secondary mb-0">Add a social account to begin managing status campaigns.</p>
+                </div>
+            </section>
+        <?php else : ?>
+            <div id="status-accordion" class="status-accordion">
+                <?php foreach ($accountsData as $index => $account) : ?>
+                    <?php
+                    $accountName = (string) $account['name'];
+                    $accountNameEsc = htmlspecialchars($accountName, ENT_QUOTES, 'UTF-8');
+                    $panelId = 'status-panel-' . (int) $index;
+                    $isInitiallyOpen = $index === 0;
+                    $statuses = $account['statuses'];
+                    ?>
+                    <section class="card status-campaign-card">
+                        <div class="card-header status-campaign-header">
+                            <button id="status-heading-<?php echo (int) $index; ?>"
+                                class="status-campaign-toggle<?php echo $isInitiallyOpen ? '' : ' collapsed'; ?>"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $panelId; ?>"
+                                aria-expanded="<?php echo $isInitiallyOpen ? 'true' : 'false'; ?>"
+                                aria-controls="<?php echo $panelId; ?>">
+                                <svg class="status-chevron" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="m9 18 6-6-6-6" />
+                                </svg>
+                                <span class="status-campaign-title">Status Campaign: #<?php echo $accountNameEsc; ?></span>
+                                <span class="badge bg-blue-lt"><?php echo count($statuses); ?> statuses</span>
+                            </button>
+                        </div>
+                        <div id="<?php echo $panelId; ?>"
+                            class="collapse status-panel<?php echo $isInitiallyOpen ? ' show' : ''; ?>"
+                            data-bs-parent="#status-accordion"
+                            data-account-name="<?php echo $accountNameEsc; ?>"
+                            aria-labelledby="status-heading-<?php echo (int) $index; ?>">
+                            <div class="card-body">
+                                <?php if ($statuses === []) : ?>
+                                    <div class="empty py-4">
+                                        <p class="empty-title">No statuses available</p>
                                     </div>
+                                <?php else : ?>
+                                    <div class="status-grid">
+                                        <?php foreach ($statuses as $status) : ?>
+                                            <?php
+                                            $statusText = (string) ($status['status'] ?? '');
+                                            if ($statusText === '') {
+                                                continue;
+                                            }
+                                            $createdAt = (string) ($status['created_at'] ?? '');
+                                            $createdTimestamp = strtotime($createdAt);
+                                            $displayDate = $createdTimestamp === false ? $createdAt : date('m/d/y g:ia', $createdTimestamp);
+                                            $statusImage = (string) ($status['display_image'] ?? '/assets/images/default.png');
+                                            $imageUrl = (string) ($status['image_url'] ?? $statusImage);
+                                            $statusId = (int) ($status['id'] ?? 0);
+                                            ?>
+                                            <article class="card status-item">
+                                                <img class="status-image" src="<?php echo htmlspecialchars($statusImage, ENT_QUOTES, 'UTF-8'); ?>"
+                                                    alt="" loading="lazy">
+                                                <div class="card-body">
+                                                    <p class="status-text"><?php echo htmlspecialchars($statusText, ENT_QUOTES, 'UTF-8'); ?></p>
+                                                    <time class="status-date" datetime="<?php echo htmlspecialchars($createdAt, ENT_QUOTES, 'UTF-8'); ?>">
+                                                        <?php echo htmlspecialchars($displayDate, ENT_QUOTES, 'UTF-8'); ?>
+                                                    </time>
+                                                </div>
+                                                <div class="card-footer status-actions">
+                                                    <button class="btn btn-primary status-icon-button copy-button" type="button"
+                                                        data-text="<?php echo htmlspecialchars($statusText, ENT_QUOTES, 'UTF-8'); ?>"
+                                                        data-url="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                                        aria-label="Copy status text and download image" title="Copy text and download image">
+                                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8V5a2 2 0 0 1 2-2h8l4 4v12a2 2 0 0 1-2 2h-2M14 3v5h5M4 8h10a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2Z" /></svg>
+                                                    </button>
+                                                    <button class="btn btn-success status-icon-button share-button" type="button"
+                                                        data-text="<?php echo htmlspecialchars($statusText, ENT_QUOTES, 'UTF-8'); ?>"
+                                                        data-url="<?php echo htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                                        aria-label="Share status" title="Share status">
+                                                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4m-6.6 7 6.6 4.4"/></svg>
+                                                    </button>
+                                                    <form class="delete-form" action="/home" method="post">
+                                                        <input type="hidden" name="account" value="<?php echo $accountNameEsc; ?>">
+                                                        <input type="hidden" name="username" value="<?php echo htmlspecialchars($accountOwner, ENT_QUOTES, 'UTF-8'); ?>">
+                                                        <input type="hidden" name="id" value="<?php echo $statusId; ?>">
+                                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                                        <button class="btn btn-danger status-icon-button" type="submit" name="delete_status"
+                                                            aria-label="Delete status" title="Delete status">
+                                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16m-10 4v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </article>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="campaign-actions">
+                                    <a class="btn btn-outline-primary" href="<?php echo htmlspecialchars((string) $account['feedUrl'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        View feed
+                                    </a>
+                                    <form action="/home" method="post" class="m-0">
+                                        <input type="hidden" name="account" value="<?php echo $accountNameEsc; ?>">
+                                        <input type="hidden" name="username" value="<?php echo htmlspecialchars($accountOwner, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <button type="submit" class="btn btn-success" name="generate_status">Generate Status</button>
+                                    </form>
                                 </div>
                             </div>
-                            <?php endif; ?>
-                       <?php endforeach; ?>
-                </div>
-                       <?php
-            else : ?>
-                <div
-                    id="<?php echo $panelId; ?>"
-                    class="status-content empty"
-                    style="display: <?php echo $panelDisplay; ?>;"
-                    data-open-display="block"
-                    aria-hidden="<?php echo $isInitiallyOpen ? 'false' : 'true'; ?>"
-                >
-                    <p class="empty-title">No statuses available.</p>
-                </div>
-                <?php
-            endif; ?>
-
-            <div
-                id="<?php echo $actionsId; ?>"
-                class="account-action-container"
-                style="display: <?php echo $accountActionDisplay; ?>;"
-                data-open-display="flex"
-                aria-hidden="<?php echo $isInitiallyOpen ? 'false' : 'true'; ?>"
-            >
-                <button class="view-feed-button btn btn-primary" onclick="location.href='<?php
-                echo $feedUrl ?>';">View Feed</button>
-                <form class="account-action-form" action="/home" method="POST">
-                    <input type="hidden" name="account" value="<?php
-                    echo htmlspecialchars($accountName, ENT_QUOTES) ?>">
-                    <input type="hidden" name="username" value="<?php echo $accountOwnerEsc ?>">
-                    <?php $csrfToken = App\Core\SessionManager::getInstance()->get('csrf_token'); ?>
-                    <input type="hidden" name="csrf_token"
-                        value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
-                    <button type="submit" class="generate-status-button btn btn-success"
-                        name="generate_status">Generate Status</button>
-                </form>
+                        </div>
+                    </section>
+                <?php endforeach; ?>
             </div>
-        </div>
-            <?php
-        endforeach;
-    }
-    ?>
+        <?php endif; ?>
+    </div>
 </main>
+<script defer src="/assets/js/status-page.js"></script>
+<?php require __DIR__ . '/layouts/footer.php'; ?>
 
-<script>
-    /**
-     * Toggles the visibility of the status content and account action container.
-     * Ensures only one section is open at a time.
-     * Saves the toggle state in localStorage.
-     * @param {HTMLElement|null} element - The element to show or hide.
-     * @param {boolean} shouldShow - Whether the element should be visible.
-     */
-    function setDisplayState(element, shouldShow) {
-        if (!element) return;
-
-        const openDisplay = element.dataset.openDisplay || 'block';
-        element.style.display = shouldShow ? openDisplay : 'none';
-        element.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-    }
-
-    /**
-     * Toggle the active status section for the selected account.
-     * @param {HTMLButtonElement} button - The collapse toggle button.
-     */
-    function toggleSection(button) {
-        const statusContainer = button.closest('.status-container');
-        if (!statusContainer) return;
-
-        const panelId = button.getAttribute('aria-controls');
-        const statusContent = document.getElementById(panelId);
-        const accountActionContainer = document.getElementById(button.dataset.actions);
-        if (!statusContent || !accountActionContainer) return;
-
-        const isCurrentlyOpen = button.getAttribute('aria-expanded') === 'true';
-
-        document.querySelectorAll('.collapse-button').forEach(btn => {
-            const isTargetButton = btn === button;
-            const shouldOpen = isTargetButton ? !isCurrentlyOpen : false;
-            btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-
-            const icon = btn.querySelector('i');
-            if (icon) {
-                icon.className = shouldOpen ? 'icon icon-arrow-up' : 'icon icon-arrow-right';
-            }
-
-            const content = document.getElementById(btn.getAttribute('aria-controls'));
-            const actions = document.getElementById(btn.dataset.actions);
-            setDisplayState(content, shouldOpen);
-            setDisplayState(actions, shouldOpen);
-        });
-
-        const accountName = button.dataset.accountName;
-        if (!isCurrentlyOpen) {
-            localStorage.setItem('openAccount', accountName);
-        } else {
-            localStorage.removeItem('openAccount');
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const storedAccount = localStorage.getItem('openAccount');
-        const buttons = document.querySelectorAll('.collapse-button');
-
-        buttons.forEach(button => {
-            const accountName = button.dataset.accountName;
-            const panel = document.getElementById(button.getAttribute('aria-controls'));
-            const actions = document.getElementById(button.dataset.actions);
-            const shouldOpen = storedAccount
-                ? storedAccount === accountName
-                : button.dataset.defaultOpen === 'true';
-
-            button.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-
-            const icon = button.querySelector('i');
-            if (icon) {
-                icon.className = shouldOpen ? 'icon icon-arrow-up' : 'icon icon-arrow-right';
-            }
-
-            setDisplayState(panel, shouldOpen);
-            setDisplayState(actions, shouldOpen);
-        });
-
-        document.querySelectorAll('.copy-button').forEach(button => {
-            button.addEventListener('click', async () => {
-                const text = button.getAttribute('data-text');
-                const imageUrl = button.getAttribute('data-url');
-
-                try {
-                    // Copy text to clipboard
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(text);
-                        showToast('Text copied to clipboard');
-                    } else {
-                        const tempTextarea = document.createElement('textarea');
-                        tempTextarea.value = text;
-                        document.body.appendChild(tempTextarea);
-                        tempTextarea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempTextarea);
-                        showToast('Text copied to clipboard (fallback)');
-                    }
-
-                    // Download image
-                    const response = await fetch(imageUrl, {
-                        mode: 'cors'
-                    });
-                    if (!response.ok) throw new Error('Image download failed');
-
-                    const blob = await response.blob();
-                    const blobUrl = URL.createObjectURL(blob);
-
-                    const a = document.createElement('a');
-                    a.href = blobUrl;
-                    a.download = 'image.png';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(blobUrl);
-
-                    console.log('Image downloaded successfully');
-                } catch (error) {
-                    console.error('Error:', error);
-                    showToast('Error copying or downloading.');
-                }
-            });
-        });
-
-        document.querySelectorAll('.share-button').forEach(button => {
-            button.addEventListener('click', async () => {
-                const text = button.getAttribute('data-text');
-                const imageUrl = button.getAttribute('data-url');
-
-                try {
-                    // Copy text to clipboard
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(text);
-                        showToast('Text copied to clipboard');
-                    } else {
-                        const tempTextarea = document.createElement('textarea');
-                        tempTextarea.value = text;
-                        document.body.appendChild(tempTextarea);
-                        tempTextarea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempTextarea);
-                        showToast('Text copied to clipboard (fallback)');
-                    }
-
-                    // Fetch image for sharing
-                    const response = await fetch(imageUrl, {
-                        mode: 'cors'
-                    });
-                    if (!response.ok) throw new Error('Image fetch failed');
-
-                    const blob = await response.blob();
-                    const file = new File([blob], 'image.png', {
-                        type: blob.type
-                    });
-
-                    const shareData = {
-                        text: text,
-                        files: [file]
-                    };
-
-                    // Share content if supported
-                    navigator.share && navigator.canShare && navigator.canShare(shareData)
-                        ? (await navigator.share(shareData),
-                            console.log('Content shared successfully'))
-                        : (console.log('Sharing not supported.'),
-                            showToast('Sharing not supported on this device.'));
-                } catch (error) {
-                    console.error('Error sharing:', error);
-                    showToast('Error occurred while sharing.');
-                }
-            });
-        });
-    });
-</script>
-
-<?php
- require 'partials/footer.php'; ?>

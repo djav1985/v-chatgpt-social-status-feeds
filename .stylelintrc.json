@@ -2,7 +2,7 @@
   "root": true,
   "extends": "stylelint-config-standard",
   "plugins": ["@stylistic/stylelint-plugin"],
-  "ignoreFiles": ["**/vendor/**", "**/node_modules/**"],
+  "ignoreFiles": ["**/vendor/**", "**/node_modules/**", "root/public/assets/lib/**"],
   "rules": {
     "@stylistic/indentation": 2,
     "color-hex-length": null,

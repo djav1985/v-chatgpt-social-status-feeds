@@ -41,11 +41,7 @@ class UsersController
         }
 
 
-        $userList = self::generateUserList();
-
-        return Response::view('users', [
-            'userList' => $userList,
-        ]);
+        return Response::view('users', ['users' => array_map(fn($user) => (array)$user, UserModel::getAllUsers())]);
     }
 
     /**
@@ -79,37 +75,6 @@ class UsersController
         }
 
         return Response::redirect('/users');
-    }
-
-    /**
-     * Generate the HTML list of all users for the admin panel.
-     *
-     * @return string Rendered list items
-     */
-    private static function generateUserList(): string
-    {
-        $users = UserModel::getAllUsers();
-        $output = '';
-        foreach ($users as $user) {
-            $user = (object)$user;
-            $dataAttributes  = "data-username=\"" . htmlspecialchars($user->username) . "\" ";
-            $dataAttributes .= "data-email=\"" . htmlspecialchars($user->email) . "\" ";
-            $dataAttributes .= "data-admin=\"" . htmlspecialchars($user->admin) . "\" ";
-            $dataAttributes .= "data-total-accounts=\"" . htmlspecialchars($user->total_accounts) . "\" ";
-            $dataAttributes .= "data-max-api-calls=\"" . htmlspecialchars($user->max_api_calls) . "\" ";
-            $dataAttributes .= "data-used-api-calls=\"" . htmlspecialchars($user->used_api_calls) . "\" ";
-            $dataAttributes .= "data-expires=\"" . htmlspecialchars($user->expires) . "\" ";
-
-            ob_start();
-            $viewData = [
-                'user' => $user,
-                'dataAttributes' => $dataAttributes,
-            ];
-            extract($viewData);
-            include __DIR__ . '/../Views/partials/user-list-item.php';
-            $output .= ob_get_clean();
-        }
-        return $output;
     }
 
     /**
@@ -156,6 +121,7 @@ class UsersController
             if (!empty($password) && (!$userExists || !password_verify($password, $userExists->password))) {
                 $password = password_hash($password, PASSWORD_DEFAULT);
             } elseif ($userExists) {
+                // An empty password on an existing account means keep its current hash.
                 $password = $userExists->password;
             }
             $isUpdate = $userExists !== null;

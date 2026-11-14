@@ -34,11 +34,9 @@ class InfoController
     {
         $this->captureRequest($request);
         $session = SessionManager::getInstance();
-        $profileData = self::generateProfileDataAttributes($session->get('username'));
         $systemMsg = self::buildSystemMessage($session->get('username'));
 
         return Response::view('info', [
-            'profileData' => $profileData,
             'systemMsg' => $systemMsg,
         ]);
     }
@@ -63,25 +61,6 @@ class InfoController
         }
 
         return Response::redirect('/info');
-    }
-
-    /**
-     * Build data attributes for the profile form from stored info.
-     *
-     * @param string $username Username to load data for
-     * @return string Attribute string
-     */
-    private static function generateProfileDataAttributes(string $username): string
-    {
-        $userInfo = UserModel::getUserInfo($username);
-        if ($userInfo) {
-            $data = "data-who=\"" . ValidationHelper::escapeOutput($userInfo->who) . "\" ";
-            $data .= "data-where=\"" . ValidationHelper::escapeOutput($userInfo->where) . "\" ";
-            $data .= "data-what=\"" . ValidationHelper::escapeOutput($userInfo->what) . "\" ";
-            $data .= "data-goal=\"" . ValidationHelper::escapeOutput($userInfo->goal) . "\"";
-            return $data;
-        }
-        return '';
     }
 
     /**

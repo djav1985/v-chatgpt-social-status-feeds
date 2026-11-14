@@ -66,7 +66,7 @@ final class SharedMessageHelperTest extends TestCase
         $this->assertSame($newMessage, $messages[1]);
     }
 
-    public function testDisplayAndClearMessagesOutputsJavaScript(): void
+    public function testGetAndClearMessagesReturnsQueuedMessagesAsData(): void
     {
         $message1 = 'Test message 1';
         $message2 = 'Test message 2';
@@ -74,55 +74,37 @@ final class SharedMessageHelperTest extends TestCase
         MessageHelper::addMessage($message1);
         MessageHelper::addMessage($message2);
 
-        ob_start();
-        MessageHelper::displayAndClearMessages();
-        $output = ob_get_clean();
-
-        $this->assertStringContainsString('<script>', $output);
-        $this->assertStringContainsString('showToast', $output);
-        $this->assertStringContainsString(json_encode($message1), $output);
-        $this->assertStringContainsString(json_encode($message2), $output);
+        self::assertSame([$message1, $message2], MessageHelper::getAndClearMessages());
     }
 
-    public function testDisplayAndClearMessagesClearsSession(): void
+    public function testGetAndClearMessagesClearsSession(): void
     {
         MessageHelper::addMessage('Test message');
 
         $this->assertNotEmpty($this->session->get('messages', []));
 
-        ob_start();
-        MessageHelper::displayAndClearMessages();
-        ob_end_clean();
+        self::assertSame(['Test message'], MessageHelper::getAndClearMessages());
 
         $messages = $this->session->get('messages', []);
         $this->assertIsArray($messages);
         $this->assertEmpty($messages);
     }
 
-    public function testDisplayAndClearMessagesWithNoMessages(): void
+    public function testGetAndClearMessagesWithNoMessages(): void
     {
         // Ensure no messages in session
         $this->session->set('messages', []);
 
-        ob_start();
-        MessageHelper::displayAndClearMessages();
-        $output = ob_get_clean();
-
-        $this->assertEmpty($output);
+        self::assertSame([], MessageHelper::getAndClearMessages());
     }
 
-    public function testDisplayAndClearMessagesHandlesSpecialCharacters(): void
+    public function testGetAndClearMessagesPreservesSpecialCharactersAsPlainText(): void
     {
         $message = 'Message with "quotes" and <html>';
 
         MessageHelper::addMessage($message);
 
-        ob_start();
-        MessageHelper::displayAndClearMessages();
-        $output = ob_get_clean();
-
-        // JSON encoding should escape special characters properly
-        $this->assertStringContainsString(json_encode($message), $output);
+        self::assertSame([$message], MessageHelper::getAndClearMessages());
     }
 
     public function testEmptyStringMessage(): void

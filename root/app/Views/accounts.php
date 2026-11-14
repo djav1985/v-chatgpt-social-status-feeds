@@ -1,191 +1,59 @@
 <?php
-
-/**
- * Project: SocialRSS
- * Author:  Vontainment <services@vontainment.com>
- * License: https://opensource.org/licenses/MIT MIT License
- * Link:    https://vontainment.com
- * Version: 3.0.0
- *
- * File: accounts.php
- * Description: AI Social Status Generator
- *
- * @var string $daysOptions Rendered day selection options.
- * @var string $cronOptions Rendered schedule selection options.
- * @var string $accountList Rendered account cards.
- * @var string $calendarOverview Rendered schedule overview.
- * @var array<string, mixed> $userStats Account and usage summary.
- */
-
-
-
-require 'partials/header.php';
+/** @var array<string, mixed> $userStats */
+require __DIR__ . '/layouts/header.php';
+$csrf = htmlspecialchars((string) App\Core\SessionManager::getInstance()->get('csrf_token', ''), ENT_QUOTES, 'UTF-8');
+$stats = $userStats ?? [];
 ?>
-
-<main class="container">
-    <div class="columns">
-        <!-- Account Management Section -->
-        <div class="account-left card column col-4 col-md-4 col-sm-12">
-            <div class="account-header card-header">
-                <h3 class="account-name card-title">Manage Accounts</h3>
-            </div>
-            <form class="form-group columns" action="/accounts" method="POST">
-                <!-- Account name input field -->
-                <label for="account">Account Name:</label>
-                <input class="form-input" type="text" name="account" id="account" required>
-
-                <!-- Platform selection dropdown -->
-                <label for="platform">Platform:</label>
-                <select class="form-select" name="platform" id="platform" required>
-                    <option value="facebook">Facebook</option>
-                    <option value="twitter">Twitter</option>
-                    <option value="instagram">Instagram</option>
-                    <option value="google-business">Google Business</option>
-                </select>
-                <!-- Prompt textarea -->
-                <label for="add-prompt">Prompt:</label>
-                <textarea class="form-input" rows="5" name="prompt" id="add-prompt" required>Create a compelling
-                    status update...</textarea>
-                <!-- Link input field -->
-                <label for="link">Link:</label>
-                <input class="form-input" type="url" name="link" id="link" required value="https://domain.com">
-                <!-- Days selection dropdown (multiple) -->
-                <label for="days">Days:</label>
-                <select class="form-select" name="days[]" id="days" multiple required>
-                    <?php echo $daysOptions; ?>
-                </select>
-                <!-- Post schedule selection dropdown (multiple) -->
-                <label for="cron">Post Schedule:</label>
-                <select class="form-select" name="cron[]" id="cron" multiple required>
-                    <?php echo $cronOptions; ?>
-                </select>
-                <!-- Hashtags inclusion dropdown -->
-                <label for="hashtags">Include Hashtags:</label>
-                <select class="form-select" name="hashtags" id="hashtags" required>
-                    <option value="0" selected>No</option>
-                    <option value="1">Yes</option>
-                </select>
-                <input type="hidden" name="csrf_token"
-                    value="<?php echo htmlspecialchars(
-                        App\Core\SessionManager::getInstance()->get('csrf_token'),
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ); ?>">
-                <button type="submit" class="btn btn-primary btn-lg" name="edit_account">Add/Update Account</button>
-            </form>
-            <?php
-                $stats = $userStats ?? [];
-                $totalAccounts = $stats['totalAccounts'] ?? 0;
-                $maxApiCallsLabel = $stats['maxApiCallsLabel'] ?? 'Off';
-                $usedApiCalls = $stats['usedApiCalls'] ?? 0;
-                $expiresLabel = $stats['expiresLabel'] ?? 'N/A';
-            ?>
-            <div class="card-body account-summary">
-                <h4>Account Summary</h4>
-                <ul class="account-summary-list">
-                    <li><strong>Total Accounts:</strong>
-                        <?php echo htmlspecialchars((string) $totalAccounts, ENT_QUOTES, 'UTF-8'); ?></li>
-                    <li><strong>Max API Calls:</strong>
-                        <?php echo htmlspecialchars((string) $maxApiCallsLabel, ENT_QUOTES, 'UTF-8'); ?></li>
-                    <li><strong>Used API Calls:</strong>
-                        <?php echo htmlspecialchars((string) $usedApiCalls, ENT_QUOTES, 'UTF-8'); ?></li>
-                    <li><strong>Expires:</strong>
-                        <?php echo htmlspecialchars((string) $expiresLabel, ENT_QUOTES, 'UTF-8'); ?></li>
-                </ul>
-            </div>
-        </div>
-        <!-- Account List Section -->
-        <div class="account-right card column col-8 col-md-8 col-sm-12">
-            <div class="account-header card-header">
-                <h3 class="account-name card-title">Account List</h3>
-            </div>
-            <div class="columns">
-                <?php echo $accountList; ?>
-            </div>
-        </div>
-</div>
-    <section class="calendar-overview">
-        <h3>Calendar Overview</h3>
-        <?php echo $calendarOverview; ?>
-    </section>
-</main>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const accountNameField = document.querySelector('#account');
-        const updateButtons = document.querySelectorAll('#update-button');
-        updateButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const promptField = document.querySelector('#add-prompt');
-                const linkField = document.querySelector('#link');
-                const hashtagsSelect = document.querySelector('#hashtags');
-                const cronField = document.querySelector('#cron');
-                const daysField = document.querySelector('#days');
-                const platformSelect = document.querySelector('#platform');
-
-                // Populate form fields with the selected account's data
-                accountNameField.value = this.dataset.accountName;
-                promptField.value = decodeURIComponent(this.dataset.prompt.replace(/\+/g, ' '));
-                linkField.value = decodeURIComponent(this.dataset.link.replace(/\+/g, ' '));
-                hashtagsSelect.value = this.dataset.hashtags;
-
-                // Clear previous selections
-                Array.from(cronField.options).forEach(option => {
-                    option.selected = false;
-                });
-                Array.from(daysField.options).forEach(option => {
-                    option.selected = false;
-                });
-
-                // Select the appropriate cron options
-                const selectedCronValues = this.dataset.cron?.split(',') || [];
-                if (selectedCronValues.length === 0 || selectedCronValues.includes('off')) {
-                    cronField.querySelector('option[value="off"]').selected = true;
-                } else {
-                    selectedCronValues.forEach(value => {
-                        const option = cronField.querySelector(`option[value="${value}"]`);
-                        if (option) option.selected = true;
-                    });
-                }
-
-                // Select the appropriate days options
-                const selectedDaysValues = this.dataset.days?.split(',') || [];
-                if (selectedDaysValues.length === 0 || selectedDaysValues.includes('everyday')) {
-                    daysField.querySelector('option[value="everyday"]').selected = true;
-                } else {
-                    selectedDaysValues.forEach(value => {
-                        const option = daysField.querySelector(`option[value="${value}"]`);
-                        if (option) option.selected = true;
-                    });
-                }
-
-                platformSelect.value = this.dataset.platform;
-                accountNameField.readOnly = true;
-            });
-        });
-
-        const accountForm = document.querySelector('form[action="/accounts"]');
-        accountForm.addEventListener('submit', function() {
-            accountNameField.readOnly = false;
-        });
-
-        document.querySelector('.account-right')?.addEventListener('click', event => {
-            event.target.id !== 'update-button' && (accountNameField.readOnly = false);
-        });
-
-        const daysField = document.querySelector('#days');
-        daysField.addEventListener('change', () => {
-            const selectedOptions = Array.from(daysField.selectedOptions).map(opt => opt.value);
-
-            // Ensure only 'everyday' or specific days are selected, not both
-            selectedOptions.includes('everyday')
-                ? Array.from(daysField.options).forEach(opt =>
-                    opt.value !== 'everyday' && (opt.selected = false))
-                : selectedOptions.length > 0 &&
-                    (daysField.querySelector('option[value="everyday"]').selected = false);
-        });
-    });
-</script>
-
-<?php
- require 'partials/footer.php'; ?>
+<main class="page-body"><div class="container-xl">
+  <div class="page-header"><div><div class="page-pretitle">Administration</div><h1 class="page-title">Accounts</h1></div></div>
+  <div class="row row-cards align-items-start">
+    <section class="col-12 col-lg-4"><div class="card"><div class="card-header"><h2 class="card-title">Manage accounts</h2></div><div class="card-body">
+      <form class="form-grid" action="/accounts" method="post">
+        <label for="account">Account name</label><input class="form-control" name="account" id="account" required>
+        <label for="platform">Platform</label><select class="form-select" name="platform" id="platform" required><?php foreach (['facebook' => 'Facebook','twitter' => 'Twitter','instagram' => 'Instagram','google-business' => 'Google Business'] as $value => $label) :
+            ?><option value="<?= htmlspecialchars($value, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></option><?php
+                                                                                                                 endforeach ?></select>
+        <label for="add-prompt">Prompt</label><textarea class="form-control" rows="4" name="prompt" id="add-prompt" required>Create a compelling status update...</textarea>
+        <label for="link">Link</label><input class="form-control" type="url" name="link" id="link" value="https://domain.com" required>
+        <label for="days">Days</label><select class="form-select" name="days[]" id="days" multiple required><?php foreach (($daysOptions ?? []) as $day) :
+            ?><option value="<?= htmlspecialchars($day, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars(ucfirst($day), ENT_QUOTES, 'UTF-8') ?></option><?php
+                                                                                                            endforeach ?></select>
+        <label for="cron">Post schedule</label><select class="form-select" name="cron[]" id="cron" multiple required><?php foreach (($cronOptions ?? []) as $option) :
+            ?><option value="<?= htmlspecialchars($option['value'], ENT_QUOTES, 'UTF-8') ?>"<?= $option['value'] === 'null' ? ' selected' : '' ?>><?= htmlspecialchars($option['label'], ENT_QUOTES, 'UTF-8') ?></option><?php
+                                                                                                                     endforeach ?></select>
+        <label for="hashtags">Include hashtags</label><select class="form-select" name="hashtags" id="hashtags"><option value="0" selected>No</option><option value="1">Yes</option></select>
+        <input type="hidden" name="csrf_token" value="<?= $csrf ?>"><button class="btn btn-success" name="edit_account">Add or update account</button>
+      </form></div><div class="card-footer"><strong>Summary</strong><ul class="mb-0"><li>Total accounts: <?= htmlspecialchars((string)($stats['totalAccounts'] ?? 0), ENT_QUOTES, 'UTF-8') ?></li><li>API calls: <?= htmlspecialchars((string)($stats['usedApiCalls'] ?? 0), ENT_QUOTES, 'UTF-8') ?> / <?= htmlspecialchars((string)($stats['maxApiCallsLabel'] ?? 'Off'), ENT_QUOTES, 'UTF-8') ?></li><li>Expires: <?= htmlspecialchars((string)($stats['expiresLabel'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></li></ul></div></div></section>
+    <section class="col-12 col-lg-8"><div class="card"><div class="card-header"><h2 class="card-title">Account list</h2></div><div class="card-body"><div class="row row-cards">
+      <?php foreach (($accountList ?? []) as $account) :
+            $name = (string)$account->account;
+            $days = explode(',', $account->days);
+            $cron = array_values(array_filter(explode(',', $account->cron), 'is_numeric'));
+            $times = $cron ? array_map(function ($v) {
+                $h = (int)$v;
+                return ($h % 12 ?: 12) . ' ' . ($h < 12 ? 'am' : 'pm');
+            }, $cron) : ['Off']; ?>
+      <div class="col-12 col-md-6"><article class="card h-100"><div class="card-body"><h3 class="h3">#<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></h3><p><strong>Prompt:</strong> <?= htmlspecialchars($account->prompt, ENT_QUOTES, 'UTF-8') ?></p><p><strong>Days:</strong> <?= htmlspecialchars(implode(', ', array_map('ucfirst', array_map('trim', $days))), ENT_QUOTES, 'UTF-8') ?></p><p><strong>Times:</strong> <?= htmlspecialchars(implode(', ', $times), ENT_QUOTES, 'UTF-8') ?></p><p class="text-break"><strong>Link:</strong> <a href="<?= htmlspecialchars($account->link, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($account->link, ENT_QUOTES, 'UTF-8') ?></a></p></div><div class="card-footer d-flex flex-wrap gap-2">
+      <button class="btn btn-primary account-update" type="button" data-account-name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" data-prompt="<?= htmlspecialchars($account->prompt, ENT_QUOTES, 'UTF-8') ?>" data-link="<?= htmlspecialchars($account->link, ENT_QUOTES, 'UTF-8') ?>" data-hashtags="<?= (int)$account->hashtags ?>" data-cron="<?= htmlspecialchars(implode(',', $cron), ENT_QUOTES, 'UTF-8') ?>" data-days="<?= htmlspecialchars(implode(',', array_map('trim', $days)), ENT_QUOTES, 'UTF-8') ?>" data-platform="<?= htmlspecialchars($account->platform, ENT_QUOTES, 'UTF-8') ?>">Update</button>
+      <form action="/accounts" method="post" class="m-0"><input type="hidden" name="account" value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="csrf_token" value="<?= $csrf ?>"><button class="btn btn-danger" name="delete_account">Delete</button></form></div></article></div>
+      <?php endforeach ?>
+      <?php if (empty($accountList)) :
+            ?><div class="col-12"><div class="empty"><p class="empty-title">No accounts yet</p></div></div><?php
+      endif ?>
+    </div></div></div></section>
+    <section class="col-12"><div class="card"><div class="card-header"><h2 class="card-title">Weekly schedule</h2></div><div class="card-body"><div class="calendar-grid">
+      <?php foreach (($calendarOverview['days'] ?? []) as $day) :
+            ?><section class="calendar-day"><h3><?= htmlspecialchars(ucfirst($day), ENT_QUOTES, 'UTF-8') ?></h3><?php foreach (['morning','afternoon','night'] as $slot) :
+    ?><div class="calendar-slot"><strong><?= htmlspecialchars(ucfirst($slot), ENT_QUOTES, 'UTF-8') ?></strong><?php $entries = $calendarOverview['schedule'][$day][$slot] ?? []; if (!$entries) :
+    ?><p class="text-secondary mb-1">—</p><?php
+    else :
+        ?><ul><?php foreach ($entries as $entry) :
+    ?><li><?= htmlspecialchars($entry['time'] . ': ' . $entry['account'], ENT_QUOTES, 'UTF-8') ?></li><?php
+        endforeach ?></ul><?php
+    endif ?></div><?php
+            endforeach ?></section><?php
+      endforeach ?>
+    </div></div></div></section>
+  </div>
+</div></main><script defer src="/assets/js/admin-forms.js"></script>
+<?php require __DIR__ . '/layouts/footer.php'; ?>
