@@ -2,7 +2,7 @@
 
 > A PHP application for generating, scheduling, and publishing social media status updates through RSS feeds.
 
-![Status dashboard with recent campaigns](./screenshots/status-home-desktop.png)
+![Status dashboard with recent campaigns](https://raw.githubusercontent.com/djav1985/v-chatgpt-social-status-feeds/main/screenshots/status-home-desktop.png)
 
 ## Table of Contents
 
@@ -96,15 +96,15 @@ Review the Docker configuration and replace example API and database settings be
 
 Sign in to the dashboard to create or update users. Use **My Info** to manage your profile.
 
-![User management page](./screenshots/status-users-desktop.png)
+![User management page](https://raw.githubusercontent.com/djav1985/v-chatgpt-social-status-feeds/main/screenshots/status-users-desktop.png)
 
-![My Info page](./screenshots/status-my-info-desktop.png)
+![My Info page](https://raw.githubusercontent.com/djav1985/v-chatgpt-social-status-feeds/main/screenshots/status-my-info-desktop.png)
 
 ### Social accounts
 
 Add a social account with its platform, prompt, link, image instructions, scheduled days and times, and hashtag preference.
 
-![Social account management page](./screenshots/status-accts-desktop.png)
+![Social account management page](https://raw.githubusercontent.com/djav1985/v-chatgpt-social-status-feeds/main/screenshots/status-accts-desktop.png)
 
 ### Publishing and generation
 
