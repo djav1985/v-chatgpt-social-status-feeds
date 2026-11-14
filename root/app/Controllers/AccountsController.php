@@ -267,6 +267,7 @@ class AccountsController
     /**
      * Create a new account or update an existing one for the current user.
      *
+     * @param array<string, mixed> $requestBody
      * @return void
      */
     private function createOrUpdateAccount(array $requestBody): void
@@ -410,6 +411,7 @@ class AccountsController
     /**
      * Delete an account owned by the current user.
      *
+     * @param array<string, mixed> $requestBody
      * @return void
      */
     private function deleteAccount(array $requestBody): void

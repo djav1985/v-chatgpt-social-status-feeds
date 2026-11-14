@@ -78,6 +78,7 @@ class UsersController
     /**
      * Create or update a user based on form input.
      *
+     * @param array<string, mixed> $requestBody
      * @return void
      */
     private function editUsers(array $requestBody): void
@@ -169,6 +170,7 @@ class UsersController
     /**
      * Delete a user account if not deleting oneself.
      *
+     * @param array<string, mixed> $requestBody
      * @return void
      */
     private function deleteUser(array $requestBody): void
@@ -191,6 +193,8 @@ class UsersController
     /**
      * Log in as another user for administrative impersonation.
      *
+     * @param array<string, mixed> $requestBody
+     * @param array<string, mixed> $serverParams
      * @return bool True when impersonation succeeded, otherwise false
      */
     private function loginAs(array $requestBody, array $serverParams): bool

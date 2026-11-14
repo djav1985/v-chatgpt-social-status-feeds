@@ -89,6 +89,7 @@ class InfoController
     /**
      * Validate and update the current user's password.
      *
+     * @param array<string, mixed> $requestBody
      * @return void
      */
     private function processPasswordChange(array $requestBody): void
@@ -129,6 +130,7 @@ class InfoController
     /**
      * Update the user's profile information from form submission.
      *
+     * @param array<string, mixed> $requestBody
      * @return void
      */
     private function processProfileUpdate(array $requestBody): void

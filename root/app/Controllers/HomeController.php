@@ -107,6 +107,7 @@ class HomeController
     /**
      * Delete a status entry and its associated image.
      *
+     * @param array<string, mixed> $requestBody
      * @return void
      */
     private function deleteStatus(array $requestBody): void
@@ -151,6 +152,7 @@ class HomeController
     /**
      * Generate a new status for an account using the StatusService.
      *
+     * @param array<string, mixed> $requestBody
      * @return void
      */
     private function generateStatus(array $requestBody): void
