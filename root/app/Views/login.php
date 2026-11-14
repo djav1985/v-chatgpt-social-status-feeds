@@ -34,10 +34,21 @@ $csrfToken = (string) App\Core\SessionManager::getInstance()->get('csrf_token', 
                 <img class="login-logo" src="/assets/images/logo.png" alt="Vontainment">
                 <h1 id="login-title" class="h2 text-center">Admin sign in</h1>
                 <form action="/login" method="post">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>"
+                    >
                     <div class="mb-3">
                         <label class="form-label" for="username">Username</label>
-                        <input class="form-control" id="username" type="text" name="username" autocomplete="username" required>
+                        <input
+                            class="form-control"
+                            id="username"
+                            type="text"
+                            name="username"
+                            autocomplete="username"
+                            required
+                        >
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="password">Password</label>

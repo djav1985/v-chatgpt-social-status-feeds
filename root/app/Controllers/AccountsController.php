@@ -74,7 +74,10 @@ class AccountsController
     /**
      * Build structured schedule data for the accounts view.
      *
-     * @return array{days: list<string>, schedule: array<string, array<string, list<array{hour: int, account: string, time: string}>>>}
+     * @return array{
+     *     days: list<string>,
+     *     schedule: array<string, array<string, list<array{hour: int, account: string, time: string}>>>
+     * }
      */
     private static function generateCalendarOverview(): array
     {
@@ -101,7 +104,11 @@ class AccountsController
                 foreach ($accountDays as $day) {
                     $day = strtolower($day);
                     if (isset($overview[$day][$slot])) {
-                        $overview[$day][$slot][] = ['hour' => $hour, 'account' => $acct->account, 'time' => self::formatHour($hour)];
+                        $overview[$day][$slot][] = [
+                            'hour' => $hour,
+                            'account' => $acct->account,
+                            'time' => self::formatHour($hour),
+                        ];
                     }
                 }
             }

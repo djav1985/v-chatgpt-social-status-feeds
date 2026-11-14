@@ -15,8 +15,12 @@
     </div>
     <footer class="admin-footer">
         <div class="container-xl">
-            <p>&copy; <?php echo date('Y'); ?> <a href="https://vontainment.com">Vontainment.com</a>
-                All Rights Reserved | Current Time: <?php echo htmlspecialchars(date('g:i:s a T'), ENT_QUOTES, 'UTF-8'); ?></p>
+            <p>
+                &copy; <?php echo date('Y'); ?>
+                <a href="https://vontainment.com">Vontainment.com</a>
+                All Rights Reserved | Current Time:
+                <?php echo htmlspecialchars(date('g:i:s a T'), ENT_QUOTES, 'UTF-8'); ?>
+            </p>
         </div>
     </footer>
     <?php require __DIR__ . '/flash-messages.php'; ?>
