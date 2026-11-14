@@ -58,12 +58,23 @@ $activeSectionEsc = htmlspecialchars($activeSection, ENT_QUOTES, 'UTF-8');
                     >
                     <button id="logout" class="btn btn-logout" type="submit" name="logout">Logout</button>
                 </form>
-                <button class="mobile-menu-toggle" type="button"
-                    data-menu-section="<?php echo htmlspecialchars($activeSection, ENT_QUOTES, 'UTF-8'); ?>"
-                    aria-label="Open <?php echo htmlspecialchars($activeSection, ENT_QUOTES, 'UTF-8'); ?> navigation menu"
-                    aria-expanded="false" aria-controls="admin-nav-links" hidden>
+                <button
+                    class="mobile-menu-toggle"
+                    type="button"
+                    data-menu-section="<?php echo $activeSectionEsc; ?>"
+                    aria-label="Open <?php echo $activeSectionEsc; ?> navigation menu"
+                    aria-expanded="false"
+                    aria-controls="admin-nav-links"
+                    hidden
+                >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path
+                            d="M4 6h16M4 12h16M4 18h16"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                        />
                     </svg>
                 </button>
             </div>
