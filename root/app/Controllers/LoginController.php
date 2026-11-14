@@ -78,7 +78,12 @@ class LoginController
         if ($userInfo) {
             $session->set('logged_in', true);
             $session->set('username', $userInfo->username);
-            $session->set('user_agent', is_string($serverParams['HTTP_USER_AGENT'] ?? null) ? $serverParams['HTTP_USER_AGENT'] : '');
+            $session->set(
+                'user_agent',
+                is_string($serverParams['HTTP_USER_AGENT'] ?? null)
+                    ? $serverParams['HTTP_USER_AGENT']
+                    : ''
+            );
             $session->set('csrf_token', bin2hex(\App\Helpers\EncryptionHelper::bytes(32)));
             $session->set('is_admin', $userInfo->admin);
             $session->set('timeout', time());

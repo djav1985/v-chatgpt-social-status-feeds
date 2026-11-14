@@ -6,7 +6,7 @@
   --tblr-primary: var(--brand-green);
   --tblr-primary-rgb: 102, 204, 51;
   --tblr-secondary: var(--brand-blue);
-  --tblr-body-font-family: Arial, sans-serif;
+  --tblr-body-font-family: arial, sans-serif;
   --tblr-body-bg: #f5f7fa;
   --tblr-body-color: var(--brand-slate);
 }

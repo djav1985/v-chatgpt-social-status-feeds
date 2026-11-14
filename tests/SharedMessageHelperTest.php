@@ -66,7 +66,7 @@ final class SharedMessageHelperTest extends TestCase
         $this->assertSame($newMessage, $messages[1]);
     }
 
-    public function testGetAndClearMessagesReturnsQueuedMessagesAsData(): void
+    public function testDisplayAndClearMessagesRendersQueuedToastsAndClearsSession(): void
     {
         $message1 = 'Test message 1';
         $message2 = 'Test message 2';
@@ -74,37 +74,38 @@ final class SharedMessageHelperTest extends TestCase
         MessageHelper::addMessage($message1);
         MessageHelper::addMessage($message2);
 
-        self::assertSame([$message1, $message2], MessageHelper::getAndClearMessages());
+        ob_start();
+        MessageHelper::displayAndClearMessages();
+        $output = (string) ob_get_clean();
+
+        self::assertStringContainsString('showToast("Test message 1", "info")', $output);
+        self::assertStringContainsString('showToast("Test message 2", "info")', $output);
+        self::assertSame([], $this->session->get('messages', []));
     }
 
-    public function testGetAndClearMessagesClearsSession(): void
-    {
-        MessageHelper::addMessage('Test message');
-
-        $this->assertNotEmpty($this->session->get('messages', []));
-
-        self::assertSame(['Test message'], MessageHelper::getAndClearMessages());
-
-        $messages = $this->session->get('messages', []);
-        $this->assertIsArray($messages);
-        $this->assertEmpty($messages);
-    }
-
-    public function testGetAndClearMessagesWithNoMessages(): void
-    {
-        // Ensure no messages in session
-        $this->session->set('messages', []);
-
-        self::assertSame([], MessageHelper::getAndClearMessages());
-    }
-
-    public function testGetAndClearMessagesPreservesSpecialCharactersAsPlainText(): void
+    public function testDisplayAndClearMessagesEscapesSpecialCharactersInFallback(): void
     {
         $message = 'Message with "quotes" and <html>';
-
         MessageHelper::addMessage($message);
 
-        self::assertSame([$message], MessageHelper::getAndClearMessages());
+        ob_start();
+        MessageHelper::displayAndClearMessages();
+        $output = (string) ob_get_clean();
+
+        self::assertStringContainsString(
+            'Message with &quot;quotes&quot; and &lt;html&gt;',
+            $output
+        );
+        self::assertSame([], $this->session->get('messages', []));
+    }
+
+    public function testDisplayAndClearMessagesOutputsNothingWhenQueueIsEmpty(): void
+    {
+        ob_start();
+        MessageHelper::displayAndClearMessages();
+        $output = (string) ob_get_clean();
+
+        self::assertSame('', $output);
     }
 
     public function testEmptyStringMessage(): void
