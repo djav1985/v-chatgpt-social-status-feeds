@@ -133,35 +133,36 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fa;color:var(--
   .admin-nav-wrap.mobile-nav-ready {
     position: relative;
     z-index: 20;
-    background: #fff;
-    box-shadow: 0 2px 8px rgb(75 81 97 / 18%);
+    height: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .admin-header .desktop-logout {
     display: none;
   }
 
+  .admin-header-actions {
+    align-items: center;
+  }
+
   .mobile-menu-toggle {
     display: flex;
-    width: 100%;
-    min-height: 3rem;
+    width: 2.75rem;
+    height: 2.75rem;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     border: 1px solid #dce2e9;
     border-radius: 0.25rem;
     background: #fff;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem;
     color: #182433;
   }
 
   .mobile-menu-toggle svg {
     width: 1.25rem;
     height: 1.25rem;
-    transition: transform 180ms ease;
-  }
-
-  .mobile-menu-toggle[aria-expanded="true"] .mobile-menu-chevron {
-    transform: rotate(180deg);
+    flex: none;
   }
 
   .mobile-nav-logout {
@@ -176,17 +177,25 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fa;color:var(--
   }
 
   .admin-nav-wrap.mobile-nav-ready .admin-nav {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     max-height: 0;
     overflow: hidden;
     opacity: 0;
     visibility: hidden;
+    background: #fff;
+    box-shadow: 0 6px 14px rgb(75 81 97 / 20%);
     transition: max-height 240ms ease, opacity 180ms ease, visibility 0s linear 240ms;
   }
 
   .admin-nav-wrap.mobile-nav-ready.is-open .admin-nav {
-    max-height: 24rem;
+    max-height: min(80vh, 32rem);
+    overflow-y: auto;
     opacity: 1;
     visibility: visible;
     transition-delay: 0s;
@@ -195,6 +204,16 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fa;color:var(--
   .admin-nav-wrap.mobile-nav-ready .admin-nav .nav-link {
     padding: 0.75rem 0.5rem;
     text-align: left;
+  }
+
+  .admin-nav-wrap.mobile-nav-ready .container-xl {
+    max-width: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .admin-nav-wrap.mobile-nav-ready .admin-nav {
+    padding: 0 1rem;
   }
 }
 

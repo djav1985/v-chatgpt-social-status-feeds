@@ -87,6 +87,8 @@ class ValidationHelper
 
         if ($password === '') {
             $errors[] = 'Password is required.';
+        } elseif (strlen($password) < 5) {
+            $errors[] = 'Password must be at least 5 characters long.';
         }
 
         // Optionally enforce username format for login attempts (same as creation rules)

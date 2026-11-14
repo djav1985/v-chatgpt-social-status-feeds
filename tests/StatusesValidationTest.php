@@ -256,6 +256,11 @@ class StatusesValidationTest extends TestCase
      */
     public function testValidateLogin(): void
     {
+        $this->assertEmpty(ValidationHelper::validateLogin([
+            'username' => 'admin',
+            'password' => 'admin'
+        ]));
+
         // Valid login
         $this->assertEmpty(ValidationHelper::validateLogin([
             'username' => 'testuser',
