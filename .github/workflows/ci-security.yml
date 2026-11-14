@@ -37,6 +37,8 @@ jobs:
           cache: npm
       - name: Install Node dependencies
         run: npm ci
+      - name: JavaScript interaction tests
+        run: npm run test:js
       # PHP coding standard
       - name: PHPCS
         run: composer phpcs
@@ -104,47 +106,3 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
-
-  # ---------- PR auto-fix ----------
-  lint-fix:
-    name: Lint and auto-fix PR
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref }}
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-      - name: Install PHP dependencies
-        run: composer install --no-interaction --prefer-dist
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - name: Install Node dependencies
-        run: npm ci
-      - name: PHPCBF
-        run: composer phpcbf || true
-      - name: ESLint Fix
-        run: node node_modules/eslint/bin/eslint.js 'root/public/assets/js/**/*.js' --ignore-pattern 'root/vendor/**' --fix || true
-      - name: Stylelint Fix
-        run: node node_modules/stylelint/bin/stylelint.mjs 'root/public/assets/css/**/*.css' --ignore-pattern 'root/vendor/**' --fix || true
-      - name: Commit fixes to PR branch
-        continue-on-error: true
-        run: |
-          git config core.filemode false
-          git add -A
-          if [ -n "$(git status --porcelain)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "chore: auto-lint fixes"
-            git push origin HEAD:${{ github.head_ref }}
-          else
-            echo "No changes to commit."
-          fi
