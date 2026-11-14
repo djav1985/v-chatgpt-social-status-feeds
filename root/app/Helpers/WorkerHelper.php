@@ -51,6 +51,11 @@ class WorkerHelper
             return false;
         }
 
+        // POSIX pid_t is signed 32-bit on supported systems; reject values that would overflow it.
+        if ($pid > 2147483647) {
+            return false;
+        }
+
         // Use posix_kill if available for better accuracy
         if (function_exists('posix_kill')) {
             return @\posix_kill($pid, 0);

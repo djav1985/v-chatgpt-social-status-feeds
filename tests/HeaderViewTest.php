@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 
 final class HeaderViewTest extends TestCase
 {
-    public function testMobileMenuToggleNamesTheActiveSectionAndShowsAnExpandIndicator(): void
+    public function testMobileMenuToggleNamesTheActiveSectionAndShowsAHamburgerIcon(): void
     {
         $sessionWasActive = session_status() === PHP_SESSION_ACTIVE;
         $originalSession = $_SESSION ?? [];
@@ -45,7 +45,8 @@ final class HeaderViewTest extends TestCase
         self::assertStringContainsString('data-menu-section="Accts"', $output);
         self::assertStringContainsString('Open Accts navigation menu', $output);
         self::assertStringContainsString('aria-expanded="false"', $output);
-        self::assertStringContainsString('class="mobile-menu-chevron"', $output);
-        self::assertStringContainsString('>Accts</span>', $output);
+        self::assertStringContainsString('class="mobile-menu-toggle"', $output);
+        self::assertStringContainsString('M4 6h16M4 12h16M4 18h16', $output);
+        self::assertStringNotContainsString('mobile-menu-chevron', $output);
     }
 }
