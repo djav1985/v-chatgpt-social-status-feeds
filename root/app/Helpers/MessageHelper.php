@@ -34,19 +34,26 @@ class MessageHelper
     }
 
     /**
-     * Retrieve queued flash messages as plain data and clear the queue.
+     * Output queued messages as toasts with a no-JavaScript fallback, then clear them.
      *
-     * @return list<string>
+     * @return void
      */
-    public static function getAndClearMessages(): array
+    public static function displayAndClearMessages(): void
     {
         $messages = SessionManager::getInstance()->get('messages');
-        SessionManager::getInstance()->set('messages', []);
-
-        if (!is_array($messages)) {
-            return [];
+        if (is_array($messages) && !empty($messages)) {
+            foreach ($messages as $message) {
+                $message = (string) $message;
+                $jsonMessage = json_encode($message, JSON_INVALID_UTF8_SUBSTITUTE);
+                $safeJsonMessage = str_ireplace('</script', '<\\/script', (string) $jsonMessage);
+                echo '<script>document.addEventListener("DOMContentLoaded", function () {' .
+                    'showToast(' . $safeJsonMessage . ', "info");' .
+                    '});</script>';
+                echo '<noscript><div class="alert alert-info flash-fallback" role="status">' .
+                    htmlspecialchars($message, ENT_QUOTES, 'UTF-8') .
+                    '</div></noscript>';
+            }
+            SessionManager::getInstance()->set('messages', []);
         }
-
-        return array_values(array_filter($messages, 'is_string'));
     }
 }

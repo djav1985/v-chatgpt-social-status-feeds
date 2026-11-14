@@ -25,8 +25,6 @@ use App\Services\QueueService;
 
 class AccountsController
 {
-    use RequestContext;
-
     /**
      * Show the accounts management page with schedule overview.
      *
@@ -34,7 +32,6 @@ class AccountsController
      */
     public function handleRequest(ServerRequestInterface $request): Response
     {
-        $this->captureRequest($request);
         $daysOptions = self::generateDaysOptions();
         $cronOptions = self::generateCronOptions();
         $accountList = self::generateAccountList();
@@ -57,14 +54,15 @@ class AccountsController
      */
     public function handleSubmission(ServerRequestInterface $request): Response
     {
-        $this->captureRequest($request);
-        if (isset($this->requestBody['edit_account'])) {
-            $this->createOrUpdateAccount();
+        $requestBody = $request->getParsedBody();
+        $requestBody = is_array($requestBody) ? $requestBody : [];
+        if (isset($requestBody['edit_account'])) {
+            $this->createOrUpdateAccount($requestBody);
             return Response::redirect('/accounts');
         }
 
-        if (isset($this->requestBody['delete_account'])) {
-            $this->deleteAccount();
+        if (isset($requestBody['delete_account'])) {
+            $this->deleteAccount($requestBody);
             return Response::redirect('/accounts');
         }
 
@@ -271,37 +269,37 @@ class AccountsController
      *
      * @return void
      */
-    private function createOrUpdateAccount(): void
+    private function createOrUpdateAccount(array $requestBody): void
     {
         $session = SessionManager::getInstance();
         $accountOwner = $session->get('username');
         // Fix: Handle space-to-dash conversion and use alphanumeric-dash mode
-        $rawAccountName = $this->requestBody['account'] ?? '';
+        $rawAccountName = $requestBody['account'] ?? '';
         $normalizedAccountName = str_replace(' ', '-', $rawAccountName);
         $accountName = ValidationHelper::sanitizeString($normalizedAccountName, 'alphanumeric-dash');
         // Preserve spaces and punctuation in the user-authored prompt.
-        $prompt = trim((string) ($this->requestBody['prompt'] ?? ''));
-        $platform = ValidationHelper::sanitizeString($this->requestBody['platform'] ?? '');
+        $prompt = trim((string) ($requestBody['prompt'] ?? ''));
+        $platform = ValidationHelper::sanitizeString($requestBody['platform'] ?? '');
         // Fix: Handle null return from validateInteger
-        $hashtags = ValidationHelper::validateInteger($this->requestBody['hashtags'] ?? 0);
+        $hashtags = ValidationHelper::validateInteger($requestBody['hashtags'] ?? 0);
         if ($hashtags === null) {
             $hashtags = 0;
             MessageHelper::addMessage('Invalid hashtags value supplied. Defaulting to 0.');
         }
         // URLs contain punctuation that the generic sanitizer would strip.
-        $link = trim((string) ($this->requestBody['link'] ?? ''));
+        $link = trim((string) ($requestBody['link'] ?? ''));
 
         // Validate cron array and process if valid
-        $cronErrors = ValidationHelper::validateCronArray($this->requestBody['cron'] ?? []);
+        $cronErrors = ValidationHelper::validateCronArray($requestBody['cron'] ?? []);
         foreach ($cronErrors as $err) {
             MessageHelper::addMessage($err);
         }
 
         // Process cron hours into comma-separated string
         $cron = 'null';
-        if (empty($cronErrors) && isset($this->requestBody['cron']) && is_array($this->requestBody['cron'])) {
+        if (empty($cronErrors) && isset($requestBody['cron']) && is_array($requestBody['cron'])) {
             $hours = [];
-            foreach ($this->requestBody['cron'] as $hour) {
+            foreach ($requestBody['cron'] as $hour) {
                 if ($hour === 'null') {
                     continue;
                 }
@@ -315,20 +313,20 @@ class AccountsController
         }
 
         // Validate days array and process if valid
-        $daysErrors = ValidationHelper::validateDaysArray($this->requestBody['days'] ?? []);
+        $daysErrors = ValidationHelper::validateDaysArray($requestBody['days'] ?? []);
         foreach ($daysErrors as $err) {
             MessageHelper::addMessage($err);
         }
 
         // Process days into comma-separated string or 'everyday'
         $days = '';
-        if (empty($daysErrors) && isset($this->requestBody['days'])) {
-            if ($this->requestBody['days'] === 'everyday') {
+        if (empty($daysErrors) && isset($requestBody['days'])) {
+            if ($requestBody['days'] === 'everyday') {
                 $days = 'everyday';
-            } elseif (is_array($this->requestBody['days'])) {
-                $days = (count($this->requestBody['days']) === 1 && $this->requestBody['days'][0] === 'everyday')
+            } elseif (is_array($requestBody['days'])) {
+                $days = (count($requestBody['days']) === 1 && $requestBody['days'][0] === 'everyday')
                     ? 'everyday'
-                    : implode(',', $this->requestBody['days']);
+                    : implode(',', $requestBody['days']);
             }
         }
 
@@ -343,8 +341,8 @@ class AccountsController
         $accountValidationErrors = ValidationHelper::validateAccount([
             'accountName' => $accountName,
             'link' => $link,
-            'cronArr' => isset($this->requestBody['cron']) && is_array($this->requestBody['cron'])
-                ? $this->requestBody['cron']
+            'cronArr' => isset($requestBody['cron']) && is_array($requestBody['cron'])
+                ? $requestBody['cron']
                 : [],
         ]);
 
@@ -414,10 +412,10 @@ class AccountsController
      *
      * @return void
      */
-    private function deleteAccount(): void
+    private function deleteAccount(array $requestBody): void
     {
         $session = SessionManager::getInstance();
-        $accountName = ValidationHelper::sanitizeString($this->requestBody['account'] ?? '', 'alphanumeric-dash');
+        $accountName = ValidationHelper::sanitizeString($requestBody['account'] ?? '', 'alphanumeric-dash');
         $accountOwner = $session->get('username');
         try {
             AccountModel::deleteAccount($accountOwner, $accountName);

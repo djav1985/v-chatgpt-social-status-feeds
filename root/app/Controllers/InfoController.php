@@ -23,8 +23,6 @@ use App\Helpers\ValidationHelper;
 
 class InfoController
 {
-    use RequestContext;
-
     /**
      * Display user profile information and system message.
      *
@@ -32,7 +30,6 @@ class InfoController
      */
     public function handleRequest(ServerRequestInterface $request): Response
     {
-        $this->captureRequest($request);
         $session = SessionManager::getInstance();
         $systemMsg = self::buildSystemMessage($session->get('username'));
 
@@ -48,15 +45,15 @@ class InfoController
      */
     public function handleSubmission(ServerRequestInterface $request): Response
     {
-        $this->captureRequest($request);
-        $session = SessionManager::getInstance();
-        if (isset($this->requestBody['change_password'])) {
-            $this->processPasswordChange();
+        $requestBody = $request->getParsedBody();
+        $requestBody = is_array($requestBody) ? $requestBody : [];
+        if (isset($requestBody['change_password'])) {
+            $this->processPasswordChange($requestBody);
             return Response::redirect('/info');
         }
 
-        if (isset($this->requestBody['update_profile'])) {
-            $this->processProfileUpdate();
+        if (isset($requestBody['update_profile'])) {
+            $this->processProfileUpdate($requestBody);
             return Response::redirect('/info');
         }
 
@@ -94,13 +91,13 @@ class InfoController
      *
      * @return void
      */
-    private function processPasswordChange(): void
+    private function processPasswordChange(array $requestBody): void
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
         // Fix: Don't sanitize passwords - only cast to string
-        $password = (string) ($this->requestBody['password'] ?? '');
-        $password2 = (string) ($this->requestBody['password2'] ?? '');
+        $password = (string) ($requestBody['password'] ?? '');
+        $password2 = (string) ($requestBody['password2'] ?? '');
 
         if ($password !== $password2) {
             MessageHelper::addMessage('Passwords do not match. Please try again.');
@@ -134,14 +131,14 @@ class InfoController
      *
      * @return void
      */
-    private function processProfileUpdate(): void
+    private function processProfileUpdate(array $requestBody): void
     {
         $session = SessionManager::getInstance();
         $username = $session->get('username');
-        $who = ValidationHelper::sanitizeString($this->requestBody['who'] ?? '', 'text');
-        $where = ValidationHelper::sanitizeString($this->requestBody['where'] ?? '', 'text');
-        $what = ValidationHelper::sanitizeString($this->requestBody['what'] ?? '', 'text');
-        $goal = ValidationHelper::sanitizeString($this->requestBody['goal'] ?? '', 'text');
+        $who = ValidationHelper::sanitizeString($requestBody['who'] ?? '', 'text');
+        $where = ValidationHelper::sanitizeString($requestBody['where'] ?? '', 'text');
+        $what = ValidationHelper::sanitizeString($requestBody['what'] ?? '', 'text');
+        $goal = ValidationHelper::sanitizeString($requestBody['goal'] ?? '', 'text');
 
         if (empty($who) || empty($where) || empty($what) || empty($goal)) {
             MessageHelper::addMessage('All fields are required.');

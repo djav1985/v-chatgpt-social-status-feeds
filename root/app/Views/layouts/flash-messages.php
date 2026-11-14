@@ -1,13 +1,7 @@
-<?php
-
-/** @var list<string> $flashMessages */
-$flashMessages = App\Helpers\MessageHelper::getAndClearMessages();
-?>
-<div id="notification-stack" class="app-toast-stack" aria-live="polite" aria-relevant="additions text">
-    <?php foreach ($flashMessages as $flashMessage) : ?>
-        <div class="alert alert-info app-toast" role="status">
-            <span><?php echo htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8'); ?></span>
-            <button class="btn-close" type="button" data-toast-dismiss aria-label="Dismiss notification"></button>
-        </div>
-    <?php endforeach; ?>
-</div>
+<div
+    id="toast-container"
+    class="toast-container position-fixed bottom-0 end-0 p-3"
+    aria-live="polite"
+    aria-atomic="false"
+></div>
+<?php App\Helpers\MessageHelper::displayAndClearMessages(); ?>

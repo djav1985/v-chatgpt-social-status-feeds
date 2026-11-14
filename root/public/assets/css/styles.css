@@ -4,7 +4,7 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fa;color:var(--
 @media(max-width:767.98px){.container-xl{padding-left:1rem;padding-right:1rem}.admin-header .container-xl{padding-top:.5rem;padding-bottom:.5rem}.page-body{padding-top:1rem}.calendar-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr))}.status-campaign-toggle{gap:.45rem;padding:.7rem}.campaign-actions>*{flex:1 1 auto}.admin-footer{position:static}}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
-.app-toast-stack{position:fixed;right:1rem;bottom:1rem;z-index:1100;width:min(24rem,calc(100vw - 2rem));display:grid;gap:.5rem}.app-toast{position:relative;margin:0;padding-right:3rem;box-shadow:0 8px 24px #1824332a;overflow-wrap:anywhere;transition:opacity .18s ease,transform .18s ease}.app-toast.is-entering{opacity:0;transform:translateY(.5rem)}.app-toast.is-dismissing{opacity:0;transform:translateY(.5rem)}
+.toast-container{z-index:1100;width:min(24rem,calc(100vw - 2rem))}.toast-container .toast{display:block;border-left:4px solid var(--brand-blue);box-shadow:0 0.5rem 1.5rem rgb(32 41 54 / 18%);opacity:0;transform:translateY(-.5rem);transition:opacity 180ms ease,transform 180ms ease}.toast-container .toast.show{opacity:1;transform:translateY(0)}.toast-container .toast-success{border-left-color:var(--brand-green)}.toast-container .toast-error{border-left-color:#dc3545}.flash-fallback{margin:0 0 .75rem}
 
 /* stylelint-disable no-duplicate-selectors */
 /* Keep the status app's navigation consistent with the updater admin. */

@@ -24,8 +24,6 @@ use App\Helpers\ValidationHelper;
 
 class LoginController
 {
-    use RequestContext;
-
     /**
      * Show the login form when the user is not already authenticated.
      *
@@ -33,7 +31,6 @@ class LoginController
      */
     public function handleRequest(ServerRequestInterface $request): Response
     {
-        $this->captureRequest($request);
         $session = SessionManager::getInstance();
         if ($session->get('logged_in') === true) {
             return Response::redirect('/');
@@ -49,22 +46,24 @@ class LoginController
      */
     public function handleSubmission(ServerRequestInterface $request): Response
     {
-        $this->captureRequest($request);
+        $requestBody = $request->getParsedBody();
+        $requestBody = is_array($requestBody) ? $requestBody : [];
+        $serverParams = $request->getServerParams();
         $session = SessionManager::getInstance();
 
         // Redirect already-logged-in users away from login form
-        if ($session->get('logged_in') === true && !isset($this->requestBody['logout'])) {
+        if ($session->get('logged_in') === true && !isset($requestBody['logout'])) {
             return Response::redirect('/');
         }
 
         // Handle logout
-        if ($session->get('logged_in') === true && isset($this->requestBody['logout'])) {
+        if ($session->get('logged_in') === true && isset($requestBody['logout'])) {
             return self::logoutUser();
         }
 
         // Sanitize and validate input
-        $username = trim($this->requestBody['username'] ?? '');
-        $password = trim($this->requestBody['password'] ?? '');
+        $username = is_string($requestBody['username'] ?? null) ? trim($requestBody['username']) : '';
+        $password = is_string($requestBody['password'] ?? null) ? trim($requestBody['password']) : '';
 
         $loginErrors = self::validateLoginInput($username, $password);
         if (!empty($loginErrors)) {
@@ -79,7 +78,7 @@ class LoginController
         if ($userInfo) {
             $session->set('logged_in', true);
             $session->set('username', $userInfo->username);
-            $session->set('user_agent', $this->requestServer['HTTP_USER_AGENT'] ?? '');
+            $session->set('user_agent', is_string($serverParams['HTTP_USER_AGENT'] ?? null) ? $serverParams['HTTP_USER_AGENT'] : '');
             $session->set('csrf_token', bin2hex(\App\Helpers\EncryptionHelper::bytes(32)));
             $session->set('is_admin', $userInfo->admin);
             $session->set('timeout', time());
@@ -88,7 +87,7 @@ class LoginController
         }
 
         // Handle failed login attempt
-        $ip = $this->requestServer['REMOTE_ADDR'] ?? '';
+        $ip = is_string($serverParams['REMOTE_ADDR'] ?? null) ? $serverParams['REMOTE_ADDR'] : '';
         if (BlacklistModel::isBlacklisted($ip)) {
             $error = 'Your IP has been blacklisted due to multiple failed login attempts.';
             ErrorManager::getInstance()->log($error);

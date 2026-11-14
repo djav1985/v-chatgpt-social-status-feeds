@@ -14,7 +14,6 @@
 namespace App\Core;
 
 use App\Helpers\MessageHelper;
-use App\Helpers\RequestInput;
 use App\Helpers\ValidationHelper;
 use App\Models\BlacklistModel;
 use FastRoute\ConfigureRoutes;
@@ -54,8 +53,9 @@ class Router
     {
         $path = $request->getUri()->getPath() ?: '/';
         $server = $request->getServerParams();
+        $ip = $server['REMOTE_ADDR'] ?? null;
         ErrorManager::logRequest($request->getMethod(), $path, [
-            'ip' => RequestInput::string($server, 'REMOTE_ADDR') ?? 'unknown',
+            'ip' => is_string($ip) ? $ip : 'unknown',
         ]);
 
         return $this->dispatchRoute($request);
@@ -92,7 +92,8 @@ class Router
     private function guardBlacklist(ServerRequestInterface $request): ?Response
     {
         $server = $request->getServerParams();
-        $ip = filter_var(RequestInput::string($server, 'REMOTE_ADDR') ?? '', FILTER_VALIDATE_IP);
+        $remoteAddress = $server['REMOTE_ADDR'] ?? null;
+        $ip = filter_var(is_string($remoteAddress) ? $remoteAddress : '', FILTER_VALIDATE_IP);
         if ($ip !== false && BlacklistModel::isBlacklisted($ip)) {
             return new Response(403);
         }
@@ -109,14 +110,17 @@ class Router
 
         $path = $request->getUri()->getPath() ?: '/';
         $isFeed = str_starts_with($path, '/feeds/');
-        $userAgent = RequestInput::string($server, 'HTTP_USER_AGENT') ?? '';
+        $userAgent = $server['HTTP_USER_AGENT'] ?? null;
+        $userAgent = is_string($userAgent) ? $userAgent : '';
         if ($path !== '/login' && $path !== '/' && !$isFeed && !$session->requireAuth($userAgent)) {
             return Response::redirect('/login');
         }
 
         if (!in_array($request->getMethod(), ['GET', 'HEAD', 'OPTIONS'], true)) {
-            $post = RequestInput::parsedBody($request);
-            $token = RequestInput::string($post, 'csrf_token') ?? '';
+            $post = $request->getParsedBody();
+            $token = is_array($post) && is_string($post['csrf_token'] ?? null)
+                ? $post['csrf_token']
+                : '';
             if (!ValidationHelper::validateCsrfToken($token)) {
                 MessageHelper::addMessage('Invalid CSRF token. Please try again.');
                 return Response::redirect($path);

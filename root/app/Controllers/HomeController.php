@@ -27,8 +27,6 @@ use App\Helpers\ValidationHelper;
 
 class HomeController
 {
-    use RequestContext;
-
     /**
      * Display the dashboard showing accounts and recent statuses.
      *
@@ -36,7 +34,6 @@ class HomeController
      */
     public function handleRequest(ServerRequestInterface $request): Response
     {
-        $this->captureRequest($request);
         $accountOwner = (string) SessionManager::getInstance()->get('username', '');
         $accounts = \App\Models\AccountModel::getAllUserAccts($accountOwner);
         $accountsData = [];
@@ -92,14 +89,15 @@ class HomeController
      */
     public function handleSubmission(ServerRequestInterface $request): Response
     {
-        $this->captureRequest($request);
-        if (isset($this->requestBody['delete_status'])) {
-            $this->deleteStatus();
+        $requestBody = $request->getParsedBody();
+        $requestBody = is_array($requestBody) ? $requestBody : [];
+        if (isset($requestBody['delete_status'])) {
+            $this->deleteStatus($requestBody);
             return Response::redirect('/home');
         }
 
-        if (isset($this->requestBody['generate_status'])) {
-            $this->generateStatus();
+        if (isset($requestBody['generate_status'])) {
+            $this->generateStatus($requestBody);
             return Response::redirect('/home');
         }
 
@@ -111,20 +109,20 @@ class HomeController
      *
      * @return void
      */
-    private function deleteStatus(): void
+    private function deleteStatus(array $requestBody): void
     {
         $session = SessionManager::getInstance();
-        $accountName = ValidationHelper::sanitizeString($this->requestBody['account'] ?? '', 'alphanumeric-dash');
+        $accountName = ValidationHelper::sanitizeString($requestBody['account'] ?? '', 'alphanumeric-dash');
         if (empty($accountName)) {
             MessageHelper::addMessage('Invalid account name.');
             return;
         }
         $accountOwner = $session->get('username');
-        if (isset($this->requestBody['username']) && $accountOwner !== trim($this->requestBody['username'])) {
+        if (isset($requestBody['username']) && $accountOwner !== trim((string) $requestBody['username'])) {
             MessageHelper::addMessage('Username mismatch.');
             return;
         }
-        $statusId = ValidationHelper::validateInteger($this->requestBody['id'] ?? '');
+        $statusId = ValidationHelper::validateInteger($requestBody['id'] ?? '');
         if ($statusId === null) {
             MessageHelper::addMessage('Invalid status ID.');
             return;
@@ -155,16 +153,16 @@ class HomeController
      *
      * @return void
      */
-    private function generateStatus(): void
+    private function generateStatus(array $requestBody): void
     {
         $session = SessionManager::getInstance();
-        $accountName = ValidationHelper::sanitizeString($this->requestBody['account'] ?? '', 'alphanumeric-dash');
+        $accountName = ValidationHelper::sanitizeString($requestBody['account'] ?? '', 'alphanumeric-dash');
         if (empty($accountName)) {
             MessageHelper::addMessage('Invalid account name.');
             return;
         }
         $accountOwner = $session->get('username');
-        if (isset($this->requestBody['username']) && $accountOwner !== trim($this->requestBody['username'])) {
+        if (isset($requestBody['username']) && $accountOwner !== trim((string) $requestBody['username'])) {
             MessageHelper::addMessage('Username mismatch.');
             return;
         }
