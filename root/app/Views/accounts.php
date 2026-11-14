@@ -23,6 +23,7 @@ $stats = $userStats ?? [];
                                                                                                                      endforeach ?></select>
         <label for="hashtags">Include hashtags</label><select class="form-select" name="hashtags" id="hashtags"><option value="0" selected>No</option><option value="1">Yes</option></select>
         <input type="hidden" name="csrf_token" value="<?= $csrf ?>"><button class="btn btn-success" name="edit_account">Add or update account</button>
+        <button class="btn btn-secondary" id="cancel-account-update" type="button" hidden>Cancel update</button>
       </form></div><div class="card-footer"><strong>Summary</strong><ul class="mb-0"><li>Total accounts: <?= htmlspecialchars((string)($stats['totalAccounts'] ?? 0), ENT_QUOTES, 'UTF-8') ?></li><li>API calls: <?= htmlspecialchars((string)($stats['usedApiCalls'] ?? 0), ENT_QUOTES, 'UTF-8') ?> / <?= htmlspecialchars((string)($stats['maxApiCallsLabel'] ?? 'Off'), ENT_QUOTES, 'UTF-8') ?></li><li>Expires: <?= htmlspecialchars((string)($stats['expiresLabel'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></li></ul></div></div></section>
     <section class="col-12 col-lg-8"><div class="card"><div class="card-header"><h2 class="card-title">Account list</h2></div><div class="card-body"><div class="row row-cards">
       <?php foreach (($accountList ?? []) as $account) :

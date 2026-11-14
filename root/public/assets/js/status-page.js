@@ -34,6 +34,69 @@
     });
   });
 
+  const copyText = async text => {
+    if (typeof navigator.clipboard?.writeText === 'function') {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Continue to the legacy fallback for browsers that reject clipboard access.
+      }
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    let copied;
+    try {
+      copied = document.execCommand?.('copy') === true;
+    } catch {
+      copied = false;
+    }
+    textarea.remove();
+    return copied;
+  };
+
+  const downloadImage = url => {
+    if (!url) return false;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '';
+    link.rel = 'noopener';
+    link.hidden = true;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    return true;
+  };
+
+  const createFileSharePayload = async (text, url) => {
+    if (
+      !url
+      || typeof navigator.canShare !== 'function'
+      || typeof window.fetch !== 'function'
+      || typeof window.File !== 'function'
+    ) return null;
+
+    try {
+      const response = await window.fetch(url);
+      if (!response.ok) return null;
+      const blob = await response.blob();
+      const path = new URL(url, document.baseURI).pathname;
+      const fileName = decodeURIComponent(path.split('/').pop() || 'status-image')
+        .replace(/[\\/:*?"<>|]/g, '_');
+      const file = new window.File([blob], fileName, { type: blob.type || 'application/octet-stream' });
+      const payload = { text, files: [file] };
+      return navigator.canShare(payload) ? payload : null;
+    } catch {
+      return null;
+    }
+  };
+
   accordion.addEventListener('click', async event => {
     const copy = event.target.closest('.copy-button');
     const share = event.target.closest('.share-button');
@@ -42,21 +105,20 @@
     const text = button.dataset.text || '';
     const url = button.dataset.url || '';
     try {
-      if (share && navigator.share) {
-        await navigator.share({ text, url });
+      if (share && typeof navigator.share === 'function') {
+        const payload = await createFileSharePayload(text, url) || { text, url };
+        await navigator.share(payload);
       } else if (copy) {
-        await navigator.clipboard.writeText(text);
-        if (url) {
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = '';
-          link.rel = 'noopener';
-          link.click();
+        const copied = await copyText(text);
+        const downloaded = downloadImage(url);
+        if (copied) {
+          window.showToast?.(downloaded ? 'Status copied. Image download started.' : 'Status copied.', 'success');
+        } else {
+          window.showToast?.(downloaded ? 'Image download started, but status could not be copied.' : 'Could not copy status.', 'error');
         }
-        window.showToast?.('Status copied. Image download started.', 'success');
       } else {
-        await navigator.clipboard.writeText(`${text} ${url}`.trim());
-        window.showToast?.('Status link copied.', 'success');
+        const copied = await copyText(`${text} ${url}`.trim());
+        window.showToast?.(copied ? 'Status link copied.' : 'Could not copy status link.', copied ? 'success' : 'error');
       }
     } catch (error) {
       if (error?.name !== 'AbortError') window.showToast?.('Could not complete that action.', 'error');

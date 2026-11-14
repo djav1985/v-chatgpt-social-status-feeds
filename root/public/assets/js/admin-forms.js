@@ -10,10 +10,24 @@
     const selectedTimes = (button.dataset.cron || '').split(',');
     [...cron.options].forEach(option => option.selected = selectedTimes.includes(option.value));
     if (!selectedTimes.length || selectedTimes[0] === '') cron.querySelector('[value="null"]').selected = true;
+    document.querySelector('#account').readOnly = true;
+    const cancelButton = document.querySelector('#cancel-account-update');
+    if (cancelButton) cancelButton.hidden = false;
     document.querySelector('#account').scrollIntoView({behavior: 'smooth', block: 'center'});
   }));
   const accountForm = document.querySelector('form[action="/accounts"]');
-  accountForm?.addEventListener('submit', () => { document.querySelector('#account').readOnly = false; });
+  const accountName = accountForm?.querySelector('#account');
+  const cancelAccountUpdate = document.querySelector('#cancel-account-update');
+  const leaveAccountUpdateMode = () => {
+    accountForm?.reset();
+    if (accountName) accountName.readOnly = false;
+    if (cancelAccountUpdate) cancelAccountUpdate.hidden = true;
+  };
+  accountForm?.addEventListener('submit', () => {
+    if (accountName) accountName.readOnly = false;
+    if (cancelAccountUpdate) cancelAccountUpdate.hidden = true;
+  });
+  cancelAccountUpdate?.addEventListener('click', leaveAccountUpdateMode);
   document.querySelector('#cron')?.addEventListener('change', event => {
     const field = event.currentTarget;
     const off = field.querySelector('[value="null"]');
@@ -48,6 +62,11 @@
     document.querySelector('#username').readOnly = true;
     document.querySelector('#username').scrollIntoView({behavior:'smooth',block:'center'});
   }));
+  const userForm = document.querySelector('form.form-grid[action="/users"]');
+  const userName = userForm?.querySelector('#username');
+  userForm?.addEventListener('submit', () => {
+    if (userName) userName.readOnly = false;
+  });
   const profile = document.querySelector('#update-profile-form');
   if (profile) for (const field of ['who','where','what','goal']) document.getElementById(field).value = profile.dataset[field] || '';
 })();

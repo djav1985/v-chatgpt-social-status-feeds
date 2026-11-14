@@ -5,6 +5,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 ## Unreleased
 ### Changed
+- Restored safe status copy/share fallbacks, clarified mobile and account update controls, preserved database defaults and schedule ordering, and removed PR auto-fix writes from CI.
 - Reworked the README to use consistent Markdown formatting and updated installation, cron, queue, caching, and development guidance to match the current application.
 - Removed redundant file-wide PHPCS ignores and narrowed test suppressions to the specific active sniffs.
 - Standardized PHP headers, opening-tag spacing, LF line endings, and final newlines across application and test PHP files.

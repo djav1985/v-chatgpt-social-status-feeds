@@ -25,6 +25,7 @@ if ($session->get('is_admin')) {
 }
 $navigation['/info'] = 'My Info';
 $navigation[$allFeedsPath] = 'Omni';
+$activeSection = $navigation[$currentPath] ?? 'Menu';
 ?>
 <!doctype html>
 <html lang="en-US">
@@ -52,16 +53,20 @@ $navigation[$allFeedsPath] = 'Omni';
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     <button id="logout" class="btn btn-logout" type="submit" name="logout">Logout</button>
                 </form>
-                <button class="mobile-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="admin-nav-links" hidden>
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                </button>
             </div>
         </div>
     </header>
     <div class="admin-nav-wrap">
         <div class="container-xl">
+            <button class="mobile-menu-toggle" type="button"
+                data-menu-section="<?php echo htmlspecialchars($activeSection, ENT_QUOTES, 'UTF-8'); ?>"
+                aria-label="Open <?php echo htmlspecialchars($activeSection, ENT_QUOTES, 'UTF-8'); ?> navigation menu"
+                aria-expanded="false" aria-controls="admin-nav-links" hidden>
+                <span class="mobile-menu-current"><?php echo htmlspecialchars($activeSection, ENT_QUOTES, 'UTF-8'); ?></span>
+                <svg class="mobile-menu-chevron" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
             <nav id="admin-nav-links" class="nav nav-tabs admin-nav" aria-label="Admin sections">
                 <?php foreach ($navigation as $path => $label) : ?>
                     <?php $isActive = $currentPath === $path; ?>

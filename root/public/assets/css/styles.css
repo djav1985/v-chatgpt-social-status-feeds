@@ -141,22 +141,27 @@ html,body{min-height:100%;overflow-x:hidden}body{background:#f5f7fb;color:var(--
     display: none;
   }
 
-  .admin-header .mobile-menu-toggle {
+  .mobile-menu-toggle {
     display: flex;
-    width: 2.75rem;
-    height: 2.5rem;
+    width: 100%;
+    min-height: 3rem;
     align-items: center;
-    justify-content: center;
-    border: 1px solid rgb(255 255 255 / 70%);
+    justify-content: space-between;
+    border: 1px solid #dce2e9;
     border-radius: 0.25rem;
-    background: transparent;
-    padding: 0.5rem;
-    color: #fff;
+    background: #fff;
+    padding: 0.75rem 1rem;
+    color: #182433;
   }
 
   .mobile-menu-toggle svg {
-    width: 1.4rem;
-    height: 1.4rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform 180ms ease;
+  }
+
+  .mobile-menu-toggle[aria-expanded="true"] .mobile-menu-chevron {
+    transform: rotate(180deg);
   }
 
   .mobile-nav-logout {

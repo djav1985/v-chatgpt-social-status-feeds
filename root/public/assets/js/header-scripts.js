@@ -64,8 +64,9 @@
     const mobileViewport = window.matchMedia("(max-width: 767.98px)");
 
     const setNavOpen = (open) => {
+      const activeSection = navToggle.dataset.menuSection || 'section';
       navToggle.setAttribute("aria-expanded", String(open));
-      navToggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
+      navToggle.setAttribute("aria-label", `${open ? "Close" : "Open"} ${activeSection} navigation menu`);
       navWrap.classList.toggle("is-open", open);
       nav.inert = mobileViewport.matches && !open;
     };

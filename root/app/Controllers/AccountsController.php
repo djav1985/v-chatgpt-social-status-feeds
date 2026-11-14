@@ -106,7 +106,26 @@ class AccountsController
                 }
             }
         }
-        return ['days' => $days, 'schedule' => $overview];
+        return ['days' => $days, 'schedule' => self::sortCalendarOverview($overview)];
+    }
+
+    /**
+     * Sort each aggregated day and time slot by hour after accounts have been combined.
+     *
+     * @param array<string, array<string, list<array{hour: int, account: string, time: string}>>> $overview
+     * @return array<string, array<string, list<array{hour: int, account: string, time: string}>>>
+     */
+    private static function sortCalendarOverview(array $overview): array
+    {
+        foreach ($overview as &$slots) {
+            foreach ($slots as &$entries) {
+                usort($entries, static fn(array $left, array $right): int => $left['hour'] <=> $right['hour']);
+            }
+            unset($entries);
+        }
+        unset($slots);
+
+        return $overview;
     }
 
     /**
